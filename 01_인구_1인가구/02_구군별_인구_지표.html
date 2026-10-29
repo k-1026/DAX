@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>대구 구군 인구 지표 (남녀 비율 %)</title>
+<style>
+:root{--bg:#ffffff;--text:#0b0b0b;--sub:#52514e;--muted:#898781;--grid:#e1e0d9;--hi:#2a78d6;--lo:#b4b2a9;--male:#2a78d6;--female:#eb6834;--ref:#52514e}
+@media (prefers-color-scheme: dark){:root{--bg:#1a1a19;--text:#f0efec;--sub:#c3c2b7;--muted:#898781;--grid:#2c2c2a;--hi:#3987e5;--lo:#5f5e5a;--male:#3987e5;--female:#d95926;--ref:#c3c2b7}}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Malgun Gothic",sans-serif;padding:24px 16px;max-width:1040px;margin:0 auto}
+h1{font-size:20px;font-weight:500;margin-bottom:4px}
+.src{font-size:12px;color:var(--muted);margin-bottom:16px}
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:12px;color:var(--sub);margin-bottom:12px}
+.legend span{display:flex;align-items:center;gap:4px}
+.sw{width:10px;height:10px;border-radius:2px;display:inline-block}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:28px 24px}
+.wide{grid-column:1/-1}
+.t{font-size:14px;font-weight:500}
+.d{font-size:12px;color:var(--muted);margin-bottom:4px}
+.box{position:relative;height:310px}
+</style>
+</head>
+<body>
+<h1>대구 구군별 인구 지표 (2024)</h1>
+<p class="src">출처: 「대구광역시기본통계」, 대구광역시 (KOSIS, 2024년 12월 31일 기준 주민등록인구)</p>
+
+<div class="grid">
+<div class="wide">
+<p class="t">남녀 비율</p><p class="d">전체 인구 중 남자·여자 비율 · 단위 % · 여자 비율이 높은 순</p>
+<div class="legend"><span><i class="sw" style="background:var(--male)"></i>남자 (%)</span><span><i class="sw" style="background:var(--female)"></i>여자 (%)</span><span>점선 = 50% (남녀 같음)</span></div>
+<div class="box" style="height:440px"><canvas id="sx" role="img" aria-label="구군별 남녀 비율">남구 남 47.7% 여 52.3%, 중구 남 47.9% 여 52.1%, 수성구 남 48.1% 여 51.9%, 동구 남 48.8% 여 51.2%, 대구 전체 남 49.1% 여 50.9%, 달서구 남 49.2% 여 50.8%, 북구 남 49.5% 여 50.5%, 서구 남 49.7% 여 50.3%, 달성군 남 51.2% 여 48.8%, 군위군 남 52.3% 여 47.7%</canvas></div>
+</div>
+</div>
+
+<div class="legend" style="margin-top:32px"><span><i class="sw" style="background:var(--hi)"></i>중구 (프로젝트 대상)</span><span><i class="sw" style="background:var(--lo)"></i>그 외 구군</span><span>점선 = 대구 전체 평균</span></div>
+<div class="grid">
+<div><p class="t">외국인 비율</p><p class="d">전체 인구 중 외국인 · 단위 %</p><div class="box"><canvas id="c2" role="img" aria-label="구군별 외국인 비율">달성군 2.79%, 군위군 2.53%, 달서구 2.39%, 서구 1.61%, 북구 1.55%, 남구 1.49%, 중구 0.97%, 동구 0.60%, 수성구 0.41%</canvas></div></div>
+<div><p class="t">세대당 인구</p><p class="d">한 세대에 사는 평균 인원 · 단위 명</p><div class="box"><canvas id="c3" role="img" aria-label="구군별 세대당 인구">수성구 2.34명, 달성군 2.26명, 달서구 2.20명, 북구 2.15명, 동구 2.08명, 중구 2.00명, 서구 1.94명, 남구 1.81명, 군위군 1.68명</canvas></div></div>
+<div><p class="t">고령화율</p><p class="d">전체 인구 중 65세 이상 · 단위 %</p><div class="box"><canvas id="c4" role="img" aria-label="구군별 고령화율">군위군 46.1%, 서구 27.3%, 남구 27.3%, 동구 23.5%, 수성구 19.3%, 달서구 18.8%, 북구 18.6%, 중구 18.2%, 달성군 16.2%</canvas></div></div>
+<div><p class="t">인구밀도</p><p class="d">1㎢당 사는 사람 수 · 단위 명</p><div class="box"><canvas id="c5" role="img" aria-label="구군별 인구밀도">중구 13,976명, 서구 9,573명, 달서구 8,574명, 남구 7,936명, 수성구 5,367명, 북구 4,465명, 동구 1,891명, 달성군 619명, 군위군 38명</canvas></div></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const grid=css('--grid'),tick=css('--muted'),hi=css('--hi'),lo=css('--lo'),ref=css('--ref'),lab=css('--text'),surf=css('--bg');
+
+const sexRows=[['남구',47.7],['중구',47.9],['수성구',48.1],['동구',48.8],['대구 전체',49.1],['달서구',49.2],['북구',49.5],['서구',49.7],['달성군',51.2],['군위군',52.3]];
+const sexPlug={id:'sexPlug',afterDatasetsDraw(c){const g=c.ctx,a=c.chartArea,x=c.scales.x.getPixelForValue(50);g.save();g.strokeStyle=ref;g.setLineDash([4,4]);g.beginPath();g.moveTo(x,a.top);g.lineTo(x,a.bottom);g.stroke();g.setLineDash([]);g.font='12px sans-serif';g.fillStyle='#ffffff';g.textBaseline='middle';[0,1].forEach(d=>{c.getDatasetMeta(d).data.forEach((b,i)=>{g.textAlign=d?'right':'left';g.fillText(c.data.datasets[d].data[i].toFixed(1)+'%',d?a.right-8:a.left+8,b.y);});});g.restore();}};
+new Chart(document.getElementById('sx'),{type:'bar',plugins:[sexPlug],data:{labels:sexRows.map(r=>r[0]),datasets:[{label:'남자',data:sexRows.map(r=>r[1]),backgroundColor:css('--male'),borderColor:surf,borderWidth:{right:2},borderSkipped:false,maxBarThickness:24},{label:'여자',data:sexRows.map(r=>+(100-r[1]).toFixed(1)),backgroundColor:css('--female'),borderColor:surf,borderWidth:{left:2},borderSkipped:false,maxBarThickness:24}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+' '+c.raw.toFixed(1)+'%'}}},scales:{x:{stacked:true,min:0,max:100,grid:{color:grid},ticks:{color:tick,stepSize:25,callback:v=>v+'%'},border:{color:grid}},y:{stacked:true,grid:{display:false},ticks:{color:tick,autoSkip:false},border:{color:grid}}}}});
+
+const plug={id:'extras',afterDatasetsDraw(c,a,o){const g=c.ctx,ar=c.chartArea,x=c.scales.x.getPixelForValue(o.avg);g.save();g.strokeStyle=ref;g.setLineDash([4,4]);g.lineWidth=1;g.beginPath();g.moveTo(x,ar.top);g.lineTo(x,ar.bottom);g.stroke();g.setLineDash([]);g.font='11px sans-serif';g.fillStyle=lab;g.textBaseline='middle';c.getDatasetMeta(0).data.forEach((b,i)=>{g.fillText(o.fmt(c.data.datasets[0].data[i]),b.x+4,b.y);});g.restore();}};
+function mk(id,rows,avg,fmt,tickFmt,min,max,step){rows.sort((a,b)=>b[1]-a[1]);new Chart(document.getElementById(id),{type:'bar',plugins:[plug],data:{labels:rows.map(r=>r[0]),datasets:[{data:rows.map(r=>r[1]),backgroundColor:rows.map(r=>r[0]==='중구'?hi:lo),borderRadius:{topRight:4,bottomRight:4},borderSkipped:'start',maxBarThickness:22}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,layout:{padding:{right:56}},plugins:{legend:{display:false},extras:{avg,fmt},tooltip:{callbacks:{label:c=>fmt(c.raw)+'  (대구 평균 '+fmt(avg)+')'}}},scales:{x:{min,max,grid:{color:grid},ticks:{color:tick,stepSize:step,callback:v=>tickFmt(v)},border:{color:grid}},y:{grid:{display:false},ticks:{color:tick,autoSkip:false},border:{color:grid}}}}});}
+mk('c2',[['중구',0.97],['동구',0.60],['서구',1.61],['남구',1.49],['북구',1.55],['수성구',0.41],['달서구',2.39],['달성군',2.79],['군위군',2.53]],1.53,v=>(+v).toFixed(2)+'%',v=>v+'%',0,3.5,1);
+mk('c3',[['중구',2.00],['동구',2.08],['서구',1.94],['남구',1.81],['북구',2.15],['수성구',2.34],['달서구',2.20],['달성군',2.26],['군위군',1.68]],2.14,v=>(+v).toFixed(2)+'명',v=>(+v).toFixed(1)+'명',1.5,2.5,0.5);
+mk('c4',[['중구',18.2],['동구',23.5],['서구',27.3],['남구',27.3],['북구',18.6],['수성구',19.3],['달서구',18.8],['달성군',16.2],['군위군',46.1]],20.5,v=>(+v).toFixed(1)+'%',v=>v+'%',0,55,10);
+mk('c5',[['중구',13976],['동구',1891],['서구',9573],['남구',7936],['북구',4465],['수성구',5367],['달서구',8574],['달성군',619],['군위군',38]],1601,v=>Math.round(v).toLocaleString()+'명',v=>(v/1000)+'천명',0,15000,5000);
+</script>
+</body>
+</html>

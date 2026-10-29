@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>음식서비스·음식료품 비율</title>
+<style>
+  :root {
+    --bg: #f7f7f5; --card: #ffffff; --text: #1d1d1f; --muted: #6b6b70; --line: #e4e4e0;
+    --svc: #d9622b; --food: #2f7d6d; --track: #ececea;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #161617; --card: #1f1f21; --text: #ededee; --muted: #a0a0a6; --line: #333336;
+      --svc: #ef8a55; --food: #4fb39d; --track: #2c2c2f;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+    line-height: 1.55;
+  }
+  main { max-width: 960px; margin: 0 auto; padding: 32px 16px 56px; }
+  h1 { font-size: 1.6rem; margin: 0 0 6px; }
+  h2 { font-size: 1.15rem; margin: 40px 0 12px; }
+  .meta { color: var(--muted); font-size: .88rem; margin: 0; }
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 24px; }
+  .kpi { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
+  .kpi .label { color: var(--muted); font-size: .85rem; }
+  .kpi .value { font-size: 2rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .kpi.svc .value { color: var(--svc); }
+  .kpi.food .value { color: var(--food); }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+  .legend { display: flex; gap: 16px; font-size: .85rem; color: var(--muted); margin-bottom: 12px; flex-wrap: wrap; }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+  .bars { display: grid; gap: 10px; }
+  .bar-row { display: grid; grid-template-columns: 76px 1fr 64px; align-items: center; gap: 10px; font-size: .88rem; }
+  .bar-row .m { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .track { background: var(--track); border-radius: 4px; height: 22px; display: flex; overflow: hidden; }
+  .seg { height: 100%; }
+  .seg.svc { background: var(--svc); }
+  .seg.food { background: var(--food); }
+  .bar-row .sum { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+  .scale { display: grid; grid-template-columns: 76px 1fr 64px; gap: 10px; font-size: .75rem; color: var(--muted); margin-top: 4px; }
+  .scale div:nth-child(2) { display: flex; justify-content: space-between; }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: .88rem; font-variant-numeric: tabular-nums; }
+  th, td { padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+  th:first-child, td:first-child { text-align: left; }
+  th { color: var(--muted); font-weight: 600; }
+  tr.total td { font-weight: 700; border-top: 2px solid var(--line); }
+  td.pct-svc { color: var(--svc); font-weight: 600; }
+  td.pct-food { color: var(--food); font-weight: 600; }
+  ul.notes { padding-left: 20px; }
+  ul.notes li { margin: 6px 0; }
+  footer { margin-top: 40px; color: var(--muted); font-size: .8rem; }
+</style>
+</head>
+<body>
+<main>
+  <h1>온라인쇼핑 거래액 중 음식서비스 · 음·식료품 비율</h1>
+  <p class="meta">2026.03 ~ 2026.08 (7·8월 잠정치) · 단위: 백만원 · 비율 = 해당 상품군 ÷ 같은 월·같은 구분의 합계 거래액</p>
+
+  <div class="kpis">
+    <div class="kpi svc"><div class="label">음식서비스 비율 (전체, 6개월)</div><div class="value">15.09%</div></div>
+    <div class="kpi food"><div class="label">음·식료품 비율 (전체, 6개월)</div><div class="value">13.92%</div></div>
+    <div class="kpi"><div class="label">두 항목 합계 비율</div><div class="value">29.01%</div></div>
+  </div>
+
+  <h2>월별 비율 (전체)</h2>
+  <div class="card">
+    <div class="legend"><span><i style="background:var(--svc)"></i>음식서비스</span><span><i style="background:var(--food)"></i>음·식료품</span></div>
+    <div class="bars" id="bars"></div>
+    <div class="scale"><div></div><div><span>0%</span><span>10%</span><span>20%</span><span>30%</span><span>40%</span></div><div></div></div>
+  </div>
+
+  <h2>구분별 요약 (6개월 합계)</h2>
+  <div class="card table-wrap">
+    <table>
+      <thead><tr><th>구분</th><th>합계</th><th>음식서비스</th><th>비율</th><th>음·식료품</th><th>비율</th></tr></thead>
+      <tbody>
+        <tr><td>전체(계)</td><td>148,489,399</td><td>22,403,551</td><td class="pct-svc">15.09%</td><td>20,672,707</td><td class="pct-food">13.92%</td></tr>
+        <tr><td>종합몰</td><td>79,582,466</td><td>0</td><td class="pct-svc">0.00%</td><td>18,303,238</td><td class="pct-food">23.00%</td></tr>
+        <tr><td>전문몰</td><td>68,906,933</td><td>22,403,551</td><td class="pct-svc">32.51%</td><td>2,369,469</td><td class="pct-food">3.44%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>월별 상세</h2>
+  <div id="tables"></div>
+
+  <h2>시사점</h2>
+  <ul class="notes">
+    <li>음식서비스와 음·식료품은 매월 상품군 중 거래액 <b>1·2위</b>이며, 둘을 합하면 전체 온라인쇼핑의 약 <b>29%</b>입니다.</li>
+    <li><b>음식서비스 비중은 꾸준히 커지고 있습니다</b>: 3월 14.2% → 8월 16.4%. 거래는 전부 전문몰(배달앱 등)에서 일어납니다.</li>
+    <li><b>음·식료품은 약 88%가 종합몰에서 거래</b>되며, 종합몰 거래액의 약 4분의 1을 차지합니다.</li>
+    <li>참고: 음·식료품과 별개인 <b>농축수산물</b>은 6개월 합계 기준 전체의 약 5.1%입니다.</li>
+  </ul>
+
+  <footer>자료: 온라인쇼핑몰 취급상품범위별/상품군별거래액 (KOSIS DT_1KE10041), 「온라인쇼핑동향조사」, 국가데이터처 · 자료다운일 2026.10.29</footer>
+</main>
+
+<script>
+  const months = ["2026.03", "2026.04", "2026.05", "2026.06", "2026.07 p)", "2026.08 p)"];
+  const data = {
+    "전체(계)": {
+      total: [25543432, 23968566, 25012159, 24646021, 25107430, 24211791],
+      svc:   [3630668, 3466198, 3834176, 3610889, 3893929, 3967691],
+      food:  [3401035, 3359356, 3538176, 3335655, 3495485, 3543000]
+    },
+    "종합몰": {
+      total: [13462838, 13031929, 13377026, 13312556, 13532613, 12865504],
+      svc:   [0, 0, 0, 0, 0, 0],
+      food:  [3027218, 2971285, 3019135, 2975899, 3131365, 3178336]
+    },
+    "전문몰": {
+      total: [12080594, 10936637, 11635133, 11333465, 11574817, 11346287],
+      svc:   [3630668, 3466198, 3834176, 3610889, 3893929, 3967691],
+      food:  [373817, 388071, 519041, 359756, 364120, 364664]
+    }
+  };
+  const fmt = n => n.toLocaleString("ko-KR");
+  const pct = (a, b) => (100 * a / b).toFixed(2) + "%";
+  const sum = arr => arr.reduce((a, b) => a + b, 0);
+
+  // 전체 기준 막대 (축 최대 40%)
+  const all = data["전체(계)"];
+  document.getElementById("bars").innerHTML = months.map((m, i) => {
+    const s = 100 * all.svc[i] / all.total[i], f = 100 * all.food[i] / all.total[i];
+    return `<div class="bar-row"><div class="m">${m}</div>
+      <div class="track"><div class="seg svc" style="width:${s / 40 * 100}%" title="음식서비스 ${s.toFixed(2)}%"></div>
+      <div class="seg food" style="width:${f / 40 * 100}%" title="음·식료품 ${f.toFixed(2)}%"></div></div>
+      <div class="sum">${(s + f).toFixed(1)}%</div></div>`;
+  }).join("");
+
+  document.getElementById("tables").innerHTML = Object.entries(data).map(([name, d]) => {
+    const rows = months.map((m, i) => `<tr><td>${m}</td><td>${fmt(d.total[i])}</td><td>${fmt(d.svc[i])}</td>
+      <td class="pct-svc">${pct(d.svc[i], d.total[i])}</td><td>${fmt(d.food[i])}</td>
+      <td class="pct-food">${pct(d.food[i], d.total[i])}</td><td>${pct(d.svc[i] + d.food[i], d.total[i])}</td></tr>`).join("");
+    const T = sum(d.total), S = sum(d.svc), F = sum(d.food);
+    return `<h3 style="font-size:1rem;margin:20px 0 8px">${name}</h3><div class="card table-wrap"><table>
+      <thead><tr><th>월</th><th>합계</th><th>음식서비스</th><th>비율</th><th>음·식료품</th><th>비율</th><th>두 항목 합</th></tr></thead>
+      <tbody>${rows}<tr class="total"><td>6개월 합계</td><td>${fmt(T)}</td><td>${fmt(S)}</td><td class="pct-svc">${pct(S, T)}</td>
+      <td>${fmt(F)}</td><td class="pct-food">${pct(F, T)}</td><td>${pct(S + F, T)}</td></tr></tbody></table></div>`;
+  }).join("");
+</script>
+</body>
+</html>

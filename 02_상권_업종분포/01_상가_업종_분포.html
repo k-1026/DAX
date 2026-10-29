@@ -1,0 +1,271 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>대구 상가 업종 분포</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@600;700&display=swap">
+<style>
+/* layout: single measured column; stat row, one emphasis bar chart, 3-up small multiples */
+:root{
+  --surface-1:#fcfcfb; --plane:#f2f2ef;
+  --ink-1:#0b0b0b; --ink-2:#52514e; --ink-3:#898781;
+  --grid:#e1e0d9; --axis:#c3c2b7; --ring:rgba(11,11,11,.10);
+  --series-1:#2a78d6; --accent:#eb6834; --track:#e8e7e1;
+  --font-ui:"Noto Sans KR",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-dis:"Noto Serif KR",Georgia,serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --surface-1:#1a1a19; --plane:#0d0d0d;
+  --ink-1:#f0efec; --ink-2:#c3c2b7; --ink-3:#898781;
+  --grid:#2c2c2a; --axis:#383835; --ring:rgba(255,255,255,.10);
+  --series-1:#3987e5; --accent:#d95926; --track:#2c2c2a;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --surface-1:#1a1a19; --plane:#0d0d0d;
+  --ink-1:#f0efec; --ink-2:#c3c2b7; --ink-3:#898781;
+  --grid:#2c2c2a; --axis:#383835; --ring:rgba(255,255,255,.10);
+  --series-1:#3987e5; --accent:#d95926; --track:#2c2c2a;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--plane);color:var(--ink-1);font-family:var(--font-ui);margin:0;
+  font-size:15px;line-height:1.5;-webkit-text-size-adjust:100%}
+.wrap{max-width:1040px;margin:0 auto;padding-block:40px 64px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-family:var(--font-dis);font-weight:700;font-size:clamp(26px,5vw,40px);
+  line-height:1.2;margin:0 0 10px;text-wrap:balance;letter-spacing:-.01em}
+.sub{color:var(--ink-2);font-size:14px;margin:0;max-width:62ch}
+.src{color:var(--ink-3);font-size:12.5px;margin:8px 0 0;max-width:62ch}
+h2{font-family:var(--font-dis);font-weight:600;font-size:clamp(19px,3.4vw,24px);
+  margin:0 0 6px;letter-spacing:-.01em}
+.lede{color:var(--ink-2);font-size:13.5px;margin:0 0 20px;max-width:64ch}
+section{margin-top:52px}
+.card{background:var(--surface-1);border:1px solid var(--ring);border-radius:10px;
+  padding:22px 18px}
+
+/* stat row */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;
+  background:var(--ring);border:1px solid var(--ring);border-radius:10px;overflow:hidden;
+  margin-top:26px}
+.kpi{background:var(--surface-1);padding:16px 16px 14px}
+.kpi .k{font-size:11.5px;text-transform:none;letter-spacing:.02em;color:var(--ink-3);
+  margin:0 0 6px;font-weight:500}
+.kpi .v{font-size:27px;font-weight:700;line-height:1.1;margin:0;letter-spacing:-.02em}
+.kpi .n{font-size:12px;color:var(--ink-2);margin:4px 0 0}
+.kpi.hl .v{color:var(--accent)}
+
+/* legend */
+.legend{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin:0 0 18px;
+  font-size:12.5px;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.sw{width:11px;height:11px;border-radius:2px;flex:none}
+
+/* bar rows */
+.rows{display:flex;flex-direction:column;gap:5px}
+.row{display:grid;grid-template-columns:22px minmax(0,148px) 1fr auto;gap:10px;
+  align-items:center;min-height:26px;border-radius:4px;outline:none}
+.row:hover,.row:focus-visible{background:color-mix(in srgb,var(--series-1) 7%,transparent)}
+.row:focus-visible{box-shadow:0 0 0 2px var(--series-1)}
+.rk{font-size:11.5px;color:var(--ink-3);text-align:right;font-variant-numeric:tabular-nums}
+.nm{font-size:13px;color:var(--ink-1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tr{position:relative;height:13px;background:var(--track);border-radius:0 4px 4px 0;min-width:0}
+.bar{position:absolute;inset:0 auto 0 0;background:var(--series-1);border-radius:0 4px 4px 0}
+.vl{font-size:12px;color:var(--ink-2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.row.hl .nm{font-weight:700;color:var(--accent)}
+.row.hl .bar{background:var(--accent)}
+.row.hl .vl{color:var(--accent);font-weight:700}
+.row.hl{background:color-mix(in srgb,var(--accent) 9%,transparent)}
+.axis{display:flex;justify-content:space-between;border-top:1px solid var(--grid);
+  margin-top:12px;padding-top:6px;font-size:11px;color:var(--ink-3);
+  font-variant-numeric:tabular-nums}
+.tail{margin:18px 0 0;padding-top:16px;border-top:1px solid var(--grid);
+  font-size:12.5px;color:var(--ink-2);max-width:66ch}
+
+/* small multiples */
+.sm{display:grid;grid-template-columns:repeat(auto-fit,minmax(282px,1fr));gap:1px;
+  background:var(--ring);border:1px solid var(--ring);border-radius:10px;overflow:hidden}
+.pn{background:var(--surface-1);padding:16px 16px 14px;min-width:0}
+.pnh{display:flex;justify-content:space-between;align-items:baseline;gap:8px;
+  margin:0 0 12px;padding-bottom:9px;border-bottom:1px solid var(--grid)}
+.pnh b{font-size:14.5px;font-weight:700}
+.pnh em{font-style:normal;font-size:11.5px;color:var(--ink-3);
+  font-variant-numeric:tabular-nums}
+.pn .row{grid-template-columns:18px minmax(0,96px) 1fr auto;gap:8px;min-height:24px}
+.pn .nm{font-size:12px}
+.pn .vl,.pn .rk{font-size:11px}
+.pnf{margin-top:11px;padding-top:10px;border-top:1px solid var(--grid)}
+.pnf .row{grid-template-columns:18px minmax(0,96px) 1fr auto}
+.pnf .cap{font-size:10.5px;color:var(--ink-3);margin:0 0 6px}
+
+/* table view */
+.tgl{display:inline-flex;gap:0;border:1px solid var(--ring);border-radius:7px;
+  overflow:hidden;margin:0 0 18px}
+.tgl button{font:inherit;font-size:12.5px;padding:6px 14px;border:0;cursor:pointer;
+  background:var(--surface-1);color:var(--ink-2)}
+.tgl button[aria-pressed="true"]{background:var(--series-1);color:#fff;font-weight:500}
+.tbox{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:12.5px;
+  font-variant-numeric:tabular-nums}
+th,td{text-align:right;padding:7px 10px;border-bottom:1px solid var(--grid);
+  white-space:nowrap}
+th:first-child,td:first-child,th:nth-child(2),td:nth-child(2){text-align:left}
+thead th{color:var(--ink-3);font-weight:500;font-size:11.5px;border-bottom:1px solid var(--axis)}
+tbody tr.hl td{color:var(--accent);font-weight:700}
+
+/* tooltip */
+#tip{position:fixed;z-index:50;pointer-events:none;opacity:0;transition:opacity .1s;
+  background:var(--surface-1);border:1px solid var(--ring);border-radius:7px;
+  padding:8px 11px;font-size:12.5px;line-height:1.45;color:var(--ink-1);
+  box-shadow:0 6px 20px rgba(0,0,0,.14);max-width:260px}
+#tip b{display:block;font-size:13px;margin-bottom:3px}
+#tip span{color:var(--ink-2);font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (max-width:480px){
+  .row{grid-template-columns:20px minmax(0,96px) 1fr auto;gap:8px}
+  .nm{font-size:12px}
+}
+</style>
+
+<div class="wrap">
+  <h1>대구 상가 업종 분포</h1>
+  <p class="sub">표준산업분류명 기준으로 대구광역시 상가업소 118,345개가 300개 업종에 어떻게 흩어져 있는지, 그 안에서 제과점업이 어디에 있는지 봅니다.</p>
+  <p class="src">소상공인시장진흥공단 「상가(상권)정보」 대구 · 2026년 6월 기준 · 전체 118,357행 중 표준산업분류명이 비어 있는 12행 제외</p>
+
+  <div class="kpis" id="kpis"></div>
+
+  <section>
+    <h2>업종별 점포 수 TOP 20</h2>
+    <p class="lede">가로축은 전체 점포 수 대비 비율입니다. 주황색이 제과점업으로, 300개 업종 가운데 <b id="bkrank"></b>위입니다.</p>
+    <div class="tgl" role="group" aria-label="보기 전환">
+      <button type="button" data-view="chart" aria-pressed="true">그래프</button>
+      <button type="button" data-view="table" aria-pressed="false">표</button>
+    </div>
+    <div class="card">
+      <div class="legend">
+        <span><i class="sw" style="background:var(--series-1)"></i>그 외 업종</span>
+        <span><i class="sw" style="background:var(--accent)"></i>제과점업</span>
+      </div>
+      <div id="c1" class="rows"></div>
+      <div class="axis" id="a1"></div>
+      <div id="t1" class="tbox" hidden></div>
+      <p class="tail" id="tail"></p>
+    </div>
+  </section>
+
+  <section>
+    <h2>구·군별 업종 TOP 5</h2>
+    <p class="lede">9개 구·군 모두 같은 가로축(0~20%)을 써서 패널끼리 바로 비교됩니다. 각 패널 아래 주황색 막대는 TOP 5에 들지 못한 제과점업을 참고로 함께 표시한 것입니다.</p>
+    <div id="c2" class="sm"></div>
+    <div id="t2" class="tbox" hidden></div>
+  </section>
+</div>
+<div id="tip" role="status" aria-live="polite"></div>
+
+<script id="viz-data" type="application/json">{"top":[{"name":"한식 일반 음식점업","n":12500,"pct":10.56},{"name":"두발 미용업","n":5965,"pct":5.04},{"name":"커피 전문점","n":4998,"pct":4.22},{"name":"부동산 중개 및 대리업","n":4158,"pct":3.51},{"name":"기타 주점업","n":2843,"pct":2.4},{"name":"일반 교과학원","n":2650,"pct":2.24},{"name":"한식 육류 요리 전문점","n":2522,"pct":2.13},{"name":"여자용 겉옷 소매업","n":2355,"pct":1.99},{"name":"김밥 및 기타 간이 음식점업","n":2074,"pct":1.75},{"name":"체인화 편의점","n":1915,"pct":1.62},{"name":"피부 미용업","n":1822,"pct":1.54},{"name":"치킨 전문점","n":1742,"pct":1.47},{"name":"자동차 전문 수리업","n":1697,"pct":1.43},{"name":"기타 음ㆍ식료품 위주 종합 소매업","n":1520,"pct":1.28},{"name":"화장품; 비누 및 방향제 소매업","n":1472,"pct":1.24},{"name":"셔츠 및 블라우스 소매업","n":1451,"pct":1.23},{"name":"의약품 및 의료용품 소매업","n":1448,"pct":1.22},{"name":"제과점업","n":1418,"pct":1.2},{"name":"경영 컨설팅업","n":1399,"pct":1.18},{"name":"기타 미용업","n":1382,"pct":1.17}],"bakery":{"name":"제과점업","n":1418,"pct":1.2,"rank":18},"stats":{"total":118345,"uniq":300,"top5":25.7,"top10":35.5,"top20":48.4,"single":33,"under10":67,"missing":12},"gus":[{"gu":"달서구","total":22760,"top5":[{"name":"한식 일반 음식점업","n":2418,"pct":10.62},{"name":"두발 미용업","n":1314,"pct":5.77},{"name":"커피 전문점","n":898,"pct":3.95},{"name":"부동산 중개 및 대리업","n":773,"pct":3.4},{"name":"기타 주점업","n":587,"pct":2.58}],"bakery":{"n":264,"pct":1.16,"rank":21}},{"gu":"수성구","total":19916,"top5":[{"name":"한식 일반 음식점업","n":1641,"pct":8.24},{"name":"두발 미용업","n":1035,"pct":5.2},{"name":"일반 교과학원","n":987,"pct":4.96},{"name":"부동산 중개 및 대리업","n":923,"pct":4.63},{"name":"커피 전문점","n":890,"pct":4.47}],"bakery":{"n":292,"pct":1.47,"rank":14}},{"gu":"북구","total":18017,"top5":[{"name":"한식 일반 음식점업","n":2091,"pct":11.61},{"name":"두발 미용업","n":972,"pct":5.39},{"name":"커피 전문점","n":747,"pct":4.15},{"name":"부동산 중개 및 대리업","n":543,"pct":3.01},{"name":"기타 주점업","n":484,"pct":2.69}],"bakery":{"n":225,"pct":1.25,"rank":17}},{"gu":"동구","total":15414,"top5":[{"name":"한식 일반 음식점업","n":1788,"pct":11.6},{"name":"두발 미용업","n":809,"pct":5.25},{"name":"커피 전문점","n":661,"pct":4.29},{"name":"부동산 중개 및 대리업","n":552,"pct":3.58},{"name":"기타 주점업","n":366,"pct":2.37}],"bakery":{"n":176,"pct":1.14,"rank":20}},{"gu":"중구","total":15150,"top5":[{"name":"한식 일반 음식점업","n":1150,"pct":7.59},{"name":"여자용 겉옷 소매업","n":873,"pct":5.76},{"name":"커피 전문점","n":717,"pct":4.73},{"name":"셔츠 및 블라우스 소매업","n":687,"pct":4.53},{"name":"두발 미용업","n":422,"pct":2.79}],"bakery":{"n":184,"pct":1.21,"rank":25}},{"gu":"달성군","total":9327,"top5":[{"name":"한식 일반 음식점업","n":1315,"pct":14.1},{"name":"두발 미용업","n":459,"pct":4.92},{"name":"커피 전문점","n":414,"pct":4.44},{"name":"부동산 중개 및 대리업","n":395,"pct":4.24},{"name":"한식 육류 요리 전문점","n":294,"pct":3.15}],"bakery":{"n":109,"pct":1.17,"rank":14}},{"gu":"남구","total":8405,"top5":[{"name":"한식 일반 음식점업","n":877,"pct":10.43},{"name":"두발 미용업","n":452,"pct":5.38},{"name":"커피 전문점","n":389,"pct":4.63},{"name":"부동산 중개 및 대리업","n":304,"pct":3.62},{"name":"기타 주점업","n":167,"pct":1.99}],"bakery":{"n":99,"pct":1.18,"rank":21}},{"gu":"서구","total":8217,"top5":[{"name":"한식 일반 음식점업","n":999,"pct":12.16},{"name":"두발 미용업","n":471,"pct":5.73},{"name":"기타 주점업","n":360,"pct":4.38},{"name":"부동산 중개 및 대리업","n":262,"pct":3.19},{"name":"커피 전문점","n":238,"pct":2.9}],"bakery":{"n":62,"pct":0.75,"rank":33}},{"gu":"군위군","total":1139,"top5":[{"name":"한식 일반 음식점업","n":221,"pct":19.4},{"name":"기타 음ㆍ식료품 위주 종합 소매업","n":53,"pct":4.65},{"name":"부동산 중개 및 대리업","n":49,"pct":4.3},{"name":"커피 전문점","n":44,"pct":3.86},{"name":"기타 일반 및 생활 숙박시설 운영업","n":34,"pct":2.99}],"bakery":{"n":7,"pct":0.61,"rank":36}}]}</script>
+<script>
+(function(){
+  var D=JSON.parse(document.getElementById('viz-data').textContent);
+  var nf=function(n){return n.toLocaleString('ko-KR')};
+
+  /* ---- KPI row ---- */
+  var k=[
+    ['전체 점포 수',nf(D.stats.total),'표준산업분류명이 있는 상가업소'],
+    ['업종 항목 수',nf(D.stats.uniq)+'개','300개 중 '+D.stats.single+'개는 점포가 단 1곳'],
+    ['TOP 5 누적 비율',D.stats.top5+'%','TOP 20까지 가면 '+D.stats.top20+'%'],
+    ['제과점업 비율',D.bakery.pct+'%',nf(D.bakery.n)+'곳 · 전체 '+D.bakery.rank+'위',1]
+  ];
+  document.getElementById('kpis').innerHTML=k.map(function(r){
+    return '<div class="kpi'+(r[3]?' hl':'')+'"><p class="k">'+r[0]+
+      '</p><p class="v">'+r[1]+'</p><p class="n">'+r[2]+'</p></div>'}).join('');
+  document.getElementById('bkrank').textContent=D.bakery.rank;
+  document.getElementById('tail').innerHTML='업종 분포는 한쪽으로 크게 쏠려 있습니다. 상위 5개 업종이 전체의 '+
+    D.stats.top5+'%, 상위 20개가 '+D.stats.top20+'%를 차지하고, 나머지 280개 업종이 남은 '+
+    (100-D.stats.top20).toFixed(1)+'%를 나눠 갖습니다. 점포가 10곳 미만인 업종이 '+
+    D.stats.under10+'개, 단 1곳인 업종이 '+D.stats.single+'개입니다. 이 구조에서는 1.20%만으로도 '+
+    D.bakery.rank+'위에 오릅니다.';
+
+  /* ---- chart 1: emphasis bars ---- */
+  var MAX1=Math.ceil(D.top[0].pct);
+  var rows=D.top.map(function(r,i){
+    var hl=r.name==='제과점업';
+    return '<div class="row'+(hl?' hl':'')+'" tabindex="0" data-n="'+r.name+
+      '" data-v="'+nf(r.n)+'곳 · 전체의 '+r.pct+'%" data-x="'+(i+1)+'위">'+
+      '<span class="rk">'+(i+1)+'</span>'+
+      '<span class="nm" title="'+r.name+'">'+r.name+'</span>'+
+      '<span class="tr"><span class="bar" style="width:'+(r.pct/MAX1*100).toFixed(2)+'%"></span></span>'+
+      '<span class="vl">'+r.pct.toFixed(2)+'% · '+nf(r.n)+'</span></div>'}).join('');
+  document.getElementById('c1').innerHTML=rows;
+  var ax=[];for(var i=0;i<=MAX1;i+=2)ax.push('<span>'+i+'%</span>');
+  document.getElementById('a1').innerHTML=ax.join('');
+
+  document.getElementById('t1').innerHTML='<table><caption class="sr">업종별 점포 수 TOP 20</caption>'+
+    '<thead><tr><th>순위</th><th>표준산업분류명</th><th>점포 수</th><th>비율</th><th>누적</th></tr></thead><tbody>'+
+    D.top.map(function(r,i){var c=D.top.slice(0,i+1).reduce(function(a,b){return a+b.pct},0);
+      return '<tr'+(r.name==='제과점업'?' class="hl"':'')+'><td>'+(i+1)+'</td><td>'+r.name+
+      '</td><td>'+nf(r.n)+'</td><td>'+r.pct.toFixed(2)+'%</td><td>'+c.toFixed(2)+'%</td></tr>'}).join('')+
+    '</tbody></table>';
+
+  /* ---- chart 2: small multiples, shared 0-20% scale ---- */
+  var MAX2=20;
+  document.getElementById('c2').innerHTML=D.gus.map(function(g){
+    var bars=g.top5.map(function(r,i){
+      return '<div class="row" tabindex="0" data-n="'+r.name+'" data-x="'+g.gu+' '+(i+1)+'위"'+
+        ' data-v="'+nf(r.n)+'곳 · '+g.gu+' 내 '+r.pct+'%">'+
+        '<span class="rk">'+(i+1)+'</span><span class="nm" title="'+r.name+'">'+r.name+'</span>'+
+        '<span class="tr"><span class="bar" style="width:'+(r.pct/MAX2*100).toFixed(2)+'%"></span></span>'+
+        '<span class="vl">'+r.pct.toFixed(2)+'%</span></div>'}).join('');
+    var b=g.bakery;
+    var bk='<div class="pnf"><p class="cap">참고 · TOP 5 밖</p>'+
+      '<div class="row hl" tabindex="0" data-n="제과점업" data-x="'+g.gu+' '+b.rank+'위"'+
+      ' data-v="'+nf(b.n)+'곳 · '+g.gu+' 내 '+b.pct+'%">'+
+      '<span class="rk">'+b.rank+'</span><span class="nm">제과점업</span>'+
+      '<span class="tr"><span class="bar" style="width:'+(b.pct/MAX2*100).toFixed(2)+'%"></span></span>'+
+      '<span class="vl">'+b.pct.toFixed(2)+'%</span></div></div>';
+    return '<div class="pn"><div class="pnh"><b>'+g.gu+'</b><em>전체 '+nf(g.total)+'개</em></div>'+
+      '<div class="rows">'+bars+'</div>'+bk+'</div>'}).join('');
+
+  document.getElementById('t2').innerHTML='<table><thead><tr><th>구·군</th><th>순위</th>'+
+    '<th>표준산업분류명</th><th>점포 수</th><th>구 내 비율</th></tr></thead><tbody>'+
+    D.gus.map(function(g){
+      return g.top5.map(function(r,i){return '<tr><td>'+(i===0?g.gu:'')+'</td><td>'+(i+1)+
+        '</td><td>'+r.name+'</td><td>'+nf(r.n)+'</td><td>'+r.pct.toFixed(2)+'%</td></tr>'}).join('')+
+        '<tr class="hl"><td></td><td>'+g.bakery.rank+'</td><td>제과점업</td><td>'+nf(g.bakery.n)+
+        '</td><td>'+g.bakery.pct.toFixed(2)+'%</td></tr>'}).join('')+'</tbody></table>';
+
+  /* ---- view toggle ---- */
+  var btns=document.querySelectorAll('.tgl button');
+  btns.forEach(function(b){b.addEventListener('click',function(){
+    var t=b.dataset.view==='table';
+    btns.forEach(function(o){o.setAttribute('aria-pressed',String(o.dataset.view===b.dataset.view))});
+    document.getElementById('c1').hidden=t;document.getElementById('a1').hidden=t;
+    document.querySelector('.legend').hidden=t;document.getElementById('t1').hidden=!t;
+    document.getElementById('c2').hidden=t;document.getElementById('t2').hidden=!t;
+  })});
+
+  /* ---- tooltip ---- */
+  var tip=document.getElementById('tip'),cur=null;
+  function show(el,x,y){
+    tip.innerHTML='<b>'+el.dataset.n+'</b><span>'+el.dataset.v+'<br>'+el.dataset.x+'</span>';
+    tip.style.opacity='1';
+    var r=tip.getBoundingClientRect();
+    var L=Math.min(Math.max(8,x+14),innerWidth-r.width-8);
+    var T=Math.min(Math.max(8,y+14),innerHeight-r.height-8);
+    tip.style.left=L+'px';tip.style.top=T+'px';
+  }
+  function hide(){tip.style.opacity='0';cur=null}
+  document.addEventListener('pointermove',function(e){
+    var el=e.target.closest&&e.target.closest('.row[data-n]');
+    if(!el){if(cur)hide();return}
+    cur=el;show(el,e.clientX,e.clientY);
+  },{passive:true});
+  document.addEventListener('focusin',function(e){
+    var el=e.target.closest&&e.target.closest('.row[data-n]');
+    if(!el)return hide();
+    var b=el.getBoundingClientRect();show(el,b.left+b.width/2,b.bottom-10);
+  });
+  document.addEventListener('focusout',hide);
+  document.addEventListener('scroll',hide,{passive:true});
+})();
+</script>
+
+</body></html>
