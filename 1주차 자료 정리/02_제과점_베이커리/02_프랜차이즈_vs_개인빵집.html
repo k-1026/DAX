@@ -1,0 +1,954 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>대구 프랜차이즈 vs 개인빵집</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+:root{--plane:#f2f2ef;--surface:#fcfcfb;--ink-1:#0b0b0b;--ink-2:#52514e;--ink-3:#898781;--grid:#e1e0d9;--ring:rgba(11,11,11,.10);
+  --fr:#eb6834;--in:#2a78d6;--ref:#52514e}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--plane:#0d0d0d;--surface:#1a1a19;--ink-1:#f0efec;--ink-2:#c3c2b7;--ink-3:#898781;--grid:#2c2c2a;--ring:rgba(255,255,255,.10);--fr:#d95926;--in:#3987e5;--ref:#c3c2b7}}
+:root[data-theme="dark"]{--plane:#0d0d0d;--surface:#1a1a19;--ink-1:#f0efec;--ink-2:#c3c2b7;--ink-3:#898781;--grid:#2c2c2a;--ring:rgba(255,255,255,.10);--fr:#d95926;--in:#3987e5;--ref:#c3c2b7}
+*{box-sizing:border-box}
+body{margin:0;background:var(--plane);color:var(--ink-1);font:15px/1.55 "Noto Sans KR",system-ui,-apple-system,"Malgun Gothic",sans-serif}
+.wrap{max-width:1040px;margin:0 auto;padding:36px 16px 64px}
+h1{font-size:clamp(24px,4.6vw,34px);margin:0 0 8px;letter-spacing:-.01em}
+h2{font-size:20px;margin:0 0 4px}
+.sub{color:var(--ink-2);font-size:14px;margin:0;max-width:68ch}
+.src{color:var(--ink-3);font-size:12.5px;margin:8px 0 0;max-width:72ch}
+section{margin-top:44px}
+.lede{color:var(--ink-2);font-size:13.5px;margin:0 0 16px;max-width:70ch}
+.card{background:var(--surface);border:1px solid var(--ring);border-radius:10px;padding:20px 18px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1px;background:var(--ring);border:1px solid var(--ring);border-radius:10px;overflow:hidden;margin-top:24px}
+.kpi{background:var(--surface);padding:16px}
+.kpi .k{font-size:12px;color:var(--ink-3);margin:0 0 4px}
+.kpi .v{font-size:26px;font-weight:700;margin:0;line-height:1.15}
+.kpi .n{font-size:12px;color:var(--ink-2);margin:4px 0 0}
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:12.5px;color:var(--ink-2);margin:0 0 12px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:11px;height:11px;border-radius:2px;display:inline-block}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+.box{position:relative;height:300px}
+.t{font-size:14px;font-weight:500;margin:0}
+.d{font-size:12px;color:var(--ink-3);margin:0 0 6px}
+.tbox{overflow-x:auto;margin-top:14px}
+table{border-collapse:collapse;width:100%;font-size:12.5px;font-variant-numeric:tabular-nums}
+th,td{padding:6px 9px;border-bottom:1px solid var(--grid);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+thead th{color:var(--ink-3);font-weight:500}
+.tgl{display:inline-flex;border:1px solid var(--ring);border-radius:7px;overflow:hidden;margin:0 0 12px}
+.tgl button{font:inherit;font-size:12.5px;padding:5px 14px;border:0;background:var(--surface);color:var(--ink-2);cursor:pointer}
+.tgl button[aria-pressed="true"]{background:var(--in);color:#fff}
+.note{font-size:12.5px;color:var(--ink-2);margin:14px 0 0;padding-top:12px;border-top:1px solid var(--grid);max-width:72ch}
+ul.note{padding-left:18px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>대구 프랜차이즈 vs 개인빵집</h1>
+  <p class="sub">대구 제과점영업 인허가 기록으로 프랜차이즈와 개인빵집의 매장 수, 연도별 개업·폐업, 매장 규모, 생존율을 비교합니다.</p>
+  <p class="src" id="src"></p>
+  <div class="kpis" id="kpis"></div>
+
+  <section>
+    <h2>1. 매장 수 비교</h2>
+    <p class="lede">지금 영업 중인 매장 기준입니다. 구별 막대는 프랜차이즈와 개인빵집을 쌓아서 보여 줍니다.</p>
+    <div class="grid2">
+      <div class="card"><p class="t">구·군별 영업 중 매장</p><p class="d">단위 곳</p>
+        <div class="legend"><span><i class="sw" style="background:var(--fr)"></i>프랜차이즈</span><span><i class="sw" style="background:var(--in)"></i>개인빵집</span></div>
+        <div class="box" style="height:320px"><canvas id="cGu"></canvas></div></div>
+      <div class="card"><p class="t">프랜차이즈 브랜드별 매장</p><p class="d">영업 중 / 누적 인허가(팝업 제외)</p>
+        <div class="tbox" style="margin-top:0"><table id="tBrand"></table></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>2. 연도별 개업·폐업 (팝업 제외)</h2>
+    <p class="lede">폐업일 기록은 2005년부터 제대로 쌓여 있어서 2005년 이후만 보여 줍니다.</p>
+    <div class="tgl" role="group" aria-label="유형 선택" id="tglY">
+      <button type="button" data-k="개인" aria-pressed="true">개인빵집</button><button type="button" data-k="프랜차이즈" aria-pressed="false">프랜차이즈</button>
+    </div>
+    <div class="card">
+      <div class="legend"><span><i class="sw" id="swOpen"></i>개업</span><span><i class="sw" style="background:var(--ink-3)"></i>폐업</span><span>선 = 연말 영업 중 매장 (오른쪽 눈금)</span></div>
+      <div class="box" style="height:340px"><canvas id="cYear"></canvas></div>
+      <div class="tbox"><table id="tYear"></table></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>3. 영업 중 매장 규모</h2>
+    <p class="lede">소재지면적 기준입니다. 막대는 각 유형 안에서 차지하는 비율이라 매장 수가 다른 두 집단을 바로 비교할 수 있습니다.</p>
+    <div class="card">
+      <div class="legend"><span><i class="sw" style="background:var(--fr)"></i>프랜차이즈</span><span><i class="sw" style="background:var(--in)"></i>개인빵집</span></div>
+      <div class="box"><canvas id="cSize"></canvas></div>
+      <div class="tbox"><table id="tSize"></table></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>2-1. 개업 연도별 생존율 (팝업 제외)</h2>
+    <p class="lede">그해 문을 연 매장 중 1·3·5년 뒤에도 영업한 비율입니다. 아직 그 기간이 지나지 않은 연도는 비워 둡니다.</p>
+    <div class="tgl" role="group" aria-label="기간 선택" id="tglS">
+      <button type="button" data-k="1y" aria-pressed="false">1년</button><button type="button" data-k="3y" aria-pressed="true">3년</button><button type="button" data-k="5y" aria-pressed="false">5년</button>
+    </div>
+    <div class="card">
+      <div class="legend"><span><i class="sw" style="background:var(--fr)"></i>프랜차이즈</span><span><i class="sw" style="background:var(--in)"></i>개인빵집</span><span>점 크기 = 그해 개업 수</span></div>
+      <div class="box" style="height:320px"><canvas id="cSurv"></canvas></div>
+      <p class="t" style="margin-top:18px">5년 단위로 묶은 생존율</p>
+      <p class="d">프랜차이즈는 해마다 개업 수가 적어(2~44곳) 연도별 값이 크게 흔들리므로 묶음 값을 함께 보세요.</p>
+      <div class="tbox" style="margin-top:0"><table id="tSurvP"></table></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>기준과 한계</h2>
+    <ul class="note" id="notes"></ul>
+  </section>
+</div>
+
+<script id="viz-data" type="application/json">{
+    "yearly":  [
+                   {
+                       "year":  2000,
+                       "프랜차이즈_open":  13,
+                       "프랜차이즈_close":  0,
+                       "프랜차이즈_operating_end":  77,
+                       "개인_open":  49,
+                       "개인_close":  0,
+                       "개인_operating_end":  315
+                   },
+                   {
+                       "year":  2001,
+                       "프랜차이즈_open":  23,
+                       "프랜차이즈_close":  0,
+                       "프랜차이즈_operating_end":  100,
+                       "개인_open":  69,
+                       "개인_close":  0,
+                       "개인_operating_end":  384
+                   },
+                   {
+                       "year":  2002,
+                       "프랜차이즈_open":  25,
+                       "프랜차이즈_close":  0,
+                       "프랜차이즈_operating_end":  125,
+                       "개인_open":  77,
+                       "개인_close":  3,
+                       "개인_operating_end":  458
+                   },
+                   {
+                       "year":  2003,
+                       "프랜차이즈_open":  30,
+                       "프랜차이즈_close":  1,
+                       "프랜차이즈_operating_end":  154,
+                       "개인_open":  64,
+                       "개인_close":  8,
+                       "개인_operating_end":  514
+                   },
+                   {
+                       "year":  2004,
+                       "프랜차이즈_open":  19,
+                       "프랜차이즈_close":  1,
+                       "프랜차이즈_operating_end":  172,
+                       "개인_open":  78,
+                       "개인_close":  12,
+                       "개인_operating_end":  580
+                   },
+                   {
+                       "year":  2005,
+                       "프랜차이즈_open":  15,
+                       "프랜차이즈_close":  13,
+                       "프랜차이즈_operating_end":  174,
+                       "개인_open":  79,
+                       "개인_close":  88,
+                       "개인_operating_end":  571
+                   },
+                   {
+                       "year":  2006,
+                       "프랜차이즈_open":  25,
+                       "프랜차이즈_close":  18,
+                       "프랜차이즈_operating_end":  181,
+                       "개인_open":  66,
+                       "개인_close":  114,
+                       "개인_operating_end":  523
+                   },
+                   {
+                       "year":  2007,
+                       "프랜차이즈_open":  24,
+                       "프랜차이즈_close":  15,
+                       "프랜차이즈_operating_end":  190,
+                       "개인_open":  78,
+                       "개인_close":  70,
+                       "개인_operating_end":  531
+                   },
+                   {
+                       "year":  2008,
+                       "프랜차이즈_open":  37,
+                       "프랜차이즈_close":  18,
+                       "프랜차이즈_operating_end":  209,
+                       "개인_open":  79,
+                       "개인_close":  81,
+                       "개인_operating_end":  529
+                   },
+                   {
+                       "year":  2009,
+                       "프랜차이즈_open":  35,
+                       "프랜차이즈_close":  17,
+                       "프랜차이즈_operating_end":  227,
+                       "개인_open":  117,
+                       "개인_close":  80,
+                       "개인_operating_end":  566
+                   },
+                   {
+                       "year":  2010,
+                       "프랜차이즈_open":  44,
+                       "프랜차이즈_close":  26,
+                       "프랜차이즈_operating_end":  245,
+                       "개인_open":  114,
+                       "개인_close":  87,
+                       "개인_operating_end":  593
+                   },
+                   {
+                       "year":  2011,
+                       "프랜차이즈_open":  41,
+                       "프랜차이즈_close":  14,
+                       "프랜차이즈_operating_end":  272,
+                       "개인_open":  103,
+                       "개인_close":  86,
+                       "개인_operating_end":  610
+                   },
+                   {
+                       "year":  2012,
+                       "프랜차이즈_open":  14,
+                       "프랜차이즈_close":  26,
+                       "프랜차이즈_operating_end":  260,
+                       "개인_open":  86,
+                       "개인_close":  74,
+                       "개인_operating_end":  622
+                   },
+                   {
+                       "year":  2013,
+                       "프랜차이즈_open":  6,
+                       "프랜차이즈_close":  16,
+                       "프랜차이즈_operating_end":  250,
+                       "개인_open":  99,
+                       "개인_close":  85,
+                       "개인_operating_end":  636
+                   },
+                   {
+                       "year":  2014,
+                       "프랜차이즈_open":  9,
+                       "프랜차이즈_close":  14,
+                       "프랜차이즈_operating_end":  245,
+                       "개인_open":  98,
+                       "개인_close":  83,
+                       "개인_operating_end":  651
+                   },
+                   {
+                       "year":  2015,
+                       "프랜차이즈_open":  18,
+                       "프랜차이즈_close":  12,
+                       "프랜차이즈_operating_end":  251,
+                       "개인_open":  108,
+                       "개인_close":  91,
+                       "개인_operating_end":  668
+                   },
+                   {
+                       "year":  2016,
+                       "프랜차이즈_open":  19,
+                       "프랜차이즈_close":  4,
+                       "프랜차이즈_operating_end":  266,
+                       "개인_open":  113,
+                       "개인_close":  78,
+                       "개인_operating_end":  703
+                   },
+                   {
+                       "year":  2017,
+                       "프랜차이즈_open":  9,
+                       "프랜차이즈_close":  7,
+                       "프랜차이즈_operating_end":  268,
+                       "개인_open":  138,
+                       "개인_close":  133,
+                       "개인_operating_end":  708
+                   },
+                   {
+                       "year":  2018,
+                       "프랜차이즈_open":  9,
+                       "프랜차이즈_close":  17,
+                       "프랜차이즈_operating_end":  260,
+                       "개인_open":  120,
+                       "개인_close":  120,
+                       "개인_operating_end":  708
+                   },
+                   {
+                       "year":  2019,
+                       "프랜차이즈_open":  2,
+                       "프랜차이즈_close":  5,
+                       "프랜차이즈_operating_end":  257,
+                       "개인_open":  92,
+                       "개인_close":  101,
+                       "개인_operating_end":  699
+                   },
+                   {
+                       "year":  2020,
+                       "프랜차이즈_open":  7,
+                       "프랜차이즈_close":  5,
+                       "프랜차이즈_operating_end":  259,
+                       "개인_open":  87,
+                       "개인_close":  79,
+                       "개인_operating_end":  707
+                   },
+                   {
+                       "year":  2021,
+                       "프랜차이즈_open":  9,
+                       "프랜차이즈_close":  11,
+                       "프랜차이즈_operating_end":  257,
+                       "개인_open":  102,
+                       "개인_close":  89,
+                       "개인_operating_end":  720
+                   },
+                   {
+                       "year":  2022,
+                       "프랜차이즈_open":  15,
+                       "프랜차이즈_close":  9,
+                       "프랜차이즈_operating_end":  263,
+                       "개인_open":  111,
+                       "개인_close":  107,
+                       "개인_operating_end":  724
+                   },
+                   {
+                       "year":  2023,
+                       "프랜차이즈_open":  23,
+                       "프랜차이즈_close":  13,
+                       "프랜차이즈_operating_end":  273,
+                       "개인_open":  114,
+                       "개인_close":  100,
+                       "개인_operating_end":  738
+                   },
+                   {
+                       "year":  2024,
+                       "프랜차이즈_open":  10,
+                       "프랜차이즈_close":  13,
+                       "프랜차이즈_operating_end":  270,
+                       "개인_open":  123,
+                       "개인_close":  125,
+                       "개인_operating_end":  736
+                   },
+                   {
+                       "year":  2025,
+                       "프랜차이즈_open":  7,
+                       "프랜차이즈_close":  18,
+                       "프랜차이즈_operating_end":  259,
+                       "개인_open":  119,
+                       "개인_close":  100,
+                       "개인_operating_end":  755
+                   },
+                   {
+                       "year":  2026,
+                       "프랜차이즈_open":  5,
+                       "프랜차이즈_close":  12,
+                       "프랜차이즈_operating_end":  252,
+                       "개인_open":  92,
+                       "개인_close":  92,
+                       "개인_operating_end":  755
+                   }
+               ],
+    "size":  [
+                 {
+                     "type":  "프랜차이즈",
+                     "operating":  252,
+                     "with_area":  252,
+                     "mean":  83.3,
+                     "p25":  63,
+                     "median":  77.52,
+                     "p75":  98.7,
+                     "max":  302.4,
+                     "33㎡ 미만 (~10평)":  11,
+                     "33~66㎡ (10~20평)":  63,
+                     "66~100㎡ (20~30평)":  119,
+                     "100~200㎡ (30~60평)":  53,
+                     "200~300㎡":  5,
+                     "300㎡ 이상":  1
+                 },
+                 {
+                     "type":  "개인",
+                     "operating":  755,
+                     "with_area":  734,
+                     "mean":  71,
+                     "p25":  28,
+                     "median":  44.25,
+                     "p75":  71.55,
+                     "max":  1330,
+                     "33㎡ 미만 (~10평)":  251,
+                     "33~66㎡ (10~20평)":  279,
+                     "66~100㎡ (20~30평)":  89,
+                     "100~200㎡ (30~60평)":  76,
+                     "200~300㎡":  18,
+                     "300㎡ 이상":  21
+                 }
+             ],
+    "popupDays":  90,
+    "survival":  [
+                     {
+                         "year":  2005,
+                         "프랜차이즈_n":  15,
+                         "프랜차이즈_1y":  93.3,
+                         "프랜차이즈_3y":  86.7,
+                         "프랜차이즈_5y":  73.3,
+                         "개인_n":  79,
+                         "개인_1y":  87.3,
+                         "개인_3y":  69.6,
+                         "개인_5y":  55.7
+                     },
+                     {
+                         "year":  2006,
+                         "프랜차이즈_n":  25,
+                         "프랜차이즈_1y":  100,
+                         "프랜차이즈_3y":  80,
+                         "프랜차이즈_5y":  72,
+                         "개인_n":  66,
+                         "개인_1y":  83.3,
+                         "개인_3y":  51.5,
+                         "개인_5y":  33.3
+                     },
+                     {
+                         "year":  2007,
+                         "프랜차이즈_n":  24,
+                         "프랜차이즈_1y":  100,
+                         "프랜차이즈_3y":  83.3,
+                         "프랜차이즈_5y":  79.2,
+                         "개인_n":  78,
+                         "개인_1y":  87.2,
+                         "개인_3y":  56.4,
+                         "개인_5y":  47.4
+                     },
+                     {
+                         "year":  2008,
+                         "프랜차이즈_n":  37,
+                         "프랜차이즈_1y":  100,
+                         "프랜차이즈_3y":  94.6,
+                         "프랜차이즈_5y":  81.1,
+                         "개인_n":  79,
+                         "개인_1y":  82.3,
+                         "개인_3y":  48.1,
+                         "개인_5y":  32.9
+                     },
+                     {
+                         "year":  2009,
+                         "프랜차이즈_n":  35,
+                         "프랜차이즈_1y":  100,
+                         "프랜차이즈_3y":  88.6,
+                         "프랜차이즈_5y":  80,
+                         "개인_n":  117,
+                         "개인_1y":  92.3,
+                         "개인_3y":  63.2,
+                         "개인_5y":  50.4
+                     },
+                     {
+                         "year":  2010,
+                         "프랜차이즈_n":  44,
+                         "프랜차이즈_1y":  100,
+                         "프랜차이즈_3y":  93.2,
+                         "프랜차이즈_5y":  86.4,
+                         "개인_n":  114,
+                         "개인_1y":  82.5,
+                         "개인_3y":  61.4,
+                         "개인_5y":  43
+                     },
+                     {
+                         "year":  2011,
+                         "프랜차이즈_n":  41,
+                         "프랜차이즈_1y":  100,
+                         "프랜차이즈_3y":  92.7,
+                         "프랜차이즈_5y":  82.9,
+                         "개인_n":  103,
+                         "개인_1y":  91.3,
+                         "개인_3y":  64.1,
+                         "개인_5y":  40.8
+                     },
+                     {
+                         "year":  2012,
+                         "프랜차이즈_n":  14,
+                         "프랜차이즈_1y":  92.9,
+                         "프랜차이즈_3y":  78.6,
+                         "프랜차이즈_5y":  71.4,
+                         "개인_n":  86,
+                         "개인_1y":  90.7,
+                         "개인_3y":  68.6,
+                         "개인_5y":  41.9
+                     },
+                     {
+                         "year":  2013,
+                         "프랜차이즈_n":  6,
+                         "프랜차이즈_1y":  100,
+                         "프랜차이즈_3y":  100,
+                         "프랜차이즈_5y":  83.3,
+                         "개인_n":  99,
+                         "개인_1y":  89.9,
+                         "개인_3y":  61.6,
+                         "개인_5y":  46.5
+                     },
+                     {
+                         "year":  2014,
+                         "프랜차이즈_n":  9,
+                         "프랜차이즈_1y":  77.8,
+                         "프랜차이즈_3y":  77.8,
+                         "프랜차이즈_5y":  66.7,
+                         "개인_n":  98,
+                         "개인_1y":  92.9,
+                         "개인_3y":  66.3,
+                         "개인_5y":  41.8
+                     },
+                     {
+                         "year":  2015,
+                         "프랜차이즈_n":  18,
+                         "프랜차이즈_1y":  100,
+                         "프랜차이즈_3y":  88.9,
+                         "프랜차이즈_5y":  83.3,
+                         "개인_n":  108,
+                         "개인_1y":  88.9,
+                         "개인_3y":  65.7,
+                         "개인_5y":  48.1
+                     },
+                     {
+                         "year":  2016,
+                         "프랜차이즈_n":  19,
+                         "프랜차이즈_1y":  100,
+                         "프랜차이즈_3y":  73.7,
+                         "프랜차이즈_5y":  68.4,
+                         "개인_n":  113,
+                         "개인_1y":  74.3,
+                         "개인_3y":  45.1,
+                         "개인_5y":  31
+                     },
+                     {
+                         "year":  2017,
+                         "프랜차이즈_n":  9,
+                         "프랜차이즈_1y":  88.9,
+                         "프랜차이즈_3y":  88.9,
+                         "프랜차이즈_5y":  66.7,
+                         "개인_n":  138,
+                         "개인_1y":  81.9,
+                         "개인_3y":  48.6,
+                         "개인_5y":  34.1
+                     },
+                     {
+                         "year":  2018,
+                         "프랜차이즈_n":  9,
+                         "프랜차이즈_1y":  100,
+                         "프랜차이즈_3y":  88.9,
+                         "프랜차이즈_5y":  88.9,
+                         "개인_n":  120,
+                         "개인_1y":  89.2,
+                         "개인_3y":  63.3,
+                         "개인_5y":  45.8
+                     },
+                     {
+                         "year":  2019,
+                         "프랜차이즈_n":  2,
+                         "프랜차이즈_1y":  100,
+                         "프랜차이즈_3y":  50,
+                         "프랜차이즈_5y":  0,
+                         "개인_n":  92,
+                         "개인_1y":  92.4,
+                         "개인_3y":  62,
+                         "개인_5y":  40.2
+                     },
+                     {
+                         "year":  2020,
+                         "프랜차이즈_n":  7,
+                         "프랜차이즈_1y":  100,
+                         "프랜차이즈_3y":  100,
+                         "프랜차이즈_5y":  100,
+                         "개인_n":  87,
+                         "개인_1y":  94.3,
+                         "개인_3y":  67.8,
+                         "개인_5y":  49.4
+                     },
+                     {
+                         "year":  2021,
+                         "프랜차이즈_n":  9,
+                         "프랜차이즈_1y":  100,
+                         "프랜차이즈_3y":  100,
+                         "프랜차이즈_5y":  null,
+                         "개인_n":  102,
+                         "개인_1y":  89.2,
+                         "개인_3y":  55.9,
+                         "개인_5y":  null
+                     },
+                     {
+                         "year":  2022,
+                         "프랜차이즈_n":  15,
+                         "프랜차이즈_1y":  100,
+                         "프랜차이즈_3y":  86.7,
+                         "프랜차이즈_5y":  null,
+                         "개인_n":  111,
+                         "개인_1y":  93.7,
+                         "개인_3y":  56.8,
+                         "개인_5y":  null
+                     },
+                     {
+                         "year":  2023,
+                         "프랜차이즈_n":  23,
+                         "프랜차이즈_1y":  100,
+                         "프랜차이즈_3y":  null,
+                         "프랜차이즈_5y":  null,
+                         "개인_n":  114,
+                         "개인_1y":  85.1,
+                         "개인_3y":  null,
+                         "개인_5y":  null
+                     },
+                     {
+                         "year":  2024,
+                         "프랜차이즈_n":  10,
+                         "프랜차이즈_1y":  100,
+                         "프랜차이즈_3y":  null,
+                         "프랜차이즈_5y":  null,
+                         "개인_n":  123,
+                         "개인_1y":  83.7,
+                         "개인_3y":  null,
+                         "개인_5y":  null
+                     },
+                     {
+                         "year":  2025,
+                         "프랜차이즈_n":  7,
+                         "프랜차이즈_1y":  null,
+                         "프랜차이즈_3y":  null,
+                         "프랜차이즈_5y":  null,
+                         "개인_n":  119,
+                         "개인_1y":  null,
+                         "개인_3y":  null,
+                         "개인_5y":  null
+                     }
+                 ],
+    "survivalPeriod":  [
+                           {
+                               "period":  "2005~2009",
+                               "type":  "프랜차이즈",
+                               "n":  136,
+                               "1y":  99.3,
+                               "3y":  87.5,
+                               "5y":  77.9
+                           },
+                           {
+                               "period":  "2005~2009",
+                               "type":  "개인",
+                               "n":  419,
+                               "1y":  87.1,
+                               "3y":  58.5,
+                               "5y":  44.9
+                           },
+                           {
+                               "period":  "2010~2014",
+                               "type":  "프랜차이즈",
+                               "n":  114,
+                               "1y":  97.4,
+                               "3y":  90.4,
+                               "5y":  81.6
+                           },
+                           {
+                               "period":  "2010~2014",
+                               "type":  "개인",
+                               "n":  500,
+                               "1y":  89.2,
+                               "3y":  64.2,
+                               "5y":  42.8
+                           },
+                           {
+                               "period":  "2015~2019",
+                               "type":  "프랜차이즈",
+                               "n":  57,
+                               "1y":  98.2,
+                               "3y":  82.5,
+                               "5y":  73.7
+                           },
+                           {
+                               "period":  "2015~2019",
+                               "type":  "개인",
+                               "n":  571,
+                               "1y":  84.9,
+                               "3y":  56.4,
+                               "5y":  39.6
+                           },
+                           {
+                               "period":  "2020~2022",
+                               "type":  "프랜차이즈",
+                               "n":  31,
+                               "1y":  100,
+                               "3y":  93.5,
+                               "5y":  92.9
+                           },
+                           {
+                               "period":  "2020~2022",
+                               "type":  "개인",
+                               "n":  300,
+                               "1y":  92.3,
+                               "3y":  59.7,
+                               "5y":  43.8
+                           }
+                       ],
+    "count":  [
+                  {
+                      "type":  "프랜차이즈",
+                      "records_all":  603,
+                      "popup_excluded":  46,
+                      "records":  557,
+                      "operating":  252,
+                      "closed":  305,
+                      "operating_share":  25
+                  },
+                  {
+                      "type":  "개인",
+                      "records_all":  3449,
+                      "popup_excluded":  608,
+                      "records":  2841,
+                      "operating":  755,
+                      "closed":  2086,
+                      "operating_share":  75
+                  }
+              ],
+    "bins":  [
+                 "33㎡ 미만 (~10평)",
+                 "33~66㎡ (10~20평)",
+                 "66~100㎡ (20~30평)",
+                 "100~200㎡ (30~60평)",
+                 "200~300㎡",
+                 "300㎡ 이상"
+             ],
+    "brands":  [
+                   {
+                       "brand":  "파리바게뜨",
+                       "total":  232,
+                       "operating":  154
+                   },
+                   {
+                       "brand":  "뚜레쥬르",
+                       "total":  146,
+                       "operating":  57
+                   },
+                   {
+                       "brand":  "빵장수단팥빵",
+                       "total":  35,
+                       "operating":  17
+                   },
+                   {
+                       "brand":  "몽블랑제",
+                       "total":  17,
+                       "operating":  8
+                   },
+                   {
+                       "brand":  "삼송빵집",
+                       "total":  8,
+                       "operating":  4
+                   },
+                   {
+                       "brand":  "근대골목단팥빵",
+                       "total":  5,
+                       "operating":  3
+                   },
+                   {
+                       "brand":  "베즐리",
+                       "total":  5,
+                       "operating":  3
+                   },
+                   {
+                       "brand":  "고려당",
+                       "total":  7,
+                       "operating":  2
+                   },
+                   {
+                       "brand":  "빵꿈터",
+                       "total":  7,
+                       "operating":  2
+                   },
+                   {
+                       "brand":  "던킨",
+                       "total":  30,
+                       "operating":  1
+                   },
+                   {
+                       "brand":  "크리스피크림",
+                       "total":  2,
+                       "operating":  1
+                   },
+                   {
+                       "brand":  "크라운베이커리",
+                       "total":  41,
+                       "operating":  0
+                   },
+                   {
+                       "brand":  "신라명과",
+                       "total":  14,
+                       "operating":  0
+                   },
+                   {
+                       "brand":  "아티제",
+                       "total":  3,
+                       "operating":  0
+                   },
+                   {
+                       "brand":  "빵굼터",
+                       "total":  3,
+                       "operating":  0
+                   },
+                   {
+                       "brand":  "엔제리너스",
+                       "total":  1,
+                       "operating":  0
+                   },
+                   {
+                       "brand":  "브레댄코",
+                       "total":  1,
+                       "operating":  0
+                   }
+               ],
+    "gu":  [
+               {
+                   "gu":  "수성구",
+                   "franchise":  49,
+                   "indie":  149,
+                   "franchise_share":  24.7
+               },
+               {
+                   "gu":  "달서구",
+                   "franchise":  47,
+                   "indie":  120,
+                   "franchise_share":  28.1
+               },
+               {
+                   "gu":  "중구",
+                   "franchise":  20,
+                   "indie":  142,
+                   "franchise_share":  12.3
+               },
+               {
+                   "gu":  "북구",
+                   "franchise":  40,
+                   "indie":  112,
+                   "franchise_share":  26.3
+               },
+               {
+                   "gu":  "동구",
+                   "franchise":  35,
+                   "indie":  88,
+                   "franchise_share":  28.5
+               },
+               {
+                   "gu":  "달성군",
+                   "franchise":  26,
+                   "indie":  52,
+                   "franchise_share":  33.3
+               },
+               {
+                   "gu":  "남구",
+                   "franchise":  16,
+                   "indie":  57,
+                   "franchise_share":  21.9
+               },
+               {
+                   "gu":  "서구",
+                   "franchise":  17,
+                   "indie":  29,
+                   "franchise_share":  37
+               },
+               {
+                   "gu":  "군위군",
+                   "franchise":  2,
+                   "indie":  6,
+                   "franchise_share":  25
+               }
+           ],
+    "asOf":  "2026-10-29"
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+(function(){
+const D=JSON.parse(document.getElementById('viz-data').textContent);
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const C={fr:css('--fr'),in:css('--in'),grid:css('--grid'),tick:css('--ink-3'),ink:css('--ink-1'),ref:css('--ref'),gray:css('--ink-3')};
+const nf=n=>Number(n).toLocaleString('ko-KR');
+const T=['프랜차이즈','개인'];
+const cnt=Object.fromEntries(D.count.map(r=>[r.type,r]));
+Chart.defaults.font.family='"Noto Sans KR",system-ui,sans-serif';
+Chart.defaults.color=C.tick;
+
+document.getElementById('src').textContent='출처: 대구광역시 제과점영업 인허가 데이터('+D.asOf+' 기준) · 팝업 = 개업 후 '+D.popupDays+'일 안에 폐업한 곳(분석에서 제외)';
+const opAll=cnt['프랜차이즈'].operating+cnt['개인'].operating;
+const sz=Object.fromEntries(D.size.map(r=>[r.type,r]));
+document.getElementById('kpis').innerHTML=[
+  ['영업 중 프랜차이즈',nf(cnt['프랜차이즈'].operating)+'곳','전체 '+nf(opAll)+'곳 중 '+cnt['프랜차이즈'].operating_share+'%'],
+  ['영업 중 개인빵집',nf(cnt['개인'].operating)+'곳','전체의 '+cnt['개인'].operating_share+'%'],
+  ['매장 면적 중앙값','프 '+Math.round(sz['프랜차이즈'].median)+' · 개 '+Math.round(sz['개인'].median)+'㎡','프랜차이즈가 약 '+(sz['프랜차이즈'].median/sz['개인'].median).toFixed(1)+'배'],
+  ['3년 생존율 (2015~2019 개업)',survP('2015~2019','프랜차이즈','3y')+'% vs '+survP('2015~2019','개인','3y')+'%','프랜차이즈 vs 개인빵집']
+].map(r=>'<div class="kpi"><p class="k">'+r[0]+'</p><p class="v">'+r[1]+'</p><p class="n">'+r[2]+'</p></div>').join('');
+function survP(p,t,k){const r=D.survivalPeriod.find(x=>x.period===p&&x.type===t);return r?r[k]:'-';}
+
+const base=(o)=>Object.assign({responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},interaction:{mode:'index',intersect:false}},o);
+const ax=(o)=>Object.assign({grid:{color:C.grid},border:{color:C.grid},ticks:{color:C.tick}},o);
+
+// 1. 구별
+const gu=D.gu.slice().sort((a,b)=>(b.franchise+b.indie)-(a.franchise+a.indie));
+new Chart(document.getElementById('cGu'),{type:'bar',data:{labels:gu.map(r=>r.gu),datasets:[
+  {label:'프랜차이즈',data:gu.map(r=>r.franchise),backgroundColor:C.fr,maxBarThickness:22},
+  {label:'개인빵집',data:gu.map(r=>r.indie),backgroundColor:C.in,maxBarThickness:22}]},
+  options:base({indexAxis:'y',scales:{x:ax({stacked:true}),y:ax({stacked:true,grid:{display:false}})},
+    plugins:{legend:{display:false},tooltip:{callbacks:{afterBody:it=>{const r=gu[it[0].dataIndex];return '프랜차이즈 비중 '+r.franchise_share+'%';}}}}})});
+document.getElementById('tBrand').innerHTML='<thead><tr><th>브랜드</th><th>영업 중</th><th>누적</th></tr></thead><tbody>'+
+  D.brands.map(b=>'<tr><td>'+b.brand+'</td><td>'+b.operating+'</td><td>'+b.total+'</td></tr>').join('')+'</tbody>';
+
+// 2. 연도별
+const Y=D.yearly.filter(r=>r.year>=2005);
+let yChart;
+function drawYear(t){
+  const col=t==='개인'?C.in:C.fr;document.getElementById('swOpen').style.background=col;
+  const ds=[{type:'bar',label:'개업',data:Y.map(r=>r[t+'_open']),backgroundColor:col,maxBarThickness:16,yAxisID:'y'},
+    {type:'bar',label:'폐업',data:Y.map(r=>r[t+'_close']),backgroundColor:C.gray,maxBarThickness:16,yAxisID:'y'},
+    {type:'line',label:'연말 영업 중',data:Y.map(r=>r[t+'_operating_end']),borderColor:C.ink,backgroundColor:C.ink,borderWidth:1.5,pointRadius:0,yAxisID:'y2'}];
+  if(yChart)yChart.destroy();
+  yChart=new Chart(document.getElementById('cYear'),{data:{labels:Y.map(r=>r.year),datasets:ds},
+    options:base({scales:{x:ax({grid:{display:false}}),y:ax({beginAtZero:true,title:{display:true,text:'개업·폐업 (곳)',color:C.tick}}),
+      y2:ax({position:'right',beginAtZero:true,grid:{display:false},title:{display:true,text:'영업 중 (곳)',color:C.tick}})}})});
+}
+drawYear('개인');
+document.getElementById('tYear').innerHTML='<thead><tr><th>연도</th><th>프랜차이즈 개업</th><th>프랜차이즈 폐업</th><th>개인 개업</th><th>개인 폐업</th></tr></thead><tbody>'+
+  Y.map(r=>'<tr><td>'+r.year+'</td><td>'+r['프랜차이즈_open']+'</td><td>'+r['프랜차이즈_close']+'</td><td>'+r['개인_open']+'</td><td>'+r['개인_close']+'</td></tr>').join('')+'</tbody>';
+toggle('tglY',k=>drawYear(k));
+
+// 3. 규모
+new Chart(document.getElementById('cSize'),{type:'bar',data:{labels:D.bins,datasets:T.map(t=>({label:t==='개인'?'개인빵집':t,
+  data:D.bins.map(b=>+(sz[t][b]/sz[t].with_area*100).toFixed(1)),backgroundColor:t==='개인'?C.in:C.fr,maxBarThickness:28}))},
+  options:base({scales:{x:ax({grid:{display:false}}),y:ax({beginAtZero:true,ticks:{color:C.tick,callback:v=>v+'%'}})},
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>{const t=T[c.datasetIndex];return (t==='개인'?'개인빵집':t)+' '+c.raw+'% ('+sz[t][D.bins[c.dataIndex]]+'곳)';}}}}})});
+const sRows=[['영업 중 매장','operating',v=>nf(v)+'곳'],['면적 기록 있음','with_area',v=>nf(v)+'곳'],['평균','mean',v=>v+'㎡'],['하위 25%','p25',v=>v+'㎡'],['중앙값','median',v=>v+'㎡'],['상위 25%','p75',v=>v+'㎡'],['최대','max',v=>v+'㎡']];
+document.getElementById('tSize').innerHTML='<thead><tr><th>지표</th><th>프랜차이즈</th><th>개인빵집</th></tr></thead><tbody>'+
+  sRows.map(r=>'<tr><td>'+r[0]+'</td><td>'+r[2](sz['프랜차이즈'][r[1]])+'</td><td>'+r[2](sz['개인'][r[1]])+'</td></tr>').join('')+
+  D.bins.map(b=>'<tr><td>'+b+'</td><td>'+sz['프랜차이즈'][b]+'곳 ('+(sz['프랜차이즈'][b]/sz['프랜차이즈'].with_area*100).toFixed(1)+'%)</td><td>'+sz['개인'][b]+'곳 ('+(sz['개인'][b]/sz['개인'].with_area*100).toFixed(1)+'%)</td></tr>').join('')+'</tbody>';
+
+// 2-1. 생존율
+const S=D.survival;let sChart;
+function drawSurv(k){
+  if(sChart)sChart.destroy();
+  sChart=new Chart(document.getElementById('cSurv'),{type:'line',data:{labels:S.map(r=>r.year),datasets:T.map(t=>({label:t==='개인'?'개인빵집':t,
+    data:S.map(r=>r[t+'_'+k]),borderColor:t==='개인'?C.in:C.fr,backgroundColor:t==='개인'?C.in:C.fr,borderWidth:2,spanGaps:false,
+    pointRadius:S.map(r=>Math.max(2,Math.min(9,Math.sqrt(r[t+'_n']||0)))),pointHoverRadius:7}))},
+    options:base({scales:{x:ax({grid:{display:false}}),y:ax({min:0,max:100,ticks:{color:C.tick,callback:v=>v+'%'}})},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>{const t=T[c.datasetIndex];return (t==='개인'?'개인빵집':t)+' '+(c.raw==null?'-':c.raw+'%')+' (개업 '+S[c.dataIndex][t+'_n']+'곳)';}}}}})});
+}
+drawSurv('3y');toggle('tglS',k=>drawSurv(k));
+document.getElementById('tSurvP').innerHTML='<thead><tr><th>개업 시기</th><th>유형</th><th>개업 수</th><th>1년</th><th>3년</th><th>5년</th></tr></thead><tbody>'+
+  D.survivalPeriod.map(r=>'<tr><td>'+r.period+'</td><td>'+(r.type==='개인'?'개인빵집':r.type)+'</td><td>'+r.n+'</td><td>'+(r['1y']??'-')+'%</td><td>'+(r['3y']??'-')+'%</td><td>'+(r['5y']==null?'-':r['5y']+'%')+'</td></tr>').join('')+'</tbody>';
+
+document.getElementById('notes').innerHTML=[
+  '프랜차이즈 = 지점을 여러 곳 둔 브랜드(파리바게뜨·뚜레쥬르·빵장수단팥빵·몽블랑제·삼송빵집 등 '+D.brands.length+'개). ‘○○베이커리’처럼 흔한 상호는 개인빵집으로 분류했습니다.',
+  '팝업 '+nf(cnt['프랜차이즈'].popup_excluded+cnt['개인'].popup_excluded)+'건(개인 '+nf(cnt['개인'].popup_excluded)+', 프랜차이즈 '+nf(cnt['프랜차이즈'].popup_excluded)+')을 뺐습니다. 대부분 백화점·전시장·축제장 매장입니다.',
+  '‘폐업’에는 점주가 바뀌면서 기존 신고를 닫고 새로 신고한 경우가 섞여 있을 수 있습니다. 특히 프랜차이즈는 같은 자리에서 점주만 바뀌는 일이 많아, 실제 매장이 사라진 비율보다 폐업이 많게 잡힐 수 있습니다.',
+  '이 자료는 ‘제과점영업’ 신고만 담고 있어, 휴게음식점으로 신고한 베이커리카페는 빠져 있습니다.',
+  '최근 연도 생존율은 관찰 기간이 짧아 비어 있거나 표본이 작습니다.'
+].map(s=>'<li>'+s+'</li>').join('');
+
+function toggle(id,fn){const bs=document.querySelectorAll('#'+id+' button');bs.forEach(b=>b.addEventListener('click',()=>{bs.forEach(o=>o.setAttribute('aria-pressed',String(o===b)));fn(b.dataset.k);}));}
+})();
+</script>
+</body>
+</html>
