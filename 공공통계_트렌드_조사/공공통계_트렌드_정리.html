@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>공공 통계 트렌드</title>
+<style>
+  :root {
+    --bg: #f7f7f5; --surface: #ffffff; --text: #1d1d1f; --muted: #6b6b70; --line: #e4e4e0;
+    --accent: #2f5bd3; --accent-soft: #e8eefc;
+    --trend: #1f7a4d; --trend-bg: #e3f4ea; --signal: #9a6a00; --signal-bg: #fbf1d9;
+    --watch: #5b6170; --watch-bg: #eceef2; --risk: #b4372f; --risk-bg: #fbe6e4;
+    --bar: #2f5bd3; --bar2: #9aa9cf; --bar-neg: #c4524a; --track: #ececea;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141416; --surface: #1d1d20; --text: #ececee; --muted: #9a9aa2; --line: #2e2e33;
+      --accent: #8aa8ff; --accent-soft: #232b40;
+      --trend: #6fd29c; --trend-bg: #18301f; --signal: #e6be5a; --signal-bg: #33290f;
+      --watch: #b3b8c4; --watch-bg: #26282e; --risk: #f08a80; --risk-bg: #3a1d1b;
+      --bar: #8aa8ff; --bar2: #4a5577; --bar-neg: #f08a80; --track: #2a2a2f;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #141416; --surface: #1d1d20; --text: #ececee; --muted: #9a9aa2; --line: #2e2e33;
+    --accent: #8aa8ff; --accent-soft: #232b40;
+    --trend: #6fd29c; --trend-bg: #18301f; --signal: #e6be5a; --signal-bg: #33290f;
+    --watch: #b3b8c4; --watch-bg: #26282e; --risk: #f08a80; --risk-bg: #3a1d1b;
+    --bar: #8aa8ff; --bar2: #4a5577; --bar-neg: #f08a80; --track: #2a2a2f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", system-ui, sans-serif;
+    line-height: 1.6; -webkit-font-smoothing: antialiased;
+  }
+  main { max-width: 960px; margin: 0 auto; padding: 40px 16px 64px; }
+  header { margin-bottom: 32px; }
+  .eyebrow { color: var(--accent); font-weight: 700; font-size: 13px; letter-spacing: .04em; }
+  h1 { font-size: clamp(26px, 5vw, 38px); line-height: 1.25; margin: 6px 0 10px; letter-spacing: -0.02em; }
+  h2 { font-size: 22px; margin: 0 0 6px; letter-spacing: -0.01em; }
+  h3 { font-size: 16px; margin: 18px 0 8px; }
+  .lede { color: var(--muted); margin: 0; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  .chip { font-size: 12px; padding: 4px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+  section { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 24px; margin-bottom: 20px; }
+  .quote { font-size: clamp(17px, 2.6vw, 21px); font-weight: 700; line-height: 1.5; border-left: 4px solid var(--accent); padding: 4px 0 4px 16px; margin: 0; }
+  .sub { color: var(--muted); font-size: 14px; margin: 0 0 16px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: 12px; }
+  td.c, th.c { text-align: center; }
+  .scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .badge { display: inline-block; font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 999px; white-space: nowrap; }
+  .b-trend { color: var(--trend); background: var(--trend-bg); }
+  .b-signal { color: var(--signal); background: var(--signal-bg); }
+  .b-watch { color: var(--watch); background: var(--watch-bg); }
+  .b-risk { color: var(--risk); background: var(--risk-bg); }
+  .ok { color: var(--trend); font-weight: 700; }
+  .no { color: var(--muted); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px; background: var(--bg); }
+  .card h3 { margin-top: 0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .big { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
+  .big small { font-size: 14px; font-weight: 600; color: var(--muted); margin-left: 4px; }
+  .cap { font-size: 13px; color: var(--muted); margin: 4px 0 12px; }
+  .pair { display: grid; gap: 6px; margin: 10px 0 4px; }
+  .pair-row { display: grid; grid-template-columns: 120px 1fr 56px; gap: 8px; align-items: center; font-size: 13px; }
+  .track { background: var(--track); border-radius: 4px; height: 12px; overflow: hidden; }
+  .fill { height: 100%; background: var(--bar); border-radius: 4px; }
+  .fill.prev { background: var(--bar2); }
+  .fill.neg { background: var(--bar-neg); }
+  .num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+  .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+  .tag { font-size: 11px; border: 1px solid var(--line); border-radius: 6px; padding: 1px 7px; color: var(--muted); }
+  .legend { display: flex; gap: 14px; font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+  ul { padding-left: 20px; margin: 8px 0; }
+  li { margin: 4px 0; }
+  details summary { cursor: pointer; font-weight: 700; }
+  details ul { font-size: 13px; word-break: break-all; }
+  a { color: var(--accent); }
+  .note { font-size: 13px; color: var(--muted); background: var(--bg); border-radius: 8px; padding: 10px 12px; margin-top: 14px; }
+  footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 24px; }
+  @media (max-width: 560px) {
+    section { padding: 18px 16px; }
+    .pair-row { grid-template-columns: 92px 1fr 50px; }
+    th, td { padding: 8px 6px; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="eyebrow">TREND REPORT · 2026-11-03</div>
+    <h1>공공 통계로 본<br>최근 2년 트렌드</h1>
+    <p class="lede">국가데이터처, 문화체육관광부, 한국콘텐츠진흥원, KISDI, 한국언론진흥재단, 국무조정실·한국보건사회연구원의 공식 통계(출처 1등급)를 교차 분석했습니다.</p>
+    <div class="meta">
+      <span class="chip">사회조사·가계동향·고용</span>
+      <span class="chip">국민여가활동조사</span>
+      <span class="chip">콘텐츠 이용행태</span>
+      <span class="chip">언론수용자·KISDI 패널</span>
+      <span class="chip">청년의 삶 실태조사</span>
+    </div>
+  </header>
+
+  <section>
+    <p class="quote">화면은 더 짧아지고, 지갑은 더 영리해지고, 청년은 더 외로워졌다. 결혼은 '해야 한다'는 말과 '할 수 있다'는 계획 사이가 벌어졌다.</p>
+  </section>
+
+  <section>
+    <h2>한눈에 보기</h2>
+    <p class="sub">2개 이상 기관에서 확인 + 시계열 같은 방향 = 트렌드 · 둘 중 하나 = 유력 시그널</p>
+    <div class="scroll">
+    <table>
+      <thead><tr><th>테마</th><th>판정</th><th class="c">확인 기관</th><th>핵심 숫자</th></tr></thead>
+      <tbody>
+        <tr><td>① 영상·숏폼 중심 미디어</td><td><span class="badge b-trend">트렌드</span></td><td class="c">4</td><td>숏폼 뉴스 이용 11.1% → 22.9%</td></tr>
+        <tr><td>② 가성비 소비 방어</td><td><span class="badge b-trend">트렌드</span></td><td class="c">4</td><td>실질 소비 +0.4%, OTT 제휴·할인 64.7%</td></tr>
+        <tr><td>③ 청년 고립·정신건강 위험</td><td><span class="badge b-trend">트렌드</span></td><td class="c">3</td><td>고립·은둔 청년 2.4% → 5.2%</td></tr>
+        <tr><td>④ 결혼·출산의 '말과 계획' 간극</td><td><span class="badge b-trend">트렌드</span></td><td class="c">2</td><td>미혼 청년 결혼계획 75.0% → 63.1%</td></tr>
+        <tr><td>⑤ 일자리 진입 지연</td><td><span class="badge b-trend">트렌드</span></td><td class="c">2</td><td>청년 고용률 45.0% (−1.1%p)</td></tr>
+        <tr><td>⑥ 경험형 여가 회복</td><td><span class="badge b-trend">트렌드</span></td><td class="c">2</td><td>해외여행 경험 15.1% → 31.5%</td></tr>
+        <tr><td>⑦ AI 일상화</td><td><span class="badge b-signal">유력 시그널</span></td><td class="c">1</td><td>생성형 AI 이용 12.3% → 38.9%</td></tr>
+        <tr><td>⑧ 주거 불안·부모 의존</td><td><span class="badge b-signal">유력 시그널</span></td><td class="c">1</td><td>보증부 월세 19.0% → 23.8%</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>변화가 큰 지표</h2>
+    <div class="legend"><span><i style="background:var(--bar2)"></i>이전</span><span><i style="background:var(--bar)"></i>최근</span></div>
+    <div class="grid">
+      <div class="card">
+        <h3>① 숏폼 뉴스 이용률 <span class="badge b-trend">트렌드</span></h3>
+        <div class="big">2.1<small>배</small></div>
+        <p class="cap">1년 새 두 배 · 한국언론진흥재단 언론수용자 조사</p>
+        <div class="pair">
+          <div class="pair-row"><span>2024</span><div class="track"><div class="fill prev" style="width:37%"></div></div><span class="num">11.1%</span></div>
+          <div class="pair-row"><span>2025</span><div class="track"><div class="fill" style="width:76%"></div></div><span class="num">22.9%</span></div>
+        </div>
+        <ul>
+          <li>동영상 플랫폼 뉴스 18.4% → <b>30.0%</b></li>
+          <li>포털 뉴스 <b>66.5%</b>, 종이신문 <b>8.4%</b> 역대 최저</li>
+          <li>여가 1위 동영상 시청 <b>85.9%</b> (데이터처)</li>
+          <li>숏폼 쇼핑 링크 접속자 31.4%가 구매 (콘진원)</li>
+        </ul>
+        <div class="tags"><span class="tag">언론재단</span><span class="tag">국가데이터처</span><span class="tag">문체부</span><span class="tag">콘진원</span></div>
+      </div>
+
+      <div class="card">
+        <h3>③ 고립·은둔 청년 <span class="badge b-risk">위험 신호</span></h3>
+        <div class="big">2.2<small>배</small></div>
+        <p class="cap">19~34세 · 국무조정실·보사연 청년의 삶 실태조사</p>
+        <div class="pair">
+          <div class="pair-row"><span>고립·은둔 '22</span><div class="track"><div class="fill prev" style="width:24%"></div></div><span class="num">2.4%</span></div>
+          <div class="pair-row"><span>고립·은둔 '24</span><div class="track"><div class="fill neg" style="width:52%"></div></div><span class="num">5.2%</span></div>
+          <div class="pair-row"><span>우울증상 '22</span><div class="track"><div class="fill prev" style="width:61%"></div></div><span class="num">6.1%</span></div>
+          <div class="pair-row"><span>우울증상 '24</span><div class="track"><div class="fill neg" style="width:88%"></div></div><span class="num">8.8%</span></div>
+        </div>
+        <ul>
+          <li>번아웃 경험 <b>32.2%</b>, 이유 1위 진로불안</li>
+          <li>청년 자살률 22.0 → <b>24.4</b> (10만 명당)</li>
+          <li>혼자 하는 여가 <b>56.6%</b> (문체부)</li>
+        </ul>
+        <div class="tags"><span class="tag">국무조정실·보사연</span><span class="tag">국가데이터처</span><span class="tag">문체부</span></div>
+      </div>
+
+      <div class="card">
+        <h3>④ 결혼의 '말과 계획' <span class="badge b-trend">트렌드</span></h3>
+        <div class="big">−11.9<small>%p</small></div>
+        <p class="cap">미혼 청년 결혼계획, 2022 → 2024</p>
+        <div class="pair">
+          <div class="pair-row"><span>'결혼해야' '22</span><div class="track"><div class="fill prev" style="width:50%"></div></div><span class="num">50.0%</span></div>
+          <div class="pair-row"><span>'결혼해야' '24</span><div class="track"><div class="fill" style="width:52.5%"></div></div><span class="num">52.5%</span></div>
+          <div class="pair-row"><span>결혼계획 '22</span><div class="track"><div class="fill prev" style="width:75%"></div></div><span class="num">75.0%</span></div>
+          <div class="pair-row"><span>결혼계획 '24</span><div class="track"><div class="fill neg" style="width:63.1%"></div></div><span class="num">63.1%</span></div>
+        </div>
+        <ul>
+          <li>사회 인식은 ↑, 당사자 계획은 ↓</li>
+          <li>결혼 안 하는 이유 1위 <b>결혼자금 부족 31.3%</b></li>
+          <li>25~29세 미혼율 <b>92.2%</b></li>
+        </ul>
+        <div class="tags"><span class="tag">국가데이터처</span><span class="tag">국무조정실·보사연</span></div>
+      </div>
+
+      <div class="card">
+        <h3>⑥ 경험형 여가 회복 <span class="badge b-trend">트렌드</span></h3>
+        <div class="big">2.1<small>배</small></div>
+        <p class="cap">해외여행 경험률, 2023 → 2025 · 국가데이터처 사회조사</p>
+        <div class="pair">
+          <div class="pair-row"><span>해외여행 '23</span><div class="track"><div class="fill prev" style="width:15.1%"></div></div><span class="num">15.1%</span></div>
+          <div class="pair-row"><span>해외여행 '25</span><div class="track"><div class="fill" style="width:31.5%"></div></div><span class="num">31.5%</span></div>
+          <div class="pair-row"><span>지속 여가 '24</span><div class="track"><div class="fill prev" style="width:38.5%"></div></div><span class="num">38.5%</span></div>
+          <div class="pair-row"><span>지속 여가 '25</span><div class="track"><div class="fill" style="width:43.2%"></div></div><span class="num">43.2%</span></div>
+        </div>
+        <ul>
+          <li>여가 만족 <b>64.0%</b>, 2016년 이후 최고 (문체부)</li>
+          <li>러닝·조깅 참여 3.2% → <b>5.2%</b></li>
+          <li>연차 소진율 <b>79.4%</b> 역대 최고</li>
+        </ul>
+        <div class="tags"><span class="tag">국가데이터처</span><span class="tag">문체부</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>② 가성비 소비 방어 · ⑤ 일자리 진입 지연</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>② 가성비 소비 방어 <span class="badge b-trend">트렌드</span></h3>
+        <ul>
+          <li>2026년 2분기 소비지출 명목 +3.4%, <b>실질 +0.4%</b></li>
+          <li>평균소비성향 <b>69.2%</b> (−1.2%p)</li>
+          <li>재정 악화 시 먼저 줄일 지출 1위 <b>외식비</b></li>
+          <li>OTT 제휴·할인 이용 <b>64.7%</b>, 광고 요금제 <b>34.8%</b></li>
+          <li>실제 구독료 10,909원 vs 적정 7,939원</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>⑤ 일자리 진입 지연 <span class="badge b-trend">트렌드</span></h3>
+        <ul>
+          <li>청년 고용률 46.1% → <b>45.0%</b></li>
+          <li>'쉬었음' 이유 '원하는 일자리 없음' 30.8% → <b>34.1%</b></li>
+          <li>대졸 졸업 소요기간 <b>4년 4.4개월</b></li>
+          <li>구직 고려 1순위 임금 <b>57.9%</b></li>
+          <li>개선 신호: 2026년 8월 청년 '쉬었음' 39.5만 명(전년 대비 감소)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>⑦ AI · ⑧ 주거 <span class="badge b-signal">유력 시그널</span></h3>
+        <ul>
+          <li>생성형 AI 이용 12.3% → 24.0% → <b>38.9%</b>, 하루 49.6분 (KISDI)</li>
+          <li>보증부 월세 19.0% → <b>23.8%</b>, 공공임대 의향 <b>71.7%</b></li>
+          <li>주택자금 부모·친지 의존 <b>61.7%</b></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>세 번의 조사 종합</h2>
+    <p class="sub">설문·전망서(11/02) × 카드·앱·검색 행동 데이터(11/03) × 공공 통계(이번) — 관심·행동·조사 삼각검증 완성</p>
+    <div class="scroll">
+    <table>
+      <thead><tr><th>테마</th><th class="c">설문</th><th class="c">행동</th><th class="c">공공</th><th>최종</th></tr></thead>
+      <tbody>
+        <tr><td>AI 일상화</td><td class="c ok">●</td><td class="c ok">●</td><td class="c ok">●</td><td><span class="badge b-trend">확정 트렌드</span></td></tr>
+        <tr><td>영상·숏폼 중심 소비</td><td class="c ok">●</td><td class="c ok">●</td><td class="c ok">●</td><td><span class="badge b-trend">확정 트렌드</span></td></tr>
+        <tr><td>가성비 × 취향 소비</td><td class="c ok">●</td><td class="c ok">●</td><td class="c ok">●</td><td><span class="badge b-trend">확정 트렌드</span></td></tr>
+        <tr><td>감정·회복 / 고립 위험</td><td class="c ok">●</td><td class="c no">○</td><td class="c ok">●</td><td><span class="badge b-signal">트렌드</span></td></tr>
+        <tr><td>러닝·경험형 여가</td><td class="c no">○</td><td class="c ok">●</td><td class="c ok">●</td><td><span class="badge b-signal">트렌드</span></td></tr>
+        <tr><td>서브컬처·IP 팬덤</td><td class="c ok">●</td><td class="c ok">●</td><td class="c no">○</td><td><span class="badge b-signal">트렌드</span></td></tr>
+        <tr><td>결혼·출산 간극</td><td class="c no">○</td><td class="c no">○</td><td class="c ok">●</td><td><span class="badge b-watch">공공 통계 단독</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="note">AI는 설문(대학생 71% 과제에 AI) · 결제(AI 구독 고객 +413%) · 공공 통계(생성형 AI 이용 38.9%)가 모두 같은 방향입니다. 설문에서 본 '감정 관리 소비'에 부족했던 행동 근거는, 공공 통계의 고립·우울 증가가 <b>구조적 원인</b>으로 채워 줍니다.</p>
+  </section>
+
+  <section>
+    <h2>시사점</h2>
+    <div class="scroll">
+    <table>
+      <tbody>
+        <tr><th>브랜드·마케터</th><td>숏폼을 광고가 아닌 판매 채널로. 광고형·제휴형 저가 요금제 설계</td></tr>
+        <tr><th>콘텐츠·서비스</th><td>혼자 하는 여가 56.6%, 외로움 38.2% → 혼자서도 연결되는 경험(느슨한 커뮤니티, 회복형 콘텐츠)</td></tr>
+        <tr><th>정책·공공</th><td>고립·은둔 1순위 이유가 취업 어려움 → 일자리와 정신건강 지원을 묶어서 설계</td></tr>
+        <tr><th>발표·설득</th><td>공공 통계(1등급)를 뼈대로, 행동·설문 데이터를 근거로 쌓기</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>한계</h2>
+    <ul>
+      <li><b>청년 세부 수치:</b> 사회조사·여가조사의 19~29세 세부는 통계표(.xlsx)에만 있어 반영하지 못했습니다.</li>
+      <li><b>역산한 이전값:</b> 일부 2022~2024년 값은 발표된 증감폭으로 역산했습니다.</li>
+      <li><b>잠정치·시계열 없음:</b> 청년의 삶 실태조사 2024는 잠정치이고, 콘텐츠 이용행태 조사는 2025년이 첫 승인통계입니다.</li>
+      <li><b>발표 전:</b> 2026년 사회조사(가족·교육 등)와 2026 국민여가활동조사는 아직 발표되지 않았습니다.</li>
+    </ul>
+    <details style="margin-top:14px">
+      <summary>출처 전체 보기</summary>
+      <ul>
+        <li>2024 사회조사, 한국경제: <a href="https://www.hankyung.com/article/202411125738i">hankyung.com</a></li>
+        <li>2025 사회조사, KDI 경제정보센터: <a href="https://eiec.kdi.re.kr/policy/materialView.do?num=273247">eiec.kdi.re.kr</a></li>
+        <li>2025 사회조사 여가·외로움, 이투데이: <a href="https://www.etoday.co.kr/news/view/2524290">etoday.co.kr</a></li>
+        <li>청년 삶의 질 2025, 뉴시스: <a href="https://www.newsis.com/view/NISX20251216_0003442538">newsis.com</a></li>
+        <li>2026년 2분기 가계동향, 뉴시스: <a href="https://www.newsis.com/view/NISX20260827_0003764910">newsis.com</a></li>
+        <li>2025 연간 고용동향, 머니투데이: <a href="https://www.mt.co.kr/economy/2026/01/14/2026011407514525840">mt.co.kr</a></li>
+        <li>2025년 5월 청년층 부가조사, 국가데이터처: <a href="https://mods.go.kr/board.es?mid=a10301010000&bid=210&act=view&list_no=437676">mods.go.kr</a></li>
+        <li>2025 국민여가활동조사, 한국경제: <a href="https://www.hankyung.com/article/202512265942g">hankyung.com</a></li>
+        <li>2025 문화 트렌드, 이로운넷: <a href="https://www.eroun.net/news/articleView.html?idxno=69899">eroun.net</a></li>
+        <li>2025 콘텐츠 이용행태 조사, 콘진원: <a href="https://www.kocca.kr/kocca/koccanews/reportview.do?nttNo=1067&menuNo=204">kocca.kr</a></li>
+        <li>2025 언론수용자 조사, 미디어스: <a href="https://www.mediaus.co.kr/news/articleView.html?idxno=315685">mediaus.co.kr</a></li>
+        <li>디지털 뉴스 리포트 2025, 한국기자협회: <a href="http://www.journalist.or.kr/news/article.html?no=57770">journalist.or.kr</a></li>
+        <li>2025 지능정보사회 이용자 패널조사, 한국기자협회: <a href="https://journalist.or.kr/news/article.html?no=60977">journalist.or.kr</a></li>
+        <li>2025 한국미디어패널 주요 결과, KISDI: <a href="https://library.kisdi.re.kr/&/10110/contents/4333447?articleId=1922596&checkinId=3758009">library.kisdi.re.kr</a></li>
+        <li>2025 방송매체 이용행태 조사, 방송미디어통신위원회: <a href="https://www.kmcc.go.kr/download.do?fileSeq=62354">kmcc.go.kr</a></li>
+        <li>2024 청년의 삶 실태조사, 국무조정실: <a href="https://www.opm.go.kr/opm/news/press1.do?mode=download&articleNo=158583&attachNo=146521">opm.go.kr</a></li>
+        <li>2024 가족과 출산조사 심층분석, KDI 경제정보센터: <a href="https://eiec.kdi.re.kr/policy/domesticView.do?ac=0000202965">eiec.kdi.re.kr</a></li>
+      </ul>
+    </details>
+  </section>
+
+  <footer>원본 데이터: 01_국가데이터처_통계 · 02_여가_콘텐츠_조사 · 03_미디어_이용_조사 · 04_청년_인식_조사 · 05_교차분석_및_3단계종합 (.xlsx)</footer>
+</main>
+</body>
+</html>
