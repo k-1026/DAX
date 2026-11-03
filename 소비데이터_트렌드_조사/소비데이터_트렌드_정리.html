@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>소비 데이터 트렌드</title>
+<style>
+  :root {
+    --bg: #f7f7f5; --surface: #ffffff; --text: #1d1d1f; --muted: #6b6b70; --line: #e4e4e0;
+    --accent: #2f5bd3; --accent-soft: #e8eefc;
+    --trend: #1f7a4d; --trend-bg: #e3f4ea; --signal: #9a6a00; --signal-bg: #fbf1d9;
+    --watch: #5b6170; --watch-bg: #eceef2; --fad: #b4372f; --fad-bg: #fbe6e4;
+    --bar: #2f5bd3; --bar-neg: #c4524a; --track: #ececea;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141416; --surface: #1d1d20; --text: #ececee; --muted: #9a9aa2; --line: #2e2e33;
+      --accent: #8aa8ff; --accent-soft: #232b40;
+      --trend: #6fd29c; --trend-bg: #18301f; --signal: #e6be5a; --signal-bg: #33290f;
+      --watch: #b3b8c4; --watch-bg: #26282e; --fad: #f08a80; --fad-bg: #3a1d1b;
+      --bar: #8aa8ff; --bar-neg: #f08a80; --track: #2a2a2f;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #141416; --surface: #1d1d20; --text: #ececee; --muted: #9a9aa2; --line: #2e2e33;
+    --accent: #8aa8ff; --accent-soft: #232b40;
+    --trend: #6fd29c; --trend-bg: #18301f; --signal: #e6be5a; --signal-bg: #33290f;
+    --watch: #b3b8c4; --watch-bg: #26282e; --fad: #f08a80; --fad-bg: #3a1d1b;
+    --bar: #8aa8ff; --bar-neg: #f08a80; --track: #2a2a2f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", system-ui, sans-serif;
+    line-height: 1.6; -webkit-font-smoothing: antialiased;
+  }
+  main { max-width: 960px; margin: 0 auto; padding: 40px 16px 64px; }
+  header { margin-bottom: 32px; }
+  .eyebrow { color: var(--accent); font-weight: 700; font-size: 13px; letter-spacing: .04em; }
+  h1 { font-size: clamp(26px, 5vw, 38px); line-height: 1.25; margin: 6px 0 10px; letter-spacing: -0.02em; }
+  h2 { font-size: 22px; margin: 0 0 6px; letter-spacing: -0.01em; }
+  h3 { font-size: 16px; margin: 18px 0 8px; }
+  .lede { color: var(--muted); margin: 0; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  .chip { font-size: 12px; padding: 4px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+  section { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 24px; margin-bottom: 20px; }
+  .quote { font-size: clamp(17px, 2.6vw, 21px); font-weight: 700; line-height: 1.5; border-left: 4px solid var(--accent); padding: 4px 0 4px 16px; margin: 0; }
+  .sub { color: var(--muted); font-size: 14px; margin: 0 0 16px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: 12px; }
+  td.c, th.c { text-align: center; }
+  .scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .badge { display: inline-block; font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 999px; white-space: nowrap; }
+  .b-trend { color: var(--trend); background: var(--trend-bg); }
+  .b-signal { color: var(--signal); background: var(--signal-bg); }
+  .b-watch { color: var(--watch); background: var(--watch-bg); }
+  .b-fad { color: var(--fad); background: var(--fad-bg); }
+  .ok { color: var(--trend); font-weight: 700; }
+  .no { color: var(--muted); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px; background: var(--bg); }
+  .card h3 { margin-top: 0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .big { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
+  .big small { font-size: 14px; font-weight: 600; color: var(--muted); margin-left: 4px; }
+  .cap { font-size: 13px; color: var(--muted); margin: 4px 0 12px; }
+  .src { font-size: 12px; color: var(--muted); }
+  .bars { display: grid; gap: 8px; margin: 10px 0 4px; }
+  .bar-row { display: grid; grid-template-columns: 112px 1fr 64px; gap: 8px; align-items: center; font-size: 13px; }
+  .track { background: var(--track); border-radius: 4px; height: 12px; overflow: hidden; }
+  .fill { height: 100%; background: var(--bar); border-radius: 4px; }
+  .fill.neg { background: var(--bar-neg); }
+  .num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+  .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+  .tag { font-size: 11px; border: 1px solid var(--line); border-radius: 6px; padding: 1px 7px; color: var(--muted); }
+  ul { padding-left: 20px; margin: 8px 0; }
+  li { margin: 4px 0; }
+  details summary { cursor: pointer; font-weight: 700; }
+  details ul { font-size: 13px; word-break: break-all; }
+  a { color: var(--accent); }
+  .note { font-size: 13px; color: var(--muted); background: var(--bg); border-radius: 8px; padding: 10px 12px; margin-top: 14px; }
+  footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 24px; }
+  @media (max-width: 560px) {
+    section { padding: 18px 16px; }
+    .bar-row { grid-template-columns: 88px 1fr 56px; }
+    th, td { padding: 8px 6px; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="eyebrow">TREND REPORT · 2026-11-03</div>
+    <h1>실제 소비 데이터로 본<br>최근 2년 트렌드</h1>
+    <p class="lede">카드 결제 · 앱 사용 · 검색·소셜, 성격이 다른 행동 데이터 세 종류가 같은 방향을 가리키는지 교차 검증했습니다.</p>
+    <div class="meta">
+      <span class="chip">신한·KB국민·삼성카드</span>
+      <span class="chip">와이즈앱·모바일인덱스</span>
+      <span class="chip">네이버 데이터랩·구글·소셜 분석</span>
+      <span class="chip">2024 ~ 2026.10</span>
+    </div>
+  </header>
+
+  <section>
+    <p class="quote">최근 2년, 한국 소비자는 AI에 매달 돈을 내고, 같은 물건은 더 싸게 사며, 아낀 돈을 건강과 취향(IP·팬덤)에 쓴다. 그리고 그 흐름은 20대에서 시작해 전 연령으로 퍼진다.</p>
+  </section>
+
+  <section>
+    <h2>한눈에 보기</h2>
+    <p class="sub">세 종류 데이터가 모두 같은 방향 = 트렌드 · 두 종류 = 유력 시그널 · 한 종류 = 관찰 신호 · 개별 아이템이 금방 꺼지면 패드</p>
+    <div class="scroll">
+    <table>
+      <thead><tr><th>테마</th><th>판정</th><th class="c">결제</th><th class="c">앱</th><th class="c">검색·소셜</th><th>핵심 숫자</th></tr></thead>
+      <tbody>
+        <tr><td>① AI 구독이 생활 고정비로</td><td><span class="badge b-trend">트렌드</span></td><td class="c ok">●</td><td class="c ok">●</td><td class="c ok">●</td><td>AI 구독 고객 +413%</td></tr>
+        <tr><td>② 가성비 최적화</td><td><span class="badge b-trend">트렌드</span></td><td class="c ok">●</td><td class="c ok">●</td><td class="c ok">●</td><td>뷰티 아울렛 +5,055%</td></tr>
+        <tr><td>③ 러닝·건강 자기관리</td><td><span class="badge b-trend">트렌드</span></td><td class="c ok">●</td><td class="c ok">●</td><td class="c ok">●</td><td>러닝매장 금액 +216%</td></tr>
+        <tr><td>④ 서브컬처·캐릭터 IP 팬덤</td><td><span class="badge b-trend">트렌드</span></td><td class="c ok">●</td><td class="c ok">●</td><td class="c ok">●</td><td>체험형 거점 20대 이하 +106%</td></tr>
+        <tr><td>⑤ 함께하는 소비</td><td><span class="badge b-signal">유력 시그널</span></td><td class="c ok">●</td><td class="c ok">●</td><td class="c no">○</td><td>공동구매 가맹점 +930%</td></tr>
+        <tr><td>⑥ 시니어 소비 확대</td><td><span class="badge b-signal">유력 시그널</span></td><td class="c ok">●</td><td class="c ok">●</td><td class="c no">○</td><td>65세+ 이용금액 +143%</td></tr>
+        <tr><td>⑦ 느리고 깊은 경험</td><td><span class="badge b-watch">관찰 신호</span></td><td class="c ok">●</td><td class="c no">○</td><td class="c no">○</td><td>라이팅 카페 금액 +71%</td></tr>
+        <tr><td>⑧ 초단기 디저트 유행</td><td><span class="badge b-fad">패드</span></td><td class="c ok">●</td><td class="c no">○</td><td class="c ok">●</td><td>반감기 163일 → 17일</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>트렌드 4가지</h2>
+    <p class="sub">결제 · 앱 · 검색·소셜 세 종류 데이터 모두에서 확인된 흐름</p>
+    <div class="grid">
+      <div class="card">
+        <h3>① AI 구독이 생활 고정비로 <span class="badge b-trend">트렌드</span></h3>
+        <div class="big">5.8<small>배</small></div>
+        <p class="cap">챗GPT 앱 월 사용자 407만(2024.8) → 2,345만(2026.4)</p>
+        <div class="bars">
+          <div class="bar-row"><span>2024.8</span><div class="track"><div class="fill" style="width:17%"></div></div><span class="num">407만</span></div>
+          <div class="bar-row"><span>2025.8</span><div class="track"><div class="fill" style="width:87%"></div></div><span class="num">2,031만</span></div>
+          <div class="bar-row"><span>2026.4</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="num">2,345만</span></div>
+        </div>
+        <ul>
+          <li>AI 유료 구독 고객 <b>+413%</b>, 금액 <b>+516%</b> (KB, 2년)</li>
+          <li>텍스트 AI 구독자의 <b>37%가 20대</b>, 4개월+ 유지 60%</li>
+          <li>20대 앱 사용자 증가율 <b>1위 챗GPT +46.5%</b></li>
+          <li>제미나이·클로드 1년 새 <b>10배 이상</b>, 20대 중심</li>
+        </ul>
+        <div class="tags"><span class="tag">KB국민카드</span><span class="tag">신한카드</span><span class="tag">와이즈앱</span><span class="tag">구글</span></div>
+      </div>
+
+      <div class="card">
+        <h3>② 가성비 최적화 <span class="badge b-trend">트렌드</span></h3>
+        <div class="big">+5,055<small>%</small></div>
+        <p class="cap">뷰티 아울렛 이용건수 (2025.1~10, 전년 대비, 신한카드)</p>
+        <div class="bars">
+          <div class="bar-row"><span>뷰티 아울렛</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="num">+5,055%</span></div>
+          <div class="bar-row"><span>워크웨어</span><div class="track"><div class="fill" style="width:35%"></div></div><span class="num">+1,771%</span></div>
+          <div class="bar-row"><span>백화점 4사</span><div class="track"><div class="fill neg" style="width:2%"></div></div><span class="num">−2%</span></div>
+          <div class="bar-row"><span>명품 플랫폼</span><div class="track"><div class="fill neg" style="width:6%"></div></div><span class="num">−27%</span></div>
+        </div>
+        <ul>
+          <li>20대 앱 증가율 <b>2위 다이소몰 +41.1%</b></li>
+          <li>Temu 신규 설치 3위(2025 상반기)</li>
+          <li>2025 검색 상위: 소비쿠폰·상생페이백, 가까운 해외여행</li>
+        </ul>
+        <div class="tags"><span class="tag">신한카드</span><span class="tag">와이즈앱</span><span class="tag">모바일인덱스</span><span class="tag">구글·네이버</span></div>
+      </div>
+
+      <div class="card">
+        <h3>③ 러닝·건강 자기관리 <span class="badge b-trend">트렌드</span></h3>
+        <div class="big">4.5<small>배</small></div>
+        <p class="cap">러닝 관련 SNS 언급량 (2023 상반기 → 2025 상반기)</p>
+        <div class="bars">
+          <div class="bar-row"><span>러닝매장 금액</span><div class="track"><div class="fill" style="width:93%"></div></div><span class="num">+216%</span></div>
+          <div class="bar-row"><span>30대 금액</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="num">+232%</span></div>
+          <div class="bar-row"><span>PDRN 언급</span><div class="track"><div class="fill" style="width:97%"></div></div><span class="num">+224%</span></div>
+          <div class="bar-row"><span>숲나들e 검색</span><div class="track"><div class="fill" style="width:54%"></div></div><span class="num">+125%</span></div>
+        </div>
+        <ul>
+          <li>러닝매장 여성 비중 38.0% → <b>43.9%</b></li>
+          <li>올리브영 30대 사용자 +16.3%</li>
+          <li>주의: 핵심 연령은 <b>30대</b></li>
+        </ul>
+        <div class="tags"><span class="tag">신한카드</span><span class="tag">와이즈앱</span><span class="tag">소셜·검색</span></div>
+      </div>
+
+      <div class="card">
+        <h3>④ 서브컬처·캐릭터 IP 팬덤 <span class="badge b-trend">트렌드</span></h3>
+        <div class="big">+106<small>%</small></div>
+        <p class="cap">체험형 아이템 거점 이용건수, 20대 이하 (2025.1~10, 신한카드)</p>
+        <div class="bars">
+          <div class="bar-row"><span>20대 이하</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="num">+106%</span></div>
+          <div class="bar-row"><span>30대</span><div class="track"><div class="fill" style="width:92%"></div></div><span class="num">+98%</span></div>
+          <div class="bar-row"><span>40대</span><div class="track"><div class="fill" style="width:88%"></div></div><span class="num">+93%</span></div>
+        </div>
+        <ul>
+          <li>디스코드 30대 +18.1%, 네이버웹툰 30대 +11.3%</li>
+          <li>급상승 앱 상위: 트릭컬·블루아카이브·버튜버</li>
+          <li>구글 2025: 케데헌·골든·브레인롯 밈</li>
+        </ul>
+        <div class="tags"><span class="tag">신한카드</span><span class="tag">와이즈앱</span><span class="tag">모바일인덱스</span><span class="tag">구글·네이버</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>유력 시그널 · 관찰 신호</h2>
+    <p class="sub">한두 종류 데이터에서만 확인된 흐름</p>
+    <div class="grid">
+      <div class="card">
+        <h3>⑤ 함께하는 소비 <span class="badge b-signal">유력 시그널</span></h3>
+        <ul>
+          <li>공동구매 전문 D사 가맹점 <b>+930%</b></li>
+          <li>패션 리커머스 이용 <b>+106%</b></li>
+          <li>리커머스 50대+ 비중 9.9% → 12% (20대 45.8% → 41.2%)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>⑥ 시니어 소비 확대 <span class="badge b-signal">유력 시그널</span></h3>
+        <ul>
+          <li>65세+ 카드 이용금액 <b>+143%</b> (2019→2025, 전체 +34%)</li>
+          <li>50대 비중 TOP5 앱이 모두 홈쇼핑</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>⑦ 느리고 깊은 경험 <span class="badge b-watch">관찰 신호</span></h3>
+        <ul>
+          <li>라이팅 카페 금액 <b>+71%</b>, 문구샵 +18%</li>
+          <li>서점 매출 <b>+8.5%</b> (2026, 3년 만에 반등, 20대 증가율 최고)</li>
+          <li>결제 근거만 강함. 앱·검색 공개 수치가 없어 판정 보류</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>⑧ 패드: 유행은 더 빨리 뜨고 더 빨리 진다</h2>
+    <p class="sub">디저트 유행의 검색량이 정점에서 절반으로 떨어지는 데 걸린 일수 (네이버 데이터랩 기반 분석)</p>
+    <div class="bars">
+      <div class="bar-row"><span>크로플</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="num">163일</span></div>
+      <div class="bar-row"><span>탕후루</span><div class="track"><div class="fill" style="width:33%"></div></div><span class="num">54일</span></div>
+      <div class="bar-row"><span>두바이 초콜릿</span><div class="track"><div class="fill" style="width:8%"></div></div><span class="num">13일</span></div>
+      <div class="bar-row"><span>두쫀쿠</span><div class="track"><div class="fill" style="width:10%"></div></div><span class="num">17일</span></div>
+    </div>
+    <ul>
+      <li>탕후루 검색량 115만 회(2023.8) → 17만 회(2024.4), <b>−85%</b></li>
+      <li>중고생 결제: 탕후루 <b>−75%</b>, 요거트전문점 <b>+317%</b> (2024 vs 2023)</li>
+    </ul>
+    <p class="note">개별 디저트는 패드입니다. 하지만 <b>유행 주기가 5년 새 약 1/10로 짧아졌다는 사실 자체</b>는 구조적 변화입니다. "다음 유행 찾기"보다 "짧은 유행을 빨리 타고 빠지는 운영"이 중요합니다.</p>
+  </section>
+
+  <section>
+    <h2>11/02 조사 결론 재검증</h2>
+    <p class="sub">설문·전망서 기반으로 내린 '조사 기반 트렌드'를 행동 데이터로 다시 확인</p>
+    <div class="scroll">
+    <table>
+      <thead><tr><th>이전 결론</th><th>재검증</th><th>행동 데이터 근거</th></tr></thead>
+      <tbody>
+        <tr><td>① 감정을 관리하는 소비</td><td><span class="badge b-signal">부분 확인</span></td><td>티 오마카세 +12.1%, 숲나들e 검색 +124.7%, 정신건강의학과 이용 +11.4%</td></tr>
+        <tr><td>② 작고 빠르게, 취향은 확실하게</td><td><span class="badge b-trend">확인</span></td><td>다이소몰 20대 +41.1%, 중고생 편의점 비중 25%, 유행 반감기 1/10</td></tr>
+        <tr><td>③ AI 일상화와 '일단 해보기'</td><td><span class="badge b-trend">강하게 확인</span></td><td>설문(과제 AI 71%)과 결제(AI 구독자 20대 37%) 일치</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>시사점</h2>
+    <div class="scroll">
+    <table>
+      <tbody>
+        <tr><th>브랜드·마케터</th><td>백화점식 할인보다 아울렛·공동구매·리커머스 채널 대응. AI 구독과의 제휴</td></tr>
+        <tr><th>상품 기획</th><td>짧은 유행은 2~3주 단위 한정 운영. 길게 갈 것은 러닝·IP·건강처럼 2년 이상 이어진 영역에서</td></tr>
+        <tr><th>타깃 설정</th><td>"MZ 전용"보다 20대에서 시작해 30~50대로 번지는 경로를 설계</td></tr>
+        <tr><th>발표·설득</th><td>①~④는 "결제·앱·검색 3종 데이터가 같은 방향"으로 설득. ⑦은 "결제는 강하지만 아직 관찰 중"이라고 정직하게</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>한계</h2>
+    <ul>
+      <li><b>원자료 직접 조회 못 함:</b> 구글 트렌드·네이버 데이터랩·썸트렌드는 공개 발표와 기사에 인용된 수치를 사용했습니다.</li>
+      <li><b>카드사별 편향:</b> 각 사 고객 데이터라 전체 시장을 대표하지 않고, 대부분 증가율만 공개됩니다.</li>
+      <li><b>앱 데이터는 추정치:</b> 와이즈앱·모바일인덱스 모두 표본 기반 추정입니다.</li>
+      <li><b>비교 기간 혼재:</b> 중고생(2019→2024), 시니어(2019→2025)는 2년보다 긴 기준선입니다.</li>
+    </ul>
+    <details style="margin-top:14px">
+      <summary>출처 전체 보기</summary>
+      <ul>
+        <li>신한카드 WISE UP (2026-01-21): <a href="https://www.shinhangroup.com/kr/archive/press/detail/600">shinhangroup.com</a></li>
+        <li>신한카드 미코노미 러닝, 파이낸셜포스트 (2025-08-25): <a href="https://www.financialpost.co.kr/news/articleView.html?idxno=231920">financialpost.co.kr</a></li>
+        <li>KB국민카드 생성형 AI 구독, 전자신문 (2026-02-08): <a href="https://m.etnews.com/20260208000042">etnews.com</a></li>
+        <li>KB국민카드 중고생 체크카드, 조세금융신문 (2025-03-17): <a href="https://www.tfmedia.co.kr/news/article.html?no=181753">tfmedia.co.kr</a></li>
+        <li>KB국민카드 시니어, 이투데이: <a href="https://www.etoday.co.kr/news/view/2594936">etoday.co.kr</a></li>
+        <li>삼성카드 데이터랩 서점업종, 매일일보 (2026-11-03): <a href="https://www.m-i.kr/news/articleView.html?idxno=2013429">m-i.kr</a></li>
+        <li>와이즈앱 20·30대 증가율, AI매터스 (2026-08-20): <a href="https://aimatters.co.kr/news-report/49187/">aimatters.co.kr</a></li>
+        <li>와이즈앱 연령별 앱 비중, 한국경제 (2026-03-31): <a href="https://www.hankyung.com/article/202603319113g">hankyung.com</a></li>
+        <li>와이즈앱 생성형 AI MAU, 연합뉴스 (2026-05-19): <a href="https://v.daum.net/v/20260519094912366">daum.net</a></li>
+        <li>와이즈앱 챗GPT 2,000만, 디지털투데이 (2025-09-02): <a href="https://www.digitaltoday.co.kr/news/articleView.html?idxno=589038">digitaltoday.co.kr</a></li>
+        <li>모바일인덱스 2025 상반기 총결산: <a href="https://www.igaworks.com/blog/2025appchart">igaworks.com</a></li>
+        <li>모바일인덱스 2026년 1월 MAU, 뉴스탭: <a href="https://www.newstap.co.kr/news/articleView.html?idxno=321347">newstap.co.kr</a></li>
+        <li>모바일인덱스 2026년 10월 리포트, 루리웹: <a href="https://bbs.ruliweb.com/news/read/230302">ruliweb.com</a></li>
+        <li>디저트 유행 반감기, 파이낸셜뉴스: <a href="https://www.fnnews.com/listicle/dubai_chewy_cookies?page=5">fnnews.com</a></li>
+        <li>탕후루→요아정 검색량, 더피알 (2024-07-02): <a href="https://www.the-pr.co.kr/news/articleView.html?idxno=51715">the-pr.co.kr</a></li>
+        <li>두쫀쿠 네이버 음식 검색 1위, 뉴시스 (2026-01-22): <a href="https://www.newsis.com/view/NISX20260122_0003486320">newsis.com</a></li>
+        <li>구글 2025 올해의 검색어: <a href="https://blog.google/intl/ko-kr/products/explore-get-answers/year-in-search-2025-kr/">blog.google</a></li>
+        <li>네이버 2025 검색어 연말 결산, 뉴시스: <a href="https://www.newsis.com/view/NISX20251219_0003447459">newsis.com</a></li>
+      </ul>
+    </details>
+  </section>
+
+  <footer>원본 데이터: 01_카드사_결제데이터 · 02_앱사용_데이터 · 03_검색_소셜_데이터 · 04_교차분석_및_재검증 (.xlsx)</footer>
+</main>
+</body>
+</html>
