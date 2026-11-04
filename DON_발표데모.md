@@ -1,6 +1,6 @@
 # D : ON (DAEGU ON) 발표 데모
 
-> 26.11.04 (수) 발표용 · 데모 링크: https://claude.ai/artifact/U3pRVgmiYD6n7eC1ZKmRsc
+> 26.11.04 (수) 발표용 · 데모 링크: https://claude.ai/artifact/U3pRVgmiYD6n7eC1ZKmRsc · 오프라인용 파일: [DON_발표데모.html](DON_발표데모.html) (내려받아 브라우저로 열기)
 
 빈 상가의 위치·면적·상권 데이터를 넣으면, AI가 그 공간에 가장 잘 맞는 용도를 추천하고 지도에서 위치를 보여주는 데모입니다.
 

@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+</head>
+<body>
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>D : ON 데모</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@400;500;600;700;800;900&display=swap">
+<style>
+  :root{
+    --bg:#FFFFFF; --surface:#F5F5F2; --surface-2:#EDEDE7; --border:#DEDED6;
+    --fg:#141414; --fg-muted:#5B5B55; --fg-faint:#8A8A82;
+    --blue:#2D4AFF; --blue-fg:#FFFFFF; --blue-tint:#E7ECFF; --blue-tint-fg:#1F3BA6;
+    --mint:#2ED4A7; --mint-fg:#06281F; --mint-text:#0E8F6D;
+    --card:#FFFFFF; --card-fg:#141414; --card-muted:#5B5B55; --card-border:#E4E4DE;
+    /* map */
+    --map-ground:#F3F3EE; --map-block:#E8E8E1; --map-road:#FFFFFF; --map-road-edge:#D6D6CC;
+    --map-river:#CFE0F5; --map-label:#6E6E66;
+    --line1:#D93F5C; --line2:#1FA36B; --line3:#E9B400;
+    --pin:#141414; --pin-active:#2D4AFF;
+    --font-display:'Gothic A1',sans-serif;
+    --font-body:'Gothic A1',system-ui,sans-serif;
+    color-scheme:light;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--bg); color:var(--fg); font-family:var(--font-body); font-weight:400;
+    padding-left:max(16px, env(safe-area-inset-left,0px));
+    padding-right:max(16px, env(safe-area-inset-right,0px));
+  }
+  h1,h2,h3{font-family:var(--font-display); font-weight:800; margin:0; text-wrap:balance; letter-spacing:-1px;}
+  p{margin:0; line-height:1.6;}
+  .shell{max-width:1180px; margin:0 auto;}
+  a{color:inherit;}
+  button:focus-visible{outline:3px solid var(--blue); outline-offset:2px;}
+
+  nav{display:flex; align-items:center; justify-content:space-between; padding-block:20px; max-width:1180px; margin:0 auto; gap:12px; flex-wrap:wrap;}
+  .logo{display:flex; flex-direction:column; align-items:flex-start; gap:2px; line-height:1.1;}
+  .logo-main{font-family:var(--font-display); font-weight:800; font-size:21px; letter-spacing:-.5px; display:flex; align-items:center; gap:8px;}
+  .logo-sub{font-family:var(--font-body); font-weight:400; font-size:10px; letter-spacing:3px; color:var(--fg-muted); padding-left:18px;}
+  .logo-dot{width:10px; height:10px; border-radius:50%; background:var(--blue); display:inline-block;}
+  .pill{display:inline-flex; align-items:center; gap:8px; border-radius:999px; padding:12px 22px; font-size:14px; font-weight:700; border:none; cursor:pointer; font-family:var(--font-body);}
+  .pill-blue{background:var(--blue); color:var(--blue-fg);}
+  .pill-mint{background:var(--mint); color:var(--mint-fg);}
+  .pill-outline{background:transparent; color:var(--fg); border:1px solid var(--border);}
+
+  .hero{position:relative; padding-block:88px 96px; display:flex; flex-direction:column; gap:48px; overflow:hidden;}
+  .hero-bg{position:absolute; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(circle at 88% 10%, rgba(45,74,255,0.10), transparent 52%),
+      radial-gradient(circle at 70% 85%, rgba(46,212,167,0.08), transparent 48%),
+      repeating-linear-gradient(0deg, rgba(20,20,20,0.045) 0px, rgba(20,20,20,0.045) 1px, transparent 1px, transparent 56px),
+      repeating-linear-gradient(90deg, rgba(20,20,20,0.045) 0px, rgba(20,20,20,0.045) 1px, transparent 1px, transparent 56px);
+    -webkit-mask-image:linear-gradient(to bottom, #000 0%, #000 65%, transparent 100%);
+    mask-image:linear-gradient(to bottom, #000 0%, #000 65%, transparent 100%);}
+  .hero > .shell{position:relative; z-index:1;}
+  .hero-eyebrow{display:flex; align-items:center; gap:10px; font-size:13px; font-weight:600; letter-spacing:2px; color:var(--fg-muted);}
+  .hero-eyebrow .sep{color:var(--border);}
+  .hero-word{font-size:100px; line-height:1.5; color:var(--fg); max-width:14ch; letter-spacing:-2px; margin-top:12px;}
+  .hero-word .mark{background:var(--blue); color:#FFFFFF; padding:2px 14px; border-radius:14px; display:inline-block;}
+  .hero-sub{display:flex; justify-content:space-between; align-items:flex-end; gap:24px; flex-wrap:wrap; padding-top:32px; margin-top:24px; border-top:1px solid var(--border);}
+  .hero-sub p{font-size:19px; max-width:44ch; color:var(--fg-muted); padding-top:24px;}
+
+  section{padding-block:72px;}
+  .section-label{font-family:var(--font-display); font-weight:800; font-size:36px; letter-spacing:-1px; margin-bottom:16px;}
+  .lede{font-size:17px; color:var(--fg-muted); max-width:62ch; margin-bottom:24px;}
+  .disclaimer{font-size:12px; color:var(--fg-faint); background:var(--surface-2); border:1px solid var(--border); border-radius:10px; padding:14px 18px; margin-bottom:24px;}
+
+  .filters{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px;}
+  .filter-btn{border-radius:999px; padding:9px 16px; font-size:13px; font-weight:700; border:1px solid var(--border); background:transparent; color:var(--fg-muted); cursor:pointer; font-family:var(--font-body);}
+  .filter-btn[aria-pressed="true"]{background:var(--blue); color:var(--blue-fg); border-color:var(--blue);}
+
+  /* Matching page: AI score panel + criteria on top, map + list below */
+  .match-wrap{display:grid; grid-template-columns:minmax(0,1fr) 360px; gap:20px; align-items:start; margin-bottom:28px;}
+  .panel{background:var(--card); color:var(--card-fg); border:1px solid var(--card-border); border-radius:18px; padding:32px; min-width:0;}
+  .panel-head{display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin-bottom:24px; flex-wrap:wrap;}
+  .panel-head h3{font-family:var(--font-body); font-size:25px; font-weight:800; color:var(--card-fg);}
+  .panel .attr-grid{grid-template-columns:repeat(4,1fr); gap:12px; margin:0 0 28px;}
+  .score-row{display:flex; align-items:center; gap:14px; margin-bottom:14px;}
+  .score-row .label{width:130px; font-size:14px; font-weight:700; flex-shrink:0;}
+  .score-track{flex:1; height:12px; background:var(--surface-2); border-radius:999px; overflow:hidden;}
+  .score-fill{height:100%; border-radius:999px; background:var(--card-muted); transition:width .4s ease;}
+  .score-fill.top{background:var(--blue);}
+  .score-pct{width:52px; text-align:right; font-size:14px; font-weight:800; font-variant-numeric:tabular-nums;}
+  .verdict{margin-top:22px; background:#101A3D; border:1px solid #2D4AFF; border-radius:12px; padding:20px 22px;}
+  .verdict .top-use{font-size:13px; color:#9FB2FF; font-weight:700; letter-spacing:.5px;}
+  .verdict h4{font-family:var(--font-body); font-size:21px; font-weight:800; color:#FFFFFF; margin:6px 0 0;}
+  .verdict p{font-size:14px; color:#C7D0FF; margin-top:8px;}
+
+  .criteria{background:var(--surface); border:1px solid var(--border); border-radius:18px; padding:24px;}
+  .criteria h3{font-family:var(--font-body); font-size:18px; font-weight:800; letter-spacing:-.5px;}
+  .criteria .sub{font-size:12px; color:var(--fg-muted); margin-top:4px;}
+  .crit{margin-top:16px; padding-top:16px; border-top:1px solid var(--border);}
+  .crit-name{font-size:14px; font-weight:800; display:flex; justify-content:space-between; align-items:center;}
+  .crit-name .is-top{font-size:11px; color:var(--blue-fg); background:var(--blue); border-radius:999px; padding:2px 8px;}
+  .crit-bar{display:flex; height:8px; border-radius:999px; overflow:hidden; margin-top:8px; gap:2px;}
+  .crit-bar span{display:block; height:100%;}
+  .crit-keys{display:flex; flex-wrap:wrap; gap:4px 12px; margin-top:8px; font-size:12px; color:var(--fg-muted); font-variant-numeric:tabular-nums;}
+  .crit-keys b{display:inline-block; width:8px; height:8px; border-radius:2px; margin-right:5px;}
+  .crit-note{font-size:11px; color:var(--fg-faint); margin-top:16px; line-height:1.5;}
+  .sub-label{font-family:var(--font-display); font-weight:800; font-size:22px; letter-spacing:-.5px; margin:8px 0 14px;}
+
+  /* Map: map canvas left, vacancy list + detail right */
+  .map-wrap{display:grid; grid-template-columns:minmax(0,1fr) 340px; gap:20px; align-items:start;}
+  .map-frame{position:relative; background:var(--map-ground); border:1px solid var(--card-border); border-radius:18px; overflow:hidden;}
+  .map-frame svg{display:block; width:100%; height:auto; aspect-ratio:5/3; touch-action:manipulation;}
+  .map-tools{position:absolute; top:12px; right:12px; display:flex; flex-direction:column; gap:6px;}
+  .map-tool{width:38px; height:38px; border-radius:10px; border:1px solid var(--border); background:var(--card); color:var(--fg); font-size:18px; font-weight:700; cursor:pointer; font-family:var(--font-body);}
+  .map-legend{position:absolute; left:12px; bottom:12px; display:flex; flex-wrap:wrap; gap:10px; background:rgba(255,255,255,.92); border:1px solid var(--border); border-radius:10px; padding:8px 12px; font-size:11px; color:var(--fg-muted); max-width:calc(100% - 24px);}
+  .map-legend span{display:inline-flex; align-items:center; gap:6px;}
+  .map-legend i{display:inline-block; width:14px; height:4px; border-radius:2px;}
+  .map-legend i.pin{width:10px; height:10px; border-radius:50%; background:var(--pin);}
+  .map-legend i.river{height:8px; background:var(--map-river);}
+
+  .road{fill:none; stroke:var(--map-road); stroke-linecap:round; stroke-linejoin:round;}
+  .road-edge{fill:none; stroke:var(--map-road-edge); stroke-linecap:round; stroke-linejoin:round;}
+  .metro{fill:none; stroke-width:4; stroke-linecap:round; stroke-linejoin:round; opacity:.85;}
+  .station{fill:var(--card); stroke:var(--fg); stroke-width:2;}
+  .lbl{font-family:var(--font-body); font-size:13px; fill:var(--map-label); font-weight:600;}
+  .lbl-road{font-size:12px; font-weight:500; fill:var(--fg-faint); letter-spacing:1px;}
+  .lbl-area{font-size:15px; font-weight:800; fill:#B8B8AE; letter-spacing:4px;}
+  .lbl-dong{fill:var(--blue); font-weight:800;}
+
+  .pin-g{cursor:pointer;}
+  .pin-g .dot{fill:var(--pin); stroke:var(--card); stroke-width:3; transition:fill .2s;}
+  .pin-g .halo{fill:var(--pin-active); opacity:0;}
+  .pin-g .num{font-family:var(--font-body); font-size:12px; font-weight:800; fill:#FFFFFF; text-anchor:middle; pointer-events:none;}
+  .pin-g .tip{font-family:var(--font-body); font-size:13px; font-weight:800; fill:var(--fg); paint-order:stroke; stroke:var(--map-ground); stroke-width:4px; opacity:0;}
+  .pin-g:hover .tip, .pin-g:focus .tip, .pin-g.active .tip{opacity:1;}
+  .pin-g.active .dot{fill:var(--pin-active);}
+  .pin-g.active .halo{opacity:.22; animation:pulse 1.6s ease-out infinite; transform-box:fill-box; transform-origin:center;}
+  .pin-g.dim{opacity:.18; pointer-events:none;}
+  .pin-g:focus{outline:none;}
+  .pin-g:focus-visible .dot{stroke:var(--pin-active); stroke-width:5;}
+  @keyframes pulse{0%{transform:scale(.6); opacity:.35} 100%{transform:scale(1.6); opacity:0}}
+  @media (prefers-reduced-motion:reduce){.pin-g.active .halo{animation:none;}}
+
+  .side{display:flex; flex-direction:column; gap:14px; min-width:0;}
+  .space-list{display:flex; flex-direction:column; gap:8px; max-height:300px; overflow-y:auto;}
+  .space-item{display:flex; align-items:center; gap:12px; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:12px 14px; cursor:pointer; text-align:left; width:100%; font-family:var(--font-body); color:var(--fg);}
+  .space-item .n{flex-shrink:0; width:24px; height:24px; border-radius:50%; background:var(--pin); color:#FFFFFF; font-size:12px; font-weight:800; display:grid; place-items:center;}
+  .space-item .name{font-size:15px; font-weight:700;}
+  .space-item .meta{font-size:12px; color:var(--fg-muted); margin-top:2px;}
+  .space-item[aria-pressed="true"]{border-color:var(--blue); background:var(--blue-tint); color:var(--blue-tint-fg);}
+  .space-item[aria-pressed="true"] .n{background:var(--blue);}
+  .space-item[aria-pressed="true"] .meta{color:var(--blue-tint-fg); opacity:.8;}
+
+  .detail{background:var(--card); border:1px solid var(--card-border); border-radius:18px; padding:22px;}
+  .detail-head{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
+  .detail h3{font-family:var(--font-body); font-size:21px; font-weight:800; letter-spacing:-.5px;}
+  .badge{font-size:12px; font-weight:700; color:var(--card-muted); background:var(--surface-2); border-radius:999px; padding:5px 12px; white-space:nowrap;}
+  .addr{font-size:13px; color:var(--fg-muted); margin-top:4px;}
+  .attr-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px;}
+  .attr{background:var(--surface); border-radius:10px; padding:12px;}
+  .attr .k{font-size:11px; color:var(--card-muted);}
+  .attr .v{font-size:17px; font-weight:800; margin-top:2px; font-variant-numeric:tabular-nums;}
+  .transit{margin-top:14px; display:flex; align-items:center; gap:10px; font-size:13px; color:var(--fg-muted);}
+  .transit .line-chip{font-size:11px; font-weight:800; color:#FFFFFF; border-radius:999px; padding:3px 9px;}
+  .transit strong{color:var(--fg);}
+  .use{margin-top:14px; padding-top:14px; border-top:1px solid var(--border); font-size:13px; color:var(--fg-muted);}
+  .use strong{color:var(--mint-text); font-size:15px;}
+
+  footer{padding-block:80px 60px; border-top:1px solid var(--border); margin-top:40px;}
+  .footer-word{font-family:var(--font-display); font-weight:900; font-size:88px; line-height:0.95; color:var(--fg); letter-spacing:-2px; overflow:hidden;}
+  .footer-sub{font-family:var(--font-body); font-weight:400; font-size:16px; letter-spacing:5px; color:var(--fg-muted); margin-top:8px;}
+  .footer-row{display:flex; justify-content:space-between; align-items:center; margin-top:32px; flex-wrap:wrap; gap:16px;}
+  .footer-src{font-size:12px; color:var(--fg-faint);}
+
+  @media (max-width:960px){
+    .map-wrap, .match-wrap{grid-template-columns:1fr;}
+    .panel .attr-grid{grid-template-columns:1fr 1fr;}
+    .panel{padding:22px;}
+    .score-row .label{width:100px; font-size:13px;}
+    .space-list{max-height:240px;}
+  }
+  @media (max-width:860px){
+    .hero-word{font-size:56px; line-height:1.3;}
+    .footer-word{font-size:48px;}
+    .map-legend{font-size:10px; gap:8px;}
+  }
+</style>
+
+<div class="shell">
+  <nav>
+    <span class="logo">
+      <span class="logo-main"><span class="logo-dot"></span>D : ON</span>
+      <span class="logo-sub">DAEGU ON</span>
+    </span>
+    <button class="pill pill-blue" type="button" onclick="document.getElementById('map').scrollIntoView({behavior:'smooth'})">AI 매칭 데모 시작</button>
+  </nav>
+</div>
+
+<header class="hero">
+  <div class="hero-bg" aria-hidden="true"></div>
+  <div class="shell">
+    <p class="hero-eyebrow"><span>VACANT SPACE AI</span><span class="sep">·</span><span>DONGSEONGRO, DAEGU</span></p>
+    <h1 class="hero-word">공실의 <span class="mark">다음</span>을<br>묻습니다</h1>
+    <div class="hero-sub">
+      <p>빈 상가의 위치·면적·상권 데이터를 넣으면, AI가 그 공간에 가장 잘 맞는 용도를 추천합니다.</p>
+      <button class="pill pill-mint" type="button" onclick="document.getElementById('map').scrollIntoView({behavior:'smooth'})">데모 체험하기 →</button>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <section id="map">
+    <h2 class="section-label">대구 공실 매칭</h2>
+    <p class="lede">활용 분야를 고르고 아래 지도나 목록에서 공실을 선택하면, AI가 면적·유동인구·임대료·공실기간·주변시설로 용도별 적합도를 계산하고 그 공실의 위치를 지도에 보여줍니다.</p>
+    <p class="disclaimer">공실 수치와 위치는 설명을 위한 예시 데이터이며, 지도는 대구 중구·서구 일대를 단순화한 개략도입니다. 실제 서비스는 소상공인시장진흥공단 상가정보·상권정보시스템 연동 후 실측치와 실측 좌표로 교체합니다.</p>
+
+    <div class="filters" id="filters" aria-label="공실 활용 분야"></div>
+
+    <div class="match-wrap">
+      <div class="panel" id="panel" aria-live="polite"></div>
+      <aside class="criteria" id="criteria"></aside>
+    </div>
+
+    <h3 class="sub-label">공실 위치</h3>
+    <div class="map-wrap">
+      <div class="map-frame">
+        <svg id="mapSvg" viewBox="0 0 1000 600" role="img" aria-label="대구 도심 공실 위치 지도">
+          <rect x="-500" y="-500" width="2000" height="1600" fill="var(--map-ground)"/>
+          <!-- blocks -->
+          <g fill="var(--map-block)">
+            <rect x="590" y="150" width="110" height="80" rx="6"/>
+            <rect x="600" y="262" width="100" height="74" rx="6"/>
+            <rect x="460" y="262" width="100" height="74" rx="6"/>
+            <rect x="300" y="262" width="130" height="74" rx="6"/>
+            <rect x="460" y="372" width="90" height="100" rx="6"/>
+            <rect x="740" y="262" width="120" height="74" rx="6"/>
+            <rect x="740" y="160" width="120" height="70" rx="6"/>
+            <rect x="140" y="262" width="130" height="74" rx="6"/>
+            <rect x="590" y="372" width="140" height="90" rx="6"/>
+            <rect x="320" y="150" width="210" height="80" rx="6"/>
+            <rect x="140" y="380" width="200" height="90" rx="6"/>
+          </g>
+          <!-- Sincheon river -->
+          <path d="M880 -20 C 900 120, 870 240, 905 360 S 940 540, 930 640" fill="none" stroke="var(--map-river)" stroke-width="34" stroke-linecap="round"/>
+          <text class="lbl" x="918" y="200" transform="rotate(80 918 200)" style="fill:#7FA3CF">신천</text>
+          <!-- roads -->
+          <g id="roads">
+            <path d="M-10 351 L1010 351"/>                         <!-- 달구벌대로 -->
+            <path d="M-10 246 L880 246"/>                          <!-- 국채보상로 -->
+            <path d="M300 136 L880 136"/>                          <!-- 태평로 -->
+            <path d="M640 -10 L629 129 L579 238 L572 351 L510 514 L480 610"/> <!-- 중앙대로 -->
+            <path d="M362 -10 L362 600"/>                          <!-- 서성로·달성로 -->
+            <path d="M720 120 L725 600"/>                          <!-- 공평로 -->
+            <path d="M-10 470 L1010 470"/>                         <!-- 명덕로 -->
+          </g>
+          <!-- 동성로 (pedestrian) -->
+          <path d="M621 139 L608 240 L595 332" fill="none" stroke="var(--mint)" stroke-width="7" stroke-linecap="round" stroke-dasharray="2 9" opacity=".9"/>
+          <!-- metro -->
+          <path class="metro" stroke="var(--line1)" d="M640 -10 L629 129 L579 238 L572 351 L510 514 L480 610"/>
+          <path class="metro" stroke="var(--line2)" d="M-10 356 L233 356 L428 356 L572 356 L767 399 L1010 440"/>
+          <path class="metro" stroke="var(--line3)" d="M362 -10 L362 279 L428 351 L470 430 L510 514 L540 610"/>
+          <g id="stations"></g>
+          <!-- labels -->
+          <text class="lbl lbl-road" x="20" y="341">달구벌대로</text>
+          <text class="lbl lbl-road" x="20" y="236">국채보상로</text>
+          <text class="lbl lbl-road" x="790" y="126">태평로</text>
+          <text class="lbl lbl-road" x="20" y="460">명덕로</text>
+          <text class="lbl lbl-road" x="648" y="60" transform="rotate(-85 648 60)">중앙대로</text>
+          <text class="lbl" x="560" y="210" style="fill:var(--mint-text);font-weight:800">동성로</text>
+          <text class="lbl lbl-area" x="640" y="560">中區 중구</text>
+          <text class="lbl lbl-area" x="70" y="560">西區 서구</text>
+          <text class="lbl lbl-area" x="760" y="40">北區 북구</text>
+          <g id="pins"></g>
+        </svg>
+        <div class="map-tools">
+          <button class="map-tool" id="zoomIn" type="button" aria-label="확대">+</button>
+          <button class="map-tool" id="zoomOut" type="button" aria-label="축소">−</button>
+          <button class="map-tool" id="zoomReset" type="button" aria-label="전체 보기" style="font-size:13px">⤢</button>
+        </div>
+        <div class="map-legend" aria-hidden="true">
+          <span><i class="pin"></i>공실</span>
+          <span><i style="background:var(--line1)"></i>1호선</span>
+          <span><i style="background:var(--line2)"></i>2호선</span>
+          <span><i style="background:var(--line3)"></i>3호선</span>
+          <span><i class="river"></i>신천</span>
+        </div>
+      </div>
+
+      <div class="side">
+        <div class="space-list" id="spaceList"></div>
+        <div class="detail" id="detail" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="shell">
+    <div class="footer-word">D : ON</div>
+    <div class="footer-sub">DAEGU ON</div>
+    <div class="footer-row">
+      <p class="footer-src">출처: KOPIS · 국민문화예술활동조사 · 대구광역시 도시재생전략계획 · 한국부동산원</p>
+      <button class="pill pill-blue" type="button" onclick="document.getElementById('map').scrollIntoView({behavior:'smooth'})">데모 다시 보기 →</button>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var NS = 'http://www.w3.org/2000/svg';
+  var M_PER_UNIT = 5.2; // 1000 units ≈ 5.2km
+
+  // x,y on the 1000×600 schematic (west→east, north→south)
+  var stations = [
+    {name:'대구역', x:629, y:129, line:1}, {name:'중앙로', x:579, y:238, line:1},
+    {name:'반월당', x:572, y:353, line:1}, {name:'명덕', x:510, y:514, line:1},
+    {name:'반고개', x:233, y:356, line:2}, {name:'신남', x:428, y:353, line:2},
+    {name:'경대병원', x:767, y:399, line:2}, {name:'서문시장', x:362, y:279, line:3},
+    {name:'남산', x:470, y:430, line:3}
+  ];
+  var lineColor = {1:'var(--line1)', 2:'var(--line2)', 3:'var(--line3)'};
+
+  var spaces = [
+    {id:'dongin', name:'동인동 일원', addr:'중구 동인동 찜갈비골목 인근', x:770, y:262, area:62, foot:3, rent:85, vacancy:14, nearby:0, history:false, floor:'1층', tag:'재생1순위'},
+    {id:'gyodong', name:'교동시장 일원', addr:'중구 교동 · 대구역 남측', x:662, y:178, area:48, foot:7, rent:140, vacancy:4, nearby:1, history:true, floor:'1층', tag:'재생1순위'},
+    {id:'hyanggyo', name:'대구향교 인근', addr:'중구 남산동 · 명덕역 북서', x:452, y:492, area:90, foot:4, rent:70, vacancy:9, nearby:0, history:true, floor:'2층', tag:'재생2순위'},
+    {id:'seobu', name:'서부시장 일원', addr:'서구 내당동 · 서부시장 골목', x:138, y:430, area:38, foot:6, rent:95, vacancy:6, nearby:2, history:false, floor:'1층', tag:'재생2순위'},
+    {id:'banggae', name:'반고개무침회골목', addr:'서구 내당동 · 반고개역 북측', x:252, y:318, area:55, foot:5, rent:110, vacancy:8, nearby:1, history:true, floor:'1층', tag:'재생1순위'},
+    {id:'chilsung', name:'칠성시장 일원', addr:'북구 칠성동 · 신천변', x:800, y:100, area:120, foot:6, rent:130, vacancy:5, nearby:0, history:false, floor:'1층', tag:'재생1순위'},
+    {id:'sinchungsa', name:'대구신청사 이전적지', addr:'중구 동인동 · 현 시청 부지', x:712, y:222, area:160, foot:5, rent:60, vacancy:18, nearby:0, history:false, floor:'1~2층', tag:'재생특화'},
+    {id:'yeoksa', name:'도심역사문화지구', addr:'중구 계산동 · 약령시·계산성당 일대', x:500, y:318, area:75, foot:8, rent:150, vacancy:3, nearby:2, history:true, floor:'1층', tag:'재생3순위'}
+  ];
+  spaces.forEach(function(s,i){ s.n = i+1; });
+
+  var critColor = ['#2D4AFF','#2ED4A7','#E9B400','#D93F5C'];
+  var uses = [
+    {key:'theater', label:'공연장', crit:[['면적 (100㎡ 근접)',30],['유동인구',25],['주변 공연시설 적음',25],['공실 기간',20]], calc:function(s){
+      var a = 1 - Math.min(Math.abs(s.area-100)/100,1);
+      var f = s.foot/10;
+      var n = s.nearby===0 ? 1 : (s.nearby===1 ? 0.5 : 0.2);
+      var v = Math.min(s.vacancy/12,1);
+      return a*0.3 + f*0.25 + n*0.25 + v*0.2;
+    }},
+    {key:'cafe', label:'카페', crit:[['유동인구',50],['면적 (40㎡ 근접)',30],['임대료 낮음',20]], calc:function(s){
+      var f = s.foot/10;
+      var a = 1 - Math.min(Math.abs(s.area-40)/60,1);
+      var r = 1 - Math.min(s.rent/400,1);
+      return f*0.5 + a*0.3 + r*0.2;
+    }},
+    {key:'gallery', label:'전시·갤러리', crit:[['면적 (70㎡ 근접)',35],['유동인구',35],['역사·문화 자원',30]], calc:function(s){
+      var a = 1 - Math.min(Math.abs(s.area-70)/80,1);
+      var f = s.foot/10;
+      var h = s.history ? 0.3 : 0.1;
+      return a*0.35 + f*0.35 + h;
+    }},
+    {key:'office', label:'사무실·스타트업', crit:[['임대료 낮음',40],['조용함 (유동인구 적음)',30],['면적 (넓을수록)',30]], calc:function(s){
+      var q = 1 - s.foot/10;
+      var r = 1 - Math.min(s.rent/300,1);
+      var a = Math.min(s.area/150,1);
+      return q*0.3 + r*0.4 + a*0.3;
+    }}
+  ];
+
+  var filterDefs = [
+    {key:'all', label:'전체'},
+    {key:'theater', label:'공연장 추천'},
+    {key:'cafe', label:'카페 추천'},
+    {key:'gallery', label:'전시 추천'},
+    {key:'office', label:'사무실 추천'}
+  ];
+
+  function score(s){
+    var raw = uses.map(function(u){ return {key:u.key, label:u.label, v:u.calc(s)}; });
+    var max = Math.max.apply(null, raw.map(function(r){return r.v;}));
+    var min = Math.min.apply(null, raw.map(function(r){return r.v;}));
+    var norm = raw.map(function(r){
+      var pct = max>min ? (r.v-min)/(max-min) : 0.5;
+      return {key:r.key, label:r.label, pct: Math.round((0.35+0.6*pct)*100)};
+    });
+    norm.sort(function(a,b){ return b.pct - a.pct; });
+    return norm;
+  }
+  function topUseKey(s){ return score(s)[0].key; }
+
+  function nearest(s){
+    var best=null;
+    stations.forEach(function(st){
+      var d=Math.hypot(st.x-s.x, st.y-s.y)*M_PER_UNIT;
+      if(!best||d<best.d) best={st:st,d:d};
+    });
+    return best;
+  }
+
+  var activeFilter='all', selectedId=spaces[1].id;
+  var svg=document.getElementById('mapSvg');
+  var FULL={x:0,y:0,w:1000,h:600}, view=Object.assign({},FULL), anim=null;
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function el(tag, attrs){ var e=document.createElementNS(NS,tag); for(var k in attrs) e.setAttribute(k,attrs[k]); return e; }
+
+  // roads: draw edge + fill once
+  (function(){
+    var g=document.getElementById('roads');
+    var paths=[].slice.call(g.children);
+    paths.forEach(function(p){
+      var d=p.getAttribute('d');
+      var major=/^M-10 351|^M640/.test(d);
+      g.insertBefore(el('path',{d:d,'class':'road-edge','stroke-width':major?22:16}), g.firstChild);
+      p.setAttribute('class','road'); p.setAttribute('stroke-width',major?18:12);
+    });
+    var sg=document.getElementById('stations');
+    stations.forEach(function(st){
+      sg.appendChild(el('circle',{cx:st.x,cy:st.y,r:6,'class':'station'}));
+      var t=el('text',{x:st.x+10,y:st.y+18,'class':'lbl'}); t.textContent=st.name+'역'; sg.appendChild(t);
+    });
+  })();
+
+  function setView(target){
+    if(anim) cancelAnimationFrame(anim);
+    var from=Object.assign({},view), t0=performance.now(), dur=reduce?0:450;
+    function step(now){
+      var p=dur?Math.min((now-t0)/dur,1):1, e=1-Math.pow(1-p,3);
+      ['x','y','w','h'].forEach(function(k){ view[k]=from[k]+(target[k]-from[k])*e; });
+      svg.setAttribute('viewBox',view.x+' '+view.y+' '+view.w+' '+view.h);
+      if(p<1) anim=requestAnimationFrame(step);
+    }
+    anim=requestAnimationFrame(step);
+  }
+  function clampView(cx,cy,w){
+    w=Math.max(250,Math.min(1000,w)); var h=w*0.6;
+    var x=Math.max(0,Math.min(1000-w,cx-w/2)), y=Math.max(0,Math.min(600-h,cy-h/2));
+    return {x:x,y:y,w:w,h:h};
+  }
+  function focusSpace(s){ setView(clampView(s.x,s.y,480)); }
+
+  function visible(s){ return activeFilter==='all' || topUseKey(s)===activeFilter; }
+
+  function renderPins(){
+    var g=document.getElementById('pins'); g.innerHTML='';
+    // draw selected last so it sits on top
+    spaces.slice().sort(function(a,b){return (a.id===selectedId)-(b.id===selectedId);}).forEach(function(s){
+      var on=s.id===selectedId;
+      var pg=el('g',{'class':'pin-g'+(on?' active':'')+(visible(s)?'':' dim'),tabindex:visible(s)?0:-1,role:'button','aria-label':s.n+'번 '+s.name});
+      pg.appendChild(el('circle',{cx:s.x,cy:s.y,r:30,'class':'halo'}));
+      pg.appendChild(el('circle',{cx:s.x,cy:s.y,r:14,'class':'dot'}));
+      var n=el('text',{x:s.x,y:s.y+4,'class':'num'}); n.textContent=s.n; pg.appendChild(n);
+      var right=s.x<820;
+      var t=el('text',{x:right?s.x+20:s.x-20,y:s.y-14,'class':'tip','text-anchor':right?'start':'end'}); t.textContent=s.name; pg.appendChild(t);
+      pg.addEventListener('click',function(){ select(s.id); });
+      pg.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); select(s.id); }});
+      g.appendChild(pg);
+    });
+  }
+
+  function renderFilters(){
+    var box=document.getElementById('filters'); box.innerHTML='';
+    filterDefs.forEach(function(f){
+      var b=document.createElement('button');
+      b.className='filter-btn'; b.type='button'; b.textContent=f.label;
+      b.setAttribute('aria-pressed',activeFilter===f.key?'true':'false');
+      b.onclick=function(){
+        activeFilter=f.key;
+        var cur=spaces.find(function(s){return s.id===selectedId;});
+        if(!visible(cur)){ var first=spaces.find(visible); if(first) selectedId=first.id; }
+        renderAll(); setView(FULL);
+      };
+      box.appendChild(b);
+    });
+  }
+
+  function renderList(){
+    var box=document.getElementById('spaceList'); box.innerHTML='';
+    spaces.filter(visible).forEach(function(s){
+      var b=document.createElement('button');
+      b.className='space-item'; b.type='button';
+      b.setAttribute('aria-pressed',selectedId===s.id?'true':'false');
+      b.innerHTML='<span class="n">'+s.n+'</span><span><div class="name">'+s.name+'</div><div class="meta">'+s.area+'㎡ · 공실 '+s.vacancy+'개월 · '+s.tag+'</div></span>';
+      b.onclick=function(){ select(s.id); };
+      box.appendChild(b);
+    });
+  }
+
+  function current(){ return spaces.find(function(x){return x.id===selectedId;}); }
+  var EMPTY='<p style="font-size:13px;color:var(--fg-muted)">이 용도로 추천된 공실이 없습니다. 다른 분야를 선택해 보세요.</p>';
+
+  function renderPanel(){
+    var s=current(), box=document.getElementById('panel');
+    if(!s||!visible(s)){ box.innerHTML=EMPTY; return; }
+    var sc=score(s), top=sc[0];
+    var html='<div class="panel-head"><h3>'+s.n+'. '+s.name+'</h3><span class="badge">'+s.tag+'</span></div>';
+    html+='<div class="attr-grid">'+
+      '<div class="attr"><div class="k">면적</div><div class="v">'+s.area+'㎡</div></div>'+
+      '<div class="attr"><div class="k">유동인구</div><div class="v">'+s.foot+'/10</div></div>'+
+      '<div class="attr"><div class="k">월 임대료</div><div class="v">'+s.rent+'만원</div></div>'+
+      '<div class="attr"><div class="k">공실 기간</div><div class="v">'+s.vacancy+'개월</div></div></div>';
+    sc.forEach(function(r,i){
+      html+='<div class="score-row"><div class="label">'+r.label+'</div>'+
+        '<div class="score-track"><div class="score-fill'+(i===0?' top':'')+'" style="width:'+r.pct+'%"></div></div>'+
+        '<div class="score-pct">'+r.pct+'%</div></div>';
+    });
+    html+='<div class="verdict"><div class="top-use">AI 추천 용도</div>'+
+      '<h4>'+top.label+'로 가장 적합 ('+top.pct+'점)</h4>'+
+      '<p>면적·유동인구·임대료·주변 경쟁시설을 종합한 결과입니다. 다른 공실을 선택하면 점수가 다시 계산됩니다.</p></div>';
+    box.innerHTML=html;
+  }
+
+  function renderCriteria(){
+    var s=current(), topKey=s&&visible(s)?topUseKey(s):null;
+    var html='<h3>점수 선정 기준</h3><p class="sub">용도별로 아래 항목에 가중치를 두어 적합도를 계산합니다.</p>';
+    uses.forEach(function(u){
+      html+='<div class="crit"><div class="crit-name">'+u.label+(u.key===topKey?'<span class="is-top">현재 1순위</span>':'')+'</div>';
+      html+='<div class="crit-bar">'+u.crit.map(function(c,i){return '<span style="flex:'+c[1]+';background:'+critColor[i]+'"></span>';}).join('')+'</div>';
+      html+='<div class="crit-keys">'+u.crit.map(function(c,i){return '<span><b style="background:'+critColor[i]+'"></b>'+c[0]+' '+c[1]+'%</span>';}).join('')+'</div></div>';
+    });
+    html+='<p class="crit-note">네 용도의 점수를 한 공실 안에서 서로 비교해 35~95점으로 환산합니다. 전시·갤러리는 역사·문화 자원이 있으면 30%, 없으면 10%를 반영합니다.</p>';
+    document.getElementById('criteria').innerHTML=html;
+  }
+
+  function renderDetail(){
+    var s=current(), box=document.getElementById('detail');
+    if(!s||!visible(s)){ box.innerHTML=EMPTY; return; }
+    var nb=nearest(s), m=Math.round(nb.d/10)*10, walk=Math.max(1,Math.round(nb.d/67));
+    box.innerHTML=
+      '<div class="detail-head"><h3>'+s.n+'. '+s.name+'</h3><span class="badge">'+s.floor+'</span></div>'+
+      '<p class="addr">'+s.addr+'</p>'+
+      '<p class="transit"><span class="line-chip" style="background:'+lineColor[nb.st.line]+'">'+nb.st.line+'호선</span><span><strong>'+nb.st.name+'역</strong> 약 '+m+'m · 도보 '+walk+'분</span></p>';
+  }
+
+  function renderSelection(){ renderList(); renderPins(); renderPanel(); renderCriteria(); renderDetail(); }
+  function renderAll(){ renderFilters(); renderSelection(); }
+  function select(id){ selectedId=id; renderSelection(); focusSpace(current()); }
+
+  document.getElementById('zoomIn').onclick=function(){ setView(clampView(view.x+view.w/2, view.y+view.h/2, view.w/1.5)); };
+  document.getElementById('zoomOut').onclick=function(){ setView(clampView(view.x+view.w/2, view.y+view.h/2, view.w*1.5)); };
+  document.getElementById('zoomReset').onclick=function(){ setView(FULL); };
+
+  renderAll();
+})();
+</script>
+
+</body>
+</html>
