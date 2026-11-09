@@ -7,95 +7,124 @@
 <style>
 :root{
   --bg:#F4F3EE; --card:#FFFFFF; --ink:#1B1E24; --ink2:#5B6068; --line:#D9D7CE; --pale:#ECEBE5;
-  --accent:#E0492B; --teal:#1F6F5C; --teal-bg:#E3F1EC; --warn:#8A5A00; --warn-bg:#FFF4D6;
+  --accent:#E0492B; --teal:#1F6F5C; --teal-bg:#E3F1EC; --teal-line:#BFE0D4;
+  --warn:#8A5A00; --warn-bg:#FFF4D6;
+  --red:#A33A22; --red-bg:#FDF1EE; --red-line:#F2C4B8; --high:#B42318; --high-bg:#FDE3DF;
   --font:'Malgun Gothic',system-ui,-apple-system,'Apple SD Gothic Neo',sans-serif;
   color-scheme:light;
 }
 *{box-sizing:border-box}
-html,body{margin:0;height:100%}
-body{background:var(--bg);color:var(--ink);font-family:var(--font);}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.55}
 button{font-family:var(--font)}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 
-.app{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px;gap:10px}
-.frame{position:relative;overflow:hidden;background:var(--bg);border-radius:10px;box-shadow:0 2px 14px rgba(0,0,0,.08)}
-.slide{position:absolute;left:0;top:0;width:1600px;height:900px;transform-origin:0 0;padding:44px 56px 36px;background:var(--bg);display:none;flex-direction:column;gap:14px;overflow:hidden}
-.slide.on{display:flex}
+.page{max-width:1240px;margin:0 auto;padding:36px 20px 72px}
+.kicker{font-size:13px;font-weight:800;letter-spacing:1.5px;color:var(--accent)}
+h1{margin:6px 0 0;font-size:32px;line-height:1.25;letter-spacing:-.5px}
+h2{margin:0;font-size:22px;letter-spacing:-.3px}
+.lead{margin:10px 0 0;color:var(--ink2);font-size:15px;max-width:80ch}
+.block{margin-top:40px}
+.block-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.block-head p{margin:0;color:var(--ink2);font-size:13.5px}
 
-.kicker{font-size:14px;font-weight:800;letter-spacing:1.5px;color:var(--accent)}
-h1{margin:0;font-size:34px;line-height:1.25;letter-spacing:-.6px}
-.lead{font-size:16px;color:var(--ink2);margin:0}
-.facts{display:flex;gap:10px;flex-wrap:wrap}
+.facts{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
 .fact{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 14px;font-size:14px;color:var(--ink2)}
-.fact b{color:var(--ink);font-size:18px;font-variant-numeric:tabular-nums;margin-right:4px}
+.fact b{color:var(--ink);font-size:17px;font-variant-numeric:tabular-nums;margin-right:4px}
 
-/* slide 1 table */
-table{width:100%;border-collapse:separate;border-spacing:0;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:15.5px;line-height:1.5}
-th{background:var(--pale);color:var(--ink2);font-weight:800;text-align:left;padding:10px 12px;font-size:14px}
-td{padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
-td.name{font-weight:800;font-size:17px}
-td.name small{display:block;font-weight:500;color:var(--ink2);font-size:13.5px;margin-top:2px}
-.tag{display:inline-block;font-size:12px;font-weight:800;border-radius:999px;padding:3px 10px;white-space:nowrap}
+/* 추천 고객유형 표 */
+.tbl-wrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:12px}
+table.types{width:100%;border-collapse:separate;border-spacing:0;font-size:14.5px;line-height:1.5;min-width:760px}
+table.types th{background:var(--pale);color:var(--ink2);font-weight:800;text-align:left;padding:10px 12px;font-size:13.5px}
+table.types td{padding:11px 12px;border-top:1px solid var(--line);vertical-align:top}
+td.name{font-weight:800;font-size:15.5px}
+td.name small{display:block;font-weight:500;color:var(--ink2);font-size:13px;margin-top:2px}
+.tag{display:inline-block;font-size:12.5px;font-weight:800;border-radius:999px;padding:3px 10px;white-space:nowrap}
 .t-core{background:var(--teal);color:#fff}
 .t-sub{background:var(--teal-bg);color:var(--teal)}
 .t-hold{background:var(--warn-bg);color:var(--warn)}
-.rank{font-weight:800;font-variant-numeric:tabular-nums}
-.note{font-size:14px;color:var(--ink2);line-height:1.6;margin-top:auto}
+.note{font-size:13px;color:var(--ink2);margin:12px 0 0}
 
-/* slide 2 journey */
-.top2{display:flex;justify-content:space-between;align-items:flex-end;gap:16px}
-.tabs{display:flex;gap:8px}
+/* 여정지도 탭 (스티키) */
+.tabbar{position:sticky;top:0;z-index:5;background:var(--bg);padding:12px 0;border-bottom:1px solid var(--line);display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
 .tabs button{border:1px solid var(--line);background:var(--card);color:var(--ink2);padding:9px 16px;border-radius:999px;font-size:14px;font-weight:800;cursor:pointer}
 .tabs button[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
-.pdesc{font-size:14px;color:var(--ink2)}
-.grid{display:grid;grid-template-columns:130px repeat(7,minmax(0,1fr));background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:16px;line-height:1.45}
-.grid>div{padding:12px 12px;border-top:1px solid var(--line);border-left:1px solid var(--line);min-width:0}
+.legend{display:flex;gap:8px;flex-wrap:wrap;font-size:12.5px;color:var(--ink2);align-items:center}
+.pdesc{margin:14px 0 10px;font-size:14.5px;color:var(--ink2)}
+
+/* 여정 표 (grid) */
+.jwrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:12px}
+.grid{display:grid;grid-template-columns:130px repeat(7,minmax(150px,1fr));min-width:1130px;font-size:15px;line-height:1.45}
+.grid>div{padding:12px;border-top:1px solid var(--line);border-left:1px solid var(--line);min-width:0}
 .grid>div:nth-child(-n+8){border-top:0}
 .grid>div:nth-child(8n+1){border-left:0}
 .h{background:var(--ink);color:#fff;font-weight:800;font-size:15px;text-align:center;padding:12px 6px}
-.lab{background:var(--pale);color:var(--ink2);font-weight:800;font-size:15px}
-.ev{display:inline-block;font-size:13px;font-weight:800;border-radius:6px;padding:3px 9px;margin-bottom:4px}
-.ev.d{background:var(--teal-bg);color:var(--teal)}
-.ev.h2{background:var(--warn-bg);color:var(--warn)}
-.ev.c{background:var(--pale);color:var(--ink2)}
+.lab{background:var(--pale);color:var(--ink2);font-weight:800;font-size:14px}
+.act{color:var(--ink)}
+.touch{color:var(--ink2)}
+
 .emo{position:relative;height:150px;grid-column:2 / -1;background:var(--card)}
-.emo svg{position:absolute;inset:14px 14px 14px 14px;width:calc(100% - 28px);height:calc(100% - 28px)}
+.emo svg{position:absolute;inset:14px;width:calc(100% - 28px);height:calc(100% - 28px)}
 .emo polyline{fill:none;stroke:var(--accent);stroke-width:2.5;vector-effect:non-scaling-stroke}
 .dot{position:absolute;width:14px;height:14px;border-radius:50%;background:var(--accent);border:2px solid #fff;transform:translate(-50%,-50%);box-shadow:0 0 0 1px var(--accent)}
-.dlab{position:absolute;transform:translate(-50%,-150%);font-size:12px;font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums}
-.emo .axis{position:absolute;left:6px;font-size:11px;color:var(--ink2)}
-.foot2{font-size:14px;color:var(--ink2);line-height:1.6;margin-top:auto}
+.dlab{position:absolute;transform:translate(-50%,-150%);font-size:12.5px;font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums}
 
-/* nav */
-.nav{display:flex;align-items:center;gap:12px;font-size:14px;color:var(--ink2)}
-.nav button{border:1px solid var(--line);background:var(--card);padding:8px 16px;border-radius:10px;font-size:14px;font-weight:800;color:var(--ink);cursor:pointer}
-.nav button:disabled{opacity:.4;cursor:default}
-.nav button:focus-visible,.tabs button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+/* 페인포인트 / 기회 */
+.pain{background:var(--red-bg)}
+.pid{display:inline-block;font-size:12px;font-weight:800;color:var(--red);margin-right:4px}
+.sev{display:inline-block;font-size:12px;font-weight:800;border-radius:6px;padding:2px 7px;margin-bottom:6px}
+.sev.high{background:var(--high-bg);color:var(--high)}
+.sev.mid{background:var(--warn-bg);color:var(--warn)}
+.sev.low{background:var(--pale);color:var(--ink2)}
+.pain-t{font-weight:600;color:var(--ink)}
+.opp{background:var(--teal-bg)}
+.opp-hd{display:inline-block;font-size:12px;font-weight:800;color:var(--teal);margin-bottom:6px}
+.opp-t{font-weight:600;color:var(--ink)}
+.ev{display:inline-block;font-size:12.5px;font-weight:800;border-radius:6px;padding:3px 8px;background:var(--pale);color:var(--ink2)}
+.ev.d{background:var(--teal-bg);color:var(--teal)}
+.ev.h{background:var(--warn-bg);color:var(--warn)}
+
+.sum{margin-top:18px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.sum div{font-size:13.5px;color:var(--ink2)}
+.sum b{display:block;font-size:22px;color:var(--ink);font-variant-numeric:tabular-nums}
+.foot{font-size:13px;color:var(--ink2);margin-top:28px;line-height:1.7}
+
+@media (max-width:900px){
+  .sum{grid-template-columns:1fr}
+  h1{font-size:26px}
+}
 </style>
 </head>
 <body>
-<div class="app">
-  <div class="frame" id="frame">
+<main class="page">
 
-    <!-- ===== Slide 1: 추천 고객유형 ===== -->
-    <section class="slide on" data-i="0" aria-label="추천 고객유형">
-      <div class="kicker">1109 · 추천 고객유형</div>
-      <h1>우리 공실 자산에 맞는 고객은 세 유형이 핵심입니다</h1>
-      <p class="lead">데모 파일의 매물 580건과 생존 분석 수치를 기준으로, 면적·월세·층 조건이 맞는 매물 수와 근거 강도로 고르고 나머지는 보조·보류로 뒀습니다.</p>
-      <div class="facts">
-        <div class="fact">공실 명시 매물 <b>580</b>건 (중구 225 · 서구 157 · 남구 198)</div>
-        <div class="fact">월세 중앙값 <b>130</b>만원 (10%~90% 40~500)</div>
-        <div class="fact">면적 중앙값 <b>98</b>㎡ (10%~90% 34~297)</div>
-        <div class="fact">1층 매물 <b>54%</b> (312건)</div>
-        <div class="fact">남구 대명동 <b>149</b>건 (26%)</div>
-      </div>
+  <header>
+    <div class="kicker">1109 · 추천 고객유형 및 여정지도</div>
+    <h1>우리 공실 자산에 맞는 고객과 그들의 공간 선택 여정</h1>
+    <p class="lead">데모 파일의 공실 매물 580건을 기준으로 고객유형을 고르고, 각 단계에서 겪는 페인포인트를 우리가 줄 수 있는 기회와 한 줄씩 연결했습니다.</p>
+    <div class="facts">
+      <div class="fact">공실 명시 매물 <b>580</b>건 (중구 225 · 서구 157 · 남구 198)</div>
+      <div class="fact">월세 중앙값 <b>130</b>만원 (10%~90% 40~500)</div>
+      <div class="fact">면적 중앙값 <b>98</b>㎡ (10%~90% 34~297)</div>
+      <div class="fact">1층 매물 <b>54%</b> (312건)</div>
+      <div class="fact">남구 대명동 <b>149</b>건 (26%)</div>
+    </div>
+  </header>
 
-      <table>
+  <!-- 1. 추천 고객유형 -->
+  <section class="block" id="types">
+    <div class="block-head">
+      <h2>1. 추천 고객유형</h2>
+      <p>우선순위는 매물 적합 수와 업종별 면적·층·임대료 조건의 맞음 정도로 정했습니다.</p>
+    </div>
+    <div class="tbl-wrap">
+      <table class="types">
         <thead>
           <tr>
-            <th style="width:90px">우선순위</th>
-            <th style="width:250px">고객유형</th>
-            <th style="width:330px">우리 자산 매칭</th>
-            <th style="width:330px">데모 근거 (생존 OR)</th>
+            <th style="width:100px">우선순위</th>
+            <th style="width:240px">고객유형</th>
+            <th style="width:340px">우리 자산 매칭</th>
             <th>주의할 점</th>
           </tr>
         </thead>
@@ -104,130 +133,168 @@ td.name small{display:block;font-weight:500;color:var(--ink2);font-size:13.5px;m
             <td><span class="tag t-core">핵심 1</span></td>
             <td class="name">소형 사무·지식서비스<small>1인 기업, 디자인·세무·IT</small></td>
             <td>사무실 명시 197건<br>소형 적합(20~80㎡, 월 100만↓) <b>176건</b></td>
-            <td>사무업무 OR <b>1.76</b><br>밀집도 점수 대상 (데모에서 밀집 근거가 확인된 유일한 조합 중 하나)</td>
-            <td>매출이 아니라 생존 기준. 중구 도심(남산동·봉산동 등) 공실이 많음</td>
+            <td>1인 기업 수요 중심. 중구 도심(남산동·봉산동 등)에 공실이 많음. 매출 자료는 없음</td>
           </tr>
           <tr>
             <td><span class="tag t-core">핵심 2</span></td>
             <td class="name">학원·교습소<small>입시·어학·예체능</small></td>
             <td>학원 명시 83건<br>중대형(100㎡↑, 월 300만↓) <b>176건</b></td>
-            <td>교육 OR <b>1.60</b><br>점수 미산정 (밀집 근거 없음)</td>
             <td>면적 요구가 큼. 학원 용도 허용 여부를 매물마다 확인해야 함</td>
           </tr>
           <tr>
             <td><span class="tag t-core">핵심 3</span></td>
             <td class="name">의원·치과·한의원<small>개원 준비</small></td>
             <td>병의원 명시 116건<br>1층 중대형 매물 다수</td>
-            <td>의료뷰티 OR <b>2.06</b> (세 유형 중 최고)<br>점수 미산정, 밀집 근거 없음</td>
-            <td>인허가·설비 비용이 큼. OR은 참고만 하고 점수에 쓰지 않는 편이 안전</td>
+            <td>인허가·설비 비용이 큼. 진료과별 입지 기준을 먼저 세워야 함</td>
           </tr>
           <tr>
             <td><span class="tag t-sub">보조</span></td>
             <td class="name">소매·편집샵·팝업<small>1층 중소형</small></td>
             <td>소매·편집 명시 41건<br>1층 40~150㎡ <b>198건</b></td>
-            <td>소매 OR <b>1.37</b><br>밀집도 점수 대상</td>
             <td>1층 입지 의존도가 높음. 보조 후보로만 둠</td>
           </tr>
           <tr>
             <td><span class="tag t-sub">보조</span></td>
             <td class="name">뷰티·피트니스</td>
             <td>명시 90건</td>
-            <td>의료뷰티 OR 2.06을 공유 (뷰티 단독 근거 없음)</td>
-            <td>의원과 같은 OR을 그대로 쓰면 과장이 됨. 별도 근거 필요</td>
+            <td>의원과 조건이 겹치지만 별도 근거 자료가 필요함</td>
           </tr>
           <tr>
             <td><span class="tag t-hold">보류</span></td>
             <td class="name">카페·디저트 1인 창업</td>
             <td>카페 명시 130건<br>소형 1층 <b>158건</b></td>
-            <td>식음료는 기준 업종 (OR 1.00)<br>점수 미산정, 근거 없음</td>
-            <td>매물은 많지만 근거가 없어 추천에서 뺌. 수요·공급 자료 확보 후 재검토</td>
+            <td>매물은 많지만 수요·경쟁 자료가 없어 보류. 자료 확보 후 재검토</td>
           </tr>
         </tbody>
       </table>
+    </div>
+    <p class="note">명시 건수는 중개사 '추천업종'과 '매물특징' 문구 기준이라 하한입니다(추천업종 빈칸 164건). 적합 건수는 면적·층·월세 조건으로 센 값이며 유형 사이에 중복이 있습니다.</p>
+  </section>
 
-      <p class="note">명시 건수는 중개사 '추천업종'과 '매물특징' 문구 기준이라 하한입니다(추천업종 빈칸 164건). 적합 건수는 면적·층·월세 조건으로 센 값이며 유형 사이에 중복이 있습니다. OR은 데모 파일 기재값으로, 원자료 검증 전입니다. 생존은 영업 지속 여부이며 매출 성과가 아닙니다.</p>
-    </section>
+  <!-- 2. 고객 여정지도 -->
+  <section class="block" id="journey">
+    <div class="block-head">
+      <h2>2. 고객 여정지도</h2>
+      <p>단계마다 행동 → 페인포인트 → 우리의 기회 순서로 읽습니다. 같은 번호(P1~P7)끼리 연결됩니다.</p>
+    </div>
 
-    <!-- ===== Slide 2: 고객 여정지도 ===== -->
-    <section class="slide" data-i="1" aria-label="고객 여정지도">
-      <div class="top2">
-        <div>
-          <div class="kicker">1109 · 고객 여정지도</div>
-          <h1 style="font-size:30px;margin-top:4px">핵심 3유형의 공간 선택 여정</h1>
-        </div>
-        <div class="tabs" role="tablist" aria-label="고객유형 선택">
-          <button role="tab" data-p="off" aria-selected="true">소형 사무 창업자</button>
-          <button role="tab" data-p="acad" aria-selected="false">학원 원장</button>
-          <button role="tab" data-p="clin" aria-selected="false">의원 원장</button>
-        </div>
+    <div class="tabbar">
+      <div class="tabs" role="tablist" aria-label="고객유형 선택">
+        <button role="tab" data-p="off" aria-selected="true">소형 사무 창업자</button>
+        <button role="tab" data-p="acad" aria-selected="false">학원 원장</button>
+        <button role="tab" data-p="clin" aria-selected="false">의원 원장</button>
       </div>
-      <div class="pdesc" id="pdesc"></div>
+      <div class="legend">
+        <span class="sev high">페인 심각도 높음</span>
+        <span class="sev mid">중간</span>
+        <span class="sev low">낮음</span>
+        <span class="ev d">데이터</span>
+        <span class="ev h">가설</span>
+        <span class="ev">확인 필요</span>
+      </div>
+    </div>
 
-      <div class="grid" id="grid"></div>
+    <p class="pdesc" id="pdesc"></p>
+    <div class="jwrap"><div class="grid" id="grid"></div></div>
+    <div class="sum" id="sum"></div>
+  </section>
 
-      <p class="foot2"><span class="ev d">데이터</span> 데모 집계 또는 매물 수 기준 &nbsp; <span class="ev h2">가설</span> 일반적인 창업 흐름이며 검증 필요 &nbsp; <span class="ev c">확인 필요</span> 추가 자료가 있어야 판단 가능. 감정 곡선은 1(불안)~5(안정)의 주관 평가입니다. 생존 OR은 분기 생존 기준이며 매출 성과가 아닙니다.</p>
-    </section>
+  <p class="foot">감정 곡선은 1(불안)~5(안정)의 주관 평가입니다. 페인포인트 심각도와 근거 수준은 데모 집계와 일반적인 창업 흐름을 바탕으로 한 판단이며, 현장 확인과 추가 자료로 검증이 필요합니다.</p>
 
-  </div>
-
-  <nav class="nav" aria-label="슬라이드 이동">
-    <button id="prev">◀ 이전</button>
-    <span id="pos">1 / 2</span>
-    <button id="next">다음 ▶</button>
-  </nav>
-</div>
+</main>
 
 <script>
 var STAGES = ["1 준비·구상","2 매물 탐색","3 상담·답사","4 조건 협상","5 인허가·공사","6 오픈·초기","7 재계약·확장"];
+var SEV = {"높음":"high","중간":"mid","낮음":"low"};
 
 var P = {
   off: {
     name: "소형 사무 창업자",
     desc: "1인 기업 · 20~80㎡ 사무실, 월 100만원 이하를 찾는 단계",
     st: [
-      {act:"사업 아이템을 정하고 사무실이 필요한지 판단", touch:"지인, 공유오피스 비교", pain:"공유오피스 대비 비용 판단이 어려움", opp:"월 비용 비교표 제공", ev:"가설", emo:3},
-      {act:"20~80㎡, 월 100만원 이하 매물 검색", touch:"매물 지도, 온라인 검색", pain:"공실 정보를 얼마나 믿을지 모름", opp:"현장 확인 필요 표시와 조건 필터", ev:"데이터 · 176건", emo:4},
-      {act:"방문해 엘리베이터·주차·채광 확인", touch:"현장, 중개사", pain:"주변 식당·편의시설이 불편할 수 있음", opp:"반경 내 편의시설 밀도 제공", ev:"가설", emo:3},
-      {act:"보증금·월세·관리비를 협상", touch:"임대인, 중개사", pain:"장기 계약을 요구받음", opp:"계약 조건 비교표", ev:"확인 필요", emo:3},
-      {act:"사업자 등록, 간단한 인테리어", touch:"세무사, 인테리어 업체", pain:"행정 절차가 헷갈림", opp:"단계별 체크리스트", ev:"가설", emo:3},
-      {act:"고객 확보, 재무 관리 시작", touch:"온라인 채널, 소개", pain:"초기 매출이 불안함", opp:"업종 생존 정보를 매출과 구분해 안내", ev:"데이터 · 사무 OR 1.76", emo:2},
-      {act:"재계약 또는 직원 채용으로 확장 검토", touch:"중개사", pain:"확장할 공간이 부족", opp:"인접 공실 알림", ev:"확인 필요", emo:4}
+      {act:"사업 아이템을 정하고 사무실이 필요한지 판단", touch:"지인, 공유오피스 비교", emo:3,
+       pain:{t:"공유오피스 대비 비용 판단이 어려움", sev:"중간", ev:"가설"},
+       opp:{t:"월 비용 비교표 (공유오피스 vs 임차)"}},
+      {act:"20~80㎡, 월 100만원 이하 매물 검색", touch:"매물 지도, 온라인 검색", emo:4,
+       pain:{t:"공실 정보를 얼마나 믿을지 모름 (중개사 기재 기준)", sev:"높음", ev:"데이터 · 적합 매물 176건"},
+       opp:{t:"현장 확인 필요 표시와 조건 필터 제공"}},
+      {act:"엘리베이터·주차·채광 확인", touch:"현장, 중개사", emo:3,
+       pain:{t:"주변 식당·편의시설이 불편할 수 있음", sev:"낮음", ev:"가설"},
+       opp:{t:"반경 내 편의시설 밀도 안내"}},
+      {act:"보증금·월세·관리비 협상", touch:"임대인, 중개사", emo:3,
+       pain:{t:"장기 계약(2~3년)을 요구받음", sev:"중간", ev:"확인 필요"},
+       opp:{t:"계약 기간·중도해지 조건 비교표"}},
+      {act:"사업자 등록, 간단 인테리어", touch:"세무사, 인테리어 업체", emo:3,
+       pain:{t:"행정 절차가 헷갈림", sev:"낮음", ev:"가설"},
+       opp:{t:"단계별 체크리스트"}},
+      {act:"고객 확보, 재무 관리 시작", touch:"온라인 채널, 소개", emo:2,
+       pain:{t:"초기 매출이 불안함", sev:"높음", ev:"확인 필요 (매출 데이터 없음)"},
+       opp:{t:"초기 매출 추정 자료 제공 (확보 가능 시)"}},
+      {act:"재계약 또는 직원 채용", touch:"중개사", emo:4,
+       pain:{t:"확장할 공간이 부족", sev:"중간", ev:"확인 필요"},
+       opp:{t:"인접 공실 알림"}}
     ]
   },
   acad: {
     name: "학원 원장",
     desc: "입시·어학·예체능 · 100㎡ 이상, 교실 배치가 가능한 매물을 찾는 단계",
     st: [
-      {act:"과목·대상을 정하고 수강생 규모를 가늠", touch:"원장 커뮤니티, 기존 원장", pain:"수요를 숫자로 보기 어려움", opp:"주거·학령 인구 자료 제공", ev:"가설", emo:3},
-      {act:"100㎡ 이상, 층·주차 조건 확인", touch:"매물 지도, 중개사", pain:"교실 수에 맞는 면적 판단이 어려움", opp:"면적별 교실 배치 예시", ev:"데이터 · 176건", emo:3},
-      {act:"현장에서 소음·층간·출입 확인", touch:"현장", pain:"건물 내 소음과 층간 문제", opp:"답사 체크리스트", ev:"가설", emo:3},
-      {act:"보증금과 월세를 비교, 용도 확인", touch:"임대인", pain:"학원 용도 허용 여부가 불명확", opp:"용도·관리비 확인 항목 안내", ev:"확인 필요", emo:2},
-      {act:"교실·설비 공사, 학원 등록", touch:"교육청, 시공사", pain:"등록 절차가 복잡", opp:"등록 절차 안내", ev:"가설", emo:2},
-      {act:"개강, 초기 원생 모집", touch:"전단, 온라인 광고, 학부모", pain:"초기 원생 확보가 늦어짐", opp:"학부모가 많은 지역의 홍보 제안", ev:"확인 필요", emo:3},
-      {act:"정원 점검, 확장 검토", touch:"중개사", pain:"재계약 시 임대료 인상", opp:"주변 시세 비교", ev:"확인 필요", emo:4}
+      {act:"과목·대상을 정하고 수강생 규모를 가늠", touch:"원장 커뮤니티, 기존 원장", emo:3,
+       pain:{t:"수요를 숫자로 보기 어려움", sev:"높음", ev:"가설"},
+       opp:{t:"주거·학령 인구 자료 제공 (데이터 확보 후)"}},
+      {act:"100㎡ 이상, 층·주차 조건 확인", touch:"매물 지도, 중개사", emo:3,
+       pain:{t:"교실 수에 맞는 면적 판단이 어려움", sev:"중간", ev:"가설"},
+       opp:{t:"면적별 교실 배치 예시"}},
+      {act:"소음·층간·출입 확인", touch:"현장", emo:3,
+       pain:{t:"건물 내 소음과 층간 문제", sev:"중간", ev:"가설"},
+       opp:{t:"답사 체크리스트"}},
+      {act:"보증금과 월세 비교, 용도 확인", touch:"임대인", emo:2,
+       pain:{t:"학원 용도 허용 여부가 불명확", sev:"높음", ev:"확인 필요"},
+       opp:{t:"용도·관리비 확인 항목 안내"}},
+      {act:"교실·설비 공사, 학원 등록", touch:"교육청, 시공사", emo:2,
+       pain:{t:"등록 절차가 복잡", sev:"중간", ev:"가설"},
+       opp:{t:"등록 절차 안내"}},
+      {act:"개강, 초기 원생 모집", touch:"전단, 온라인 광고, 학부모", emo:3,
+       pain:{t:"초기 원생 확보가 늦어짐", sev:"높음", ev:"확인 필요"},
+       opp:{t:"학부모 밀집 지역 홍보 제안"}},
+      {act:"정원 점검, 확장 검토", touch:"중개사", emo:4,
+       pain:{t:"재계약 시 임대료 인상", sev:"중간", ev:"확인 필요"},
+       opp:{t:"주변 시세 비교 알림"}}
     ]
   },
   clin: {
     name: "의원 원장",
     desc: "개원 준비 · 1층 중대형 매물에서 진료과 동선이 맞는 곳을 찾는 단계",
     st: [
-      {act:"개원 시기와 진료과를 정하고 상권 조사", touch:"동료, 학회, 개원 컨설팅", pain:"입지 기준이 불명확", opp:"진료과별 입지 체크리스트", ev:"가설", emo:3},
-      {act:"1층 중대형(100㎡↑) 매물 검색", touch:"매물 지도, 중개사", pain:"1층·면적·주차를 동시에 맞추기 어려움", opp:"진료과 조건에 맞춘 추천", ev:"데이터 · 병의원 명시 116건", emo:3},
-      {act:"주변 병원 수와 접근성 확인", touch:"현장, 중개사", pain:"경쟁 병원 수를 알기 어려움", opp:"반경 내 같은 진료과 수 제공 (데이터 확보 후)", ev:"확인 필요", emo:4},
-      {act:"보증금·권리금·원상복구 협상", touch:"임대인, 중개사", pain:"권리금과 원상복구 비용이 불투명", opp:"계약 비용 체크리스트", ev:"가설", emo:2},
-      {act:"개설 신고, 설비·인테리어 공사", touch:"보건소, 시공사", pain:"기간과 비용을 예측하기 어려움", opp:"일정·비용 가이드", ev:"가설", emo:2},
-      {act:"개원, 초기 환자 확보", touch:"네이버 플레이스, 지역 광고", pain:"초기 환자 수가 불확실", opp:"지역 수요 기반 홍보 전략", ev:"확인 필요", emo:3},
-      {act:"재계약 또는 분원 검토", touch:"중개사, 재무 상담", pain:"재계약 시 임대료 인상", opp:"주변 시세 비교 알림", ev:"확인 필요", emo:4}
+      {act:"개원 시기와 진료과를 정하고 상권 조사", touch:"동료, 학회, 개원 컨설팅", emo:3,
+       pain:{t:"입지 기준이 불명확", sev:"높음", ev:"가설"},
+       opp:{t:"진료과별 입지 체크리스트"}},
+      {act:"1층 중대형(100㎡↑) 매물 검색", touch:"매물 지도, 중개사", emo:3,
+       pain:{t:"1층·면적·주차를 동시에 맞추기 어려움", sev:"높음", ev:"데이터 · 병의원 명시 116건"},
+       opp:{t:"진료과 조건에 맞춘 추천 리스트"}},
+      {act:"주변 병원 수, 접근성 확인", touch:"현장, 중개사", emo:4,
+       pain:{t:"경쟁 병원 수를 알기 어려움", sev:"중간", ev:"확인 필요"},
+       opp:{t:"반경 내 같은 진료과 수 (데이터 확보 후)"}},
+      {act:"보증금·권리금·원상복구 협상", touch:"임대인, 중개사", emo:2,
+       pain:{t:"권리금과 원상복구 비용이 불투명", sev:"높음", ev:"가설"},
+       opp:{t:"계약 비용 체크리스트"}},
+      {act:"개설 신고, 설비·인테리어 공사", touch:"보건소, 시공사", emo:2,
+       pain:{t:"기간과 비용을 예측하기 어려움", sev:"중간", ev:"가설"},
+       opp:{t:"일정·비용 가이드"}},
+      {act:"개원, 초기 환자 확보", touch:"네이버 플레이스, 지역 광고", emo:3,
+       pain:{t:"초기 환자 수가 불확실", sev:"높음", ev:"확인 필요"},
+       opp:{t:"지역 수요 기반 홍보 전략"}},
+      {act:"재계약 또는 분원 검토", touch:"중개사, 재무 상담", emo:4,
+       pain:{t:"재계약 시 임대료 인상", sev:"중간", ev:"확인 필요"},
+       opp:{t:"주변 시세 비교 알림"}}
     ]
   }
 };
 
-var cur = "off";
-
 function evClass(ev){
   if (ev.indexOf("데이터") === 0) return "d";
-  if (ev.indexOf("가설") === 0) return "h2";
-  return "c";
+  if (ev.indexOf("가설") === 0) return "h";
+  return "";
 }
 
 function cell(html, cls){
@@ -237,30 +304,30 @@ function cell(html, cls){
   return d;
 }
 
-function renderMap(key){
+function renderPersona(key){
   var p = P[key];
   document.getElementById("pdesc").textContent = p.name + " · " + p.desc;
   var g = document.getElementById("grid");
   g.innerHTML = "";
 
+  // 헤더 행
   g.appendChild(cell("", "lab h"));
   STAGES.forEach(function(s){ g.appendChild(cell(s, "h")); });
 
-  function row(label, fn){
+  function row(label, fn, cls){
     g.appendChild(cell(label, "lab"));
-    p.st.forEach(function(s, i){ g.appendChild(cell(fn(s, i))); });
+    p.st.forEach(function(s, i){ g.appendChild(cell(fn(s, i), cls)); });
   }
-  row("행동", function(s){ return s.act; });
-  row("접점", function(s){ return s.touch; });
+
+  row("행동", function(s){ return '<span class="act">' + s.act + '</span>'; });
+  row("접점", function(s){ return '<span class="touch">' + s.touch + '</span>'; });
 
   // 감정 곡선 행
   g.appendChild(cell("감정 (1~5)", "lab"));
   var emo = document.createElement("div");
   emo.className = "emo";
   var pts = p.st.map(function(s, i){
-    var x = (i + 0.5) / 7 * 100;
-    var y = (5 - s.emo) / 4 * 100;
-    return {x:x, y:y, v:s.emo};
+    return {x:(i + 0.5) / 7 * 100, y:(5 - s.emo) / 4 * 100, v:s.emo};
   });
   var svgNS = "http://www.w3.org/2000/svg";
   var svg = document.createElementNS(svgNS, "svg");
@@ -285,9 +352,31 @@ function renderMap(key){
   });
   g.appendChild(emo);
 
-  row("고충", function(s){ return s.pain; });
-  row("우리 기회", function(s){ return s.opp; });
-  row("근거 수준", function(s){ return '<span class="ev ' + evClass(s.ev) + '">' + s.ev + '</span>'; });
+  // 페인포인트 행 (새로 추가)
+  row("페인포인트", function(s, i){
+    return '<span class="pid">P' + (i + 1) + '</span>' +
+      '<span class="sev ' + SEV[s.pain.sev] + '">심각도 ' + s.pain.sev + '</span>' +
+      '<div class="pain-t">' + s.pain.t + '</div>';
+  }, "pain");
+
+  // 우리의 기회 행 (페인포인트 번호와 연결)
+  row("우리의 기회", function(s, i){
+    return '<span class="opp-hd">P' + (i + 1) + ' → 해결</span>' +
+      '<div class="opp-t">' + s.opp.t + '</div>';
+  }, "opp");
+
+  row("근거 수준", function(s){
+    var c = evClass(s.pain.ev);
+    return '<span class="ev ' + c + '">' + s.pain.ev + '</span>';
+  });
+
+  // 요약
+  var counts = {"높음":0,"중간":0,"낮음":0};
+  p.st.forEach(function(s){ counts[s.pain.sev]++; });
+  document.getElementById("sum").innerHTML =
+    '<div><b>' + counts["높음"] + '</b>심각도 높음 페인포인트</div>' +
+    '<div><b>' + counts["중간"] + '</b>심각도 중간 페인포인트</div>' +
+    '<div><b>' + counts["낮음"] + '</b>심각도 낮음 페인포인트</div>';
 
   document.querySelectorAll('.tabs button').forEach(function(b){
     b.setAttribute("aria-selected", String(b.dataset.p === key));
@@ -295,38 +384,10 @@ function renderMap(key){
 }
 
 document.querySelectorAll('.tabs button').forEach(function(b){
-  b.addEventListener("click", function(){ cur = b.dataset.p; renderMap(cur); });
+  b.addEventListener("click", function(){ renderPersona(b.dataset.p); });
 });
 
-// 16:9 고정 슬라이드를 화면에 맞춰 비율 유지 축소/확대
-var slides = Array.prototype.slice.call(document.querySelectorAll(".slide"));
-var idx = 0;
-function fit(){
-  var s = Math.min((window.innerWidth - 24) / 1600, (window.innerHeight - 90) / 900);
-  if (!(s > 0)) s = 1;
-  var f = document.getElementById("frame");
-  f.style.width = (1600 * s) + "px";
-  f.style.height = (900 * s) + "px";
-  slides.forEach(function(el){ el.style.transform = "scale(" + s + ")"; });
-}
-function show(i){
-  idx = Math.max(0, Math.min(slides.length - 1, i));
-  slides.forEach(function(el, k){ el.classList.toggle("on", k === idx); });
-  document.getElementById("pos").textContent = (idx + 1) + " / " + slides.length;
-  document.getElementById("prev").disabled = idx === 0;
-  document.getElementById("next").disabled = idx === slides.length - 1;
-}
-document.getElementById("prev").addEventListener("click", function(){ show(idx - 1); });
-document.getElementById("next").addEventListener("click", function(){ show(idx + 1); });
-document.addEventListener("keydown", function(e){
-  if (e.key === "ArrowRight") show(idx + 1);
-  if (e.key === "ArrowLeft") show(idx - 1);
-});
-window.addEventListener("resize", fit);
-
-renderMap(cur);
-fit();
-show(0);
+renderPersona("off");
 </script>
 </body>
 </html>
