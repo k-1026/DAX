@@ -4,24 +4,27 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@600;700&display=swap" rel="stylesheet">
 <style>
-/* Layout concept: one 16:9 journey frame built on the five elements of a journey map.
-   ① 행위자 and ② 시나리오·기대 sit side by side on top; ③ stages, ④ 행동·생각·감정 (with curve), ⑤ 기회 run below. */
+/* Layout concept: one 16:9 frame. Top: ① 행위자 + ② 시나리오·기대. Below: the course-style table —
+   stage chips, then 행동 / 생각 / 감정 curve / 터치포인트 / 페인포인트 / 기회 rows, all centered per stage column. */
 :root{
-  --bg:#EDEFF2; --paper:#FAFAFB; --ink:#141A22; --muted:#5A6573; --line:#D5DAE0;
-  --acc:#1E5F82; --acc-soft:#DCEAF2; --on-acc:#FFFFFF; --pin:#C0392B;
+  --bg:#EDF0F0; --paper:#FBFCFC; --ink:#17201F; --muted:#5C6A69; --line:#D6DEDD;
+  --acc:#247C7C; --acc-soft:#DDF0EF; --on-acc:#FFFFFF;
+  --pain:#C8442A; --good:#4C7A25;
   --serif:"Noto Serif KR","Nanum Myeongjo",serif;
   --sans:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#0C1015; --paper:#141A22; --ink:#E8ECF1; --muted:#9AA5B2; --line:#2A3441;
-    --acc:#6BB4DA; --acc-soft:#1B2D3A; --on-acc:#0C1015; --pin:#E8786B;
+    --bg:#0B1111; --paper:#131B1B; --ink:#E7EFEE; --muted:#9BAAA9; --line:#2A3938;
+    --acc:#5CC2BE; --acc-soft:#183131; --on-acc:#0B1111;
+    --pain:#F08A6A; --good:#A3D26F;
     color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#0C1015; --paper:#141A22; --ink:#E8ECF1; --muted:#9AA5B2; --line:#2A3441;
-  --acc:#6BB4DA; --acc-soft:#1B2D3A; --on-acc:#0C1015; --pin:#E8786B;
+  --bg:#0B1111; --paper:#131B1B; --ink:#E7EFEE; --muted:#9BAAA9; --line:#2A3938;
+  --acc:#5CC2BE; --acc-soft:#183131; --on-acc:#0B1111;
+  --pain:#F08A6A; --good:#A3D26F;
   color-scheme:dark;
 }
 *{box-sizing:border-box}
@@ -39,69 +42,70 @@ body{
   container-type:inline-size; aspect-ratio:16/9; min-width:1100px;
   background:var(--paper); border:1px solid var(--line); border-radius:6px; overflow:hidden;
 }
-.inner{height:100%; display:flex; flex-direction:column; gap:.9cqw; padding:1.7cqw 3cqw 1.2cqw}
-.head p{margin:0 0 .3cqw; font-size:.85cqw; letter-spacing:.14em; font-weight:700; color:var(--acc)}
-.head h2{margin:0; font-family:var(--serif); font-size:1.95cqw; line-height:1.25; letter-spacing:-.01em}
+.inner{height:100%; display:flex; flex-direction:column; gap:.9cqw; padding:1.6cqw 3cqw 1.1cqw}
+.head p{margin:0 0 .25cqw; font-size:.82cqw; letter-spacing:.14em; font-weight:700; color:var(--acc)}
+.head h2{margin:0; font-family:var(--serif); font-size:1.85cqw; line-height:1.25; letter-spacing:-.01em}
 
 /* ① ② */
 .top2{display:grid; grid-template-columns:.95fr 1.65fr; gap:1cqw}
-.card{border-radius:.45cqw; padding:.8cqw 1.1cqw; min-width:0}
+.card{border-radius:.45cqw; padding:.7cqw 1.1cqw; min-width:0}
 .persona{background:var(--acc); color:var(--on-acc)}
 .scn{background:var(--acc-soft); border:1px solid var(--line)}
-.kk{font-size:.74cqw; font-weight:700; letter-spacing:.06em; margin-bottom:.3cqw; display:block}
+.kk{font-size:.72cqw; font-weight:700; letter-spacing:.06em; margin-bottom:.25cqw; display:block}
 .persona .kk{opacity:.85}
 .scn .kk{color:var(--acc)}
-.pname{font-family:var(--serif); font-size:1.2cqw; font-weight:700; margin:0 0 .3cqw; line-height:1.3}
-.persona ul{margin:0; padding:0; list-style:none; display:grid; gap:.15cqw}
-.persona li{font-size:.8cqw; line-height:1.4}
+.pname{font-family:var(--serif); font-size:1.15cqw; font-weight:700; margin:0 0 .25cqw; line-height:1.3}
+.persona ul{margin:0; padding:0; list-style:none; display:grid; gap:.1cqw}
+.persona li{font-size:.78cqw; line-height:1.4}
 .persona li b{font-weight:700; margin-right:.4cqw}
 .scn-grid{display:grid; grid-template-columns:1fr 1fr; gap:1.1cqw}
-.scn p{margin:0; font-size:.86cqw; line-height:1.5}
-.scn .sub{font-size:.76cqw; font-weight:700; color:var(--muted); margin-bottom:.15cqw; display:block}
+.scn p{margin:0; font-size:.84cqw; line-height:1.5}
+.scn .sub{font-size:.74cqw; font-weight:700; color:var(--muted); margin-bottom:.12cqw; display:block}
 
-/* ③ ④ ⑤ */
+/* table */
 .grid{
   flex:1; min-height:0; display:grid; column-gap:.6cqw;
-  grid-template-columns:6.8cqw repeat(6, minmax(0,1fr));
-  grid-template-rows:auto auto repeat(5, minmax(0,1fr));
+  grid-template-columns:6.6cqw repeat(6, minmax(0,1fr));
+  grid-template-rows:auto auto auto auto auto auto auto;
+  align-content:stretch;
 }
-.lab{font-size:.78cqw; font-weight:700; color:var(--muted); letter-spacing:.02em; padding:.5cqw .3cqw .5cqw 0; border-top:1px solid var(--line); line-height:1.35}
-.c{font-size:.84cqw; line-height:1.42; padding:.5cqw .65cqw; border-top:1px solid var(--line); min-width:0}
-.c.q{font-weight:500}
-.c.opp{background:var(--acc-soft); border-top-color:transparent}
-.lab.opp{color:var(--acc); border-top-color:transparent}
-.lab.pain{color:var(--pin)}
+.lab{
+  font-size:.86cqw; font-weight:700; color:var(--ink); padding:.4cqw .2cqw .4cqw 0;
+  border-top:1px solid var(--line); display:flex; align-items:center; line-height:1.3;
+}
+.lab i{font-style:normal; font-weight:500; color:var(--muted); font-size:.72cqw; margin-right:.3cqw}
+.lab.noline{border-top:none; padding-top:0}
+.c{
+  font-size:.86cqw; line-height:1.42; padding:.4cqw .5cqw; border-top:1px solid var(--line); min-width:0;
+  text-align:center; display:flex; align-items:center; justify-content:center;
+}
+.c.q{color:var(--muted); font-weight:500}
+.c.pain{color:var(--pain); font-weight:700}
+.c.opp{color:var(--good); font-weight:700}
 .st{
-  display:flex; align-items:center; justify-content:center; gap:.6cqw; height:3.3cqw;
+  display:flex; align-items:center; justify-content:center; height:2.9cqw;
   background:var(--acc); color:var(--on-acc); font-weight:700; font-size:1.02cqw;
-  clip-path:polygon(0 0, calc(100% - 1.2cqw) 0, 100% 50%, calc(100% - 1.2cqw) 100%, 0 100%, 1.2cqw 50%);
-  margin-left:-1cqw; padding:0 1.5cqw; text-align:center; line-height:1.25; min-width:0;
+  border-radius:.5cqw; padding:0 .8cqw; text-align:center; line-height:1.25; min-width:0;
 }
-.st:nth-child(2){margin-left:0; clip-path:polygon(0 0, calc(100% - 1.2cqw) 0, 100% 50%, calc(100% - 1.2cqw) 100%, 0 100%)}
-.st b{
-  font-size:.78cqw; width:1.5cqw; height:1.5cqw; border-radius:50%; flex:none;
-  display:inline-flex; align-items:center; justify-content:center;
-  background:var(--on-acc); color:var(--acc);
-}
-.curve{grid-column:2 / -1; position:relative; height:5.6cqw; border-top:1px solid var(--line); margin-top:.35cqw}
+.curve{grid-column:2 / -1; position:relative; height:6.4cqw; border-top:1px solid var(--line)}
+.lab.cv{align-items:flex-start; flex-direction:column; justify-content:center}
+.lab.cv small{display:block; font-weight:500; font-size:.66cqw; margin-top:.25cqw; color:var(--muted); line-height:1.4}
 .curve svg{position:absolute; inset:0; width:100%; height:100%; overflow:visible}
-.curve .area{fill:var(--acc-soft)}
-.curve .line{fill:none; stroke:var(--acc); stroke-width:2.2; stroke-linejoin:round; stroke-linecap:round; vector-effect:non-scaling-stroke}
-.curve .after{fill:none; stroke:var(--acc); stroke-width:1.8; stroke-dasharray:5 4; stroke-linejoin:round; stroke-linecap:round; vector-effect:non-scaling-stroke; opacity:.75}
-.curve .mid{stroke:var(--line); stroke-width:1; stroke-dasharray:4 4; vector-effect:non-scaling-stroke}
+.curve .line{fill:none; stroke:var(--acc); stroke-width:2.2; stroke-linecap:round; vector-effect:non-scaling-stroke}
+.curve .after{fill:none; stroke:var(--acc); stroke-width:1.6; stroke-dasharray:5 4; stroke-linecap:round; vector-effect:non-scaling-stroke; opacity:.7}
+.curve .mid{stroke:var(--muted); stroke-width:1; stroke-dasharray:3 4; vector-effect:non-scaling-stroke; opacity:.6}
+.pm{position:absolute; left:-.9cqw; font-size:.9cqw; color:var(--muted); font-weight:700}
 .dot{position:absolute; width:.95cqw; height:.95cqw; border-radius:50%; background:var(--acc); border:.2cqw solid var(--paper); transform:translate(-50%,-50%)}
-.dot.low{background:var(--pin); width:1.2cqw; height:1.2cqw}
-.dl{position:absolute; transform:translate(-50%,-165%); font-size:.84cqw; font-weight:700; color:var(--acc); white-space:nowrap}
-.dl.low{color:var(--pin)}
-.ln{position:absolute; transform:translate(-50%,115%); font-size:.74cqw; font-weight:700; color:var(--pin); white-space:nowrap}
-.lab.cv{grid-row:2; border-top:1px solid var(--line); margin-top:.35cqw; padding-top:.5cqw}
-.lab.cv small{display:block; font-weight:500; font-size:.68cqw; margin-top:.2cqw; color:var(--muted)}
+.dot.low{background:var(--pain); width:1.25cqw; height:1.25cqw}
+.dl{position:absolute; transform:translate(-50%,-170%); font-size:.8cqw; font-weight:700; color:var(--acc); white-space:nowrap}
+.dl.low{color:var(--pain)}
+.ln{position:absolute; transform:translate(-50%,125%); font-size:.72cqw; font-weight:700; color:var(--pain); white-space:nowrap}
 .pr{
-  display:inline-block; margin-right:.35cqw; padding:.02cqw .45cqw; border-radius:99px; font-size:.7cqw; font-weight:700;
-  border:1px solid var(--pin); color:var(--pin); line-height:1.5; white-space:nowrap;
+  display:inline-block; margin-right:.3cqw; padding:0 .45cqw; border-radius:99px; font-size:.68cqw; font-weight:700;
+  border:1px solid var(--pain); color:var(--pain); line-height:1.55; white-space:nowrap; vertical-align:1px;
 }
-.pr.p1{background:var(--pin); color:var(--paper)}
-.foot{margin:0; font-size:.72cqw; color:var(--muted); line-height:1.45}
+.pr.p1{background:var(--pain); color:var(--paper)}
+.foot{margin:0; font-size:.7cqw; color:var(--muted); line-height:1.45}
 @media (prefers-reduced-motion: reduce){*{transition:none!important; animation:none!important}}
 </style>
 
@@ -145,51 +149,59 @@ body{
       </div>
 
       <div class="grid">
-        <div class="lab">③ 여정 단계</div>
-        <div class="st"><b>1</b>업종 선택</div>
-        <div class="st"><b>2</b>조건 설정</div>
-        <div class="st"><b>3</b>지도·목록 탐색</div>
-        <div class="st"><b>4</b>상세·근거 확인</div>
-        <div class="st"><b>5</b>매물·중개사 확인</div>
-        <div class="st"><b>6</b>현장 확인·결정</div>
+        <div class="lab noline"><i>③</i>여정 단계</div>
+        <div class="st">업종 선택</div>
+        <div class="st">조건 설정</div>
+        <div class="st">지도·목록 탐색</div>
+        <div class="st">상세·근거 확인</div>
+        <div class="st">매물·중개사 확인</div>
+        <div class="st">현장 확인·결정</div>
 
-        <div class="lab cv">④ 감정<small>실선 현재<br>점선 개선 후(가설)</small></div>
+        <div class="lab"><i>④</i>행동</div>
+        <div class="c">업종 탭에서<br>식음료 선택</div>
+        <div class="c">월세 200만원 · 약 40㎡<br>구·법정동 지정</div>
+        <div class="c">지도·목록을 오가며<br>상위 10위 핀 살핌</div>
+        <div class="c">월세·층과<br>점수 근거 읽기</div>
+        <div class="c">원본 매물 이동<br>중개사무소 확인</div>
+        <div class="c">후보 3곳<br>현장 방문</div>
+
+        <div class="lab"><i>④</i>생각</div>
+        <div class="c q">“카페 자리는<br>어디가 좋을까?”</div>
+        <div class="c q">“200만원 안에서만<br>보자”</div>
+        <div class="c q">“상위권은<br>어느 동일까?”</div>
+        <div class="c q">“점수 높으면<br>장사 잘될까?”</div>
+        <div class="c q">“아직 공실이<br>맞을까?”</div>
+        <div class="c q">“직접 보고<br>확정하자”</div>
+
+        <div class="lab cv"><span><i>④</i>감정</span><small>실선 현재 · 점선 개선 후<br>(가설)</small></div>
         <div class="curve" data-v="72,66,82,32,48,78" data-w="74,72,84,66,68,86" data-l="기대,몰입,발견,의문,신중,확신" data-low="3"></div>
 
-        <div class="lab">④ 행동</div>
-        <div class="c">업종 탭에서 식음료를 선택</div>
-        <div class="c">월 임대료 상한 200만원, 면적 약 40㎡, 구·법정동을 지정</div>
-        <div class="c">지도와 목록을 오가며 상위 10위(빨간 핀) 주변을 살핌</div>
-        <div class="c">상세 패널에서 월세·층과 점수 근거를 읽음</div>
-        <div class="c">원본 매물 링크로 이동해 중개사무소 정보를 확인</div>
-        <div class="c">후보 3곳을 현장 방문해 직접 확인</div>
+        <div class="lab"><i>④</i>터치포인트</div>
+        <div class="c">업종 탭<br>점수 기준 안내</div>
+        <div class="c">월세·면적<br>구·동 필터</div>
+        <div class="c">지도 핀 · 동 칩<br>목록</div>
+        <div class="c">상세 패널<br>점수/100</div>
+        <div class="c">원본 매물 링크<br>중개사무소</div>
+        <div class="c">현장<br>(데모 밖)</div>
 
-        <div class="lab">④ 생각</div>
-        <div class="c q">“카페 자리는 어디가 좋을까”</div>
-        <div class="c q">“월세 200만원 안에서 볼 수 있는 곳만 보자”</div>
-        <div class="c q">“상위권 자리가 어느 동에 모여 있지”</div>
-        <div class="c q">“이 점수가 높으면 장사가 잘된다는 뜻일까”</div>
-        <div class="c q">“후보 3곳이 지금도 공실인지 하나씩 확인해야겠다”</div>
-        <div class="c q">“데이터로 좁혔으니 직접 보고 확정하자”</div>
+        <div class="lab" style="color:var(--pain)"><i>최저점</i>페인포인트</div>
+        <div class="c pain"><span><span class="pr">우선 3</span><br>선택한 뒤에야<br>점수 유무를 앎</span></div>
+        <div class="c pain">조건을 바꿀 때마다<br>항목을 다시 지정</div>
+        <div class="c pain">상위 50위만 강조<br>좌표 미확인은 목록만</div>
+        <div class="c pain"><span><span class="pr p1">우선 1</span><br>점수·생존율 용어 해석<br>매출로 읽을 여지</span></div>
+        <div class="c pain"><span><span class="pr">우선 2</span><br>후보마다 공실 재확인<br>중개사 문의 반복</span></div>
+        <div class="c pain">메모·비교를<br>화면 밖에서 정리</div>
 
-        <div class="lab pain">최저점 → 페인포인트</div>
-        <div class="c"><span class="pr">우선 3</span>6개 업종 중 점수 산출은 2곳이라 선택한 뒤에 점수 유무를 앎</div>
-        <div class="c">조건을 바꿀 때마다 같은 항목을 다시 지정</div>
-        <div class="c">지도 강조는 상위 50위까지이고, 좌표 미확인 매물은 목록으로 확인</div>
-        <div class="c"><span class="pr p1">우선 1</span>점수와 생존율 용어를 해석해야 하고, 생존을 매출로 읽을 여지</div>
-        <div class="c"><span class="pr">우선 2</span>후보마다 원본 매물로 이동해 공실을 재확인하고 중개사에 문의</div>
-        <div class="c">방문 메모와 후보 비교를 화면 밖에서 따로 정리</div>
-
-        <div class="lab opp">⑤ 기회<br>무엇을 바꾸면 곡선이 올라가는가</div>
-        <div class="c opp">업종 탭에 ‘점수 산출’ 표시 → 선택 전에 기대를 맞춤</div>
-        <div class="c opp">자주 쓰는 조건 저장 → 다시 입력하는 수고를 줄임</div>
-        <div class="c opp">관심 매물 담기와 나란히 비교 → 후보 정리가 수월해짐</div>
-        <div class="c opp">점수 옆 한 줄 해설과 ‘영업 지속 기준’ 표기 → 의문이 풀려 곡선이 가장 크게 오름</div>
-        <div class="c opp">후보별 문의 질문 목록과 공실 확인일 표시 → 확인 부담을 덜어 줌</div>
-        <div class="c opp">방문 메모 기록과 후보 순서 재정렬 → 결정에 확신이 붙음</div>
+        <div class="lab" style="color:var(--good)"><i>⑤</i>기회</div>
+        <div class="c opp">업종 탭에<br>‘점수 산출’ 표시</div>
+        <div class="c opp">자주 쓰는<br>조건 저장</div>
+        <div class="c opp">관심 매물 담기<br>나란히 비교</div>
+        <div class="c opp">한 줄 해설<br>‘영업 지속 기준’ 표기</div>
+        <div class="c opp">문의 질문 목록<br>공실 확인일 표시</div>
+        <div class="c opp">방문 메모 기록<br>후보 순서 재정렬</div>
       </div>
 
-      <p class="foot">서연은 데모 기본값(식음료 업종, 월 임대료 상한 200만원)에 맞춰 설정한 가상 페르소나입니다. 감정 곡선·개선 후 곡선·페인포인트·우선순위는 데모 화면 구성에서 정리한 가설이며 실제 이용자 조사 결과는 아닙니다. 사용 데이터: 네이버부동산 공실 명시 매물 2,717건 · 상가(상권)정보 2025.06 → 2026.06. 점수는 참고 지표이며 임대·창업의 성과를 보장하지 않습니다.</p>
+      <p class="foot">서연은 데모 기본값(식음료 업종, 월 임대료 상한 200만원)에 맞춰 설정한 가상 페르소나이며, 곡선·페인포인트·우선순위는 데모 화면 구성에서 정리한 가설입니다. 사용 데이터: 네이버부동산 공실 명시 매물 2,717건 · 상가(상권)정보 2025.06 → 2026.06. 점수는 참고 지표이며 임대·창업의 성과를 보장하지 않습니다.</p>
     </div>
   </section>
   </div>
@@ -200,13 +212,22 @@ document.querySelectorAll('.curve').forEach(function(el){
   var v = el.dataset.v.split(',').map(Number), w = (el.dataset.w||'').split(',').map(Number), l = el.dataset.l.split(',');
   var low = el.dataset.low === undefined ? -1 : Number(el.dataset.low);
   var n = v.length;
-  function P(a){ return a.map(function(x,i){ return [(i+.5)/n*100, 85 - x*.55]; }); }
-  function D(p){ return p.map(function(q,i){ return (i?'L':'M')+q[0].toFixed(2)+' '+q[1].toFixed(2); }).join(' '); }
+  function P(a){ return a.map(function(x,i){ return [(i+.5)/n*100, 90 - x*.7]; }); }
+  function clamp(y){ return Math.max(2, Math.min(98, y)); }
+  function D(p){
+    var d = 'M'+p[0][0].toFixed(2)+' '+p[0][1].toFixed(2);
+    for(var i=0;i<p.length-1;i++){
+      var p0=p[i-1]||p[i], p1=p[i], p2=p[i+1], p3=p[i+2]||p2;
+      var c1x=p1[0]+(p2[0]-p0[0])/6, c1y=clamp(p1[1]+(p2[1]-p0[1])/6);
+      var c2x=p2[0]-(p3[0]-p1[0])/6, c2y=clamp(p2[1]-(p3[1]-p1[1])/6);
+      d += ' C'+c1x.toFixed(2)+' '+c1y.toFixed(2)+' '+c2x.toFixed(2)+' '+c2y.toFixed(2)+' '+p2[0].toFixed(2)+' '+p2[1].toFixed(2);
+    }
+    return d;
+  }
   var pts = P(v);
-  var area = 'M'+pts[0][0].toFixed(2)+' 100 '+pts.map(function(p){ return 'L'+p[0].toFixed(2)+' '+p[1].toFixed(2); }).join(' ')+' L'+pts[n-1][0].toFixed(2)+' 100 Z';
-  var html = '<svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">'
-    + '<line class="mid" x1="0" y1="58" x2="100" y2="58"/>'
-    + '<path class="area" d="'+area+'" opacity=".55"/>'
+  var html = '<span class="pm" style="top:.1cqw">+</span><span class="pm" style="bottom:.1cqw">−</span>'
+    + '<svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">'
+    + '<line class="mid" x1="0" y1="55" x2="100" y2="55"/>'
     + (w.length===n ? '<path class="after" d="'+D(P(w))+'"/>' : '')
     + '<path class="line" d="'+D(pts)+'"/></svg>';
   pts.forEach(function(p,i){
