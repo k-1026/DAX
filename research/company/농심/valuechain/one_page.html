@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>농심 산업 밸류체인 (v0) 발표 한 페이지</title>
+<style>
+  :root { --ink:#1d2330; --muted:#5b6475; --line:#d9dee7; --accent:#1f5fbf; --tag:#eef3fb; --warn:#9a4b00; --warnbg:#fff4e5; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: "Malgun Gothic","Apple SD Gothic Neo",sans-serif; color:var(--ink); background:#f5f7fa; line-height:1.55; }
+  .page { max-width: 880px; margin: 24px auto; background:#fff; padding: 28px 34px; border:1px solid var(--line); border-radius: 10px; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  .meta { color:var(--muted); font-size: 13px; margin-bottom: 14px; }
+  h2 { font-size: 16px; color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 3px; margin: 18px 0 8px; }
+  ul { margin: 4px 0 4px 18px; padding: 0; }
+  li { margin: 2px 0; font-size: 14px; }
+  .src { color: var(--muted); font-size: 12.5px; }
+  .u { background: var(--warnbg); color: var(--warn); padding: 0 3px; border-radius: 3px; font-size: 12.5px; }
+  table { width:100%; border-collapse: collapse; font-size: 13.5px; margin-top: 6px; }
+  th, td { border: 1px solid var(--line); padding: 6px 8px; text-align: left; vertical-align: top; }
+  th { background: var(--tag); }
+  .open { color: var(--warn); font-weight: 600; }
+  .foot { margin-top: 16px; color: var(--muted); font-size: 12px; }
+  .diagram-wrap { border: 1px solid var(--line); border-radius: 8px; padding: 8px; background: #fff; overflow-x: auto; margin-bottom: 10px; }
+  .diagram-wrap .mermaid svg { height: auto; }
+  .diagram-label { font-size: 12.5px; font-weight: 600; margin: 6px 0 4px; }
+  .diagram-note { color: var(--muted); font-size: 12px; margin: 4px 0 8px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <h1>농심 산업 밸류체인 (v0) 발표 한 페이지</h1>
+  <div class="meta">작성일 2026-11-06 · 근거: valuechain_v0.md, analysis.md, onepager.md · 숫자는 [출처 n]이 붙은 것만 쓰고, 미확인은 <span class="u">[U]</span>로 표시</div>
+
+  <h2>1. 질문과 범위</h2>
+  <ul>
+    <li>농심의 원료와 제품이 어떤 경로로 움직이고, 돈과 데이터는 어디서 오가는가.</li>
+    <li>대상: 농심, 제62기 매출 총계 3,514,316백만원 <span class="src">[출처 1]</span>.</li>
+    <li>단계 구성(지역 생산자 → 가공 → 식품 온라인 플랫폼 → 주문 → 물류·배송)은 팀이 정했다. 원페이지에 밸류체인 단계는 없다.</li>
+  </ul>
+
+  <h2>2. 다섯 단계 요약</h2>
+  <table>
+    <tr><th style="width:18%">단계</th><th>내용</th></tr>
+    <tr><td>1. 지역 생산자</td><td>구미 농가 국산 밀 <span class="src">[출처 5]</span>, 국내 제분사 소맥분 <span class="src">[출처 1]</span>, 말레이시아 팜유 선도구매 <span class="src">[출처 1]</span>, 외부 상품 매입 330,686백만원 <span class="src">[출처 1]</span>. 수입 소맥 196 USD/MT는 국제 시세 평균이며 납품 단가가 아니다 <span class="src">[출처 1]</span>.</td></tr>
+    <tr><td>2. 가공</td><td>국내 공장 7곳 <span class="src">[출처 1]</span>, 해외 생산 법인 <span class="src">[출처 1]</span>, 구미라면축제면 20만 봉 한정 <span class="src">[출처 5]</span>, 연구개발비 매출 대비 0.8% <span class="src">[출처 1]</span>.</td></tr>
+    <tr><td>3. 식품 온라인 플랫폼</td><td>본사가 판매와 정산을 맡는다. 농심몰은 자사 채널 <span class="src">[출처 5]</span>. 국내 온라인 비중 17.2% <span class="src">[출처 1]</span>. 중국은 온라인을 외부 전문업체와 협업 <span class="src">[출처 1]</span>.</td></tr>
+    <tr><td>4. 주문</td><td>신유통 46.7%, 기타 23.5%, 온라인 17.2%, 대리점 12.7% <span class="src">[출처 1]</span>. 외상기일은 대리점 10일, 기타 채널 30일 <span class="src">[출처 1]</span>. 현장 판매로 구미 축제, 인도 푸드트럭 20개 거점 <span class="src">[출처 4]</span>, 미국 월마트 48개 매장 <span class="src">[출처 6]</span>. 구미 축제 방문객 약 35만 명(지난해) <span class="src">[출처 5]</span>.</td></tr>
+    <tr><td>5. 물류·배송</td><td>대리점 운반비는 농심 부담 <span class="src">[출처 1]</span>. 해외 직거래 파트너 <span class="src">[출처 1]</span>. 운송사와 물류비는 <span class="u">[U]</span>.</td></tr>
+  </table>
+
+  <h2>3. 돈과 데이터 흐름</h2>
+  <ul>
+    <li><b>돈:</b> 구매자 → 본사(정산). 본사 → 원료 공급자, 운반 담당. 수수료와 결제 방식은 <span class="u">[U]</span>.</li>
+    <li><b>데이터:</b> 원재료 시세, 닐슨 기반 점유율 추정 <span class="src">[출처 1]</span>은 외부에서 본사로 들어오고, DART 공시 <span class="src">[출처 1][출처 2]</span>는 본사에서 나간다. 방향 해석은 제가 붙인 것이다.</li>
+  </ul>
+
+  <h2>4. 한계</h2>
+  <ul>
+    <li>수수료율, 결제 방식, 운송사, 물류비 <span class="u">[U]</span>.</li>
+    <li>2026 상반기 실적은 PDF 본문이 추출되지 않아 <span class="u">[U]</span> <span class="src">[출처 3]</span>.</li>
+    <li>삼양식품 수치는 웹 출처 7~9 원문이 sources.md에 없어서 <span class="u">[U]</span>.</li>
+    <li>매출 에누리(567,779백만원, 16.2%) <span class="src">[출처 1]</span>는 원문에 있으나 다이어그램에 빠져 있다.</li>
+  </ul>
+
+  <h2>5. 질문 답변</h2>
+  <table>
+    <tr><th style="width:24%">질문</th><th>답변</th></tr>
+    <tr><td>Q1. 돈의 시작점과 끝점, 중간에서 떼는 주체</td><td>
+      시작점은 구매자(주문 단계), 끝점은 원료 공급자와 운반 담당이다. 본사가 중간에서 받고 지급한다.
+      원문에서 확인된 차감은 매출 에누리와 대형 유통의 납품가 인하 요구(음료 업계 사례)다 <span class="src">[출처 1]</span>.
+      떼는 주체로 확정할 수 있는 곳은 없다. 수수료는 금액이 없어 <span class="u">[U]</span>다.</td></tr>
+    <tr><td>Q2. 돈 흐름과 데이터 흐름의 방향이 다른 이유</td><td>
+      돈은 거래 방향을 따르고, 데이터는 본사가 필요로 하는 정보 방향을 따른다. 설명은 가능하다.
+      원문에 명시된 방향은 아니므로 해석으로 표시한다.</td></tr>
+    <tr><td>Q3. 병목 마커가 신호 체크리스트의 어느 신호에 근거하는가</td><td><span class="open">확인 불가.</span> 팀 맵과 신호 체크리스트 파일을 찾지 못했다.</td></tr>
+    <tr><td>Q4. 우선 기회 1개가 '먼저 간다' 칸에 들어간 근거</td><td><span class="open">확인 불가.</span> 우선 기회 목록 파일을 찾지 못했다.</td></tr>
+    <tr><td>Q5. 원페이지와 어긋난 항목 처리</td><td>
+      외부 온라인 업체를 중국 협업 업체와 국내 온라인 채널로 나눴다.
+      현장 판매 노드를 추가했다 <span class="src">[출처 4][출처 5][출처 6]</span>.
+      운송사는 '운반 담당(사명 [U])'으로 바꿨다.
+      납품가 인하와 소비자 설명은 원문 범위로 한정했다.
+      수수료 흐름은 삭제했다.
+      196 USD/MT는 시세 데이터로 옮겼다.
+      닐슨과 DART는 '단계 밖' 상자로 옮겼다.
+      삼양식품은 <span class="u">[U]</span>로 유지했다.
+      단계 명칭 통일은 팀 결정을 기다린다.</td></tr>
+  </table>
+
+  <h2>6. 다음 단계</h2>
+  <ul>
+    <li>팀 맵, 신호 체크리스트, 우선 기회 목록 파일 확인 (Q3, Q4).</li>
+    <li>매출 에누리를 다이어그램에 추가.</li>
+    <li>수수료, 결제 방식, 운송사 자료 확보.</li>
+    <li>단계 명칭 통일 결정 후 다른 파일 함께 수정.</li>
+  </ul>
+
+  <h2>7. 밸류체인 맵 (Mermaid)</h2>
+  <div class="diagram-note">한눈에 보는 요약 맵 다음에 전체 맵이 있다. 전체 맵은 원본(valuechain_v0.md)과 같고, 가로로 스크롤해서 본다. 실선은 상품 흐름, 굵은 화살표는 돈 흐름, 점선은 데이터 흐름이다. 굵은 글씨는 하는 사람, 괄호는 영향 주는 사람이다.</div>
+  <div class="diagram-label">한눈에 보기 (요약)</div>
+  <div class="diagram-wrap"><div class="mermaid" id="overview"></div></div>
+  <div class="diagram-label">전체 맵 (숫자·출처 포함, 가로 스크롤)</div>
+  <div class="diagram-wrap"><div class="mermaid" id="map"></div></div>
+
+  <div class="foot">이 HTML은 one_page.md와 같은 내용이다. 수정할 때는 두 파일을 함께 바꾼다.</div>
+</div>
+<script type="text/plain" id="mermaid-src">
+flowchart LR
+  subgraph S1["1. 지역 생산자"]
+    P1["<b>구미 지역 농가</b><br/>국산 밀 (농가명 [U]) [출처 5]"]
+    P2["<b>대한제분 CJ제일제당 사조동아원</b><br/>소맥분 (국내 제분사) [출처 1]"]
+    P3["<b>말레이시아 팜유 공급선</b><br/>(이름 [U]) [출처 1]"]
+    P4["<b>국내 연포장업체</b><br/>포장재 (업체명 [U]) [출처 1]"]
+    P5["<b>외부 브랜드 상품 공급처</b><br/>켈로그·츄파춥스 등, 매입 330,686백만원 [출처 1]"]
+    X1("(국제 원자재 시세: 시카고 선물, 쿠알라룸푸르 선물) [출처 1]")
+  end
+
+  subgraph S2["2. 가공"]
+    M1["<b>농심 국내 공장 7곳</b><br/>안양·안성·아산·부산·구미·녹산·포승 [출처 1]"]
+    M4["<b>농심 구미공장</b><br/>구미라면축제면 20만 봉 한정 [출처 5]"]
+    M2["<b>상해농심·심양농심·청도농심·연변농심</b><br/>농심아메리카 해외 생산 [출처 1]"]
+    M3["<b>㈜허심청브로이</b><br/>맥주 [출처 1]"]
+    X2("(경쟁사: 삼양식품 [U, 웹 출처 검증 전], NISSIN·MARUCHAN) [출처 1]")
+    X3("(식품위생법 등 규제 기관 [U]) [출처 1]")
+  end
+
+  subgraph S3["3. 식품 온라인 플랫폼"]
+    HQ["<b>농심 본사</b><br/>판매·대금 정산"]
+    O1["<b>농심몰</b><br/>자사 채널, 구미라면축제면 판매 [출처 5]"]
+    O2a["<b>중국 온라인 협업 업체</b><br/>(상해농심 협업, 사명 [U]) [출처 1]"]
+    O2b["<b>국내 온라인 채널</b><br/>17.2%, 업체 [U] [출처 1]"]
+    X4("(음료 업계 사례: 대형 유통 납품가 인하 요구) [출처 1]")
+  end
+
+  subgraph S4["4. 주문"]
+    B1["<b>소비자</b><br/>자사몰 구매 고객, 스낵 주 소비층 아동·청소년 [출처 1][출처 5]"]
+    B2["<b>신유통</b><br/>대형마트·슈퍼체인·CVS 46.7% [출처 1]"]
+    B3["<b>대리점·특약점</b><br/>12.7%, 외상기일 10일 이내 [출처 1]"]
+    B4["<b>직거래 유통사</b><br/>WALMART·COSTCO·LOBLAW·세븐일레븐 등 [출처 1][출처 6]"]
+    B5["<b>기타 채널</b><br/>농협·직거래슈퍼·백화점·연쇄점 23.5%, 외상기일 30일 이내 [출처 1]"]
+    F1["<b>현장 판매·푸드트럭</b><br/>구미 축제 부스 [출처 5], 인도 20개 거점 [출처 4], 미국 월마트 48개 매장 [출처 6]"]
+    X7("(구미시: 구미라면축제 기획, 방문객 35만 명 지난해 [출처 5]; 집계 수신자 [U])")
+  end
+
+  subgraph S5["5. 물류·배송"]
+    L1["<b>운반 담당</b><br/>(사명 [U], 원문에 운송사 기재 없음), 대리점 운반비 농심 부담 [출처 1]"]
+    L2["<b>해외 현지 유통 파트너</b><br/>직거래 (사명 [U]) [출처 1]"]
+    X8("(한국수출보험공사, 해외 현지 보증보험사: 해외 거래처 신용위험) [출처 1]")
+  end
+
+  subgraph S0["단계 밖: 공공·데이터"]
+    X5("(닐슨: 시장점유율 데이터) [출처 1]")
+    X6("(DART 전자공시) [출처 1][출처 2]")
+  end
+
+  %% 상품 흐름
+  P1 --> M1
+  P2 --> M1
+  P3 --> M1
+  P4 --> M1
+  P5 --> HQ
+  M1 --> HQ
+  M4 --> HQ
+  M2 --> HQ
+  M3 --> HQ
+  M2 --> O2a
+  HQ --> O1
+  HQ --> O2b
+  HQ --> B2
+  HQ --> B3
+  HQ --> B4
+  HQ --> B5
+  HQ --> F1
+  O1 --> B1
+  O2b --> B1
+  F1 --> B1
+  L2 --> B4
+  L1 --> B1
+  L1 --> B2
+  L1 --> B3
+  L1 --> B5
+
+  %% 돈 흐름
+  B1 ==>|"구매 (결제 방식 [U])"| O1
+  B2 ==>|"정산 (거래처 유형별 대금회수 조건)"| HQ
+  B3 ==>|"정산 (외상기일 10일 이내) [출처 1]"| HQ
+  B5 ==>|"정산 (외상기일 30일 이내) [출처 1]"| HQ
+  B4 ==>|"납품 단가 (계약 조건 [U])"| HQ
+  HQ ==>|"구매 대금 (지급 조건 [U])"| P2
+  HQ ==>|"구매 대금 (지급 조건 [U])"| P3
+  HQ ==>|"구매 대금 (지급 조건 [U])"| P4
+  HQ ==>|"구매 대금 (지급 조건 [U])"| P5
+  HQ ==>|"납품 단가 (국산 밀, 단가 [U])"| P1
+  HQ ==>|"운반비 지급 (수신자 [U])"| L1
+
+  %% 데이터 흐름
+  X1 -.->|"원자재 시세 데이터 (국제 형성가격, 수입 소맥 196 USD/MT 제62기 [출처 1]; 보유자: 시카고 선물거래소, 쿠알라룸푸르 선물)"| HQ
+  X5 -.->|"시장점유율 데이터 (보유자: 닐슨, 농심 추정치 근거) [출처 1]"| HQ
+  O1 -.->|"주문·판매 데이터 [I] (보유자: 농심몰 운영 주체 농심)"| HQ
+  HQ -.->|"사업보고서 매출·계열 데이터 (보유자: 농심, DART 공시) [출처 1][출처 2]"| X6
+</script>
+<script type="text/plain" id="overview-src">
+flowchart LR
+  subgraph A["1. 지역 생산자"]
+    a1["원료 공급자<br/>밀·팜유·포장재·외부 상품"]
+  end
+  subgraph B["2. 가공"]
+    b1["농심 공장<br/>국내 7곳 [출처 1]"]
+  end
+  subgraph C["3. 식품 온라인 플랫폼"]
+    c1["<b>농심 본사</b><br/>판매·정산"]
+    c2["농심몰·온라인 채널"]
+  end
+  subgraph D["4. 주문"]
+    d1["<b>소비자·신유통·대리점·직거래</b><br/>현장 판매·푸드트럭 포함"]
+  end
+  subgraph E["5. 물류·배송"]
+    e1["<b>운반 담당·해외 파트너</b>"]
+  end
+  ext("(공공·데이터: 닐슨·DART)")
+  a1 --> b1
+  b1 --> c1
+  c1 --> c2
+  c1 --> d1
+  c2 --> d1
+  d1 --> e1
+  d1 ==>|"정산"| c1
+  c1 ==>|"구매 대금"| a1
+  ext -.->|"데이터"| c1
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>
+  (function () {
+    var fullSrc = document.getElementById('mermaid-src').textContent.trim();
+    var overviewSrc = document.getElementById('overview-src').textContent.trim();
+    var full = document.getElementById('map');
+    var overview = document.getElementById('overview');
+    full.textContent = fullSrc;
+    overview.textContent = overviewSrc;
+    mermaid.initialize({
+      startOnLoad: false,
+      securityLevel: 'loose',
+      themeVariables: { fontSize: '11px' },
+      flowchart: { htmlLabels: true, useMaxWidth: false, nodeSpacing: 14, rankSpacing: 36, padding: 6 }
+    });
+    mermaid.run({ nodes: [overview, full] }).catch(function (e) {
+      full.textContent = '다이어그램을 그리지 못했습니다: ' + e.message + '\n\n' + fullSrc;
+    });
+  })();
+</script>
+</body>
+</html>
