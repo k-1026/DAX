@@ -21,9 +21,9 @@
   th { background: var(--tag); }
   .open { color: var(--warn); font-weight: 600; }
   .foot { margin-top: 16px; color: var(--muted); font-size: 12px; }
-  .diagram-wrap { border: 1px solid var(--line); border-radius: 8px; padding: 8px; background: #fff; }
-  .diagram-wrap .mermaid { width: 100%; }
-  .diagram-wrap .mermaid svg { max-width: 100%; height: auto; }
+  .diagram-wrap { border: 1px solid var(--line); border-radius: 8px; padding: 8px; background: #fff; overflow-x: auto; margin-bottom: 10px; }
+  .diagram-wrap .mermaid svg { height: auto; }
+  .diagram-label { font-size: 12.5px; font-weight: 600; margin: 6px 0 4px; }
   .diagram-note { color: var(--muted); font-size: 12px; margin: 4px 0 8px; }
 </style>
 </head>
@@ -97,7 +97,10 @@
   </ul>
 
   <h2>7. 밸류체인 맵 (Mermaid)</h2>
-  <div class="diagram-note">원본은 valuechain_v0.md의 Mermaid 블록이다. 실선 화살표는 상품 흐름, 굵은 화살표는 돈 흐름, 점선은 데이터 흐름이다. 굵은 글씨는 하는 사람, 괄호는 영향 주는 사람이다.</div>
+  <div class="diagram-note">한눈에 보는 요약 맵 다음에 전체 맵이 있다. 전체 맵은 원본(valuechain_v0.md)과 같고, 가로로 스크롤해서 본다. 실선은 상품 흐름, 굵은 화살표는 돈 흐름, 점선은 데이터 흐름이다. 굵은 글씨는 하는 사람, 괄호는 영향 주는 사람이다.</div>
+  <div class="diagram-label">한눈에 보기 (요약)</div>
+  <div class="diagram-wrap"><div class="mermaid" id="overview"></div></div>
+  <div class="diagram-label">전체 맵 (숫자·출처 포함, 가로 스크롤)</div>
   <div class="diagram-wrap"><div class="mermaid" id="map"></div></div>
 
   <div class="foot">이 HTML은 one_page.md와 같은 내용이다. 수정할 때는 두 파일을 함께 바꾼다.</div>
@@ -197,20 +200,52 @@ flowchart LR
   O1 -.->|"주문·판매 데이터 [I] (보유자: 농심몰 운영 주체 농심)"| HQ
   HQ -.->|"사업보고서 매출·계열 데이터 (보유자: 농심, DART 공시) [출처 1][출처 2]"| X6
 </script>
+<script type="text/plain" id="overview-src">
+flowchart LR
+  subgraph A["1. 지역 생산자"]
+    a1["원료 공급자<br/>밀·팜유·포장재·외부 상품"]
+  end
+  subgraph B["2. 가공"]
+    b1["농심 공장<br/>국내 7곳 [출처 1]"]
+  end
+  subgraph C["3. 식품 온라인 플랫폼"]
+    c1["<b>농심 본사</b><br/>판매·정산"]
+    c2["농심몰·온라인 채널"]
+  end
+  subgraph D["4. 주문"]
+    d1["<b>소비자·신유통·대리점·직거래</b><br/>현장 판매·푸드트럭 포함"]
+  end
+  subgraph E["5. 물류·배송"]
+    e1["<b>운반 담당·해외 파트너</b>"]
+  end
+  ext("(공공·데이터: 닐슨·DART)")
+  a1 --> b1
+  b1 --> c1
+  c1 --> c2
+  c1 --> d1
+  c2 --> d1
+  d1 --> e1
+  d1 ==>|"정산"| c1
+  c1 ==>|"구매 대금"| a1
+  ext -.->|"데이터"| c1
+</script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
 <script>
   (function () {
-    var src = document.getElementById('mermaid-src').textContent.trim();
-    var host = document.getElementById('map');
-    host.textContent = src;
+    var fullSrc = document.getElementById('mermaid-src').textContent.trim();
+    var overviewSrc = document.getElementById('overview-src').textContent.trim();
+    var full = document.getElementById('map');
+    var overview = document.getElementById('overview');
+    full.textContent = fullSrc;
+    overview.textContent = overviewSrc;
     mermaid.initialize({
       startOnLoad: false,
       securityLevel: 'loose',
       themeVariables: { fontSize: '11px' },
-      flowchart: { htmlLabels: true, useMaxWidth: true, nodeSpacing: 14, rankSpacing: 36, padding: 6 }
+      flowchart: { htmlLabels: true, useMaxWidth: false, nodeSpacing: 14, rankSpacing: 36, padding: 6 }
     });
-    mermaid.run({ nodes: [host] }).catch(function (e) {
-      host.textContent = '다이어그램을 그리지 못했습니다: ' + e.message + '\n\n' + src;
+    mermaid.run({ nodes: [overview, full] }).catch(function (e) {
+      full.textContent = '다이어그램을 그리지 못했습니다: ' + e.message + '\n\n' + fullSrc;
     });
   })();
 </script>
