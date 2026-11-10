@@ -1,0 +1,244 @@
+<meta charset="utf-8">
+<title>공실 스코어링 흐름</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: 16:9 슬라이드. 위 흐름 5단계, 아래 가중치 표와 경고 설명 두 열. 좁은 화면에서는 세로로 쌓는다. */
+:root {
+  --bg: #EEF2EE;
+  --surface: #FFFFFF;
+  --ink: #1A2420;
+  --muted: #56645E;
+  --line: #D3DCD6;
+  --pos: #1E6E58;
+  --pos-soft: #DDEEE7;
+  --neg: #A03A3A;
+  --neg-soft: #F6E3E1;
+  --warn: #8C5E0E;
+  --warn-soft: #F8EED8;
+  --font-display: "Space Grotesk", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-body: "Inter", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0F1714;
+    --surface: #17221E;
+    --ink: #E4EDE8;
+    --muted: #9AAAA2;
+    --line: #2B3A34;
+    --pos: #6FD0AE;
+    --pos-soft: #17372C;
+    --neg: #F09A94;
+    --neg-soft: #3B2221;
+    --warn: #E8BE6A;
+    --warn-soft: #37301A;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0F1714;
+  --surface: #17221E;
+  --ink: #E4EDE8;
+  --muted: #9AAAA2;
+  --line: #2B3A34;
+  --pos: #6FD0AE;
+  --pos-soft: #17372C;
+  --neg: #F09A94;
+  --neg-soft: #3B2221;
+  --warn: #E8BE6A;
+  --warn-soft: #37301A;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  padding-block: 32px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+h1, h2, h3 { font-family: var(--font-display); margin: 0; line-height: 1.2; text-wrap: balance; }
+p { margin: 0; }
+
+.slide {
+  width: min(100%, 1200px);
+  margin: 0 auto;
+  aspect-ratio: 16 / 9;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: clamp(18px, 2.4vw, 32px);
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  gap: 14px;
+  min-width: 0;
+}
+.eyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; }
+.head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 6px 24px; }
+h1 { font-size: clamp(22px, 2.6vw, 32px); font-weight: 700; letter-spacing: -0.01em; }
+.lede { color: var(--muted); font-size: 13px; max-width: 58ch; }
+
+/* 흐름 5단계 */
+.flow { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; position: relative; }
+.step { position: relative; padding: 10px 12px 10px 12px; border-left: 1px solid var(--line); min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.step:first-child { border-left: 0; padding-left: 0; }
+.step-no { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+.step h3 { font-size: 15px; }
+.step ul { margin: 2px 0 0; padding-left: 16px; font-size: 12px; color: var(--muted); display: flex; flex-direction: column; gap: 2px; }
+.step li::marker { color: var(--line); }
+.step .num { font-family: var(--font-display); font-weight: 700; font-size: 20px; color: var(--ink); }
+
+/* 아래 두 열 */
+.bottom { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 16px; min-height: 0; }
+.panel { min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 8px; }
+.panel h2 { font-size: 16px; }
+.tbl { overflow-x: auto; min-width: 0; border: 1px solid var(--line); border-radius: 10px; }
+table { border-collapse: collapse; width: 100%; font-size: 12px; min-width: 520px; }
+th, td { padding: 5px 8px; border-bottom: 1px solid var(--line); text-align: center; white-space: nowrap; }
+th { font-weight: 600; color: var(--muted); font-size: 11px; }
+td:first-child, th:first-child { text-align: left; font-weight: 500; }
+tr:last-child td { border-bottom: 0; }
+.pos { color: var(--pos); font-weight: 600; }
+.neg { color: var(--neg); font-weight: 600; }
+.dim { color: var(--line); }
+.note { font-size: 11px; color: var(--muted); }
+
+/* 경고 */
+.warn-box { background: var(--warn-soft); border: 1px solid var(--warn); border-radius: 10px; padding: 10px 12px; color: var(--ink); }
+.warn-box b { color: var(--warn); font-weight: 600; }
+.warn-list { display: grid; grid-template-columns: 1fr; gap: 5px; margin: 0; padding: 0; list-style: none; }
+.warn-list li { display: grid; grid-template-columns: 108px minmax(0, 1fr); gap: 8px; font-size: 12px; padding: 5px 0; border-bottom: 1px solid var(--line); }
+.warn-list li:last-child { border-bottom: 0; }
+.warn-list .k { font-weight: 600; }
+.warn-list .n { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+.caveat { font-size: 11px; color: var(--muted); border-top: 1px dashed var(--line); padding-top: 6px; }
+
+footer { font-size: 11px; color: var(--muted); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 16px; border-top: 1px solid var(--line); padding-top: 8px; }
+
+@media (max-width: 860px) {
+  .slide { aspect-ratio: auto; grid-template-rows: auto; }
+  .flow { grid-template-columns: 1fr; gap: 10px; }
+  .step, .step:first-child { border-left: 0; padding: 8px 0; border-top: 1px solid var(--line); }
+  .step:first-child { border-top: 0; }
+  .bottom { grid-template-columns: 1fr; }
+}
+</style>
+
+<main class="slide" aria-label="공실 스코어링 흐름 한 페이지">
+  <header class="head">
+    <div>
+      <div class="eyebrow">대구 공실 매칭 · 스코어링 흐름 · 2026-11-10</div>
+      <h1>공실 스코어링 흐름</h1>
+    </div>
+    <p class="lede">공실 매물 2,667건을 5개 용도로 나누고, 입지 조건을 점수로 바꾼 뒤 감점과 가점을 더해 순위를 정합니다.</p>
+  </header>
+
+  <ol class="flow" style="list-style:none; padding:0; margin:0">
+    <li class="step">
+      <span class="step-no">1단계</span>
+      <h3>데이터 모으기</h3>
+      <span class="num">2,667</span>
+      <ul>
+        <li>공실 매물 (대구 전역, 노출 중)</li>
+        <li>상가업소 116,628곳</li>
+        <li>주차장 817곳, 전시관 273곳</li>
+        <li>물류창고 영업 30곳, 용도지역 10,019개</li>
+      </ul>
+    </li>
+    <li class="step">
+      <span class="step-no">2단계</span>
+      <h3>조건으로 거르기</h3>
+      <span class="num">−50</span>
+      <ul>
+        <li>위치 정보 없음 48건 제외</li>
+        <li>공실 표시가 아닌 2건 제외</li>
+        <li>면적, 보증금, 월세는 사용자가 고른 범위 안에서만 비교 (기본값은 데이터 전체 범위)</li>
+      </ul>
+    </li>
+    <li class="step">
+      <span class="step-no">3단계</span>
+      <h3>조건을 점수로</h3>
+      <span class="num">100점</span>
+      <ul>
+        <li>각 조건을 전체 매물 기준 0~1로 바꿈</li>
+        <li>용도별 가중치를 곱해서 더함</li>
+        <li>포화는 적을수록, 나머지는 많을수록 가점</li>
+      </ul>
+    </li>
+    <li class="step">
+      <span class="step-no">4단계</span>
+      <h3>감점과 가점</h3>
+      <span class="num">±10</span>
+      <ul>
+        <li>지하 −10 (침수 외, 카페·식당·오피스·전시)</li>
+        <li>침수 등급 1 −10, 2~3 −25, 4 −40 (지하·창고)</li>
+        <li>오피스 1층 −10, 2~5층 +5</li>
+        <li>창고 1층 +2</li>
+      </ul>
+    </li>
+    <li class="step">
+      <span class="step-no">5단계</span>
+      <h3>순위와 경고</h3>
+      <span class="num">호 단위</span>
+      <ul>
+        <li>호마다 점수와 순위</li>
+        <li>같은 좌표 호는 건물로 묶어 표시</li>
+        <li>경고는 점수에 넣지 않고 표시만</li>
+      </ul>
+    </li>
+  </ol>
+
+  <div class="bottom">
+    <section class="panel">
+      <h2>용도별 가중치 (세트 B, %)</h2>
+      <div class="tbl">
+        <table>
+          <thead>
+            <tr><th>조건</th><th>카페</th><th>식당</th><th>전시</th><th>오피스</th><th>창고</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>동종 포화 (적을수록)</td><td>20</td><td>15</td><td class="dim">–</td><td>20</td><td class="dim">–</td></tr>
+            <tr><td>보완 집적</td><td>25</td><td>30</td><td>25</td><td>20</td><td class="dim">–</td></tr>
+            <tr><td>주차장 (500m)</td><td>15</td><td>15</td><td class="dim">–</td><td>25</td><td>35</td></tr>
+            <tr><td>전시관 근접 (1km)</td><td class="dim">–</td><td class="dim">–</td><td>40</td><td class="dim">–</td><td class="dim">–</td></tr>
+            <tr><td>상업지역</td><td>10</td><td>10</td><td>5</td><td>15</td><td class="dim">–</td></tr>
+            <tr><td>공업지역</td><td class="dim">–</td><td class="dim">–</td><td class="dim">–</td><td class="dim">–</td><td>40</td></tr>
+            <tr><td>1층</td><td>15</td><td>15</td><td>15</td><td class="dim">–</td><td class="dim">–</td></tr>
+            <tr><td>역 근접</td><td>8</td><td>8</td><td>10</td><td>10</td><td class="dim">–</td></tr>
+            <tr><td>무권리</td><td>4</td><td>4</td><td>3</td><td class="dim">–</td><td class="dim">–</td></tr>
+            <tr><td>임대료 (보증금·월세 낮음)</td><td>3</td><td>3</td><td>2</td><td>10</td><td>15</td></tr>
+            <tr><td>구 단위 물류 집계 <span class="note">(주의)</span></td><td class="dim">–</td><td class="dim">–</td><td class="dim">–</td><td class="dim">–</td><td>10</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">합계는 모두 100. 오피스 2~5층 +5는 가점이고, 1층 −10은 감점입니다.</p>
+    </section>
+
+    <section class="panel">
+      <h2>경고 문구 설명</h2>
+      <div class="warn-box">
+        <p><b>실제 허용 여부는 건축물대장, 토지이음, 구청 건축과에서 확인해야 합니다.</b> 경고는 점수에 넣지 않고 확인이 필요하다는 표시입니다.</p>
+      </div>
+      <ul class="warn-list">
+        <li><span class="k">방화지구</span><span><span class="n">635곳 · </span>화재 확산을 막으려고 건축 구조(내화구조, 불연재료 등)를 정한 지구입니다. 업종을 막는지는 확인하지 못했습니다.</span></li>
+        <li><span class="k">지구단위계획구역</span><span><span class="n">582곳 · </span>구역별 계획으로 허용 용도와 최고 층수를 정할 수 있습니다. 구역마다 내용이 다릅니다.</span></li>
+        <li><span class="k">제1종 지구단위계획구역</span><span><span class="n">320곳 · </span>지구단위계획구역의 하위 구분입니다. 다른 구분과의 차이는 확인하지 못했습니다.</span></li>
+        <li><span class="k">고도지구</span><span><span class="n">33곳 · </span>건축물 높이를 제한하는 지구로 알려져 있습니다. 정의는 법령으로 다시 확인해야 합니다.</span></li>
+      </ul>
+      <p class="caveat">정답 데이터가 없어서 가중치는 안정성 기준으로 골랐습니다. 입점 후 결과로 검증하기 전까지 잠정값입니다. 구 단위 물류 집계는 거친 지표이고 방향은 가설입니다.</p>
+    </section>
+  </div>
+
+  <footer>
+    <span>출처: 소상공인 상가(상권)정보 202609 · 전국주차장정보표준데이터 · 한국문화정보원 전시관 위치 · 행정안전부 물류창고업체 조회 · 국토계획 용도지역 (WGS84)</span>
+    <span>데이터 기준일: 매물 노출 2026-10-07~11-06</span>
+  </footer>
+</main>
