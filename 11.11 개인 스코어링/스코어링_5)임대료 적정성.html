@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>임대료 적정성 기준</title>
+<style>
+  :root {
+    --bg: #f7f7f5; --card: #ffffff; --ink: #1d1d1b; --sub: #6b6b66; --line: #e4e3df; --soft: #f1f0ec;
+    --accent: #0b7285; --accent-soft: #d6f0f4; --warn: #b45309; --pend: #868e96;
+    --b100: #2b8a3e; --b85: #51a35c; --b70: #8cc58f; --b50: #c9c6bd; --b35: #f0a868; --b15: #e8743b; --b0: #c92a2a;
+    --k1: #2563eb; --k2: #e8590c; --k3: #0f9d8a; --k4: #7048e8; --k5: #0b7285; --rest: #e4e3df;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141413; --card: #1e1e1c; --ink: #ecebe6; --sub: #a3a29c; --line: #34332f; --soft: #262624;
+      --accent: #3bc9db; --accent-soft: #163a40; --warn: #f0b35c; --pend: #868e96;
+      --b100: #69db7c; --b85: #51cf66; --b70: #2f9e44; --b50: #5c5b56; --b35: #d9802e; --b15: #f76707; --b0: #ff6b6b;
+      --k1: #7aa7f7; --k2: #ff922b; --k3: #38d9c0; --k4: #9775fa; --k5: #3bc9db; --rest: #34332f;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif; line-height: 1.6; font-size: 15px; }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 32px 16px 64px; }
+  header h1 { font-size: 28px; margin: 0 0 6px; letter-spacing: -0.02em; }
+  header p { margin: 6px 0 0; color: var(--sub); }
+  .pill { display: inline-block; background: var(--accent-soft); color: var(--accent); font-weight: 700;
+    border-radius: 999px; padding: 2px 12px; font-size: 13px; margin: 0 6px 4px 0; }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 24px; margin-top: 20px; }
+  h2 { font-size: 19px; margin: 0 0 4px; letter-spacing: -0.01em; }
+  h2 .num { color: var(--accent); margin-right: 6px; }
+  h3 { font-size: 15px; margin: 22px 0 8px; }
+  .desc { color: var(--sub); margin: 0 0 16px; font-size: 14px; }
+  .chart { width: 100%; height: auto; display: block; }
+  .chart text { fill: var(--ink); font-size: 12px; }
+  .chart .sub { fill: var(--sub); }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { padding: 7px 6px; border-bottom: 1px solid var(--line); text-align: center; }
+  th { color: var(--sub); font-weight: 600; font-size: 13px; }
+  td.l, th.l { text-align: left; }
+  ul.notes { margin: 10px 0 0; padding-left: 18px; font-size: 14px; color: var(--sub); }
+  ul.notes b { color: var(--ink); }
+  .formula { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; }
+  .box { border: 1.5px solid var(--line); border-radius: 10px; padding: 10px 14px; background: var(--bg); text-align: center; }
+  .box small { display: block; font-weight: 400; color: var(--sub); font-size: 12px; }
+  .box.hl { border-color: var(--accent); }
+  .op { color: var(--sub); font-size: 20px; }
+  .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .cond { background: var(--bg); border-radius: 12px; padding: 14px; }
+  .cond h4 { margin: 0 0 8px; font-size: 15px; }
+  .cond h4 .n { color: var(--accent); margin-right: 4px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 4px; }
+  .chip { background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 2px 8px; font-size: 12px; }
+  .chip.m { border-color: var(--accent); color: var(--accent); font-weight: 700; }
+  .steps { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 13px; }
+  .steps span.s { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 4px 10px; }
+  .steps span.s.p { border-color: var(--pend); color: var(--pend); }
+  .steps span.a { color: var(--sub); }
+  .callout { border-left: 4px solid var(--warn); background: var(--bg); padding: 12px 14px; border-radius: 6px; margin-top: 14px; font-size: 14px; }
+  .callout b.t { color: var(--warn); }
+  .callout ul { margin: 6px 0 0; padding-left: 18px; }
+  .toast { display: flex; gap: 10px; align-items: flex-start; background: var(--soft); border-radius: 10px; padding: 10px 12px; font-size: 13px; text-align: left; }
+  .toast i { font-style: normal; font-weight: 800; width: 20px; height: 20px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: #fff; flex: none; font-size: 12px; }
+  .calc { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  label { display: block; font-size: 13px; color: var(--sub); margin: 12px 0 4px; }
+  input[type=range] { width: 100%; }
+  .result { background: var(--bg); border-radius: 12px; padding: 16px; }
+  .result .big { font-size: 42px; font-weight: 800; line-height: 1.1; }
+  .alloc { display: grid; grid-template-columns: 60px 1fr 110px; gap: 8px 12px; align-items: center; }
+  .bar { display: flex; height: 28px; border-radius: 8px; overflow: hidden; background: var(--rest); }
+  .bar div { display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; color: #fff; white-space: nowrap; }
+  .key { display: flex; flex-wrap: wrap; gap: 12px; font-size: 13px; color: var(--sub); margin-bottom: 10px; }
+  .key i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; margin-right: 4px; vertical-align: -1px; }
+  footer { color: var(--sub); font-size: 13px; margin-top: 24px; }
+  @media (max-width: 760px) {
+    .three, .calc { grid-template-columns: 1fr; }
+    .alloc { grid-template-columns: 48px 1fr; } .alloc .sum { grid-column: 2; margin-top: -4px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>스코어링 5) 임대료 적정성</h1>
+  <p><span class="pill">가중치 15% · 6개 카테고리 공통</span><span class="pill">공실 매물끼리 비교</span></p>
+  <p>매물의 <b>㎡당 월세</b>를 <b>같은 층 · 비슷한 크기 · 가까운 다른 공실 매물</b>과 비교해서, 주변보다 싸면 높은 점수를 줍니다.</p>
+</header>
+
+<section>
+  <h2><span class="num">1</span>한눈에 보는 계산 흐름</h2>
+  <p class="desc">상가 임대료 실거래가는 공개되지 않아서 공실 매물끼리 비교합니다. 모든 매물이 똑같이 호가(내놓은 가격)라서 매물끼리 비교하는 데는 문제가 없습니다.</p>
+  <div class="formula">
+    <div class="box">㎡당 월세<small>월세 ÷ 전용면적</small></div><span class="op">→</span>
+    <div class="box">비교 매물 중간값<small>같은 층·크기·가까운 매물</small></div><span class="op">→</span>
+    <div class="box">비율<small>내 값 ÷ 중간값</small></div><span class="op">→</span>
+    <div class="box">점수<small>0 ~ 100</small></div><span class="op">× 15% =</span>
+    <div class="box hl">최종 반영 점수<small>최대 15점</small></div>
+  </div>
+  <ul class="notes">
+    <li><b>보증금은 넣지 않습니다.</b> 보증금을 월세로 바꿔 더해 봐도(연 6%, 12% 모두 시험) 매물 순위가 거의 같았습니다(순위 상관 0.997).</li>
+    <li><b>관리비는 넣지 않습니다.</b> 매물의 61%가 관리비 칸이 비어 있어서, 넣으면 관리비를 적은 매물만 손해를 봅니다.</li>
+    <li>예: 월세 200만원, 전용면적 75㎡ → ㎡당 2.67만원</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="num">2</span>가중치: 6개 모두 15%</h2>
+  <p class="desc">임대료는 어떤 업종이든 가장 큰 고정비라서 6개 카테고리에 같은 비중을 줍니다.</p>
+  <svg id="wCmp" class="chart" viewBox="0 0 900 190" role="img" aria-label="다른 기준과 가중치 비교"></svg>
+  <ul class="notes">
+    <li><b>다른 기준보다 큰 이유:</b> 역세권·유동인구·점포 유지율은 동네를 간접적으로 보는 보조 지표지만, 임대료는 매물의 실제 가격이라 가장 직접적인 데이터입니다.</li>
+    <li><b>20%가 아닌 이유:</b> 비중이 너무 크면 "싼 이유가 있는 매물"(낡음, 위치 불리 등)이 위로 올라오기 쉽습니다.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="num">3</span>비교할 매물 고르기</h2>
+  <p class="desc">아래 세 가지가 <b>모두 같은</b> 다른 공실 매물과 비교합니다 (나 자신은 빼고).</p>
+  <div class="three">
+    <div class="cond">
+      <h4><span class="n">①</span>같은 층 (11단계)</h4>
+      <div class="chips" id="floorChips"></div>
+      <p class="desc" style="margin:8px 0 0;font-size:13px">지하 1~3층은 하나로(지하 2·3층이 4곳뿐), 10~19층은 하나로(층마다 1~11곳) 묶었습니다.</p>
+    </div>
+    <div class="cond">
+      <h4><span class="n">②</span>비슷한 크기 (3단계)</h4>
+      <div class="chips"><span class="chip m">소형 50㎡ 미만</span><span class="chip m">중형 50~150㎡</span><span class="chip m">대형 150㎡ 이상</span></div>
+      <p class="desc" style="margin:8px 0 0;font-size:13px">작은 매물은 원래 ㎡당 값이 비쌉니다. 나누지 않으면 33㎡ 미만 매물이 평균 38% 비싸게 나와 억울하게 감점됩니다.</p>
+    </div>
+    <div class="cond">
+      <h4><span class="n">③</span>가까운 매물 (5곳 이상까지)</h4>
+      <div class="steps"><span class="s">500m</span><span class="a">→</span><span class="s">1km</span><span class="a">→</span><span class="s">2km</span><span class="a">→</span><span class="s">같은 구</span><span class="a">→</span><span class="s p">판단 보류</span></div>
+      <p class="desc" style="margin:8px 0 0;font-size:13px">대구 전체까지는 넓히지 않습니다. 달성군 매물을 동성로 매물과 비교하게 되기 때문입니다.</p>
+    </div>
+  </div>
+  <h3>층별 매물 수와 판단 보류</h3>
+  <svg id="floorChart" class="chart" viewBox="0 0 900 300" role="img" aria-label="층별 매물 수와 판단 보류"></svg>
+  <p class="desc" style="margin-top:4px">층을 자세히 나눈 이유: "3층 이상"을 하나로 묶었더니 3층은 싸 보이고(0.87) 10층 이상은 비싸 보였습니다(1.18). 9층은 매물이 11곳뿐이라 전부 판단 보류(50점)입니다.</p>
+  <h3>어디까지 넓혀서 비교했나 (2,639곳)</h3>
+  <svg id="rangeChart" class="chart" viewBox="0 0 900 70" role="img" aria-label="비교 범위 분포"></svg>
+</section>
+
+<section>
+  <h2><span class="num">4</span>비율 → 점수</h2>
+  <p class="desc">비율 = 이 매물의 ㎡당 월세 ÷ 비교 매물들의 ㎡당 월세 중간값. 1.0보다 작으면 주변보다 쌉니다.</p>
+  <svg id="scaleChart" class="chart" viewBox="0 0 900 190" role="img" aria-label="비율 구간별 점수"></svg>
+  <table id="bandTable" style="margin-top:6px"></table>
+  <div class="callout"><b class="t">0.7과 1.5를 양 끝으로 둔 이유</b>
+    <ul>
+      <li><b>0.7 미만 = 최고점:</b> "주변보다 30% 이상 싸다"는 이미 충분히 큰 차이입니다. 더 싼 매물에는 연세 계약, 아주 큰 평수, 불리한 위치처럼 싼 이유가 있는 매물이 섞여 있어서 점수를 더 올리지 않습니다.</li>
+      <li><b>1.5 이상 = 최저점:</b> 비율은 곱하기로 움직여서, 주변의 3분의 2(0.67)와 2분의 3(1.5)이 1.0에서 같은 거리입니다. 위 그림에서 두 경계가 1.0을 사이에 두고 같은 간격인 것을 볼 수 있습니다.</li>
+      <li><b>비싼 동네라고 감점되지 않습니다:</b> 같은 동네끼리 비교하므로, 위치 장점은 역세권·유동인구 점수에서 따로 반영됩니다.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">5</span>따로 처리하는 매물과 화면 표시</h2>
+  <p class="desc">50점은 싼지 비싼지 판단할 근거가 없을 때 주는 중간 점수입니다 (최종 50 × 15% = 7.5점). 아래 문구는 <b>화면에 반드시 표시</b>합니다.</p>
+  <table>
+    <tr><th class="l">경우</th><th>매물 수</th><th>점수</th><th class="l">화면 표시</th></tr>
+    <tr><td class="l"><b>판단 보류</b><br><span style="font-size:13px;color:var(--sub)">같은 구까지 넓혀도 같은 층·크기 매물 5곳 미만 (9층 11곳 포함)</span></td><td>160</td><td><b>50</b></td><td class="l"><div class="toast"><i style="background:var(--pend)">i</i>비교할 비슷한 매물이 부족해서 임대료 점수를 중간(50점)으로 표시했어요</div></td></tr>
+    <tr><td class="l"><b>층 정보 없음</b> ("전체층", "기타")<br><b>전용면적 10㎡ 미만</b></td><td>26<br>4</td><td><b>50</b></td><td class="l"><div class="toast"><i style="background:var(--pend)">i</i>비교할 비슷한 매물이 부족해서 임대료 점수를 중간(50점)으로 표시했어요</div></td></tr>
+    <tr><td class="l"><b>가격 극단값</b><br><span style="font-size:13px;color:var(--sub)">㎡당 월세가 같은 층 그룹에서 상·하위 1%</span></td><td>48</td><td><b>50</b></td><td class="l"><div class="toast"><i style="background:var(--warn)">!</i>가격 정보 확인이 필요해요</div></td></tr>
+    <tr><td class="l"><b>매우 저렴</b><br><span style="font-size:13px;color:var(--sub)">비율 0.5 미만 (극단값 제외)</span></td><td>-</td><td><b>100</b><br><span style="font-size:12px;color:var(--sub)">정상 계산</span></td><td class="l"><div class="toast"><i style="background:var(--b100)">✓</i>주변보다 매우 저렴해요 · 계약 조건(연세, 관리비 등)을 확인하세요</div></td></tr>
+  </table>
+  <h3>가격 극단값 예시 (입력 실수로 보이는 매물)</h3>
+  <table>
+    <tr><th class="l">매물</th><th>㎡당 월세</th><th class="l">짐작되는 이유</th></tr>
+    <tr><td class="l">이곡동 1층 115.7㎡, 월세 6,000만원</td><td>51.86만원<br><span style="font-size:12px;color:var(--sub)">1층 보통 1.64만원의 약 32배</span></td><td class="l">600만원을 잘못 적은 것으로 보임</td></tr>
+    <tr><td class="l">감삼동 "1층" 202.66㎡, 월세 65만원</td><td>0.32만원</td><td class="l">설명에는 "건물 3층" (층 입력 실수)</td></tr>
+    <tr><td class="l">상인동 1층 143.63㎡, 월세 50만원</td><td>0.35만원</td><td class="l">"월세 연납" 조건이라 월세가 낮게 적힘</td></tr>
+  </table>
+  <p class="desc" style="margin-top:8px">극단값은 <b>다른 매물의 비교 기준에서 빼고</b>(넣으면 주변 "보통 가격"이 흔들림), <b>자기 점수는 50점</b>을 줍니다(정상 계산하면 입력 실수가 100점이나 0점이 됨).</p>
+</section>
+
+<section>
+  <h2><span class="num">6</span>공실 매물에 적용한 결과</h2>
+  <p class="desc">좌표 있는 2,717곳 중 50점을 받는 238곳(8.8%)을 뺀 나머지 매물의 점수 분포입니다.</p>
+  <svg id="distChart" class="chart" viewBox="0 0 900 230" role="img" aria-label="점수 분포"></svg>
+  <p class="desc" style="margin-top:4px">매물 가격(호가) 차이가 커서 양 끝(100점, 0점)에 많이 몰립니다.</p>
+  <h3>층별 균형 확인 (비율 중앙값, 1.0에 가까울수록 공평)</h3>
+  <svg id="balChart" class="chart" viewBox="0 0 900 220" role="img" aria-label="층별 비율 중앙값"></svg>
+</section>
+
+<section>
+  <h2><span class="num">7</span>최종 반영 점수</h2>
+  <p class="desc">최종 반영 점수 = 점수 × 15% (최대 15점)</p>
+  <table id="exTable"></table>
+  <h3>직접 계산해 보기</h3>
+  <div class="calc">
+    <div>
+      <label for="rent">월세: <b id="rentV"></b></label><input id="rent" type="range" min="20" max="800" step="5" value="200">
+      <label for="area">전용면적: <b id="areaV"></b></label><input id="area" type="range" min="10" max="400" step="1" value="75">
+      <label for="ref">비교 매물들의 ㎡당 월세 중간값: <b id="refV"></b></label><input id="ref" type="range" min="0.5" max="6" step="0.05" value="2.8">
+    </div>
+    <div class="result">
+      <div style="font-size:13px;color:var(--sub)">최종 반영 점수</div>
+      <div class="big" id="resBig">-</div>
+      <div style="font-size:14px;color:var(--sub);margin-top:6px" id="resTxt"></div>
+      <svg id="resScale" class="chart" viewBox="0 0 420 46" style="margin-top:10px"></svg>
+      <div id="resToast" style="margin-top:8px"></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">8</span>지금까지 정한 비중 (100점 만점)</h2>
+  <div class="key"><span><i style="background:var(--k1)"></i>역세권</span><span><i style="background:var(--k2)"></i>동일업종 밀집도</span><span><i style="background:var(--k3)"></i>유동인구</span><span><i style="background:var(--k4)"></i>점포 유지율</span><span><i style="background:var(--k5)"></i>임대료 적정성</span><span><i style="background:var(--rest)"></i>미정</span></div>
+  <div class="alloc" id="alloc"></div>
+  <div class="callout"><b class="t">참고 사항</b>
+    <ul>
+      <li><b>적는 방식 차이:</b> "월세에 관리비·부가세 포함"으로 적은 매물(예: 동산동 "관리비 포함 500만원")은 실제보다 비싸게 계산됩니다. 매물 설명을 읽어 걸러내는 작업은 아직 하지 않았습니다.</li>
+      <li><b>경계값(0.7, 0.85, 0.95 등)은 판단으로 정한 값입니다.</b> 점수를 더 고르게 퍼뜨리려면 점포 유지율처럼 "같은 조건 매물 중 몇 등인지"로 바꾸는 방법도 있습니다.</li>
+      <li><b>새 매물 데이터를 받으면</b> 비교 기준(중간값)이 바뀌므로 다시 계산합니다.</li>
+    </ul>
+  </div>
+</section>
+
+<footer>데이터: 대구 구역별 공실 매물 CSV (월세, 전용면적, 층, 구, 경도·위도)</footer>
+</div>
+
+<script>
+(function () {
+  var BANDS = [[0, 0.7, 100, "0.7 미만", "30% 이상 쌈"], [0.7, 0.85, 85, "0.7~0.85", "15~30% 쌈"], [0.85, 0.95, 70, "0.85~0.95", "5~15% 쌈"],
+    [0.95, 1.05, 50, "0.95~1.05", "비슷함"], [1.05, 1.2, 35, "1.05~1.2", "5~20% 비쌈"], [1.2, 1.5, 15, "1.2~1.5", "20~50% 비쌈"], [1.5, Infinity, 0, "1.5 이상", "50% 이상 비쌈"]];
+  var BCOL = { 100: "var(--b100)", 85: "var(--b85)", 70: "var(--b70)", 50: "var(--b50)", 35: "var(--b35)", 15: "var(--b15)", 0: "var(--b0)" };
+  var DIST = { 100: 24.3, 85: 14.5, 70: 8.8, 50: 10.7, 35: 9.7, 15: 13.1, 0: 19.0 };
+  // [층, 전체, 보류]
+  var FLOORS = [["지하", 67, 32], ["1층", 1438, 1], ["2층", 488, 13], ["3층", 273, 8], ["4층", 138, 16], ["5층", 95, 16], ["6층", 42, 24], ["7층", 29, 14], ["8층", 21, 13], ["9층", 11, 11], ["10층 이상", 37, 12]];
+  var BAL = [["지하", 0.98], ["1층", 0.98], ["2층", 0.96], ["3층", 0.97], ["4층", 0.96], ["5층", 0.89], ["6층", 1.00], ["7층", 0.97], ["8층", 1.07], ["9층", null], ["10층 이상", 0.96]];
+  var NS = "http://www.w3.org/2000/svg";
+  function el(tag, a, p, t) { var e = document.createElementNS(NS, tag); for (var k in a) e.setAttribute(k, a[k]); if (t != null) e.textContent = t; if (p) p.appendChild(e); return e; }
+  function band(r) { for (var i = 0; i < BANDS.length; i++) if (r >= BANDS[i][0] && r < BANDS[i][1]) return BANDS[i]; return BANDS[6]; }
+  function nf(x) { return (Math.round(x * 100) / 100).toString(); }
+
+  // 2. weight comparison
+  (function () {
+    var svg = document.getElementById("wCmp"), d = [["역세권", 10, "var(--k1)"], ["동일업종 밀집도", "10~20", "var(--k2)"], ["유동인구", "5~10", "var(--k3)"], ["점포 유지율", "5~10", "var(--k4)"], ["임대료 적정성", 15, "var(--k5)"]];
+    var L = 140, Wd = 640, rowH = 36, max = 20;
+    d.forEach(function (r, i) {
+      var y = 4 + i * rowH, v = typeof r[1] === "number" ? r[1] : +String(r[1]).split("~")[1], lo = typeof r[1] === "number" ? r[1] : +String(r[1]).split("~")[0];
+      el("text", { x: L - 12, y: y + 21, "text-anchor": "end", "font-weight": i === 4 ? 800 : 400, "font-size": 13 }, svg, r[0]);
+      el("rect", { x: L, y: y + 6, width: Wd, height: 22, rx: 5, fill: "var(--bg)" }, svg);
+      el("rect", { x: L, y: y + 6, width: Wd * v / max, height: 22, rx: 5, fill: r[2], "fill-opacity": i === 4 ? 1 : 0.35 }, svg);
+      if (lo !== v) el("rect", { x: L, y: y + 6, width: Wd * lo / max, height: 22, rx: 5, fill: r[2], "fill-opacity": 0.7 }, svg);
+      el("text", { x: L + Wd * v / max + 8, y: y + 22, "font-weight": 700 }, svg, r[1] + "%");
+    });
+  })();
+
+  // 3. floors
+  document.getElementById("floorChips").innerHTML = FLOORS.map(function (f) { return '<span class="chip m">' + f[0] + "</span>"; }).join("");
+  (function () {
+    var svg = document.getElementById("floorChart"), L = 90, Wd = 700, rowH = 25, T = 6;
+    var sc = function (n) { return Wd * Math.log10(n + 1) / Math.log10(1500); };
+    FLOORS.forEach(function (f, i) {
+      var y = T + i * rowH, wAll = sc(f[1]), wP = wAll * f[2] / f[1];
+      el("text", { x: L - 10, y: y + 15, "text-anchor": "end", "font-size": 12, "font-weight": 700 }, svg, f[0]);
+      el("rect", { x: L, y: y + 3, width: wAll, height: 16, rx: 3, fill: "var(--accent)", "fill-opacity": 0.75 }, svg);
+      if (f[2]) el("rect", { x: L + wAll - wP, y: y + 3, width: wP, height: 16, rx: 3, fill: "var(--pend)" }, svg);
+      el("text", { x: L + wAll + 8, y: y + 15, "font-size": 12 }, svg, f[1].toLocaleString() + "곳 · 보류 " + f[2]);
+    });
+    el("text", { x: L, y: T + FLOORS.length * rowH + 14, "class": "sub", "font-size": 11 }, svg, "막대 길이는 매물 수(로그 눈금). 회색 부분 = 판단 보류(50점)");
+  })();
+  (function () {
+    var svg = document.getElementById("rangeChart"), d = [["500m", 849], ["1km", 799], ["2km", 542], ["같은 구", 289], ["보류", 160]], tot = 2639, x = 0, Wd = 900;
+    var cols = ["var(--accent)", "color-mix(in srgb, var(--accent) 75%, var(--card))", "color-mix(in srgb, var(--accent) 50%, var(--card))", "color-mix(in srgb, var(--accent) 30%, var(--card))", "var(--pend)"];
+    d.forEach(function (r, i) {
+      var w = Wd * r[1] / tot;
+      el("rect", { x: x, y: 4, width: w - 2, height: 30, rx: 4, fill: cols[i] }, svg);
+      el("text", { x: x + w / 2, y: 54, "text-anchor": "middle", "font-size": 12, "font-weight": 700 }, svg, r[0] + " " + r[1]);
+      x += w;
+    });
+  })();
+
+  // 4. scale (log axis)
+  (function () {
+    var svg = document.getElementById("scaleChart"), L = 30, Wd = 840, lo = Math.log(0.4), hi = Math.log(2.5);
+    var X = function (r) { return L + Wd * (Math.log(r) - lo) / (hi - lo); };
+    BANDS.forEach(function (b) {
+      var a = X(Math.max(b[0], 0.4)), c = X(Math.min(b[1], 2.5));
+      el("rect", { x: a, y: 40, width: c - a - 1, height: 46, fill: BCOL[b[2]] }, svg);
+      el("text", { x: (a + c) / 2, y: 69, "text-anchor": "middle", "font-weight": 800, "font-size": 15, style: "fill:" + (b[2] === 50 ? "var(--ink)" : "#fff") }, svg, b[2]);
+    });
+    [0.5, 0.7, 0.85, 0.95, 1.05, 1.2, 1.5, 2].forEach(function (r) { el("text", { x: X(r), y: 104, "text-anchor": "middle", "class": "sub", "font-size": 11 }, svg, r); });
+    el("line", { x1: X(1), x2: X(1), y1: 30, y2: 92, stroke: "var(--ink)", "stroke-width": 2 }, svg);
+    el("text", { x: X(1), y: 24, "text-anchor": "middle", "font-weight": 700 }, svg, "1.0 = 주변과 같음");
+    el("text", { x: L, y: 24, "font-size": 12, "font-weight": 700, style: "fill:var(--b100)" }, svg, "← 주변보다 쌈");
+    el("text", { x: L + Wd, y: 24, "text-anchor": "end", "font-size": 12, "font-weight": 700, style: "fill:var(--b0)" }, svg, "주변보다 비쌈 →");
+    // symmetry markers
+    var yb = 130;
+    el("line", { x1: X(1 / 1.5), x2: X(1), y1: yb, y2: yb, stroke: "var(--sub)", "stroke-width": 1.5 }, svg);
+    el("line", { x1: X(1), x2: X(1.5), y1: yb, y2: yb, stroke: "var(--sub)", "stroke-width": 1.5 }, svg);
+    [1 / 1.5, 1, 1.5].forEach(function (r) { el("line", { x1: X(r), x2: X(r), y1: yb - 6, y2: yb + 6, stroke: "var(--sub)", "stroke-width": 1.5 }, svg); });
+    el("text", { x: (X(1 / 1.5) + X(1)) / 2, y: yb + 22, "text-anchor": "middle", "font-size": 12 }, svg, "주변의 2/3 (0.67)");
+    el("text", { x: (X(1) + X(1.5)) / 2, y: yb + 22, "text-anchor": "middle", "font-size": 12 }, svg, "주변의 3/2 (1.5)");
+    el("text", { x: X(1), y: yb + 44, "text-anchor": "middle", "class": "sub", "font-size": 11 }, svg, "곱하기 눈금에서는 두 거리가 같습니다 → 0.7과 1.5가 대칭");
+  })();
+  document.getElementById("bandTable").innerHTML = "<tr><th>비율</th><th>뜻</th><th>점수</th><th>매물 비율</th></tr>" + BANDS.map(function (b) {
+    return "<tr><td>" + b[3] + "</td><td>" + b[4] + "</td><td><b style='display:inline-block;min-width:36px;border-radius:6px;padding:0 6px;background:" + BCOL[b[2]] + ";color:" + (b[2] === 50 ? "var(--ink)" : "#fff") + "'>" + b[2] + "</b></td><td>" + DIST[b[2]] + "%</td></tr>";
+  }).join("");
+
+  // 6. distribution
+  (function () {
+    var svg = document.getElementById("distChart"), L = 40, Wd = 820, H = 150, T = 20, bw = Wd / 7, max = 26;
+    BANDS.forEach(function (b, i) {
+      var v = DIST[b[2]], h = H * v / max, x = L + i * bw + 10;
+      el("rect", { x: x, y: T + H - h, width: bw - 20, height: h, rx: 6, fill: BCOL[b[2]] }, svg);
+      el("text", { x: x + (bw - 20) / 2, y: T + H - h - 6, "text-anchor": "middle", "font-weight": 700 }, svg, v + "%");
+      el("text", { x: x + (bw - 20) / 2, y: T + H + 18, "text-anchor": "middle", "font-weight": 700 }, svg, b[2] + "점");
+      el("text", { x: x + (bw - 20) / 2, y: T + H + 34, "text-anchor": "middle", "class": "sub", "font-size": 11 }, svg, b[3]);
+    });
+  })();
+  (function () {
+    var svg = document.getElementById("balChart"), L = 40, Wd = 840, T = 20, H = 140, lo = 0.8, hi = 1.2, cw = Wd / BAL.length;
+    var Y = function (v) { return T + H - H * (v - lo) / (hi - lo); };
+    el("rect", { x: L, y: Y(1.05), width: Wd, height: Y(0.95) - Y(1.05), fill: "var(--b50)", "fill-opacity": 0.35 }, svg);
+    [0.8, 0.9, 1.0, 1.1, 1.2].forEach(function (v) {
+      el("line", { x1: L, x2: L + Wd, y1: Y(v), y2: Y(v), stroke: v === 1 ? "var(--ink)" : "var(--line)", "stroke-dasharray": v === 1 ? "" : "3 3" }, svg);
+      el("text", { x: L - 6, y: Y(v) + 4, "text-anchor": "end", "class": "sub", "font-size": 11 }, svg, v.toFixed(1));
+    });
+    BAL.forEach(function (b, i) {
+      var x = L + cw * i + cw / 2;
+      el("text", { x: x, y: T + H + 20, "text-anchor": "middle", "font-size": 12 }, svg, b[0]);
+      if (b[1] == null) { el("text", { x: x, y: Y(1) - 10, "text-anchor": "middle", "font-size": 11, style: "fill:var(--pend)" }, svg, "전부 보류"); return; }
+      el("circle", { cx: x, cy: Y(b[1]), r: 7, fill: "var(--accent)" }, svg);
+      el("text", { x: x, y: Y(b[1]) - 12, "text-anchor": "middle", "font-size": 11, "font-weight": 700 }, svg, b[1].toFixed(2));
+    });
+    el("text", { x: L + Wd, y: T + H + 40, "text-anchor": "end", "class": "sub", "font-size": 11 }, svg, "회색 띠(0.95~1.05) 안이면 그 층이 공평하게 비교되고 있다는 뜻");
+  })();
+
+  // 7. examples
+  (function () {
+    var ex = [["용산동 1층 119.8㎡, 월세 100만원", 0.83, 0.55], ["동성로(삼덕동1가) 1층 75㎡, 월세 200만원", 2.67, 0.95], ["범어동 1층 96㎡, 월세 350만원", 3.65, 1.16], ["동성로(삼덕동1가) 1층 66㎡, 월세 460만원", 6.97, 2.49], ["9층 매물 (판단 보류)", null, null]];
+    document.getElementById("exTable").innerHTML = "<tr><th class='l'>예시</th><th>㎡당 월세</th><th>비율</th><th>점수</th><th>최종 반영</th></tr>" + ex.map(function (e) {
+      var s = e[2] == null ? 50 : band(e[2])[2];
+      return "<tr><td class='l'>" + e[0] + "</td><td>" + (e[1] == null ? "-" : e[1] + "만원") + "</td><td>" + (e[2] == null ? "-" : e[2]) + "</td><td><b style='display:inline-block;min-width:36px;border-radius:6px;padding:0 6px;background:" + BCOL[s] + ";color:" + (s === 50 ? "var(--ink)" : "#fff") + "'>" + s + "</b></td><td><b>" + nf(s * 0.15) + "점</b></td></tr>";
+    }).join("");
+  })();
+  (function () {
+    var rent = document.getElementById("rent"), area = document.getElementById("area"), ref = document.getElementById("ref");
+    function upd() {
+      var m = +rent.value, a = +area.value, rf = +ref.value, pm = m / a, r = pm / rf, b = band(r), fin = b[2] * 0.15;
+      document.getElementById("rentV").textContent = m + "만원"; document.getElementById("areaV").textContent = a + "㎡"; document.getElementById("refV").textContent = rf.toFixed(2) + "만원";
+      var big = document.getElementById("resBig"); big.textContent = nf(fin) + "점"; big.style.color = BCOL[b[2]] === "var(--b50)" ? "var(--ink)" : BCOL[b[2]];
+      document.getElementById("resTxt").innerHTML = "㎡당 월세 " + pm.toFixed(2) + "만원 ÷ 중간값 " + rf.toFixed(2) + "만원 = 비율 <b>" + r.toFixed(2) + "</b> (" + b[4] + ")<br>점수 " + b[2] + " × 15% = <b>" + nf(fin) + "점</b>";
+      var svg = document.getElementById("resScale"); while (svg.firstChild) svg.removeChild(svg.firstChild);
+      var lo = Math.log(0.4), hi = Math.log(2.5), X = function (v) { return 10 + 400 * (Math.log(Math.min(Math.max(v, 0.4), 2.5)) - lo) / (hi - lo); };
+      BANDS.forEach(function (bb) { var p = X(Math.max(bb[0], 0.4)), q = X(Math.min(bb[1], 2.5)); el("rect", { x: p, y: 8, width: q - p - 1, height: 14, fill: BCOL[bb[2]] }, svg); });
+      el("polygon", { points: (X(r) - 6) + ",34 " + (X(r) + 6) + ",34 " + X(r) + ",24", fill: "var(--ink)" }, svg);
+      document.getElementById("resToast").innerHTML = r < 0.5 ? '<div class="toast"><i style="background:var(--b100)">✓</i>주변보다 매우 저렴해요 · 계약 조건(연세, 관리비 등)을 확인하세요</div>' : "";
+    }
+    [rent, area, ref].forEach(function (e) { e.addEventListener("input", upd); }); upd();
+  })();
+
+  // 8. allocation
+  (function () {
+    var A = { 술집: [10, 20, 10, 10, 15], 식당: [10, 10, 10, 10, 15], 카페: [10, 10, 10, 10, 15], 소매: [10, 10, 10, 5, 15], 오피스: [10, 10, 5, 5, 15], 전시: [10, 10, 5, 5, 15] };
+    var cols = ["var(--k1)", "var(--k2)", "var(--k3)", "var(--k4)", "var(--k5)"], names = ["역세권", "동일업종 밀집도", "유동인구", "점포 유지율", "임대료 적정성"], h = "";
+    Object.keys(A).forEach(function (c) {
+      var v = A[c], used = v.reduce(function (a, b) { return a + b; }, 0);
+      h += "<div style='font-weight:700'>" + c + "</div><div class='bar'>" + v.map(function (x, i) { return "<div style='width:" + x + "%;background:" + cols[i] + "' title='" + names[i] + " " + x + "%'>" + x + "</div>"; }).join("") +
+        "<div style='flex:1;color:var(--sub)'>미정 " + (100 - used) + "</div></div><div class='sum' style='font-size:13px;color:var(--sub)'>정한 비중 <b style='color:var(--ink);font-size:16px'>" + used + "</b> / 100</div>";
+    });
+    document.getElementById("alloc").innerHTML = h;
+  })();
+})();
+</script>
+</body>
+</html>

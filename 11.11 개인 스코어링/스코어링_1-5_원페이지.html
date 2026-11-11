@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>스코어링 기준 한눈에</title>
+<!-- DONG: 행정동별 카테고리 유입 비율 [식당, 카페, 술집, 소매, 오피스, 전시] -->
+
+<style>
+  :root {
+    --bg: #f7f7f5; --card: #ffffff; --ink: #1d1d1b; --sub: #6b6b66; --line: #e4e3df; --soft: #f1f0ec;
+    --k1: #2563eb; --k2: #e8590c; --k3: #0f9d8a; --k4: #7048e8; --k5: #0b7285; --rest: #e4e3df;
+    --k1s: #dbe7fd; --k2s: #fde5d6; --k3s: #d3f2ec; --k4s: #ece6fd; --k5s: #d6f0f4;
+    --warn: #b45309; --night: #e9e7f5;
+    --b100: #2b8a3e; --b85: #51a35c; --b70: #8cc58f; --b50: #c9c6bd; --b35: #f0a868; --b15: #e8743b; --b0: #c92a2a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141413; --card: #1e1e1c; --ink: #ecebe6; --sub: #a3a29c; --line: #34332f; --soft: #262624;
+      --k1: #7aa7f7; --k2: #ff922b; --k3: #38d9c0; --k4: #9775fa; --k5: #3bc9db; --rest: #34332f;
+      --k1s: #23314d; --k2s: #3d2a1c; --k3s: #183b36; --k4s: #2b2445; --k5s: #163a40;
+      --warn: #f0b35c; --night: #26243a;
+      --b100: #69db7c; --b85: #51cf66; --b70: #2f9e44; --b50: #5c5b56; --b35: #d9802e; --b15: #f76707; --b0: #ff6b6b;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif; line-height: 1.55; font-size: 14px; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 28px 16px 56px; }
+  header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 12px; }
+  header h1 { font-size: 26px; margin: 0; letter-spacing: -0.02em; }
+  header p { margin: 4px 0 0; color: var(--sub); }
+  .key { display: flex; flex-wrap: wrap; gap: 12px; font-size: 13px; }
+  .key span { display: inline-flex; align-items: center; gap: 6px; }
+  .key i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+  .panel { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px; margin-top: 16px; }
+  .panel h2 { font-size: 17px; margin: 0 0 2px; }
+  .panel .desc { color: var(--sub); margin: 0 0 14px; font-size: 13px; }
+  /* allocation */
+  .alloc { display: grid; grid-template-columns: 64px 1fr 120px; gap: 8px 12px; align-items: center; }
+  .alloc .name { font-weight: 700; font-size: 15px; }
+  .bar { display: flex; height: 30px; border-radius: 8px; overflow: hidden; background: var(--rest); }
+  .bar div { display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; color: #fff; white-space: nowrap; }
+  .alloc .sum { font-size: 13px; color: var(--sub); }
+  .alloc .sum b { color: var(--ink); font-size: 16px; }
+  /* three cards */
+  .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 16px; }
+  .crit { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; border-top: 6px solid var(--c); display: flex; flex-direction: column; gap: 12px; }
+  .crit h3 { margin: 0; font-size: 18px; display: flex; justify-content: space-between; align-items: baseline; }
+  .crit h3 small { font-size: 13px; color: var(--c); font-weight: 800; }
+  .crit .what { margin: 0; color: var(--sub); font-size: 13px; }
+  .fx { background: var(--cs); border-radius: 8px; padding: 8px 10px; font-weight: 700; font-size: 13px; text-align: center; }
+  .lbl { font-size: 12px; color: var(--sub); font-weight: 700; margin-bottom: 4px; letter-spacing: 0.02em; }
+  .chart { width: 100%; height: auto; display: block; }
+  .chart text { fill: var(--ink); font-size: 11px; }
+  .chart .sub { fill: var(--sub); }
+  .chips { display: flex; flex-wrap: wrap; gap: 4px; }
+  .chip { border-radius: 6px; padding: 3px 8px; font-size: 12px; background: var(--soft); }
+  .chip b { margin-left: 3px; }
+  table.mini { border-collapse: collapse; width: 100%; font-size: 12px; }
+  table.mini th, table.mini td { padding: 4px 3px; border-bottom: 1px solid var(--line); text-align: center; }
+  table.mini th { color: var(--sub); font-weight: 600; }
+  table.mini td:first-child, table.mini th:first-child { text-align: left; font-weight: 700; }
+  .warn { font-size: 12px; color: var(--sub); border-left: 3px solid var(--warn); padding-left: 8px; margin-top: auto; }
+  .link { font-size: 12px; color: var(--c); font-weight: 700; text-decoration: none; }
+  /* calculator */
+  .calc { display: grid; grid-template-columns: 1.1fr 1fr; gap: 20px; }
+  .ctrl { display: grid; gap: 12px; }
+  .ctrl label { display: block; font-size: 12px; color: var(--sub); font-weight: 700; margin-bottom: 4px; }
+  .catbtns { display: flex; flex-wrap: wrap; gap: 6px; }
+  .catbtns button { border: 1.5px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 999px;
+    padding: 5px 14px; font-size: 14px; cursor: pointer; font-family: inherit; }
+  .catbtns button.on { background: var(--ink); color: var(--card); border-color: var(--ink); }
+  .chk { display: flex; gap: 6px; align-items: center; font-size: 12px; color: var(--sub); margin-top: 4px; cursor: pointer; }
+  .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .sec { border-top: 1px dashed var(--line); padding-top: 10px; }
+  select, input[type=number] { width: 100%; padding: 7px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); font-size: 14px; font-family: inherit; }
+  input[type=range] { width: 100%; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .out { background: var(--bg); border-radius: 12px; padding: 16px; }
+  .total { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; margin-bottom: 10px; }
+  .total .big { font-size: 42px; font-weight: 800; line-height: 1; white-space: nowrap; }
+  .total .of { color: var(--sub); }
+  .part { display: grid; grid-template-columns: 82px 1fr 64px; gap: 8px; align-items: center; margin: 8px 0; font-size: 13px; }
+  .track { height: 14px; background: var(--rest); border-radius: 7px; overflow: hidden; }
+  .fill { height: 100%; border-radius: 7px; transition: width .2s; }
+  .part .v { text-align: right; font-weight: 700; }
+  .why { font-size: 12px; color: var(--sub); margin: -4px 0 6px 90px; }
+  .src { background: var(--soft); border-radius: 8px; padding: 8px 10px; }
+  .src ul { margin: 0; padding-left: 16px; font-size: 12px; }
+  .src li { margin: 4px 0; }
+  .src li span { display: block; color: var(--sub); }
+  .src code { display: block; font-size: 10.5px; color: var(--sub); word-break: break-all; font-family: ui-monospace, Consolas, monospace; }
+  footer { color: var(--sub); font-size: 12px; margin-top: 18px; }
+  @media (max-width: 960px) { .three { grid-template-columns: 1fr; } .calc { grid-template-columns: 1fr; } }
+  @media (max-width: 560px) {
+    .alloc { grid-template-columns: 48px 1fr; } .alloc .sum { grid-column: 2; margin-top: -6px; }
+    .bar div { font-size: 11px; } .row2, .row3 { grid-template-columns: 1fr; } .why { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <h1>공실 매칭 스코어링 기준 한눈에 보기</h1>
+    <p>지금까지 정한 5개 기준(역세권 · 동일업종 밀집도 · 유동인구 · 점포 유지율 · 임대료 적정성)이 카테고리별로 100점 중 몇 점을 차지하는지 정리했습니다.</p>
+  </div>
+  <div class="key">
+    <span><i style="background:var(--k1)"></i>① 역세권</span>
+    <span><i style="background:var(--k2)"></i>② 동일업종 밀집도</span>
+    <span><i style="background:var(--k3)"></i>③ 유동인구</span>
+    <span><i style="background:var(--k4)"></i>④ 점포 유지율</span>
+    <span><i style="background:var(--k5)"></i>⑤ 임대료 적정성</span>
+    <span><i style="background:var(--rest)"></i>아직 정하지 않은 비중</span>
+  </div>
+</header>
+
+<div class="panel">
+  <h2>카테고리별 배점</h2>
+  <p class="desc">막대 전체가 100점입니다. 색칠된 부분이 지금까지 정한 기준이고, 회색은 앞으로 채울 비중입니다.</p>
+  <div class="alloc" id="alloc"></div>
+</div>
+
+<div class="three">
+  <div class="crit" style="--c:var(--k1);--cs:var(--k1s)">
+    <h3>① 역세권 <small>모든 카테고리 10%</small></h3>
+    <p class="what">가장 가까운 지하철 출구까지의 거리와 그 역의 이용객 규모로 점수를 줍니다.</p>
+    <div class="fx">거리 점수 × 역 규모 계수 × 10%</div>
+    <div><div class="lbl">거리 점수 (500m에서 크게 떨어짐)</div><svg id="k1dist" class="chart" viewBox="0 0 340 120"></svg></div>
+    <div><div class="lbl">역 규모 계수 (하루 이용객)</div><div class="chips" id="k1tier"></div></div>
+    <div class="warn">500m 밖은 임대료 프리미엄이 사라져서 점수를 크게 낮췄습니다. 근처에 역이 여러 개면 가장 높은 값을 씁니다.</div>
+    <div class="src"><div class="lbl">원본 데이터</div><ul><li><b>대구교통공사 1·2·3호선 역별 출구별 위치정보</b><span>출구 좌표 → 매물에서 가장 가까운 출구까지 거리</span><code>데모/추가 자료/대구교통공사 역별 승하차 인원/대구교통공사_1호선(2호선·3호선) 역별 출구별 위치정보_*.csv</code></li><li><b>대구교통공사 역별 일별 시간별 승하차 인원 현황 (2026년 1~9월)</b><span>하루 평균 이용객 → 역 규모 계수 (91개 역, 환승역 합침)</span><code>데모/추가 자료/대구교통공사 역별 승하차 인원/대구교통공사_역별일별시간별승하차인원현황_20260930.csv</code></li><li><b>대구 구역별 공실 매물</b><span>매물 좌표(경도·위도)</span><code>데모/추가 자료/대구 전체 공실정보/대구_구역별_매물 (최종).csv</code></li></ul></div>
+    <a class="link" href="스코어링_1)역세권.html">자세히 보기 →</a>
+  </div>
+
+  <div class="crit" style="--c:var(--k2);--cs:var(--k2s)">
+    <h3>② 동일업종 밀집도 <small>10~20%</small></h3>
+    <p class="what">매물 주변 원 안에 같은 업종 가게가 몇 곳 있는지 세고, 다른 매물과 비교해 6개 구간으로 나눕니다.</p>
+    <div class="fx">구간 점수 × 카테고리 가중치</div>
+    <div><div class="lbl">원 크기 · 각 구간이 시작되는 가게 수</div><table class="mini" id="k2tab"></table></div>
+    <div><div class="lbl">구간별 점수 곡선</div><svg id="k2curve" class="chart" viewBox="0 0 340 106"></svg></div>
+    <div class="warn">소매는 백화점·아울렛·지하상가·서문시장 안의 가게를 빼고 셉니다. 동네 시장은 그대로 셉니다.</div>
+    <div class="src"><div class="lbl">원본 데이터</div><ul><li><b>소상공인시장진흥공단 상가(상권)정보 대구 (2026)</b><span>업종 코드·좌표·건물명 → 원 안의 같은 업종 가게 수 (118,357곳)</span><code>데모/추가 자료/소상공인시장진흥공단_상가(상권)정보-대구/[원본1]상가정보_대구전체(2026).xlsx</code></li><li><b>대구 구역별 공실 매물</b><span>매물 좌표, 구간 경계값(매물 2,669곳의 하위 20%·40%… 지점)</span><code>데모/추가 자료/대구 전체 공실정보/대구_구역별_매물 (최종).csv</code></li></ul></div>
+    <a class="link" href="스코어링_2)동일업종 밀집도.html">자세히 보기 →</a>
+  </div>
+
+  <div class="crit" style="--c:var(--k3);--cs:var(--k3s)">
+    <h3>③ 유동인구 <small>5~10%</small></h3>
+    <p class="what">매물이 속한 행정동에 카테고리별로 중요한 시간대에 외부 사람이 얼마나 들어오는지 봅니다.</p>
+    <div class="fx">시간대 인구 ÷ 새벽(2~4시) 인구 = 유입 비율</div>
+    <div><div class="lbl">카테고리별로 보는 시간대</div><svg id="k3time" class="chart" viewBox="0 0 340 150"></svg></div>
+    <div><div class="lbl">유입 비율 → 점수 (6개 공통)</div><div class="chips" id="k3scale"></div></div>
+    <div class="warn">행정동 단위라 같은 동 매물은 같은 점수를 받습니다. 그래서 가중치를 작게 두었습니다.</div>
+    <div class="src"><div class="lbl">원본 데이터</div><ul><li><b>대구 서비스인구(유동인구) 통계 2025년 1~12월</b><span>행정동 139곳 × 0~23시 인구 → 시간대 인구 ÷ 새벽(2~4시) 인구</span><code>데모/추가 자료/대구 유동인구/대구_서비스인구(유동인구)_시간대별_2025.01-12_통합.csv</code></li><li><b>대구 구역별 공실 매물</b><span>매물이 속한 행정동</span><code>데모/추가 자료/대구 전체 공실정보/대구_구역별_매물 (최종).csv</code></li></ul></div>
+    <a class="link" href="스코어링_3)유동인구.html">자세히 보기 →</a>
+  </div>
+
+  <div class="crit" style="--c:var(--k4);--cs:var(--k4s)">
+    <h3>④ 점포 유지율 <small>5~10%</small></h3>
+    <p class="what">매물 주변 500m(전시 2km) 안에서 같은 업종 가게가 2023년 12월 이후 얼마나 버텼는지와 가게 수가 늘었는지를 봅니다.</p>
+    <div class="fx">(유지율 점수 + 증감률 점수) ÷ 2 × 가중치</div>
+    <div><div class="lbl">유지율: 10점 칸 ~ 100점 칸 (● = 50점, 보통)</div><svg id="k4ret" class="chart" viewBox="0 0 340 128"></svg></div>
+    <div><div class="lbl">증감률: 10점 칸 ~ 100점 칸 (● = 50점, 보통)</div><svg id="k4chg" class="chart" viewBox="0 0 340 144"></svg></div>
+    <div class="warn">같은 업종 안에서 줄 세운 점수라 업종마다 "보통"이 다릅니다. 주변에 2023년 같은 업종 가게가 10곳 미만(전시 2km 안 5곳 미만)이면 50점을 줍니다.</div>
+    <div class="src"><div class="lbl">원본 데이터</div><ul><li><b>소상공인시장진흥공단 상가(상권)정보 대구 2023년 12월 31일 기준</b><span>예전 가게 목록 (113,639곳)</span><code>데모/추가 자료/대구 폐업률을 알기 위한 데이터/daegu_202312.csv</code></li><li><b>소상공인시장진흥공단 상가(상권)정보 대구 (2026)</b><span>지금 가게 목록 (118,357곳) → 상가업소번호로 비교</span><code>데모/추가 자료/소상공인시장진흥공단_상가(상권)정보-대구/[원본1]상가정보_대구전체(2026).xlsx</code></li><li><b>대구 구역별 공실 매물</b><span>매물 좌표, 점수 변환표(매물 2,669곳 기준)</span><code>데모/추가 자료/대구 전체 공실정보/대구_구역별_매물 (최종).csv</code></li></ul></div>
+    <a class="link" href="스코어링_4)점포 유지율.html">자세히 보기 →</a>
+  </div>
+
+  <div class="crit" style="--c:var(--k5);--cs:var(--k5s)">
+    <h3>⑤ 임대료 적정성 <small>모든 카테고리 15%</small></h3>
+    <p class="what">매물의 ㎡당 월세를 같은 층, 비슷한 크기, 가까운 다른 공실 매물과 비교해서 주변보다 싸면 높은 점수를 줍니다.</p>
+    <div class="fx">내 ㎡당 월세 ÷ 비교 매물 중간값 = 비율</div>
+    <div><div class="lbl">비율 → 점수 (0.7 미만이면 최고점)</div><svg id="k5bar" class="chart" viewBox="0 0 340 120"></svg></div>
+    <div><div class="lbl">비교 매물 고르기 (5곳 이상 될 때까지 넓힘)</div><div class="chips" id="k5how"></div></div>
+    <div class="warn">같은 구까지 넓혀도 5곳 미만, 층 정보 없음, 가격 극단값(상·하위 1%)인 매물은 50점을 줍니다 (8.8%).</div>
+    <div class="src"><div class="lbl">원본 데이터</div><ul><li><b>대구 구역별 공실 매물</b><span>월세, 전용면적, 층, 구, 경도·위도 → ㎡당 월세와 주변 비교 (보증금·관리비는 안 씀)</span><code>데모/추가 자료/대구 전체 공실정보/대구_구역별_매물 (최종).csv</code></li></ul></div>
+    <a class="link" href="스코어링_5)임대료 적정성.html">자세히 보기 →</a>
+  </div>
+</div>
+
+<div class="panel">
+  <h2>다섯 기준 합쳐서 계산해 보기</h2>
+  <p class="desc">카테고리와 매물 조건을 고르면 다섯 기준에서 받는 점수와 합계가 나옵니다. ④는 카테고리를 바꾸면 그 업종의 "보통(50점)" 값으로 시작합니다.</p>
+  <div class="calc">
+    <div class="ctrl">
+      <div><label>카테고리</label><div class="catbtns" id="cats"></div></div>
+      <div class="row2">
+        <div><label for="st">① 가까운 역</label><select id="st"></select></div>
+        <div><label for="dist">① 역 출구까지 거리: <span id="distV"></span></label><input id="dist" type="range" min="0" max="1500" step="10" value="200"></div>
+      </div>
+      <div><label for="cnt">② 원 안의 같은 업종 가게 수: <span id="cntV"></span></label><input id="cnt" type="range" min="0" max="140" step="1" value="20"></div>
+      <div><label for="dong">③ 매물이 속한 행정동</label><select id="dong"></select></div>
+      <div class="sec">
+        <div class="row2">
+          <div><label for="ret">④ 유지율 (지금도 있는 비율): <span id="retV"></span></label><input id="ret" type="range" min="40" max="100" step="1" value="70"></div>
+          <div><label for="chg">④ 증감률 (가게 수 변화): <span id="chgV"></span></label><input id="chg" type="range" min="-40" max="50" step="1" value="0"></div>
+        </div>
+        <label class="chk"><input type="checkbox" id="hold4"> ④ 판단 보류 (주변 같은 업종 가게가 너무 적음 → 50점)</label>
+      </div>
+      <div class="sec">
+        <div class="row3">
+          <div><label for="rent">⑤ 월세 (만원)</label><input id="rent" type="number" min="1" step="5" value="200"></div>
+          <div><label for="area">⑤ 전용면적 (㎡)</label><input id="area" type="number" min="10" step="1" value="75"></div>
+          <div><label for="med">⑤ 주변 ㎡당 중간값 (만원)</label><input id="med" type="number" min="0.1" step="0.01" value="2.80"></div>
+        </div>
+        <label class="chk"><input type="checkbox" id="hold5"> ⑤ 판단 보류 (비교할 비슷한 매물 부족 → 50점)</label>
+      </div>
+    </div>
+    <div class="out">
+      <div class="total"><span class="big" id="tot">-</span><span class="of" id="totOf"></span></div>
+      <div class="part"><span>① 역세권</span><div class="track"><div class="fill" id="f1" style="background:var(--k1)"></div></div><span class="v" id="v1"></span></div>
+      <div class="why" id="w1"></div>
+      <div class="part"><span>② 밀집도</span><div class="track"><div class="fill" id="f2" style="background:var(--k2)"></div></div><span class="v" id="v2"></span></div>
+      <div class="why" id="w2"></div>
+      <div class="part"><span>③ 유동인구</span><div class="track"><div class="fill" id="f3" style="background:var(--k3)"></div></div><span class="v" id="v3"></span></div>
+      <div class="why" id="w3"></div>
+      <div class="part"><span>④ 유지율</span><div class="track"><div class="fill" id="f4" style="background:var(--k4)"></div></div><span class="v" id="v4"></span></div>
+      <div class="why" id="w4"></div>
+      <div class="part"><span>⑤ 임대료</span><div class="track"><div class="fill" id="f5" style="background:var(--k5)"></div></div><span class="v" id="v5"></span></div>
+      <div class="why" id="w5"></div>
+    </div>
+  </div>
+</div>
+
+<footer>각 기준의 원본 데이터는 카드 아래 "원본 데이터"에 적었습니다. 파일 위치는 모두 <code>데모/추가 자료/</code> 아래입니다.</footer>
+</div>
+
+<script>
+var DONG = {"가창면":[1.2576,1.4501,0.9986,1.4027,1.3319,1.4402],"감삼동":[0.9403,0.8887,1.0256,0.8952,0.9254,0.883],"검단동":[1.1989,1.3329,0.9933,1.3199,1.2563,1.353],"고산1동":[0.9006,0.839,0.9768,0.8525,0.8508,0.8465],"고산2동":[1.1993,1.2018,1.1793,1.1941,1.2406,1.1802],"고산3동":[0.8286,0.7602,0.9449,0.771,0.7918,0.7598],"고성동":[0.9796,0.8781,1.131,0.886,0.9296,0.8666],"공산동":[1.0965,1.1614,0.9883,1.14,1.089,1.1556],"관문동":[0.9204,0.8896,0.9694,0.8969,0.906,0.8908],"관음동":[0.8657,0.8135,0.965,0.8222,0.8421,0.8123],"구암동":[0.7913,0.7222,0.8954,0.7361,0.7251,0.7321],"구지면":[1.1662,1.2571,1.016,1.2483,1.2154,1.2677],"국우동":[0.9564,0.9361,0.9747,0.9421,0.9234,0.9456],"남산1동":[1.4571,1.5808,1.2321,1.5689,1.5633,1.5829],"남산2동":[1.2868,1.3944,1.0403,1.3938,1.3281,1.418],"남산3동":[1.1009,1.0816,1.0851,1.092,1.0732,1.0922],"남산4동":[0.7747,0.7124,0.9149,0.7209,0.7502,0.7089],"내당1동":[0.8926,0.85,0.9647,0.8585,0.8654,0.8531],"내당2·3동":[0.8966,0.8995,0.9158,0.8946,0.8883,0.8971],"내당4동":[0.8874,0.8411,0.9467,0.8526,0.8467,0.8486],"노원동":[1.6549,1.9466,1.1496,1.9234,1.8268,1.9755],"논공읍":[1.1655,1.2671,1.0037,1.2554,1.2134,1.2782],"다사읍":[0.8997,0.8568,0.9672,0.8644,0.8754,0.857],"대명10동":[1.0678,1.075,1.0378,1.0796,1.068,1.0837],"대명11동":[0.9399,0.9365,0.9606,0.9382,0.9356,0.9395],"대명1동":[0.7835,0.711,0.9102,0.7239,0.7373,0.7139],"대명2동":[1.0017,0.9927,0.9797,1.001,0.9742,1.0052],"대명3동":[0.9913,1.0184,0.9441,1.017,0.9955,1.0268],"대명4동":[1.0744,1.1241,1.0087,1.1161,1.0864,1.1322],"대명5동":[1.1998,1.2767,1.0308,1.2742,1.1919,1.3042],"대명6동":[0.9145,0.8819,0.9687,0.8862,0.9023,0.8791],"대명9동":[0.9391,0.9096,0.9676,0.9154,0.907,0.9125],"대봉1동":[1.2708,1.3178,1.1837,1.3088,1.3297,1.3046],"대봉2동":[0.8684,0.8148,0.9494,0.826,0.821,0.8233],"대신동":[1.5195,1.879,1.0457,1.7892,1.6601,1.8612],"대현동":[1.0356,1.0454,1.0205,1.0441,1.0488,1.0439],"도원동":[0.8384,0.7788,0.9398,0.7877,0.7953,0.7807],"도평동":[1.043,1.0785,0.9883,1.0779,1.0709,1.0829],"동인동":[1.2361,1.3394,1.0536,1.3281,1.2931,1.3453],"동천동":[1.022,0.9585,1.1422,0.9578,1.0265,0.9362],"동촌동":[0.8699,0.8438,0.9364,0.8451,0.8573,0.841],"두류1.2동":[1.0225,1.0232,1.0044,1.0225,1.0151,1.0233],"두류3동":[1.1401,1.1116,1.1787,1.107,1.1255,1.1009],"두산동":[1.3451,1.2865,1.36,1.27,1.2856,1.256],"만촌1동":[0.9597,0.959,0.9537,0.9593,0.9573,0.9592],"만촌2동":[0.9851,0.951,1.0222,0.9613,0.9665,0.9553],"만촌3동":[0.9006,0.8653,0.9353,0.8798,0.8544,0.8822],"무태조야동":[0.9032,0.8529,0.9857,0.8617,0.8875,0.8494],"방촌동":[0.8776,0.8212,0.9689,0.8306,0.8433,0.8215],"범물1동":[0.8383,0.8035,0.8928,0.8127,0.8123,0.8085],"범물2동":[0.7711,0.7038,0.8922,0.7183,0.7293,0.7093],"범어1동":[1.0012,0.9692,1.0312,0.9791,0.9818,0.9745],"범어2동":[1.2005,1.2236,1.1343,1.2231,1.2452,1.2187],"범어3동":[1.0157,1.0015,1.0134,1.0105,1.012,1.0067],"범어4동":[1.0393,0.9935,1.0928,0.9987,1.0219,0.988],"복현1동":[0.9083,0.8731,0.9645,0.8812,0.8832,0.8776],"복현2동":[0.8523,0.8042,0.9155,0.8162,0.8061,0.8142],"본동":[0.8938,0.8533,0.9438,0.8647,0.8572,0.8619],"본리동":[0.9262,0.8549,1.0143,0.8684,0.8697,0.8601],"봉덕1동":[0.9328,0.9262,0.9517,0.9315,0.9334,0.9299],"봉덕2동":[0.7881,0.7234,0.9059,0.7351,0.7615,0.7224],"봉덕3동":[0.9801,0.9543,0.9757,0.9704,0.9355,0.9758],"불로·봉무동":[1.0473,1.0701,1.0265,1.0599,1.0722,1.0591],"비산1동":[0.7351,0.6627,0.87,0.6739,0.6941,0.6629],"비산2·3동":[0.9147,0.8718,0.9829,0.8793,0.888,0.8736],"비산4동":[0.7926,0.7176,0.8889,0.7373,0.7277,0.7312],"비산5동":[0.8815,0.8385,0.9464,0.8475,0.8598,0.8387],"비산6동":[0.8496,0.7958,0.952,0.8023,0.8316,0.7902],"비산7동":[1.2225,1.3397,1.0423,1.3267,1.3213,1.3367],"산격1동":[0.807,0.7562,0.9055,0.7675,0.7896,0.7562],"산격2동":[1.5346,1.7641,1.1432,1.7263,1.692,1.7528],"산격3동":[1.1129,1.1295,1.0947,1.1225,1.1284,1.1238],"산격4동":[0.8167,0.7969,0.88,0.8011,0.8151,0.796],"삼덕동":[1.7063,1.8509,1.5196,1.7976,1.8472,1.8027],"상동":[0.9466,0.9051,0.9952,0.9115,0.919,0.9041],"상인1동":[0.8505,0.7985,0.9281,0.8104,0.8167,0.803],"상인2동":[0.8724,0.7971,0.9998,0.8061,0.8315,0.7933],"상인3동":[0.8351,0.78,0.9209,0.7925,0.8006,0.7858],"상중이동":[1.2296,1.3531,1.0107,1.3503,1.3161,1.3678],"성내1동":[3.095,3.6264,2.4204,3.4105,3.6741,3.3941],"성내2동":[2.6718,3.3208,1.7844,3.12,3.1584,3.1682],"성내3동":[0.9839,1.0109,0.9662,1.0085,1.0017,1.0141],"성당동":[0.8951,0.8606,0.9423,0.8699,0.8626,0.8686],"송현1동":[0.8523,0.8073,0.922,0.8191,0.8208,0.8145],"송현2동":[0.9968,0.9739,1.0074,0.9837,0.9786,0.9813],"수성1가동":[0.8328,0.7875,0.9082,0.7977,0.8,0.7932],"수성2·3가동":[1.0343,1.03,1.0517,1.0311,1.0481,1.0267],"수성4가동":[0.8956,0.8298,1.003,0.8423,0.8655,0.8299],"신당동":[1.232,1.3282,1.0593,1.3177,1.2773,1.3376],"신암1동":[0.8618,0.8056,0.9552,0.8181,0.8175,0.8136],"신암2동":[0.7917,0.7174,0.925,0.7284,0.7451,0.7178],"신암3동":[0.8727,0.8124,0.9575,0.8262,0.8258,0.8214],"신암4동":[1.0598,1.0752,1.0611,1.0628,1.0884,1.0595],"신암5동":[0.9342,0.9172,0.943,0.9266,0.9128,0.9275],"신천1·2동":[0.8474,0.7953,0.9289,0.8081,0.8192,0.8005],"신천3동":[1.0822,1.1236,1.0207,1.1235,1.1159,1.128],"신천4동":[1.631,1.8275,1.3642,1.7549,1.8074,1.7572],"안심1동":[0.8769,0.8314,0.9609,0.8376,0.8576,0.8287],"안심2동":[1.0757,1.1015,1.0055,1.107,1.0949,1.1092],"안심3·4동":[0.9712,0.9561,0.985,0.9611,0.9597,0.9594],"옥포읍":[0.985,0.9857,0.9819,0.9876,0.9883,0.986],"용산1동":[0.851,0.7949,0.9464,0.802,0.8147,0.7935],"용산2동":[0.7635,0.683,0.8855,0.7009,0.6999,0.6929],"원대동":[0.9391,0.9274,0.9429,0.9347,0.9317,0.9312],"월성1동":[0.9535,0.8893,1.0545,0.895,0.9297,0.8803],"월성2동":[1.3425,1.5337,1.0089,1.5225,1.4537,1.5571],"유가읍":[1.0637,1.0803,1.0488,1.0697,1.0752,1.0711],"읍내동":[0.8174,0.7653,0.8911,0.778,0.7743,0.7737],"이곡1동":[0.954,0.9165,1.0078,0.9231,0.949,0.9118],"이곡2동":[1.0045,0.9925,1.0269,0.9936,0.9985,0.9923],"이천동":[0.9196,0.8956,0.9593,0.9018,0.9011,0.8998],"장기동":[1.0262,1.0184,1.0072,1.0285,1.018,1.0288],"죽전동":[1.0692,1.064,1.0572,1.0692,1.087,1.0617],"중동":[0.9411,0.9155,0.9848,0.9223,0.9341,0.9169],"지산1동":[0.9441,0.9137,0.9854,0.9231,0.9244,0.9191],"지산2동":[0.8636,0.8186,0.9439,0.8285,0.8377,0.8231],"지저동":[1.0709,1.057,1.0625,1.0619,1.0719,1.0553],"진천동":[0.8663,0.8101,0.9577,0.8196,0.834,0.8105],"칠성동":[1.0651,1.0648,1.0475,1.0636,1.0591,1.0647],"침산1동":[1.3194,1.4812,1.0258,1.4724,1.4233,1.4968],"침산2동":[0.9811,0.9495,1.0329,0.9523,0.9837,0.9408],"침산3동":[0.9101,0.8929,0.943,0.8982,0.8913,0.898],"태전1동":[0.8896,0.8391,0.9543,0.851,0.8478,0.8462],"태전2동":[0.8765,0.8224,0.9603,0.831,0.847,0.8219],"파동":[0.7747,0.7162,0.8927,0.7263,0.7417,0.7179],"평리1동":[0.8495,0.8048,0.9422,0.8125,0.8341,0.8041],"평리2동":[0.7838,0.7151,0.9273,0.7247,0.7524,0.7127],"평리3동":[0.9977,0.9588,1.0389,0.9676,0.9687,0.9622],"평리4동":[0.9059,0.8371,1.02,0.8456,0.8771,0.8314],"평리5동":[0.9546,0.8938,1.0439,0.9051,0.9192,0.8956],"평리6동":[0.9008,0.8733,0.9264,0.8866,0.8869,0.8812],"하빈면":[1.4329,1.6638,1.0314,1.6403,1.525,1.6902],"해안동":[0.9457,0.9496,0.9513,0.9521,0.9505,0.9535],"현풍읍":[1.0318,1.0256,1.0064,1.0318,1.0104,1.0345],"화원읍":[0.9033,0.8646,0.9629,0.8729,0.8831,0.8654],"황금1동":[0.74,0.6846,0.8568,0.6956,0.7021,0.6903],"황금2동":[1.0461,1.0193,1.0578,1.0248,1.0082,1.0247],"효목1동":[0.9708,0.9152,1.0613,0.917,0.9436,0.9043],"효목2동":[0.9477,0.9073,1.0175,0.9132,0.9256,0.9068]};
+(function () {
+  var CATS = ["식당", "카페", "술집", "소매", "오피스", "전시"];
+  // ② 동일업종 밀집도
+  var K2 = {
+    식당: { w: 10, r: 300, th: [40, 62, 83, 117, 150], sc: [20, 50, 70, 90, 100, 90] },
+    카페: { w: 10, r: 300, th: [7, 11, 16, 23, 32], sc: [30, 60, 80, 100, 100, 90] },
+    술집: { w: 20, r: 300, th: [3, 7, 13, 26, 42], sc: [20, 40, 60, 80, 100, 100] },
+    소매: { w: 10, r: 300, th: [34, 50, 65, 88, 109], sc: [20, 50, 70, 90, 100, 100] },
+    오피스: { w: 10, r: 500, th: [28, 43, 59, 95, 148], sc: [20, 40, 60, 80, 100, 100] },
+    전시: { w: 10, r: 1000, th: [1, 2, 4, 8, 14], sc: [20, 40, 60, 80, 100, 100] }
+  };
+  var K2MAX = { 식당: 400, 카페: 120, 술집: 140, 소매: 300, 오피스: 500, 전시: 60 };
+  var TIERN = ["아주 적음", "적음", "보통", "많음", "아주 많음", "최상위"];
+  // ③ 유동인구
+  var K3 = { 식당: { w: 10, win: [[11, 14], [18, 21]] }, 카페: { w: 10, win: [[13, 17]] }, 술집: { w: 10, win: [[19, 23]] },
+    소매: { w: 10, win: [[11, 18]] }, 오피스: { w: 5, win: [[15, 18]] }, 전시: { w: 5, win: [[11, 17]] } };
+  var K3CUT = [0.9, 1.0, 1.1, 1.5], K3SC = [20, 40, 60, 80, 100];
+  var K3LBL = ["0.9 미만", "0.9~1.0", "1.0~1.1", "1.1~1.5", "1.5 이상"];
+  // ① 역세권
+  var BANDS = [[0, 100, 100, "0~100m"], [100, 200, 90, "100~200m"], [200, 300, 80, "200~300m"], [300, 400, 70, "300~400m"], [400, 500, 60, "400~500m"], [500, 1000, 10, "500m~1km"], [1000, Infinity, 0, "1km 이상"]];
+  var TIERS = [[20000, 1.0, "초대형", "2만+"], [15000, 0.8, "대형", "1.5만~2만"], [10000, 0.6, "중형", "1만~1.5만"], [5000, 0.4, "소형", "5천~1만"], [0, 0.2, "초소형", "5천 미만"]];
+  var ST = [["반월당",66981],["동대구역",37125],["중앙로",29804],["상인",20681],["대구역",15942],["범어",15763],["진천",15465],["서부정류장",15183],["영남대",15033],["청라언덕",14499],["두류",13904],["경대병원",13740],["서문시장",13216],["대실",13106],["죽전",13090],["감삼",12773],["용산",12686],["강창",12120],["명덕",12088],["계명대",11738],["대구은행",11455],["신매",11128],["영대병원",10957],["수성구청",10592],["신천",9406],["설화명곡",9125],["성서산업단지",8994],["아양교",8907],["월배",8644],["만촌",8597],["대곡",8566],["정평",8441],["팔거",8428],["율하",8314],["각산",8045],["사월",8034],["내당",7957],["대명",7881],["화원",7845],["하양",7794],["월촌",7741],["칠성시장",7590],["반고개",7503],["교대",7493],["신기",7345],["북구청",7311],["안지랑",7158],["범물",7056],["안심",6916],["칠곡운암",6903],["송현",6598],["다사",6528],["임당",6486],["이곡",6371],["방촌",6350],["동구청",6231],["현충로",5824],["달성공원",5743],["담티",5715],["남산",5659],["반야월",5643],["수성시장",5552],["대공원",5401],["황금",5258],["고산",5057],["대봉교",5046],["문양",4960],["해안",4602],["수성못",4495],["동촌",4370],["팔달시장",4336],["지산",4051],["용지",4024],["동천",4014],["구암",3906],["매천",3748],["용계",3744],["태전",3737],["수성구민운동장",3365],["원대",3349],["건들바위",3346],["부호",3320],["매천시장",2730],["만평",2482],["칠곡경대병원",2376],["공단",2224],["어린이회관",2182],["팔달",1978],["대구한의대병원",1707],["연호",1124],["학정",704]];
+
+  // ④ 점포 유지율: 변환표 (10,20,…,80,100점 칸), 유지율 %, 증감률 %
+  var K4 = {
+    식당: { w: 10, r: 500, ret: [62, 64, 66, 68, 70, 71, 72, 74, 76], chg: [-7, -4, -2, 0, 2, 4, 7, 9, 13] },
+    카페: { w: 10, r: 500, ret: [53, 57, 61, 64, 66, 68, 71, 74, 79], chg: [-19, -13, -8, -5, 0, 2, 5, 10, 18] },
+    술집: { w: 10, r: 500, ret: [63, 67, 71, 73, 75, 78, 80, 83, 86], chg: [-29, -23, -18, -16, -12, -9, -6, -2, 3] },
+    소매: { w: 5, r: 500, ret: [66, 69, 71, 72, 74, 75, 77, 78, 80], chg: [-7, -4, -2, 0, 1, 3, 6, 9, 14] },
+    오피스: { w: 5, r: 500, ret: [71, 75, 78, 80, 82, 83, 85, 87, 89], chg: [-5, 0, 4, 7, 10, 14, 16, 20, 29] },
+    전시: { w: 5, r: 2000, ret: [60, 66, 70, 73, 75, 77, 80, 85, 92], chg: [-11, -4, 0, 1, 6, 10, 17, 25, 43] }
+  };
+  var SC4 = [10, 20, 30, 40, 50, 60, 70, 80, 100];
+  function conv4(th, v) { var s = 0; for (var i = 0; i < th.length; i++) if (v >= th[i]) s = SC4[i]; return s; }
+  // ⑤ 임대료 적정성
+  var W5 = 15, K5CUT = [0.7, 0.85, 0.95, 1.05, 1.2, 1.5], K5SC = [100, 85, 70, 50, 35, 15, 0];
+  var K5LBL = ["0.7 미만", "0.7~0.85", "0.85~0.95", "0.95~1.05", "1.05~1.2", "1.2~1.5", "1.5 이상"];
+  var K5COL = ["--b100", "--b85", "--b70", "--b50", "--b35", "--b15", "--b0"];
+  function tier5(r) { var t = 0; while (t < 6 && r >= K5CUT[t]) t++; return t; }
+
+  var NS = "http://www.w3.org/2000/svg";
+  function el(tag, a, p, t) { var e = document.createElementNS(NS, tag); for (var k in a) e.setAttribute(k, a[k]); if (t != null) e.textContent = t; if (p) p.appendChild(e); return e; }
+  function nf(x) { return (Math.round(x * 10) / 10).toString(); }
+  function band(d) { for (var i = 0; i < BANDS.length; i++) if (d >= BANDS[i][0] && d < BANDS[i][1]) return BANDS[i]; return BANDS[6]; }
+  function tierSt(n) { for (var i = 0; i < TIERS.length; i++) if (n >= TIERS[i][0]) return TIERS[i]; return TIERS[4]; }
+  function tier2(c, n) { var t = 0; while (t < 5 && n >= K2[c].th[t]) t++; return t; }
+  function tier3(r) { var t = 0; while (t < 4 && r >= K3CUT[t]) t++; return t; }
+  function radT(r) { return r >= 1000 ? r / 1000 + "km" : r + "m"; }
+
+  // allocation bars
+  (function () {
+    var box = document.getElementById("alloc"), h = "";
+    CATS.forEach(function (c) {
+      var a = 10, b = K2[c].w, d = K3[c].w, e = K4[c].w, f = W5, used = a + b + d + e + f;
+      function seg(v, col, lbl) { return '<div style="width:' + v + '%;background:' + col + '" title="' + lbl + " " + v + '%">' + v + "</div>"; }
+      h += '<div class="name">' + c + '</div><div class="bar">' + seg(a, "var(--k1)", "역세권") + seg(b, "var(--k2)", "동일업종 밀집도") + seg(d, "var(--k3)", "유동인구") +
+        seg(e, "var(--k4)", "점포 유지율") + seg(f, "var(--k5)", "임대료 적정성") +
+        '<div style="flex:1;color:var(--sub)">미정 ' + (100 - used) + "</div></div>" +
+        '<div class="sum">정한 비중 <b>' + used + "</b> / 100</div>";
+    });
+    box.innerHTML = h;
+  })();
+
+  // ① mini distance chart
+  (function () {
+    var svg = document.getElementById("k1dist"), L = 4, W = 332, T = 16, H = 72, bw = W / 7;
+    BANDS.forEach(function (b, i) {
+      var h = H * b[2] / 100, x = L + i * bw + 4, w = bw - 8;
+      if (h > 0) el("rect", { x: x, y: T + H - h, width: w, height: h, rx: 4, fill: b[2] >= 60 ? "var(--k1)" : "var(--k1s)" }, svg);
+      el("text", { x: x + w / 2, y: T + H - h - 4, "text-anchor": "middle", "font-weight": 700 }, svg, b[2]);
+      el("text", { x: x + w / 2, y: T + H + 14, "text-anchor": "middle", "class": "sub", "font-size": 9 }, svg, ["~100m", "~200m", "~300m", "~400m", "~500m", "~1km", "1km+"][i]);
+    });
+    var xc = L + 5 * bw;
+    el("line", { x1: xc, x2: xc, y1: 4, y2: T + H + 2, stroke: "var(--warn)", "stroke-dasharray": "4 3", "stroke-width": 1.5 }, svg);
+  })();
+  document.getElementById("k1tier").innerHTML = TIERS.map(function (t) {
+    return '<span class="chip">' + t[2] + " " + t[3] + "<b>×" + t[1].toFixed(1) + "</b></span>";
+  }).join("");
+
+  // ② table + curves
+  (function () {
+    var h = "<tr><th></th><th>원</th><th>적음</th><th>보통</th><th>많음</th><th>최상위</th><th>비중</th></tr>";
+    CATS.forEach(function (c) {
+      var k = K2[c];
+      h += "<tr><td>" + c + "</td><td>" + radT(k.r) + "</td><td>" + k.th[0] + "</td><td>" + k.th[1] + "</td><td>" + k.th[2] + "</td><td>" + k.th[4] + "+</td><td><b>" + k.w + "%</b></td></tr>";
+    });
+    document.getElementById("k2tab").innerHTML = h;
+    var svg = document.getElementById("k2curve"), L = 26, W = 306, T = 12, H = 76, step = W / 6;
+    [0, 50, 100].forEach(function (v) { var y = T + H - H * v / 100; el("line", { x1: L, x2: L + W, y1: y, y2: y, stroke: "var(--line)" }, svg); el("text", { x: L - 4, y: y + 4, "text-anchor": "end", "class": "sub", "font-size": 9 }, svg, v); });
+    var curves = [["상승형: 술집·오피스·전시", K2.술집.sc, "var(--k2)", ""], ["포화형: 소매", K2.소매.sc, "var(--sub)", "5 3"], ["포화형: 식당·카페", K2.식당.sc, "var(--k2)", "2 3"]];
+    curves.forEach(function (cv, ci) {
+      el("polyline", { points: cv[1].map(function (v, i) { return (L + step * i + step / 2) + "," + (T + H - H * v / 100); }).join(" "), fill: "none", stroke: cv[2], "stroke-width": 2.2, "stroke-dasharray": cv[3] }, svg);
+    });
+    ["아주적음", "적음", "보통", "많음", "아주많음", "최상위"].forEach(function (t, i) { el("text", { x: L + step * i + step / 2, y: T + H + 13, "text-anchor": "middle", "class": "sub", "font-size": 9 }, svg, t); });
+    var lg = document.createElement("div"); lg.className = "chips"; lg.style.marginTop = "4px";
+    lg.innerHTML = curves.map(function (cv) {
+      return '<span style="font-size:12px;color:var(--sub);display:inline-flex;align-items:center;gap:4px;margin-right:8px">' +
+        '<svg width="18" height="6"><line x1="0" x2="18" y1="3" y2="3" stroke="' + cv[2] + '" stroke-width="2.2" stroke-dasharray="' + cv[3] + '"/></svg>' + cv[0] + "</span>";
+    }).join("");
+    svg.parentNode.appendChild(lg);
+  })();
+
+  // ③ time map + scale
+  (function () {
+    var svg = document.getElementById("k3time"), L = 44, W = 292, T = 14, rh = 21, cw = W / 24;
+    [0, 6, 12, 18].forEach(function (h) { el("text", { x: L + cw * h + cw / 2, y: 10, "text-anchor": "middle", "class": "sub", "font-size": 9 }, svg, h + "시"); });
+    CATS.forEach(function (c, r) {
+      var y = T + r * rh;
+      el("text", { x: L - 6, y: y + 14, "text-anchor": "end", "font-weight": 700 }, svg, c);
+      for (var i = 0; i < 24; i++) {
+        var on = K3[c].win.some(function (w) { return i >= w[0] && i <= w[1]; }), dawn = i >= 2 && i <= 4;
+        el("rect", { x: L + cw * i + 0.5, y: y + 3, width: cw - 1, height: 15, rx: 2, fill: on ? "var(--k3)" : (dawn ? "var(--night)" : "var(--soft)") }, svg);
+      }
+    });
+    el("text", { x: L, y: T + 6 * rh + 12, "class": "sub", "font-size": 9 }, svg, "초록: 보는 시간대 · 연보라: 새벽 기준(2~4시)");
+  })();
+  document.getElementById("k3scale").innerHTML = K3LBL.map(function (l, i) {
+    return '<span class="chip" style="background:color-mix(in srgb, var(--k3) ' + (12 + i * 20) + '%, var(--card))">' + l + "<b>" + K3SC[i] + "</b></span>";
+  }).join("");
+
+  // ④ range charts (10점 칸 ~ 100점 칸, 50점 dot)
+  function rangeChart(id, key, lo, hi, ticks, fmt) {
+    var svg = document.getElementById(id), L = 46, W = 282, T = 16, rh = 18;
+    function x(v) { return L + W * (v - lo) / (hi - lo); }
+    ticks.forEach(function (v) {
+      el("line", { x1: x(v), x2: x(v), y1: T - 2, y2: T + 6 * rh, stroke: "var(--line)", "stroke-dasharray": v === 0 ? "" : "2 3" }, svg);
+      el("text", { x: x(v), y: 10, "text-anchor": "middle", "class": "sub", "font-size": 9 }, svg, fmt(v));
+    });
+    CATS.forEach(function (c, r) {
+      var th = K4[c][key], y = T + r * rh + rh / 2;
+      el("text", { x: L - 6, y: y + 4, "text-anchor": "end", "font-weight": 700 }, svg, c);
+      el("line", { x1: x(th[0]), x2: x(th[8]), y1: y, y2: y, stroke: "var(--k4s)", "stroke-width": 8, "stroke-linecap": "round" }, svg);
+      el("line", { x1: x(th[0]), x2: x(th[8]), y1: y, y2: y, stroke: "var(--k4)", "stroke-width": 2, "stroke-linecap": "round", opacity: 0.5 }, svg);
+      el("circle", { cx: x(th[4]), cy: y, r: 4.5, fill: "var(--k4)" }, svg);
+      var lx = x(th[8]) + 6, anchor = "start";
+      if (lx > L + W - 22) { lx = x(th[0]) - 6; anchor = "end"; }
+      el("text", { x: lx, y: y + 4, "text-anchor": anchor, "class": "sub", "font-size": 10 }, svg, fmt(th[4]));
+    });
+    if (id === "k4chg") el("text", { x: L, y: T + 6 * rh + 16, "class": "sub", "font-size": 9 }, svg, "막대 옆 숫자 = 그 업종의 50점(보통) 값 · 전시는 반경 2km");
+  }
+  rangeChart("k4ret", "ret", 50, 95, [50, 60, 70, 80, 90], function (v) { return v + "%"; });
+  rangeChart("k4chg", "chg", -30, 45, [-30, -15, 0, 15, 30, 45], function (v) { return (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v) + "%"; });
+
+  // ⑤ score bars
+  (function () {
+    var svg = document.getElementById("k5bar"), L = 4, W = 332, T = 16, H = 70, bw = W / 7;
+    K5SC.forEach(function (s, i) {
+      var h = Math.max(H * s / 100, 2), x = L + i * bw + 4, w = bw - 8;
+      el("rect", { x: x, y: T + H - h, width: w, height: h, rx: 4, fill: "var(" + K5COL[i] + ")" }, svg);
+      el("text", { x: x + w / 2, y: T + H - h - 4, "text-anchor": "middle", "font-weight": 700 }, svg, s);
+      el("text", { x: x + w / 2, y: T + H + 14, "text-anchor": "middle", "class": "sub", "font-size": 9 }, svg, ["<0.7", "0.7~", "0.85~", "0.95~", "1.05~", "1.2~", "1.5+"][i]);
+    });
+    el("text", { x: L + 3.5 * bw, y: T + H + 28, "text-anchor": "middle", "class": "sub", "font-size": 9 }, svg, "← 주변보다 쌈 · 비슷 · 비쌈 →");
+  })();
+  document.getElementById("k5how").innerHTML = ["같은 층 (11단계)", "비슷한 크기 (50㎡ / 150㎡)", "500m → 1km → 2km → 같은 구"].map(function (t) {
+    return '<span class="chip">' + t + "</span>";
+  }).join("");
+
+  // calculator
+  var DONGS = Object.keys(DONG).sort(function (a, b) { return a.localeCompare(b, "ko"); });
+  var cur = "술집", cats = document.getElementById("cats");
+  var st = document.getElementById("st"), dist = document.getElementById("dist"), cnt = document.getElementById("cnt"), dong = document.getElementById("dong");
+  ST.forEach(function (s, i) { var o = document.createElement("option"); o.value = i; o.textContent = s[0] + " (" + tierSt(s[1])[2] + ")"; st.appendChild(o); });
+  DONGS.forEach(function (d) { var o = document.createElement("option"); o.value = d; o.textContent = d; dong.appendChild(o); });
+  st.value = 2; dong.value = "삼덕동";
+  CATS.forEach(function (c) {
+    var b = document.createElement("button"); b.type = "button"; b.textContent = c;
+    b.onclick = function () { cur = c; cnt.max = K2MAX[c]; cnt.value = Math.round((K2[c].th[2] + K2[c].th[3]) / 2); set4(); paint(); upd(); };
+    cats.appendChild(b);
+  });
+  function paint() { Array.prototype.forEach.call(cats.children, function (b) { b.className = b.textContent === cur ? "on" : ""; }); }
+  function upd() {
+    var s = ST[+st.value], d = +dist.value, b = band(d), t = tierSt(s[1]);
+    var p1 = b[2] * t[1] / 10;
+    var k2 = K2[cur], n = +cnt.value, t2 = tier2(cur, n), p2 = k2.sc[t2] * k2.w / 100;
+    var ci = CATS.indexOf(cur), r = DONG[dong.value][ci], t3 = tier3(r), p3 = K3SC[t3] * K3[cur].w / 100;
+    var k4 = K4[cur], rv = +ret.value, cv = +chg.value, h4 = hold4.checked;
+    var s4r = conv4(k4.ret, rv), s4c = conv4(k4.chg, cv), s4 = h4 ? 50 : (s4r + s4c) / 2, p4 = s4 * k4.w / 100;
+    var rentV = +rent.value, areaV = +area.value, medV = +med.value, h5 = hold5.checked || !(areaV > 0 && medV > 0 && rentV > 0);
+    var per = areaV > 0 ? rentV / areaV : 0, ratio = medV > 0 ? per / medV : 0, t5 = tier5(ratio), s5 = h5 ? 50 : K5SC[t5], p5 = s5 * W5 / 100;
+    var max = 10 + k2.w + K3[cur].w + k4.w + W5, tot = p1 + p2 + p3 + p4 + p5;
+    document.getElementById("retV").textContent = rv + "%";
+    document.getElementById("chgV").textContent = (cv > 0 ? "+" : "") + cv + "%";
+    document.getElementById("distV").textContent = d >= 1500 ? "1.5km 이상" : d + "m";
+    document.getElementById("cntV").textContent = n + "곳 (원 " + radT(k2.r) + ")";
+    document.getElementById("tot").textContent = nf(tot) + "점";
+    document.getElementById("totOf").textContent = "/ " + max + "점 (다섯 기준 합계, 100점 중)";
+    [[p1, 10, "1"], [p2, k2.w, "2"], [p3, K3[cur].w, "3"], [p4, k4.w, "4"], [p5, W5, "5"]].forEach(function (x) {
+      document.getElementById("f" + x[2]).style.width = (100 * x[0] / x[1]) + "%";
+      document.getElementById("v" + x[2]).textContent = nf(x[0]) + " / " + x[1];
+    });
+    document.getElementById("w1").textContent = s[0] + "역 " + t[2] + " ×" + t[1].toFixed(1) + " · " + b[3] + " " + b[2] + "점";
+    document.getElementById("w2").textContent = TIERN[t2] + " 구간 → " + k2.sc[t2] + "점 × " + k2.w + "%";
+    document.getElementById("w3").textContent = dong.value + " 유입 비율 " + r.toFixed(2) + " → " + K3SC[t3] + "점 × " + K3[cur].w + "%";
+    document.getElementById("w4").textContent = h4 ? "판단 보류 → 50점 × " + k4.w + "%" :
+      "유지율 " + s4r + "점 + 증감률 " + s4c + "점 → 평균 " + nf(s4) + "점 × " + k4.w + "% (반경 " + radT(k4.r) + ")";
+    document.getElementById("w5").textContent = h5 ? "판단 보류 → 50점 × " + W5 + "%" :
+      "㎡당 " + per.toFixed(2) + "만원 ÷ " + medV.toFixed(2) + " = 비율 " + ratio.toFixed(2) + " (" + K5LBL[t5] + ") → " + s5 + "점 × " + W5 + "%" +
+      (ratio < 0.5 ? " · 매우 저렴: 계약 조건 확인" : "");
+  }
+  var ret = document.getElementById("ret"), chg = document.getElementById("chg"), hold4 = document.getElementById("hold4");
+  var rent = document.getElementById("rent"), area = document.getElementById("area"), med = document.getElementById("med"), hold5 = document.getElementById("hold5");
+  function set4() { ret.value = K4[cur].ret[4]; chg.value = K4[cur].chg[4]; }
+  [st, dist, cnt, dong, ret, chg, hold4, rent, area, med, hold5].forEach(function (e) { e.addEventListener("input", upd); e.addEventListener("change", upd); });
+  cnt.max = K2MAX[cur]; cnt.value = 30; set4(); paint(); upd();
+})();
+</script>
+</body>
+</html>

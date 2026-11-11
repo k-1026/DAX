@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>동일업종 밀집도 기준</title>
+<style>
+  :root {
+    --bg: #f7f7f5; --card: #ffffff; --ink: #1d1d1b; --sub: #6b6b66; --line: #e4e3df;
+    --accent: #2563eb; --accent-soft: #dbe7fd; --warn: #b45309; --ok: #15803d;
+    --c-식당: #e8590c; --c-카페: #9c6644; --c-술집: #c2255c; --c-소매: #2f9e44; --c-오피스: #1c7ed6; --c-전시: #7048e8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141413; --card: #1e1e1c; --ink: #ecebe6; --sub: #a3a29c; --line: #34332f;
+      --accent: #7aa7f7; --accent-soft: #23314d; --warn: #f0b35c; --ok: #6cc788;
+      --c-식당: #ff922b; --c-카페: #d4a373; --c-술집: #f06595; --c-소매: #69db7c; --c-오피스: #4dabf7; --c-전시: #9775fa;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif; line-height: 1.6; font-size: 15px; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 32px 16px 64px; }
+  header h1 { font-size: 28px; margin: 0 0 6px; letter-spacing: -0.02em; }
+  header p { margin: 0; color: var(--sub); }
+  .pill { display: inline-block; background: var(--accent-soft); color: var(--accent); font-weight: 700;
+    border-radius: 999px; padding: 2px 12px; font-size: 13px; margin-right: 6px; }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 24px; margin-top: 20px; }
+  h2 { font-size: 19px; margin: 0 0 4px; letter-spacing: -0.01em; }
+  h2 .num { color: var(--accent); margin-right: 6px; }
+  .desc { color: var(--sub); margin: 0 0 18px; font-size: 14px; }
+  .flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .step { background: var(--bg); border-radius: 12px; padding: 14px; position: relative; }
+  .step .n { font-size: 12px; color: var(--accent); font-weight: 700; }
+  .step b { display: block; font-size: 15px; margin: 2px 0 4px; }
+  .step span { font-size: 13px; color: var(--sub); }
+  .chart { width: 100%; height: auto; display: block; }
+  .chart text { fill: var(--ink); font-size: 12px; }
+  .chart .sub { fill: var(--sub); }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: center; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { padding: 8px 6px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+  th { color: var(--sub); font-weight: 600; font-size: 13px; }
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: 0; }
+  .callout { border-left: 4px solid var(--warn); background: var(--bg); padding: 12px 14px; border-radius: 6px; margin-top: 14px; font-size: 14px; }
+  .callout b { color: var(--warn); }
+  .callout ul { margin: 6px 0 0; padding-left: 18px; }
+  .ruler { margin-bottom: 14px; }
+  .ruler .name { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+  .ruler .name small { color: var(--sub); font-weight: 400; margin-left: 6px; }
+  .segs { display: grid; grid-template-columns: 2fr 2fr 2fr 2fr 1fr 1fr; gap: 3px; }
+  .seg { border-radius: 6px; padding: 6px 4px; text-align: center; font-size: 12px; line-height: 1.3; }
+  .seg b { display: block; font-size: 13px; }
+  .tiers-head { display: grid; grid-template-columns: 2fr 2fr 2fr 2fr 1fr 1fr; gap: 3px; font-size: 11px; color: var(--sub); text-align: center; margin-bottom: 4px; }
+  .minis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .mini { background: var(--bg); border-radius: 12px; padding: 12px; }
+  .mini h3 { margin: 0; font-size: 15px; }
+  .mini h3 small { font-weight: 400; color: var(--sub); font-size: 12px; margin-left: 4px; }
+  .legend-type { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--sub); margin-top: 14px; }
+  .calc { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+  label { display: block; font-size: 13px; color: var(--sub); margin-bottom: 6px; }
+  .catbtns { display: flex; flex-wrap: wrap; gap: 6px; }
+  .catbtns button { border: 1.5px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 999px;
+    padding: 6px 14px; font-size: 14px; cursor: pointer; font-family: inherit; }
+  .catbtns button.on { color: #fff; border-color: transparent; }
+  input[type=range] { width: 100%; }
+  .result { background: var(--bg); border-radius: 12px; padding: 18px; text-align: center; }
+  .result .big { font-size: 44px; font-weight: 800; line-height: 1.1; }
+  .result .steps { color: var(--sub); font-size: 14px; margin-top: 8px; }
+  .tierline { display: grid; grid-template-columns: 2fr 2fr 2fr 2fr 1fr 1fr; gap: 3px; margin-top: 12px; }
+  .tierline div { height: 10px; border-radius: 3px; background: var(--line); }
+  .ex td:last-child, .ex th:last-child { text-align: right; white-space: nowrap; }
+  footer { color: var(--sub); font-size: 13px; margin-top: 24px; }
+  @media (max-width: 720px) {
+    .flow { grid-template-columns: 1fr 1fr; }
+    .two, .calc { grid-template-columns: 1fr; }
+    .minis { grid-template-columns: 1fr 1fr; }
+    .seg { font-size: 11px; padding: 5px 2px; }
+    .seg b { font-size: 12px; }
+  }
+  @media (max-width: 420px) { .minis { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>스코어링 2) 동일업종 밀집도</h1>
+  <p><span class="pill">가중치 10~20%</span>매물 주변에 같은 업종 가게가 얼마나 모여 있는지로 점수를 줍니다.</p>
+</header>
+
+<section>
+  <h2><span class="num">1</span>어떻게 계산하나요?</h2>
+  <p class="desc">네 단계로 계산합니다.</p>
+  <div class="flow">
+    <div class="step"><div class="n">STEP 1</div><b>원 그리기</b><span>매물을 중심으로 300m · 500m · 1km 원을 그립니다</span></div>
+    <div class="step"><div class="n">STEP 2</div><b>같은 업종 세기</b><span>원 안에 있는 같은 업종 가게 수를 셉니다</span></div>
+    <div class="step"><div class="n">STEP 3</div><b>구간 정하기</b><span>다른 매물과 비교해 6개 구간 중 어디인지 정합니다</span></div>
+    <div class="step"><div class="n">STEP 4</div><b>점수 × 가중치</b><span>구간 점수(0~100)에 카테고리 가중치를 곱합니다</span></div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">2</span>카테고리별 가중치</h2>
+  <p class="desc">100점 만점 중 동일업종 밀집도가 차지하는 비중입니다. 모여 있을 때 효과가 큰 술집이 가장 높습니다.</p>
+  <svg id="wChart" class="chart" viewBox="0 0 900 250" role="img" aria-label="카테고리별 가중치 막대그래프"></svg>
+</section>
+
+<section>
+  <h2><span class="num">3</span>원의 크기</h2>
+  <p class="desc">카테고리마다 손님이 움직이는 범위가 달라서 원의 크기를 다르게 둡니다. 왼쪽 그림은 실제 비율대로 그렸습니다.</p>
+  <div class="two">
+    <svg id="circles" class="chart" viewBox="0 0 400 400" role="img" aria-label="300m 500m 1km 원 크기 비교"></svg>
+    <table id="radTable"></table>
+  </div>
+  <div class="callout"><b>소매에서 빼는 가게</b>
+    <ul>
+      <li>건물명에 백화점, 아울렛, 지하상가, 쇼핑센터, 서문시장이 들어간 가게는 세지 않습니다 (현대·롯데·신세계·동아백화점, 메트로센터, 대신·두류지하상가, 대현프리몰, 모다·현대시티아울렛, 서문시장 등).</li>
+      <li>서문시장처럼 건물명이 비어 있는 가게가 많은 곳은, 같은 자리에 몰린 가게도 함께 뺍니다.</li>
+      <li>월배시장, 봉덕시장, 교동시장 같은 <b style="color:var(--ok)">동네 시장은 그대로 셉니다.</b> 길가 상권과 비슷하기 때문입니다.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">4</span>구간 나누는 기준</h2>
+  <p class="desc">공실 매물 2,669곳을 주변 가게 수가 적은 순서로 줄 세운 뒤 6개 구간으로 나눴습니다. 칸 안의 숫자는 원 안의 같은 업종 가게 수입니다.</p>
+  <div class="tiers-head"><div>아주 적음<br>하위 20%</div><div>적음<br>20~40%</div><div>보통<br>40~60%</div><div>많음<br>60~80%</div><div>아주 많음<br>80~90%</div><div>최상위<br>상위 10%</div></div>
+  <div id="rulers"></div>
+</section>
+
+<section>
+  <h2><span class="num">5</span>구간별 점수</h2>
+  <p class="desc">같은 업종이 많으면 손님이 모이는 장점과 경쟁이 심해지는 단점이 함께 생깁니다. 업종마다 어느 쪽이 큰지 달라서 점수 곡선을 두 가지로 나눴습니다.</p>
+  <div class="minis" id="minis"></div>
+  <div class="legend-type">
+    <span><b style="color:var(--ink)">상승형</b> (술집·오피스·전시): 모여 있을수록 손님이 찾아옵니다</span>
+    <span><b style="color:var(--ink)">포화형</b> (소매·식당·카페): 어느 수준부터는 더 늘어도 효과가 없고, 식당·카페는 최상위에서 약간 감점합니다</span>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">6</span>직접 계산해 보기</h2>
+  <p class="desc">카테고리를 고르고 주변 가게 수를 움직여 보세요.</p>
+  <div class="calc">
+    <div>
+      <label>카테고리</label>
+      <div class="catbtns" id="catBtns"></div>
+      <label for="cnt" style="margin-top:18px">원 안의 같은 업종 가게 수: <b id="cntVal">0곳</b> <span id="radNote"></span></label>
+      <input id="cnt" type="range" min="0" max="200" step="1" value="20">
+    </div>
+    <div class="result">
+      <div style="color:var(--sub);font-size:13px">최종 반영 점수</div>
+      <div class="big" id="resBig">-</div>
+      <div class="steps" id="resSteps"></div>
+      <div class="tierline" id="tierline"></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">7</span>계산 예시</h2>
+  <p class="desc">최종 반영 점수 = 구간별 점수 × 카테고리별 가중치</p>
+  <table class="ex" id="exTable"></table>
+  <div class="callout"><b>따로 처리할 매물</b>
+    <ul>
+      <li>좌표가 없는 매물(48곳)은 같은 법정동 매물의 평균 점수를 주거나 "점수 없음"으로 표시합니다.</li>
+      <li>시장 안에 있는 매물(예: 광덕시장, 대동시장 안)은 "시장 안 매물"로 표시하고, 점수는 시장 안 가게를 포함해서 계산합니다.</li>
+    </ul>
+  </div>
+</section>
+
+<footer>데이터: 소상공인시장진흥공단 상가(상권)정보 대구 (2026), 대구 구역별 공실 매물 CSV</footer>
+</div>
+
+<script>
+(function () {
+  var TIER_NAMES = ["아주 적음", "적음", "보통", "많음", "아주 많음", "최상위"];
+  var CATS = [
+    { k: "술집", w: 20, r: 300, what: "요리주점, 유흥주점, 생맥주 전문", th: [3, 7, 13, 26, 42], sc: [20, 40, 60, 80, 100, 100], type: "상승형", max: 140 },
+    { k: "식당", w: 10, r: 300, what: "음식점 중 카페·술집을 뺀 곳", th: [40, 62, 83, 117, 150], sc: [20, 50, 70, 90, 100, 90], type: "포화형", max: 400 },
+    { k: "카페", w: 10, r: 300, what: "카페", th: [7, 11, 16, 23, 32], sc: [30, 60, 80, 100, 100, 90], type: "포화형", max: 120 },
+    { k: "소매", w: 10, r: 300, what: "소매점 (백화점·시장 등 안의 가게 제외)", th: [34, 50, 65, 88, 109], sc: [20, 50, 70, 90, 100, 100], type: "포화형", max: 300 },
+    { k: "오피스", w: 10, r: 500, what: "컨설팅, 건축설계, 광고, 디자인 등", th: [28, 43, 59, 95, 148], sc: [20, 40, 60, 80, 100, 100], type: "상승형", max: 500 },
+    { k: "전시", w: 10, r: 1000, what: "예술품 소매업 (갤러리·화랑)", th: [1, 2, 4, 8, 14], sc: [20, 40, 60, 80, 100, 100], type: "상승형", max: 60 }
+  ];
+  var NS = "http://www.w3.org/2000/svg";
+  function el(tag, attrs, parent, text) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (text != null) e.textContent = text;
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function col(c) { return "var(--c-" + c.k + ")"; }
+  function tierOf(c, n) { var t = 0; while (t < c.th.length && n >= c.th[t]) t++; return t; }
+  function rangeText(c, i) {
+    var lo = i === 0 ? 0 : c.th[i - 1], hi = i < c.th.length ? c.th[i] - 1 : null;
+    if (i === 0) return c.th[0] === 1 ? "0곳" : c.th[0] + "곳 미만";
+    if (hi === null) return lo + "곳 이상";
+    return lo === hi ? lo + "곳" : lo + "~" + hi + "곳";
+  }
+  function radText(r) { return r >= 1000 ? (r / 1000) + "km" : r + "m"; }
+
+  // 2. weights
+  (function () {
+    var svg = document.getElementById("wChart"), L = 80, R = 70, T = 6, rowH = 40, W = 900 - L - R, max = 25;
+    CATS.forEach(function (c, i) {
+      var y = T + i * rowH, w = W * c.w / max;
+      el("text", { x: L - 12, y: y + 24, "text-anchor": "end", "font-weight": 700, "font-size": 14 }, svg, c.k);
+      el("rect", { x: L, y: y + 6, width: W, height: 26, rx: 6, fill: "var(--bg)" }, svg);
+      el("rect", { x: L, y: y + 6, width: w, height: 26, rx: 6, fill: col(c) }, svg);
+      el("text", { x: L + w + 10, y: y + 25, "font-weight": 800, "font-size": 16 }, svg, c.w + "%");
+    });
+  })();
+
+  // 3. circles (to scale: 1km radius = 180px)
+  (function () {
+    var svg = document.getElementById("circles"), cx = 200, cy = 200, s = 180 / 1000;
+    [[1000, ["전시"]], [500, ["오피스"]], [300, ["식당", "카페", "술집", "소매"]]].forEach(function (d) {
+      var r = d[0] * s, c0 = CATS.filter(function (c) { return c.k === d[1][0]; })[0];
+      el("circle", { cx: cx, cy: cy, r: r, fill: col(c0), "fill-opacity": 0.12, stroke: col(c0), "stroke-width": 2 }, svg);
+      el("text", { x: cx, y: cy - r + 18, "text-anchor": "middle", "font-weight": 700, "font-size": 13 }, svg, radText(d[0]));
+      el("text", { x: cx, y: cy - r + 34, "text-anchor": "middle", "class": "sub", "font-size": 12 }, svg, d[1].join(" · "));
+    });
+    el("circle", { cx: cx, cy: cy, r: 6, fill: "var(--ink)" }, svg);
+    el("text", { x: cx, y: cy + 22, "text-anchor": "middle", "font-weight": 700 }, svg, "매물");
+  })();
+  (function () {
+    var h = "<tr><th>카테고리</th><th>원의 크기</th><th>세는 가게</th></tr>";
+    CATS.forEach(function (c) {
+      h += '<tr><td><span class="dot" style="background:' + col(c) + '"></span><b>' + c.k + "</b></td><td><b>" + radText(c.r) + "</b></td><td>" + c.what + "</td></tr>";
+    });
+    document.getElementById("radTable").innerHTML = h;
+  })();
+
+  // 4. rulers
+  (function () {
+    var box = document.getElementById("rulers");
+    CATS.forEach(function (c) {
+      var d = document.createElement("div"); d.className = "ruler";
+      var segs = c.th.concat([null]).map(function (_, i) {
+        var a = 0.12 + i * 0.16;
+        return '<div class="seg" style="background:color-mix(in srgb, ' + col(c) + " " + Math.round(a * 100) + '%, var(--card))"><b>' + rangeText(c, i) + "</b></div>";
+      }).join("");
+      d.innerHTML = '<div class="name"><span class="dot" style="background:' + col(c) + '"></span>' + c.k + "<small>원 " + radText(c.r) + "</small></div><div class='segs'>" + segs + "</div>";
+      box.appendChild(d);
+    });
+  })();
+
+  // 5. mini curves
+  (function () {
+    var box = document.getElementById("minis");
+    CATS.slice().sort(function (a, b) { return a.type === b.type ? 0 : (a.type === "상승형" ? -1 : 1); }).forEach(function (c) {
+      var d = document.createElement("div"); d.className = "mini";
+      d.innerHTML = "<h3>" + c.k + "<small>" + c.type + "</small></h3>";
+      var svg = el("svg", { viewBox: "0 0 260 150", "class": "chart", role: "img", "aria-label": c.k + " 구간별 점수" }, d);
+      var L = 26, R = 8, T = 18, B = 26, W = 260 - L - R, H = 150 - T - B;
+      [0, 50, 100].forEach(function (v) {
+        var y = T + H - H * v / 100;
+        el("line", { x1: L, x2: L + W, y1: y, y2: y, stroke: "var(--line)" }, svg);
+        el("text", { x: L - 4, y: y + 4, "text-anchor": "end", "class": "sub", "font-size": 10 }, svg, v);
+      });
+      var step = W / 6, pts = c.sc.map(function (v, i) { return [L + step * i + step / 2, T + H - H * v / 100]; });
+      el("polyline", { points: pts.map(function (p) { return p.join(","); }).join(" "), fill: "none", stroke: col(c), "stroke-width": 2.5, "stroke-linejoin": "round" }, svg);
+      pts.forEach(function (p, i) {
+        el("circle", { cx: p[0], cy: p[1], r: 4, fill: col(c) }, svg);
+        el("text", { x: p[0], y: p[1] - 8, "text-anchor": "middle", "font-size": 10, "font-weight": 700 }, svg, c.sc[i]);
+        el("text", { x: p[0], y: T + H + 16, "text-anchor": "middle", "class": "sub", "font-size": 9 }, svg, ["아주적음", "적음", "보통", "많음", "아주많음", "최상위"][i]);
+      });
+      box.appendChild(d);
+    });
+  })();
+
+  // 6. calculator
+  (function () {
+    var btns = document.getElementById("catBtns"), rng = document.getElementById("cnt"), cur = CATS[0];
+    CATS.forEach(function (c) {
+      var b = document.createElement("button"); b.textContent = c.k; b.type = "button";
+      b.addEventListener("click", function () { cur = c; rng.max = c.max; rng.value = Math.round((c.th[2] + c.th[3]) / 2); paint(); upd(); });
+      btns.appendChild(b); c.btn = b;
+    });
+    function paint() {
+      CATS.forEach(function (c) { var on = c === cur; c.btn.className = on ? "on" : ""; c.btn.style.background = on ? col(c) : ""; });
+    }
+    function upd() {
+      var n = +rng.value, t = tierOf(cur, n), s = cur.sc[t], fin = s * cur.w / 100;
+      document.getElementById("cntVal").textContent = n + "곳";
+      document.getElementById("radNote").textContent = "(원 " + radText(cur.r) + ")";
+      var big = document.getElementById("resBig"); big.textContent = (fin % 1 ? fin.toFixed(1) : fin) + "점"; big.style.color = col(cur);
+      document.getElementById("resSteps").innerHTML = "구간: <b>" + TIER_NAMES[t] + "</b> (" + rangeText(cur, t) + ")<br>구간 점수 " + s + " × 가중치 " + cur.w + "% = <b>" + (fin % 1 ? fin.toFixed(1) : fin) + "점</b> (최대 " + cur.w + "점)";
+      document.getElementById("tierline").innerHTML = TIER_NAMES.map(function (_, i) { return '<div style="background:' + (i === t ? col(cur) : "var(--line)") + '"></div>'; }).join("");
+    }
+    rng.addEventListener("input", upd);
+    rng.max = cur.max; rng.value = 20; paint(); upd();
+  })();
+
+  // 7. examples
+  (function () {
+    var ex = [
+      ["술집", "300m 안 술집 30곳", 30], ["식당", "300m 안 식당 50곳", 50], ["카페", "300m 안 카페 18곳", 18],
+      ["카페", "300m 안 카페 40곳", 40], ["소매", "300m 안 소매 70곳", 70], ["오피스", "500m 안 오피스 30곳", 30], ["전시", "1km 안 갤러리 5곳", 5]
+    ];
+    var h = "<tr><th>예시</th><th>구간</th><th>계산</th><th>최종 반영</th></tr>";
+    ex.forEach(function (e) {
+      var c = CATS.filter(function (x) { return x.k === e[0]; })[0], t = tierOf(c, e[2]), s = c.sc[t], fin = s * c.w / 100;
+      h += '<tr><td><span class="dot" style="background:' + col(c) + '"></span>' + c.k + " 자리, " + e[1] + "</td><td>" + TIER_NAMES[t] + "</td><td>" + s + " × " + c.w + "%</td><td><b>" + (fin % 1 ? fin.toFixed(1) : fin) + "점</b></td></tr>";
+    });
+    document.getElementById("exTable").innerHTML = h;
+  })();
+})();
+</script>
+</body>
+</html>

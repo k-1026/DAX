@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>점포 유지율 기준</title>
+<style>
+  :root {
+    --bg: #f7f7f5; --card: #ffffff; --ink: #1d1d1b; --sub: #6b6b66; --line: #e4e3df; --soft: #f1f0ec;
+    --accent: #7048e8; --accent-soft: #ece6fd; --warn: #b45309; --good: #15803d; --bad: #c92a2a;
+    --c-식당: #e8590c; --c-카페: #9c6644; --c-술집: #c2255c; --c-소매: #2f9e44; --c-오피스: #1c7ed6; --c-전시: #7048e8;
+    --k1: #2563eb; --k2: #e8590c; --k3: #0f9d8a; --k4: #7048e8; --rest: #e4e3df;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141413; --card: #1e1e1c; --ink: #ecebe6; --sub: #a3a29c; --line: #34332f; --soft: #262624;
+      --accent: #9775fa; --accent-soft: #2b2445; --warn: #f0b35c; --good: #6cc788; --bad: #ff8787;
+      --c-식당: #ff922b; --c-카페: #d4a373; --c-술집: #f06595; --c-소매: #69db7c; --c-오피스: #4dabf7; --c-전시: #9775fa;
+      --k1: #7aa7f7; --k2: #ff922b; --k3: #38d9c0; --k4: #9775fa; --rest: #34332f;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif; line-height: 1.6; font-size: 15px; }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 32px 16px 64px; }
+  header h1 { font-size: 28px; margin: 0 0 6px; letter-spacing: -0.02em; }
+  header p { margin: 6px 0 0; color: var(--sub); }
+  .pill { display: inline-block; background: var(--accent-soft); color: var(--accent); font-weight: 700;
+    border-radius: 999px; padding: 2px 12px; font-size: 13px; margin: 0 6px 4px 0; }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 24px; margin-top: 20px; }
+  h2 { font-size: 19px; margin: 0 0 4px; letter-spacing: -0.01em; }
+  h2 .num { color: var(--accent); margin-right: 6px; }
+  h3 { font-size: 15px; margin: 22px 0 8px; }
+  .desc { color: var(--sub); margin: 0 0 16px; font-size: 14px; }
+  .note { border-left: 4px solid var(--accent); background: var(--bg); padding: 10px 14px; border-radius: 6px; font-size: 14px; margin-top: 14px; }
+  .callout { border-left: 4px solid var(--warn); background: var(--bg); padding: 12px 14px; border-radius: 6px; margin-top: 14px; font-size: 14px; }
+  .callout b.t { color: var(--warn); }
+  .callout ul, .note ul { margin: 6px 0 0; padding-left: 18px; }
+  .chart { width: 100%; height: auto; display: block; }
+  .chart text { fill: var(--ink); font-size: 12px; }
+  .chart .sub { fill: var(--sub); }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { padding: 7px 6px; border-bottom: 1px solid var(--line); text-align: center; }
+  th { color: var(--sub); font-weight: 600; font-size: 13px; }
+  td.l, th.l { text-align: left; }
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
+  .formula { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; }
+  .box { border: 1.5px solid var(--line); border-radius: 10px; padding: 10px 14px; background: var(--bg); text-align: center; }
+  .box small { display: block; font-weight: 400; color: var(--sub); font-size: 12px; }
+  .box.hl { border-color: var(--accent); }
+  .op { color: var(--sub); font-size: 20px; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .card2 { background: var(--bg); border-radius: 12px; padding: 16px; }
+  .card2 h4 { margin: 0 0 6px; font-size: 15px; }
+  .card2 .big { font-size: 28px; font-weight: 800; color: var(--accent); line-height: 1.2; }
+  .card2 p { margin: 6px 0 0; font-size: 13px; color: var(--sub); }
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .step { background: var(--bg); border-radius: 12px; padding: 12px; }
+  .step .n { font-size: 12px; color: var(--accent); font-weight: 800; }
+  .step b { display: block; margin: 2px 0; }
+  .step span { font-size: 13px; color: var(--sub); }
+  .flowrow { display: grid; grid-template-columns: 1fr 34px 1fr; gap: 8px; align-items: center; margin: 6px 0; font-size: 14px; }
+  .flowrow .arrow { text-align: center; color: var(--sub); font-size: 18px; }
+  .tag { display: inline-block; border-radius: 6px; padding: 2px 8px; font-size: 12px; font-weight: 700; background: var(--soft); }
+  .conv td.v { font-variant-numeric: tabular-nums; font-size: 13px; }
+  .calc { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .catbtns { display: flex; flex-wrap: wrap; gap: 6px; }
+  .catbtns button { border: 1.5px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 999px;
+    padding: 5px 14px; font-size: 14px; cursor: pointer; font-family: inherit; }
+  .catbtns button.on { color: #fff; border-color: transparent; }
+  label { display: block; font-size: 13px; color: var(--sub); margin: 14px 0 4px; }
+  input[type=range] { width: 100%; }
+  .result { background: var(--bg); border-radius: 12px; padding: 16px; }
+  .result .big { font-size: 40px; font-weight: 800; line-height: 1.1; }
+  .result .row { display: grid; grid-template-columns: 76px 1fr 46px; gap: 8px; align-items: center; font-size: 13px; margin: 8px 0; }
+  .track { height: 12px; background: var(--rest); border-radius: 6px; overflow: hidden; }
+  .fill { height: 100%; border-radius: 6px; transition: width .2s; }
+  .alloc { display: grid; grid-template-columns: 60px 1fr 110px; gap: 8px 12px; align-items: center; }
+  .bar { display: flex; height: 28px; border-radius: 8px; overflow: hidden; background: var(--rest); }
+  .bar div { display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; color: #fff; white-space: nowrap; }
+  .key { display: flex; flex-wrap: wrap; gap: 12px; font-size: 13px; color: var(--sub); margin-bottom: 10px; }
+  .key i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; margin-right: 4px; vertical-align: -1px; }
+  footer { color: var(--sub); font-size: 13px; margin-top: 24px; }
+  @media (max-width: 760px) {
+    .two, .calc { grid-template-columns: 1fr; }
+    .steps { grid-template-columns: 1fr 1fr; }
+    .alloc { grid-template-columns: 48px 1fr; } .alloc .sum { grid-column: 2; margin-top: -4px; }
+    .conv th, .conv td { padding: 5px 2px; font-size: 11px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>스코어링 4) 점포 유지율</h1>
+  <p><span class="pill">가중치 5~10%</span><span class="pill">6개 카테고리</span><span class="pill">2023년 12월 → 2026년 비교</span></p>
+  <p>매물 주변에서 같은 업종 가게가 <b>2년 반 동안 얼마나 버텼는지(유지율)</b>와 <b>가게 수가 늘었는지 줄었는지(증감률)</b>를 보고, 두 값을 점수로 바꿔 평균을 냅니다.</p>
+  <div class="note">"폐업률"이 아니라 <b>"점포 유지율"</b>이라고 부르는 이유: 행정상 폐업 신고 기록이 아니라 <b>가게 목록에서 사라졌는지</b>로 본 값이라서, 업종 변경이나 데이터 누락이 일부 섞여 있을 수 있습니다.</div>
+</header>
+
+<section>
+  <h2><span class="num">1</span>카테고리별 가중치</h2>
+  <p class="desc">100점 만점 중 점포 유지율이 차지하는 비중입니다. 모두 10% 이하인 "동네 보조 지표"입니다.</p>
+  <svg id="wChart" class="chart" viewBox="0 0 900 250" role="img" aria-label="카테고리별 가중치"></svg>
+  <table id="wTable" style="margin-top:6px"></table>
+  <div class="callout"><b class="t">10%를 넘지 않게 둔 이유</b>
+    <ul>
+      <li>실제 폐업 기록이 아니라 목록 비교로 추정한 값이고, 비교 시점이 두 개뿐입니다.</li>
+      <li>역세권(10%), 유동인구(5~10%)와 같은 동네 보조 지표 수준으로 맞췄습니다.</li>
+      <li>10%면 최고점과 최저점 차이가 최대 10점이라, 구분은 되지만 이 점수 하나로 순위가 뒤집히지 않습니다.</li>
+      <li>빵집 인허가(실제 폐업 신고) 데이터로 정확도를 확인한 뒤 15%로 올리거나 5%로 낮추는 것을 검토합니다 (아직 확인하지 않음).</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">2</span>무엇을 세나요?</h2>
+  <p class="desc">매물 주변 원 안에서 같은 업종 가게를 <b>2023년 12월</b>과 <b>지금</b> 두 번 셉니다.</p>
+  <div class="two">
+    <div class="card2"><h4>유지율 · 얼마나 버텼나</h4><div class="big">2023년 가게 중 지금도 있는 비율</div><p>2023년 가게 중 지금도 있는 가게 수 ÷ 2023년 가게 수</p></div>
+    <div class="card2"><h4>증감률 · 늘었나 줄었나</h4><div class="big">가게 수가 얼마나 변했나</div><p>(지금 가게 수 − 2023년 가게 수) ÷ 2023년 가게 수</p></div>
+  </div>
+  <h3>원의 크기</h3>
+  <div class="two">
+    <div>
+      <table>
+        <tr><th class="l">카테고리</th><th>원의 크기</th><th>판단 보류 (2023년 가게)</th></tr>
+        <tr><td class="l">식당 · 카페 · 술집 · 소매 · 오피스</td><td><b>500m</b></td><td>10곳 미만</td></tr>
+        <tr><td class="l">전시 (예술품 소매업)</td><td><b>2km</b></td><td>5곳 미만</td></tr>
+      </table>
+      <p class="desc" style="margin-top:10px">300m는 가게가 너무 적어 흔들리고(카페 매물의 30%, 술집 45%가 10곳 미만), 1km는 동네 차이가 흐려집니다. 판단 보류 매물은 <b>50점</b>을 줍니다.</p>
+    </div>
+    <div>
+      <div style="font-size:13px;color:var(--sub);font-weight:700;margin-bottom:4px">전시 반경 시험: 판단 보류 비율 (갤러리 5곳 미만)</div>
+      <svg id="exhChart" class="chart" viewBox="0 0 420 170" role="img" aria-label="전시 반경별 판단 보류 비율"></svg>
+      <p class="desc" style="margin:4px 0 0">갤러리는 대구 전체에 2023년 243곳, 지금 265곳뿐입니다. 3km는 원 넓이(약 28km²)가 중구 전체의 네 배라 "매물 주변"으로 보기 어렵습니다.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">3</span>데이터 정리 규칙</h2>
+  <p class="desc">"같은 가게"를 정확히 맞추려고 두 가지를 정리합니다. 번호가 바뀌었어도 상호명과 지번주소가 같으면 같은 가게로 봅니다 (번호가 유지된 가게의 98.2%가 상호명도 같았습니다).</p>
+  <div class="two">
+    <div class="card2">
+      <h4><span class="tag" style="color:var(--accent)">규칙 A</span> 업종만 바뀐 가게 → 지금 분류로 통일</h4>
+      <p>같은 번호인데 카테고리가 바뀐 가게 <b style="color:var(--ink)">1,529곳</b> 중 <b style="color:var(--ink)">99%(1,516곳)</b>가 상호명도 같습니다. 주인이 바뀐 게 아니라 <b style="color:var(--ink)">분류만 다시 매겨진 것</b>입니다 (예: "비투" 백반/한정식 → 요리주점).</p>
+      <p>그대로 두면 두 업종 사이에 가짜 증감이 생깁니다.</p>
+      <svg id="ruleA" class="chart" viewBox="0 0 420 150" role="img" aria-label="업종 분류 변경 건수"></svg>
+    </div>
+    <div class="card2">
+      <h4><span class="tag" style="color:var(--accent)">규칙 B</span> 이사한 가게 → 원래 동네에서 빼고, 새 동네에서 새 가게로</h4>
+      <div class="flowrow"><div class="box" style="font-size:13px">원래 동네<small>망한 것도 버틴 것도 아님 → 계산에서 뺌</small></div><div class="arrow">→</div><div class="box hl" style="font-size:13px">옮겨 간 동네<small>가게가 늘었음 → 새 가게로 셈</small></div></div>
+      <p><b style="color:var(--ink)">이사로 보는 조건 (모두 만족)</b>: 상호명이 같음(표기 차이 무시) · 소분류가 같음 · 3km 이내 · 대구에 같은 상호 2곳 이하(체인점 제외) · 상호 3글자 이상이고 업종 이름과 다름</p>
+      <p>이사로 판정된 가게: <b style="color:var(--ink)">271곳</b> (사라진 가게의 1% 남짓)<br>예: "한우국밥" 대신동 265-6 → 115-6 (265m), "언제나좋은날" 범어동 197-1 → 201-2 (94m)</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">4</span>점수 계산 방법</h2>
+  <p class="desc">유지율과 증감률을 각각 <b>"같은 카테고리 공실 매물 중 몇 등쯤인지"</b> 0~100점으로 바꾼 뒤 평균을 냅니다. 나보다 못한 매물이 많을수록 점수가 높습니다.</p>
+  <div class="steps">
+    <div class="step"><div class="n">①</div><b>유지율 점수</b><span>유지율이 나보다 낮거나 같은 매물 비율 × 100</span></div>
+    <div class="step"><div class="n">②</div><b>증감률 점수</b><span>증감률이 나보다 낮거나 같은 매물 비율 × 100</span></div>
+    <div class="step"><div class="n">③</div><b>점포 유지율 점수</b><span>(① + ②) ÷ 2</span></div>
+    <div class="step"><div class="n">④</div><b>최종 반영 점수</b><span>③ × 카테고리 가중치</span></div>
+  </div>
+  <h3>예시: 봉산동 카페 매물</h3>
+  <svg id="exChart" class="chart" viewBox="0 0 900 210" role="img" aria-label="봉산동 카페 계산 예시"></svg>
+  <h3>4가지 유형(안정형·회전형·정체형·쇠퇴형) 방식에서 바꾼 이유</h3>
+  <table>
+    <tr><th class="l">4가지 유형 방식의 문제</th><th class="l">바꾼 방식에서는</th></tr>
+    <tr><td class="l">기준선에서 점수가 뚝 끊깁니다 (평균보다 조금만 높아도 100점, 조금만 낮아도 70점)</td><td class="l">좋은 만큼 점수가 조금씩 올라갑니다</td></tr>
+    <tr><td class="l">평균보다 조금 나은 동네와 아주 나은 동네가 같은 점수였습니다</td><td class="l">얼마나 좋은지만큼 차이가 납니다</td></tr>
+    <tr><td class="l">"회전형 70점, 정체형 50점" 순서에 데이터 근거가 없었습니다</td><td class="l">두 값을 반씩 반영해서 임의로 정한 점수가 없습니다</td></tr>
+  </table>
+  <ul class="desc" style="margin-top:10px;padding-left:18px">
+    <li>유지율과 증감률은 서로 다른 정보입니다 (상관계수 0.17~0.44, 술집만 0.74). 그래서 둘 다 씁니다.</li>
+    <li>"새로 생긴 가게 ÷ 사라진 가게(대체율)"는 증감률과 상관계수 0.83~0.92로 사실상 같은 정보라 넣지 않았습니다.</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="num">5</span>점수 변환표 (서비스에 넣을 고정 기준)</h2>
+  <p class="desc">매번 줄을 세우지 않도록 만든 "몇 %면 몇 점" 표입니다. 칸의 값은 그 카테고리 공실 매물을 줄 세웠을 때 아래에서 10%, 20%, … 90% 지점의 값입니다. 값이 어떤 칸 <b>이상</b>이고 오른쪽 칸 <b>미만</b>이면 그 칸 점수를 줍니다. 첫 칸보다 낮으면 0점, 상위 10%는 모두 100점(90점은 쓰지 않음)입니다.</p>
+  <h3>유지율 → 유지율 점수</h3>
+  <div style="overflow-x:auto"><table class="conv" id="convS"></table></div>
+  <h3>증감률 → 증감률 점수</h3>
+  <div style="overflow-x:auto"><table class="conv" id="convN"></table></div>
+  <div class="callout"><b class="t">카테고리마다 퍼센트가 다른 이유</b> 업종마다 원래 버티는 정도가 달라서 <b>"같은 업종 안에서 이 동네가 몇 등인가"</b>로 봅니다. 50점(중간) 유지율은 카페 66%, 식당 70%, 소매 74%, 술집 75%, 오피스 82%입니다. 술집은 대구 전체가 줄고 있어서 <b>−12%만 줄어도 50점</b>이고, 오피스는 <b>+10%는 늘어야 50점</b>입니다.
+    <ul>
+      <li>식당·소매는 칸 사이 차이가 1~2%p라 작은 차이로도 점수가 바뀝니다. 다만 가중치가 10% 이하라 최종 점수로는 2점 안팎입니다.</li>
+      <li>계산식(정확한 등수)과 표(10점 단위)는 점수가 조금 다를 수 있습니다. 봉산동 카페는 계산식으로 37점, 표로는 30점입니다. 6번 결과는 계산식 기준입니다.</li>
+      <li>새 공실 매물 데이터를 받으면 이 표를 다시 만듭니다.</li>
+    </ul>
+  </div>
+  <h3>변환표로 직접 계산해 보기</h3>
+  <div class="calc">
+    <div>
+      <div class="catbtns" id="cats"></div>
+      <label for="sv">유지율: <b id="svV"></b></label><input id="sv" type="range" min="40" max="100" step="1" value="58">
+      <label for="nt">증감률: <b id="ntV"></b></label><input id="nt" type="range" min="-50" max="60" step="1" value="-1">
+    </div>
+    <div class="result">
+      <div style="font-size:13px;color:var(--sub)">최종 반영 점수</div>
+      <div class="big" id="resBig">-</div>
+      <div class="row"><span>유지율 점수</span><div class="track"><div class="fill" id="f1"></div></div><b id="r1"></b></div>
+      <div class="row"><span>증감률 점수</span><div class="track"><div class="fill" id="f2"></div></div><b id="r2"></b></div>
+      <div class="row"><span>평균</span><div class="track"><div class="fill" id="f3"></div></div><b id="r3"></b></div>
+      <div style="font-size:13px;color:var(--sub)" id="resTxt"></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">6</span>공실 매물에 적용한 결과 (좌표 있는 2,669곳)</h2>
+  <p class="desc">같은 동네 매물들의 평균 점포 유지율 점수입니다. 오른쪽으로 갈수록 좋은 동네입니다.</p>
+  <svg id="dongChart" class="chart" viewBox="0 0 900 470" role="img" aria-label="동네별 점포 유지율 점수"></svg>
+  <ul class="desc" style="padding-left:18px">
+    <li>순서가 상식과 맞습니다: 카페는 신당동 &lt; 지산동 &lt; 봉산동 &lt; 동성로 &lt; 범어동, 술집은 동성로(요리주점 감소) &lt; 성서 &lt; 수성못.</li>
+    <li>4가지 유형에서는 신당동과 지산동 카페가 둘 다 "쇠퇴형(20점)"이었지만, 이제 12점과 30점으로 차이가 납니다.</li>
+    <li>봉산동 카페는 "회전형(70점)"이었지만, 유지율이 하위 22%이고 가게 수는 겨우 유지해서 37점이 됩니다.</li>
+    <li><b>전시의 한계:</b> 갤러리 수가 적어서 반경을 조금만 바꿔도 결과가 흔들립니다 (봉산문화거리는 1km로 계산하면 더 높게 나옴). 그래서 가중치를 5%로만 둡니다.</li>
+  </ul>
+  <h3>동네별 값</h3>
+  <div style="overflow-x:auto"><table id="dongTable"></table></div>
+  <h3>카테고리별 판단 보류와 점수 분포</h3>
+  <table id="distTable"></table>
+</section>
+
+<section>
+  <h2><span class="num">7</span>최종 반영 점수 예시</h2>
+  <p class="desc">최종 반영 점수 = 점포 유지율 점수 × 카테고리별 가중치</p>
+  <table id="exTable"></table>
+</section>
+
+<section>
+  <h2><span class="num">8</span>지금까지 정한 비중 (100점 만점)</h2>
+  <div class="key"><span><i style="background:var(--k1)"></i>역세권</span><span><i style="background:var(--k2)"></i>동일업종 밀집도</span><span><i style="background:var(--k3)"></i>유동인구</span><span><i style="background:var(--k4)"></i>점포 유지율</span><span><i style="background:var(--rest)"></i>미정</span></div>
+  <div class="alloc" id="alloc"></div>
+  <div class="callout"><b class="t">참고 사항</b>
+    <ul>
+      <li><b>사라짐 ≠ 폐업:</b> 번호 변경, 업종 분류 변경(규칙 A), 이사(규칙 B)는 걸러냈습니다. 체인점 이사나 데이터 누락은 여전히 사라진 가게로 잡힐 수 있습니다.</li>
+      <li><b>분류 체계 변경:</b> 6개 카테고리 안에서 2023년에만 있거나 2026년에만 있는 소분류는 없습니다. "소독·방제 서비스업"은 이름의 쉼표가 세미콜론으로 바뀐 것뿐이고 코드는 그대로라 영향이 없습니다.</li>
+      <li><b>좌표 없는 매물:</b> 공실 매물 파일에서 삭제할 예정이라 따로 처리하지 않습니다.</li>
+      <li><b>전시 데이터:</b> 상가 안 전시 공간에 맞는 데이터는 상가정보의 예술품 소매업뿐입니다. 카페 겸 갤러리처럼 다른 업종으로 등록된 곳은 잡히지 않습니다.</li>
+      <li><b>상대 평가:</b> 50점 = 대구 공실 매물 중 보통이라는 뜻이지, 절대적으로 안전한 동네라는 뜻은 아닙니다.</li>
+    </ul>
+  </div>
+</section>
+
+<footer>데이터: 소상공인시장진흥공단 상가(상권)정보 대구 2023년 12월 31일 기준(113,639곳), 2026년(118,357곳), 대구 구역별 공실 매물 CSV</footer>
+</div>
+
+<script>
+(function () {
+  var CATS = ["식당", "카페", "술집", "소매", "오피스", "전시"];
+  var W = { 식당: 10, 카페: 10, 술집: 10, 소매: 5, 오피스: 5, 전시: 5 };
+  var WHY = { 식당: "회전이 빠르고 동네 차이가 뚜렷합니다", 카페: "회전이 가장 빨라서 이 지표가 가장 쓸모 있습니다", 술집: "대구 전체가 줄고 있는 업종이라 버티는 동네를 고르는 게 중요합니다",
+    소매: "편의점과 옷가게처럼 세부 업종이 섞여 신호가 흐립니다", 오피스: "원래 안정적인 업종이라 동네 차이가 작습니다", 전시: "갤러리가 대구 전체에 약 250곳뿐이라 결과가 흔들려서 반경 2km, 가중치는 가장 작게 둡니다" };
+  var STEPS = [10, 20, 30, 40, 50, 60, 70, 80, 100];
+  var SURV = { 식당: [62, 64, 66, 68, 70, 71, 72, 74, 76], 카페: [53, 57, 61, 64, 66, 68, 71, 74, 79], 술집: [63, 67, 71, 73, 75, 78, 80, 83, 86],
+    소매: [66, 69, 71, 72, 74, 75, 77, 78, 80], 오피스: [71, 75, 78, 80, 82, 83, 85, 87, 89], 전시: [60, 66, 70, 73, 75, 77, 80, 85, 92] };
+  var NET = { 식당: [-7, -4, -2, 0, 2, 4, 7, 9, 13], 카페: [-19, -13, -8, -5, 0, 2, 5, 10, 18], 술집: [-29, -23, -18, -16, -12, -9, -6, -2, 3],
+    소매: [-7, -4, -2, 0, 1, 3, 6, 9, 14], 오피스: [-5, 0, 4, 7, 10, 14, 16, 20, 29], 전시: [-11, -4, 0, 1, 6, 10, 17, 25, 43] };
+  // [카테고리, 동, 유지율, 증감률, 유지율점수, 증감률점수, 합산]
+  var DONG = [
+    ["카페", "달서구 신당동", 56, -28, 20, 4, 12], ["카페", "수성구 지산동", 58, -11, 29, 31, 30], ["카페", "중구 봉산동", 58, -1, 22, 52, 37],
+    ["카페", "중구 삼덕동1가", 59, 1, 24, 58, 41], ["카페", "수성구 범어동", 63, 11, 41, 73, 57],
+    ["식당", "달서구 용산동", 67, -7, 35, 19, 27], ["식당", "수성구 범어동", 72, 9, 65, 76, 71], ["식당", "중구 삼덕동1가", 71, 12, 63, 88, 75],
+    ["술집", "중구 삼덕동1가", 64, -20, 15, 28, 21], ["술집", "달서구 이곡동", 77, -1, 55, 83, 69], ["술집", "수성구 두산동", 81, -3, 71, 74, 73],
+    ["소매", "달서구 송현동", 75, 4, 55, 59, 57], ["소매", "중구 대신동", 86, 12, 94, 68, 81],
+    ["오피스", "중구 남산동", 83, 4, 58, 34, 46], ["오피스", "수성구 범어동", 82, 14, 55, 58, 57],
+    ["전시", "수성구 범어동", 73, -3, 43, 26, 35], ["전시", "중구 봉산동", 77, 0, 58, 32, 45], ["전시", "수성구 두산동", 86, 20, 84, 75, 79]
+  ];
+  var DIST = [["식당", "0%", 27, 50, 74], ["카페", "5%", 28, 51, 74], ["술집", "14%", 23, 51, 77], ["소매", "1%", 26, 51, 72], ["오피스", "5%", 27, 52, 72], ["전시 (2km)", "25%", 30, 49, 77]];
+  var NS = "http://www.w3.org/2000/svg";
+  function el(tag, a, p, t) { var e = document.createElementNS(NS, tag); for (var k in a) e.setAttribute(k, a[k]); if (t != null) e.textContent = t; if (p) p.appendChild(e); return e; }
+  function col(c) { return "var(--c-" + c + ")"; }
+  function sgn(v) { return (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v) + "%"; }
+  function tableScore(th, v) { if (v < th[0]) return 0; var s = 0; for (var i = 0; i < th.length; i++) if (v >= th[i]) s = STEPS[i]; return s; }
+  function nf(x) { return (Math.round(x * 100) / 100).toString(); }
+
+  // 1. weights
+  (function () {
+    var svg = document.getElementById("wChart"), L = 80, R = 70, T = 6, rowH = 40, Wd = 900 - L - R, max = 12;
+    CATS.forEach(function (c, i) {
+      var y = T + i * rowH, w = Wd * W[c] / max;
+      el("text", { x: L - 12, y: y + 24, "text-anchor": "end", "font-weight": 700, "font-size": 14 }, svg, c);
+      el("rect", { x: L, y: y + 6, width: Wd, height: 26, rx: 6, fill: "var(--bg)" }, svg);
+      el("rect", { x: L, y: y + 6, width: w, height: 26, rx: 6, fill: col(c) }, svg);
+      el("text", { x: L + w + 10, y: y + 25, "font-weight": 800, "font-size": 16 }, svg, W[c] + "%");
+    });
+    document.getElementById("wTable").innerHTML = "<tr><th class='l'>카테고리</th><th class='l'>이유</th></tr>" + CATS.map(function (c) {
+      return "<tr><td class='l'><span class='dot' style='background:" + col(c) + "'></span><b>" + c + "</b> " + W[c] + "%</td><td class='l'>" + WHY[c] + "</td></tr>";
+    }).join("");
+  })();
+
+  // 2. exhibition radius test
+  (function () {
+    var svg = document.getElementById("exhChart"), d = [["1km", 65, "3곳"], ["2km", 25, "10곳"], ["3km", 11, "22곳"]];
+    var L = 60, Wd = 300, rowH = 46;
+    d.forEach(function (r, i) {
+      var y = 8 + i * rowH, w = Wd * r[1] / 100, on = r[0] === "2km";
+      el("text", { x: L - 10, y: y + 20, "text-anchor": "end", "font-weight": on ? 800 : 400, "font-size": 13 }, svg, r[0]);
+      el("rect", { x: L, y: y + 4, width: Wd, height: 24, rx: 5, fill: "var(--bg)" }, svg);
+      el("rect", { x: L, y: y + 4, width: w, height: 24, rx: 5, fill: on ? "var(--accent)" : "var(--rest)" }, svg);
+      el("text", { x: L + w + 8, y: y + 21, "font-weight": 700 }, svg, r[1] + "%");
+      el("text", { x: L, y: y + 42, "class": "sub", "font-size": 11 }, svg, "매물 주변 갤러리 중앙값 " + r[2] + (on ? " · 채택" : ""));
+    });
+  })();
+
+  // 3. rule A flows
+  (function () {
+    var svg = document.getElementById("ruleA"), d = [["식당", "술집", 330], ["술집", "식당", 151], ["식당", "카페", 119], ["카페", "식당", 94]];
+    var L = 120, Wd = 230, rowH = 34, max = 330;
+    d.forEach(function (r, i) {
+      var y = 4 + i * rowH, w = Wd * r[2] / max;
+      el("text", { x: L - 10, y: y + 20, "text-anchor": "end", "font-size": 13 }, svg, r[0] + " → " + r[1]);
+      el("rect", { x: L, y: y + 6, width: w, height: 20, rx: 4, fill: col(r[1]) }, svg);
+      el("text", { x: L + w + 6, y: y + 21, "font-weight": 700 }, svg, r[2] + "곳");
+    });
+  })();
+
+  // 4. example (봉산동 카페)
+  (function () {
+    var svg = document.getElementById("exChart"), L = 120, Wd = 640, rows = [["① 유지율 58%", 22, "var(--c-카페)"], ["② 증감률 −1%", 52, "var(--c-카페)"], ["③ 평균", 37, "var(--accent)"]];
+    rows.forEach(function (r, i) {
+      var y = 10 + i * 46, w = Wd * r[1] / 100;
+      el("text", { x: L - 10, y: y + 20, "text-anchor": "end", "font-size": 13, "font-weight": 700 }, svg, r[0]);
+      el("rect", { x: L, y: y + 4, width: Wd, height: 24, rx: 6, fill: "var(--bg)" }, svg);
+      el("rect", { x: L, y: y + 4, width: w, height: 24, rx: 6, fill: r[2] }, svg);
+      el("text", { x: L + w + 8, y: y + 21, "font-weight": 800, "font-size": 14 }, svg, r[1] + "점");
+    });
+    [0, 50, 100].forEach(function (v) { el("text", { x: L + Wd * v / 100, y: 158, "text-anchor": "middle", "class": "sub", "font-size": 11 }, svg, v); });
+    var t = el("text", { x: L, y: 186, "font-size": 13 }, svg, "유지율은 카페 매물 중 하위 22%, 증감률은 중간쯤(52%) → 평균 37점 × 카페 가중치 10% = ");
+    el("tspan", { "font-size": 15, "font-weight": 800, style: "fill:var(--accent)" }, t, "3.7점");
+  })();
+
+  // 5. conversion tables
+  function conv(id, data, fmt) {
+    var h = "<tr><th class='l'>카테고리</th><th>0점</th>" + STEPS.map(function (s) { return "<th>" + s + "점</th>"; }).join("") + "</tr>";
+    CATS.forEach(function (c) {
+      var th = data[c];
+      h += "<tr><td class='l'><span class='dot' style='background:" + col(c) + "'></span><b>" + c + (c === "전시" ? " (2km)" : "") + "</b></td><td class='v' style='color:var(--sub)'>" + fmt(th[0]) + " 미만</td>" +
+        th.map(function (v, i) { var a = 8 + i * 9; return "<td class='v' style='background:color-mix(in srgb, " + col(c) + " " + a + "%, var(--card))'>" + fmt(v) + "</td>"; }).join("") + "</tr>";
+    });
+    document.getElementById(id).innerHTML = h;
+  }
+  conv("convS", SURV, function (v) { return v + "%"; });
+  conv("convN", NET, sgn);
+
+  // calculator
+  (function () {
+    var cur = "카페", box = document.getElementById("cats"), sv = document.getElementById("sv"), nt = document.getElementById("nt");
+    CATS.forEach(function (c) {
+      var b = document.createElement("button"); b.type = "button"; b.textContent = c;
+      b.onclick = function () { cur = c; sv.value = SURV[c][4]; nt.value = NET[c][4]; paint(); upd(); };
+      box.appendChild(b);
+    });
+    function paint() { Array.prototype.forEach.call(box.children, function (b) { var on = b.textContent === cur; b.className = on ? "on" : ""; b.style.background = on ? col(b.textContent) : ""; }); }
+    function upd() {
+      var s = +sv.value, n = +nt.value, a = tableScore(SURV[cur], s), b = tableScore(NET[cur], n), avg = (a + b) / 2, fin = avg * W[cur] / 100;
+      document.getElementById("svV").textContent = s + "%"; document.getElementById("ntV").textContent = sgn(n);
+      var big = document.getElementById("resBig"); big.textContent = nf(fin) + "점"; big.style.color = col(cur);
+      [[a, "1"], [b, "2"], [avg, "3"]].forEach(function (x) { var f = document.getElementById("f" + x[1]); f.style.width = x[0] + "%"; f.style.background = x[1] === "3" ? "var(--accent)" : col(cur); document.getElementById("r" + x[1]).textContent = nf(x[0]); });
+      document.getElementById("resTxt").textContent = "평균 " + nf(avg) + "점 × " + cur + " 가중치 " + W[cur] + "% (최대 " + W[cur] + "점) · 판단 보류면 50점";
+    }
+    sv.addEventListener("input", upd); nt.addEventListener("input", upd); paint(); upd();
+  })();
+
+  // 6. dong dot plot
+  (function () {
+    var svg = document.getElementById("dongChart"), L = 90, R = 30, Wd = 900 - L - R, T = 30, rowH = 70;
+    [0, 25, 50, 75, 100].forEach(function (v) {
+      var x = L + Wd * v / 100;
+      el("line", { x1: x, x2: x, y1: T - 10, y2: T + rowH * 6 - 20, stroke: v === 50 ? "var(--sub)" : "var(--line)", "stroke-dasharray": v === 50 ? "4 4" : "" }, svg);
+      el("text", { x: x, y: T - 14, "text-anchor": "middle", "class": "sub", "font-size": 11 }, svg, v === 50 ? "50 (보통)" : v);
+    });
+    CATS.forEach(function (c, ci) {
+      var y = T + ci * rowH + 18;
+      el("text", { x: L - 14, y: y + 5, "text-anchor": "end", "font-weight": 700, "font-size": 14 }, svg, c);
+      el("line", { x1: L, x2: L + Wd, y1: y, y2: y, stroke: "var(--line)", "stroke-width": 6, "stroke-linecap": "round" }, svg);
+      var pts = DONG.filter(function (d) { return d[0] === c; });
+      pts.forEach(function (d, k) {
+        var x = L + Wd * d[6] / 100, up = k % 2 === 0;
+        el("circle", { cx: x, cy: y, r: 8, fill: col(c), stroke: "var(--card)", "stroke-width": 2 }, svg);
+        el("text", { x: x, y: up ? y - 14 : y + 24, "text-anchor": "middle", "font-size": 11 }, svg, d[1].split(" ")[1] + " " + d[6]);
+      });
+    });
+    var h = "<tr><th class='l'>카테고리</th><th class='l'>동네</th><th>유지율</th><th>증감률</th><th>유지율 점수</th><th>증감률 점수</th><th>점포 유지율 점수</th></tr>";
+    DONG.forEach(function (d) {
+      h += "<tr><td class='l'><span class='dot' style='background:" + col(d[0]) + "'></span>" + d[0] + "</td><td class='l'>" + d[1] + "</td><td>" + d[2] + "%</td><td>" + sgn(d[3]) + "</td><td>" + d[4] + "</td><td>" + d[5] + "</td><td><b>" + d[6] + "</b></td></tr>";
+    });
+    document.getElementById("dongTable").innerHTML = h;
+    document.getElementById("distTable").innerHTML = "<tr><th class='l'>카테고리</th><th>판단 보류</th><th>하위 20% 점수</th><th>중앙 점수</th><th>상위 20% 점수</th></tr>" +
+      DIST.map(function (d) { return "<tr><td class='l'>" + d[0] + "</td><td>" + d[1] + "</td><td>" + d[2] + "</td><td>" + d[3] + "</td><td>" + d[4] + "</td></tr>"; }).join("");
+  })();
+
+  // 7. examples
+  (function () {
+    var ex = [["카페", "신당동", 12], ["카페", "봉산동", 37], ["카페", "범어동", 57], ["술집", "동성로 삼덕동1가", 21], ["술집", "수성못 두산동", 73],
+      ["식당", "용산동", 27], ["소매", "대신동", 81], ["오피스", "판단 보류", 50], ["전시", "두산동", 79]];
+    document.getElementById("exTable").innerHTML = "<tr><th class='l'>예시</th><th>점포 유지율 점수</th><th>계산</th><th>최종 반영</th></tr>" + ex.map(function (e) {
+      var f = e[2] * W[e[0]] / 100;
+      return "<tr><td class='l'><span class='dot' style='background:" + col(e[0]) + "'></span>" + e[0] + " 자리, " + e[1] + "</td><td>" + e[2] + "</td><td>" + e[2] + " × " + W[e[0]] + "%</td><td><b>" + nf(f) + "점</b></td></tr>";
+    }).join("");
+  })();
+
+  // 8. allocation
+  (function () {
+    var A = { 술집: [10, 20, 10, 10], 식당: [10, 10, 10, 10], 카페: [10, 10, 10, 10], 소매: [10, 10, 10, 5], 오피스: [10, 10, 5, 5], 전시: [10, 10, 5, 5] };
+    var cols = ["var(--k1)", "var(--k2)", "var(--k3)", "var(--k4)"], names = ["역세권", "동일업종 밀집도", "유동인구", "점포 유지율"], h = "";
+    Object.keys(A).forEach(function (c) {
+      var v = A[c], used = v.reduce(function (a, b) { return a + b; }, 0);
+      h += "<div style='font-weight:700'>" + c + "</div><div class='bar'>" + v.map(function (x, i) { return "<div style='width:" + x + "%;background:" + cols[i] + "' title='" + names[i] + " " + x + "%'>" + x + "</div>"; }).join("") +
+        "<div style='flex:1;color:var(--sub)'>미정 " + (100 - used) + "</div></div><div class='sum' style='font-size:13px;color:var(--sub)'>정한 비중 <b style='color:var(--ink);font-size:16px'>" + used + "</b> / 100</div>";
+    });
+    document.getElementById("alloc").innerHTML = h;
+  })();
+})();
+</script>
+</body>
+</html>
