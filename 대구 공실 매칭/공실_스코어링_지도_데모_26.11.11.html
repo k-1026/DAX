@@ -378,8 +378,9 @@ function whyLine(i) { const M = basisModel(i); return M.good.length ? '<div clas
 
 // ───── 지도 ─────
 const BASES = {
-  "일반": { url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png", opt: { maxZoom: 20, maxNativeZoom: 19, attribution: "&copy; OpenStreetMap 기여자" } },
-  "밝게": { url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png", opt: { maxZoom: 20, maxNativeZoom: 19, attribution: "&copy; OpenStreetMap 기여자", className: "tiles-soft" } }
+  // OSM France(HOT) 타일: 파일을 바로 열어도(file://) 지도가 나옴. 한글 지명 표기.
+  "일반": { url: "https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", opt: { subdomains: "abc", maxZoom: 20, maxNativeZoom: 19, attribution: "&copy; OpenStreetMap 기여자, 타일 OSM France" } },
+  "밝게": { url: "https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", opt: { subdomains: "abc", maxZoom: 20, maxNativeZoom: 19, attribution: "&copy; OpenStreetMap 기여자, 타일 OSM France", className: "tiles-soft" } }
 };
 const map = L.map("map", { preferCanvas: true, minZoom: 10, maxZoom: 20, scrollWheelZoom: true }).setView([35.8714, 128.6014], 13);
 L.control.scale({ imperial: false, position: "bottomleft" }).addTo(map);
@@ -635,7 +636,6 @@ function init() {
   map.on("zoomend", renderMap);
   map.on("click", (e) => { const gu = guAt(e.latlng); if (gu && !state.gus.has(gu)) { state.gus.add(gu); afterFilter(); } });
   matchMedia("(prefers-color-scheme: dark)").addEventListener("change", renderMap);
-  if (location.protocol === "file:") $("file-warn").hidden = false;
   renderAll();
 }
 init();
