@@ -377,17 +377,35 @@ function gradeOf(it) {
 function whyLine(i) { const M = basisModel(i); return M.good.length ? '<div class="why">✔ ' + esc(M.good[0].good) + '</div>' : (M.bad.length ? '<div class="why bad">• ' + esc(M.bad[0].bad) + '</div>' : ''); }
 
 // ───── 지도 ─────
-const BASES = {
-  // OSM France(HOT) 타일: 파일을 바로 열어도(file://) 지도가 나옴. 한글 지명 표기.
-  "일반": { url: "https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", opt: { subdomains: "abc", maxZoom: 20, maxNativeZoom: 19, attribution: "&copy; OpenStreetMap 기여자, 타일 OSM France" } },
-  "밝게": { url: "https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", opt: { subdomains: "abc", maxZoom: 20, maxNativeZoom: 19, attribution: "&copy; OpenStreetMap 기여자, 타일 OSM France", className: "tiles-soft" } }
+// 배경지도: 브이월드 키가 있으면 브이월드(국토교통부 공식 지도), 없거나 불러오기에 실패하면 OSM France 지도.
+// 키는 내 컴퓨터의 데모 파일에만 넣고, GitHub에 올리는 파일에는 비워 둔다.
+const VWORLD_KEY = "";
+const OSMFR = { url: "https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", opt: { subdomains: "abc", maxZoom: 20, maxNativeZoom: 19, attribution: "&copy; OpenStreetMap 기여자, 타일 OSM France" } };
+const BASES = VWORLD_KEY ? {
+  "일반": { url: "https://api.vworld.kr/req/wmts/1.0.0/" + VWORLD_KEY + "/Base/{z}/{y}/{x}.png", opt: { minZoom: 6, maxZoom: 20, maxNativeZoom: 19, attribution: "&copy; 브이월드(국토교통부)" }, fb: "일반" },
+  "밝게": { url: "https://api.vworld.kr/req/wmts/1.0.0/" + VWORLD_KEY + "/white/{z}/{y}/{x}.png", opt: { minZoom: 6, maxZoom: 20, maxNativeZoom: 18, attribution: "&copy; 브이월드(국토교통부)" }, fb: "밝게" }
+} : {
+  "일반": OSMFR,
+  "밝게": { url: OSMFR.url, opt: Object.assign({}, OSMFR.opt, { className: "tiles-soft" }) }
 };
+const FALLBACK = { "일반": OSMFR, "밝게": { url: OSMFR.url, opt: Object.assign({}, OSMFR.opt, { className: "tiles-soft" }) } };
 const map = L.map("map", { preferCanvas: true, minZoom: 10, maxZoom: 20, scrollWheelZoom: true }).setView([35.8714, 128.6014], 13);
 L.control.scale({ imperial: false, position: "bottomleft" }).addTo(map);
-const baseLayers = {}; let curBase = null;
+const baseLayers = {}; let curBase = null, usingFallback = false;
+function makeBase(name) {
+  const B = usingFallback ? FALLBACK[name] : BASES[name];
+  const layer = L.tileLayer(B.url, B.opt);
+  if (!usingFallback && BASES[name].fb) {
+    // 브이월드 타일이 연달아 실패하면(키 만료·차단 등) OSM France로 바꿈
+    let fails = 0, oks = 0;
+    layer.on("tileerror", () => { fails++; if (fails >= 6 && oks === 0 && !usingFallback) { usingFallback = true; Object.keys(baseLayers).forEach(k => { map.removeLayer(baseLayers[k]); delete baseLayers[k]; }); const cur = curBase; curBase = null; setBase(cur); } });
+    layer.on("tileload", () => { oks++; });
+  }
+  return layer;
+}
 function setBase(name) {
   if (curBase) map.removeLayer(baseLayers[curBase]);
-  if (!baseLayers[name]) baseLayers[name] = L.tileLayer(BASES[name].url, BASES[name].opt);
+  if (!baseLayers[name]) baseLayers[name] = makeBase(name);
   baseLayers[name].addTo(map); baseLayers[name].bringToBack(); curBase = name;
   document.querySelectorAll("[data-base]").forEach(b => b.classList.toggle("on", b.dataset.base === name));
 }
