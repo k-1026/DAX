@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>대구 상가 임차인 고객여정지도</title>
+<style>
+:root{
+  --bg:#F6F5F1; --surface:#FFFFFF; --ink:#141E33; --ink-2:#36425A; --ink-3:#556178; --line:#C9CFDA; --soft:#EEF1F5;
+  --accent:#1747C7; --accent-bg:#E4ECFF;
+  --a:#7A4800; --a-bg:#FDF0D5; --b:#0C5A66; --b-bg:#DDF1F3;
+  --pain:#A3201A; --pain-bg:#FCE4E2; --ok:#17663F; --ok-bg:#DDF3E8; --todo:#5B2DA8; --todo-bg:#EEE7FB;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#11161F; --surface:#182030; --ink:#F0F3F8; --ink-2:#C3CBD8; --ink-3:#A3AEC0; --line:#3A4558; --soft:#222C3C;
+  --accent:#8DB0FF; --accent-bg:#1E2D52;
+  --a:#F2B656; --a-bg:#3A2C12; --b:#7FD3DE; --b-bg:#12343A;
+  --pain:#FF9A9E; --pain-bg:#3D1C1F; --ok:#6EDBAC; --ok-bg:#143429; --todo:#C9B0FF; --todo-bg:#2C2147;
+}}
+*{box-sizing:border-box}
+html{font-size:17px}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:'Pretendard','Malgun Gothic',system-ui,-apple-system,sans-serif; line-height:1.55; word-break:keep-all}
+.wrap{max-width:1760px; margin:0 auto; padding:28px 24px 48px}
+h1{font-size:1.9rem; margin:0 0 4px; letter-spacing:-.5px}
+h2{font-size:1.3rem; margin:36px 0 12px; letter-spacing:-.3px}
+h3{font-size:1.08rem; margin:0}
+p{margin:0}
+.lead{color:var(--ink-2); font-size:1.05rem}
+.tag{display:inline-block; font-size:.8rem; font-weight:700; padding:1px 9px; border-radius:999px; white-space:nowrap}
+.t-src{color:var(--ok); background:var(--ok-bg)} .t-data{color:var(--accent); background:var(--accent-bg)} .t-team{color:var(--b); background:var(--b-bg)} .t-hyp{color:var(--a); background:var(--a-bg)}
+.t-have{color:var(--ok); background:var(--ok-bg)} .t-todo{color:var(--todo); background:var(--todo-bg)} .t-out{color:var(--ink-2); background:var(--soft)}
+.legend{display:flex; flex-wrap:wrap; gap:8px 18px; margin-top:14px; font-size:.93rem; color:var(--ink-2)}
+
+/* 주인공 */
+.personas{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin-top:22px}
+.persona{background:var(--surface); border:2px solid var(--line); border-radius:16px; padding:18px 20px}
+.persona.pa{border-color:var(--a)} .persona.pb{border-color:var(--b)}
+.persona .who{display:flex; align-items:center; gap:12px; margin-bottom:8px}
+.persona .av{width:3rem; height:3rem; border-radius:50%; display:grid; place-items:center; font-weight:700; font-size:1.1rem; flex:none}
+.pa .av{background:var(--a-bg); color:var(--a)} .pb .av{background:var(--b-bg); color:var(--b)}
+.persona ul{margin:6px 0 0; padding-left:1.1em; color:var(--ink-2)}
+.persona .q{margin-top:10px; font-weight:700}
+
+/* 여정 표 */
+.scroll{overflow-x:auto; border:1px solid var(--line); border-radius:14px; background:var(--surface)}
+table.jm{border-collapse:collapse; width:100%; min-width:1500px; table-layout:fixed}
+table.jm th,table.jm td{border-bottom:1px solid var(--line); border-left:1px solid var(--line); padding:12px 12px; vertical-align:top; text-align:left; font-size:.94rem}
+table.jm th:first-child,table.jm td:first-child{border-left:0; width:7.2rem; background:var(--soft); font-weight:700; position:sticky; left:0; z-index:1}
+table.jm tr:last-child td{border-bottom:0}
+table.jm thead th{background:var(--ink); color:var(--bg); font-size:1.02rem; text-align:center; vertical-align:middle}
+table.jm thead th:first-child{background:var(--ink); color:var(--bg)}
+table.jm thead th span{display:block; font-weight:400; font-size:.85rem; opacity:.85}
+table.jm ul{margin:0; padding-left:1.05em}
+table.jm li + li{margin-top:3px}
+.mood{display:grid; grid-template-columns:2.6rem minmax(0,1fr); gap:4px 8px; align-items:center; font-size:.86rem}
+.mood .bar{height:.7rem; background:var(--soft); border-radius:99px; overflow:hidden}
+.mood .bar i{display:block; height:100%; border-radius:99px}
+.mood .ma i{background:var(--a)} .mood .mb i{background:var(--b)}
+.mood b.la{color:var(--a)} .mood b.lb{color:var(--b)}
+.mood .say{grid-column:1 / -1; color:var(--ink-2)}
+td.pain{background:var(--pain-bg)}
+td.pain b{color:var(--pain)}
+td.pain .ev{display:block; margin-top:6px; color:var(--ink-2); font-size:.88rem}
+
+/* 어려움 정리 */
+table.pp{border-collapse:collapse; width:100%; min-width:1100px}
+table.pp th,table.pp td{border-bottom:1px solid var(--line); padding:12px 14px; vertical-align:top; text-align:left; font-size:.96rem}
+table.pp th{background:var(--soft); white-space:nowrap}
+table.pp td:first-child{font-weight:700; white-space:nowrap; color:var(--pain)}
+table.pp tr:last-child td{border-bottom:0}
+table.pp .num{font-weight:700; font-size:1.05rem}
+
+.cols{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px}
+.box{background:var(--surface); border:1px solid var(--line); border-left:6px solid var(--accent); border-radius:12px; padding:16px}
+.box p{color:var(--ink-2); margin-top:4px}
+.src{color:var(--ink-2); font-size:.92rem; padding-left:1.2em}
+.src li + li{margin-top:4px}
+.src a{color:var(--accent)}
+.note{background:var(--a-bg); color:var(--a); border-radius:12px; padding:12px 16px; font-weight:600; margin-top:14px}
+@media (max-width:900px){ .personas,.cols{grid-template-columns:minmax(0,1fr)} .wrap{padding:20px 16px 36px} h1{font-size:1.5rem} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>대구 상가 임차인 고객여정지도</h1>
+  <p class="lead">가게 자리를 구하는 두 사람이 결심부터 개업까지 겪는 일과 어려움을 따라가 보고, 서비스가 어디를 풀어야 하는지 찾습니다.</p>
+  <div class="legend">
+    <span>근거 표시:</span>
+    <span><span class="tag t-data">우리 데이터</span> 데모 매물 2,717건에서 직접 센 값</span>
+    <span><span class="tag t-team">팀 자료</span> 대구 상가 공실 현황 보고(2026.10.29)</span>
+    <span><span class="tag t-src">공개 자료</span> 조사·보도</span>
+    <span><span class="tag t-hyp">가설</span> 아직 확인하지 못한 추정</span>
+  </div>
+
+  <div class="personas">
+    <div class="persona pa">
+      <div class="who"><span class="av">A</span><div><h3>50대 퇴직자 · 첫 창업</h3><p style="color:var(--ink-2)">회사를 그만두고 처음 가게를 내려는 사람</p></div></div>
+      <ul>
+        <li>퇴직금이 걸려 있어 실패가 가장 두렵다</li>
+        <li>상가 계약을 해 본 적이 없고, 서류 용어가 낯설다</li>
+        <li>작은 글씨와 복잡한 화면이 불편하다</li>
+      </ul>
+      <p class="q">"어디가 괜찮은 자리인지, 누구 말을 믿어야 할지 모르겠어요."</p>
+    </div>
+    <div class="persona pb">
+      <div class="who"><span class="av">B</span><div><h3>20~30대 청년 · 첫 창업</h3><p style="color:var(--ink-2)">적은 자본으로 작게 시작하려는 사람</p></div></div>
+      <ul>
+        <li>보증금과 월세 부담이 가장 큰 문제다</li>
+        <li>온라인 검색은 익숙하지만 정보가 너무 많아 고르기 어렵다</li>
+        <li>계약 경험이 없어 조건을 따질 줄 모른다</li>
+      </ul>
+      <p class="q">"싼 곳은 많은데, 싼 데는 이유가 있을 것 같아 불안해요."</p>
+    </div>
+  </div>
+  <p class="note">두 사람의 성격과 감정 높낮이는 가설입니다. 실제 임차인 인터뷰로 확인하지 않았습니다.</p>
+
+  <h2>여정 지도</h2>
+  <div class="scroll">
+  <table class="jm">
+    <thead><tr>
+      <th>단계</th>
+      <th>1. 결심<span>업종 정하기</span></th>
+      <th>2. 동네 알아보기<span>상권 비교</span></th>
+      <th>3. 매물 찾기<span>온라인 검색</span></th>
+      <th>4. 현장 방문<span>발품, 비교</span></th>
+      <th>5. 가능 여부 확인<span>용도, 서류</span></th>
+      <th>6. 계약<span>조건 협의</span></th>
+      <th>7. 개업 준비<span>인허가, 공사</span></th>
+    </tr></thead>
+    <tbody>
+    <tr><td>하는 일</td>
+      <td><ul><li>할 가게 정하기</li><li>쓸 수 있는 돈 계산</li></ul></td>
+      <td><ul><li>어느 동네가 좋을지 알아보기</li><li>지인, 유튜브, 카페 글 찾아보기</li></ul></td>
+      <td><ul><li>네이버 부동산 등에서 매물 보기</li><li>월세, 보증금, 넓이 비교</li></ul></td>
+      <td><ul><li>중개사와 여러 곳 보러 다니기</li><li>주변 가게, 사람 흐름 살피기</li></ul></td>
+      <td><ul><li>이 건물에서 내 업종을 할 수 있는지 확인</li><li>건축물대장, 구청 문의</li></ul></td>
+      <td><ul><li>월세, 보증금, 권리금 협의</li><li>계약서 작성</li></ul></td>
+      <td><ul><li>영업 신고, 사업자 등록</li><li>인테리어, 설비 공사</li></ul></td>
+    </tr>
+    <tr><td>만나는 곳</td>
+      <td>가족, 지인, 창업 교육</td>
+      <td>상권정보 사이트, 유튜브, 온라인 카페</td>
+      <td>부동산 매물 사이트, 앱</td>
+      <td>공인중개사, 현장</td>
+      <td>구청 건축과, 정부24, 중개사</td>
+      <td>건물주, 중개사</td>
+      <td>구청, 세무서, 시공 업체</td>
+    </tr>
+    <tr><td>기분<br><span style="font-weight:400;font-size:.82rem">(가설)</span></td>
+      <td><div class="mood"><b class="la">A</b><span class="bar ma"><i style="width:60%"></i></span><b class="lb">B</b><span class="bar mb"><i style="width:80%"></i></span><span class="say">기대 반, 걱정 반</span></div></td>
+      <td><div class="mood"><b class="la">A</b><span class="bar ma"><i style="width:40%"></i></span><b class="lb">B</b><span class="bar mb"><i style="width:60%"></i></span><span class="say">말이 다 달라 헷갈림</span></div></td>
+      <td><div class="mood"><b class="la">A</b><span class="bar ma"><i style="width:35%"></i></span><b class="lb">B</b><span class="bar mb"><i style="width:45%"></i></span><span class="say">많은데 뭐가 맞는지 모름</span></div></td>
+      <td><div class="mood"><b class="la">A</b><span class="bar ma"><i style="width:40%"></i></span><b class="lb">B</b><span class="bar mb"><i style="width:55%"></i></span><span class="say">지치고 헛걸음도 함</span></div></td>
+      <td><div class="mood"><b class="la">A</b><span class="bar ma"><i style="width:20%"></i></span><b class="lb">B</b><span class="bar mb"><i style="width:35%"></i></span><span class="say">가장 막막한 구간</span></div></td>
+      <td><div class="mood"><b class="la">A</b><span class="bar ma"><i style="width:25%"></i></span><b class="lb">B</b><span class="bar mb"><i style="width:20%"></i></span><span class="say">손해 볼까 불안</span></div></td>
+      <td><div class="mood"><b class="la">A</b><span class="bar ma"><i style="width:55%"></i></span><b class="lb">B</b><span class="bar mb"><i style="width:60%"></i></span><span class="say">후련하지만 걱정 남음</span></div></td>
+    </tr>
+    <tr><td>어려움</td>
+      <td class="pain"><b>P1. 내 업종에 맞는 자리가 어떤 건지 모른다</b><span class="ev"><span class="tag t-src">공개 자료</span> 60대 신규 자영업자의 65.7%가 시작하기 쉬운 업종에 몰림 (한국은행 인용 보도)</span></td>
+      <td class="pain"><b>P2. 동네마다 차이가 큰데 비교할 방법이 없다</b><span class="ev"><span class="tag t-team">팀 자료</span> 대구 상권별 중대형 공실률이 20.0%(죽전역)부터 38.3%(서문시장·청라언덕)까지 벌어짐</span></td>
+      <td class="pain"><b>P3. 매물 정보가 비어 있다</b><span class="ev"><span class="tag t-data">우리 데이터</span> 관리비 미기재 61.0%, 추천 용도 비어 있음 25.3%, 건물 전체 층수는 전부 미기재</span>
+        <b style="display:block;margin-top:10px">P4. 이 가격이 싼지 비싼지 모른다</b><span class="ev"><span class="tag t-data">우리 데이터</span> 같은 동네·비슷한 층 평균보다 20% 넘게 싼 매물 32.5%, 20% 넘게 비싼 매물 32.2%</span></td>
+      <td class="pain"><b>P5. 가 보니 이미 나갔거나 설명과 다르다</b><span class="ev"><span class="tag t-data">우리 데이터</span> 확인된 지 30일 넘은 매물 12.7%</span><span class="ev"><span class="tag t-hyp">가설</span> 헛걸음 경험은 확인하지 못함</span></td>
+      <td class="pain"><b>P6. 이 건물에서 내 가게를 할 수 있는지 모른다</b><span class="ev"><span class="tag t-data">우리 데이터</span> 음식점 기준, 서류상 바로 가능 38.3% · 기재 변경 필요 43.9% · 어려움 15.9%</span><span class="ev"><span class="tag t-src">공개 자료</span> 위반건축물은 고치기 전까지 용도 변경이 원칙적으로 안 됨</span></td>
+      <td class="pain"><b>P7. 계약 조건을 따질 줄 모른다</b><span class="ev"><span class="tag t-src">공개 자료</span> 서울시 상가임대차 상담 사례: 계약 해지 24건, 권리금 23건, 임대료 21건, 관리비 10건</span><span class="ev"><span class="tag t-team">팀 자료</span> 공실 지수 222, 임대료 지수 103 (2020년 1분기=100). 빈 상가가 2배가 돼도 월세는 안 내림</span></td>
+      <td class="pain"><b>P8. 열고 나서가 더 걱정이다</b><span class="ev"><span class="tag t-src">공개 자료</span> 폐업 이유 1위 매출 부진 70.9%, 폐업 때 빚이 있던 사람 68.5%</span><span class="ev"><span class="tag t-team">팀 자료</span> 대구 개업 대비 폐업 비율 91.2% (2025)</span></td>
+    </tr>
+    <tr><td>두 사람 차이<br><span style="font-weight:400;font-size:.82rem">(가설)</span></td>
+      <td>A는 익숙한 업종을 고르고, B는 유행 업종에 끌림</td>
+      <td>A는 지인 말에 기대고, B는 온라인 정보가 넘쳐 못 고름</td>
+      <td>A는 사이트 사용 자체가 어렵고, B는 싼 매물만 보다 조건을 놓침</td>
+      <td>A는 중개사 말에 의존하고, B는 시간이 없어 몇 곳만 봄</td>
+      <td>둘 다 서류를 볼 줄 모름. A는 용어에서, B는 경험에서 막힘</td>
+      <td>A는 큰돈이 걸려 겁내고, B는 보증금이 모자람</td>
+      <td>A는 빚 없이 하려다 규모가 작아지고, B는 대출 부담이 큼</td>
+    </tr>
+    <tr><td>서비스가 하는 일</td>
+      <td><span class="tag t-have">지금 있음</span> 업종 8가지 중 고르면 업종별 기준으로 점수 계산</td>
+      <td><span class="tag t-have">지금 있음</span> 지도에 동네별 빈 상가 수<br><span class="tag t-todo">보완</span> 동네별 공실 흐름 보여 주기</td>
+      <td><span class="tag t-have">지금 있음</span> 시세 대비 가격, "관리비가 적혀 있지 않아요" 표시<br><span class="tag t-todo">보완</span> 빈 정보를 중개사 질문으로 바꿔 주기</td>
+      <td><span class="tag t-have">지금 있음</span> 며칠 전 확인된 매물인지 표시, 카카오맵·로드뷰, 담기·비교·엑셀<br><span class="tag t-todo">보완</span> 오래된 매물 표시</td>
+      <td><span class="tag t-have">지금 있음</span> 건물 용도 등급, 구청 확인 안내<br><span class="tag t-todo">보완</span> 위반건축물 여부, 토지이음 바로 열기</td>
+      <td><span class="tag t-todo">보완</span> 상담 준비 질문 목록<br><span class="tag t-out">범위 밖</span> 계약서 검토, 법률 판단</td>
+      <td><span class="tag t-out">범위 밖</span> 개업 뒤 운영<br><span class="tag t-have">지금 있음</span> 주변 손님 수, 같은 업종 수 정보</td>
+    </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h2>어려움 8가지 정리</h2>
+  <div class="scroll">
+  <table class="pp">
+    <thead><tr><th>어려움</th><th>단계</th><th>근거</th><th>서비스 적용</th></tr></thead>
+    <tbody>
+      <tr><td>P1. 업종에 맞는 자리 기준을 모름</td><td>결심</td><td><span class="tag t-src">공개 자료</span> 60대 신규 자영업자 <span class="num">65.7%</span>가 시작하기 쉬운 업종에 몰림</td><td><span class="tag t-have">지금 있음</span> 업종별 점수 기준</td></tr>
+      <tr><td>P2. 동네 차이를 비교할 방법이 없음</td><td>동네 알아보기</td><td><span class="tag t-team">팀 자료</span> 상권별 공실률 <span class="num">20.0~38.3%</span></td><td><span class="tag t-have">지금 있음</span> 동네별 지도 · <span class="tag t-todo">보완</span> 공실 흐름</td></tr>
+      <tr><td>P3. 매물 정보가 비어 있음</td><td>매물 찾기</td><td><span class="tag t-data">우리 데이터</span> 관리비 미기재 <span class="num">61.0%</span></td><td><span class="tag t-have">지금 있음</span> 확인할 점 표시 · <span class="tag t-todo">보완</span> 질문 목록</td></tr>
+      <tr><td>P4. 가격이 적당한지 모름</td><td>매물 찾기</td><td><span class="tag t-data">우리 데이터</span> 평균보다 20% 넘게 싸거나 비싼 매물이 <span class="num">64.7%</span></td><td><span class="tag t-have">지금 있음</span> 시세 대비 가격</td></tr>
+      <tr><td>P5. 헛걸음</td><td>현장 방문</td><td><span class="tag t-data">우리 데이터</span> 30일 넘은 매물 <span class="num">12.7%</span> · <span class="tag t-hyp">가설</span></td><td><span class="tag t-have">지금 있음</span> 확인일 · <span class="tag t-todo">보완</span> 오래됨 표시</td></tr>
+      <tr><td>P6. 내 업종이 가능한 건물인지 모름</td><td>가능 여부 확인</td><td><span class="tag t-data">우리 데이터</span> 음식점 기준 바로 가능 <span class="num">38.3%</span>뿐</td><td><span class="tag t-have">지금 있음</span> 건물 용도 등급 · <span class="tag t-todo">보완</span> 위반건축물</td></tr>
+      <tr><td>P7. 계약 조건을 따질 줄 모름</td><td>계약</td><td><span class="tag t-src">공개 자료</span> 상담 사례 상위: 계약 해지, 권리금, 임대료</td><td><span class="tag t-todo">보완</span> 상담 준비 · <span class="tag t-out">범위 밖</span> 법률</td></tr>
+      <tr><td>P8. 개업 뒤 걱정</td><td>개업 준비</td><td><span class="tag t-src">공개 자료</span> 폐업 이유 매출 부진 <span class="num">70.9%</span></td><td><span class="tag t-out">범위 밖</span> · 주변 정보만 제공</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h2>여기서 읽히는 것</h2>
+  <div class="cols">
+    <div class="box"><h3>가장 막막한 곳은 5단계다</h3><p>"이 건물에서 내 가게를 할 수 있나"는 일반 매물 사이트가 답해 주지 않는 질문입니다. 음식점 기준으로 서류상 바로 가능한 매물은 38.3%뿐이고, 나머지는 변경 절차가 필요하거나 어렵습니다. 용도 맞춤 추천이 이 자리를 풉니다.</p></div>
+    <div class="box"><h3>매물 정보의 빈칸이 불안을 만든다</h3><p>관리비가 적히지 않은 매물이 61.0%입니다. 빈칸을 숨기지 않고 "확인할 점"으로 드러낸 뒤, 중개사에게 물어볼 질문으로 바꿔 주는 것이 다음 보완점입니다.</p></div>
+    <div class="box"><h3>6~7단계는 서비스 바깥이다</h3><p>계약서 검토와 개업 뒤 운영은 서비스가 판단하지 않습니다. 대신 상담 준비 질문과 "구청·중개사에 확인하세요" 안내로 넘겨줍니다.</p></div>
+  </div>
+
+  <h2>근거 자료</h2>
+  <ul class="src">
+    <li><b>우리 데이터</b>: 데모 매물 2,717건(네이버 부동산 수집, 2026-11-10 기준)과 건축물대장 매칭 결과에서 직접 센 값</li>
+    <li><b>팀 자료</b>: 「대구 상가 공실, 얼마나 심각하고 어떻게 활용할 것인가」(2026.10.29). 원출처는 한국부동산원 R-ONE 상업용부동산 임대동향조사, 국세청 TASIS</li>
+    <li>소상공인 실태조사 경영 애로(경쟁 심화 61.0%, 상권 쇠퇴 33.5%, 보증금·월세 28.6%): <a href="https://www.fnnews.com/news/202603130840507888">파이낸셜뉴스 2026.3</a></li>
+    <li>폐업 소상공인 실태(매출 부진 70.9%, 폐업 때 부채 보유 68.5%): <a href="https://www.fnnews.com/news/202606301314240062">파이낸셜뉴스 2026.6</a> (중소벤처기업부 조사 보도)</li>
+    <li>60대 신규 자영업자 업종 쏠림(65.7%)과 5년 내 이탈(31%): <a href="https://www.segye.com/newsView/20261012519831">세계일보 2026.10</a> (한국은행 인용 보도)</li>
+    <li>상가임대차 상담 사례 유형: <a href="https://news.seoul.go.kr/economy/archives/521173">서울특별시 경제분야 누리집</a></li>
+    <li>위반건축물과 용도 변경, 영업 가능 여부 확인: <a href="https://safehomes.kr/insights/commercial-zoning-permit-check">상가 용도·허가 확인하는 법</a> (민간 정보 글)</li>
+    <li>대구 상가 공실률 최근 보도: <a href="https://kbmaeil.com/article/20261029500178">경북매일 2026.10</a>, <a href="https://www.newsis.com/view/NISX20260611_0003666278">뉴시스 2026.6</a></li>
+  </ul>
+  <p class="note">공개 자료의 숫자는 검색 요약에서 가져온 것입니다. 발표에 쓰기 전에 원문에서 숫자와 조사 연도를 확인해야 합니다. 서울시 상담 사례는 대구가 아닌 서울 자료이고, 위반건축물 내용은 민간 정보 글이 출처입니다.</p>
+</div>
+</body>
+</html>
