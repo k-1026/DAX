@@ -1,0 +1,964 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>대구 빈 상가 찾기 · 발표</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0; height:100%; background:#0B0F17; overflow:hidden; font-family:'Pretendard','Malgun Gothic',system-ui,sans-serif}
+.stage{position:absolute; inset:0 0 44px 0; display:grid; place-items:center}
+.box{width:min(100vw, calc((100vh - 44px) * 16 / 9)); aspect-ratio:16 / 9; position:relative; background:#F6F5F1}
+iframe{position:absolute; inset:0; width:100%; height:100%; border:0; visibility:hidden}
+iframe.on{visibility:visible}
+.nav{position:absolute; left:0; right:0; bottom:0; height:44px; display:flex; align-items:center; gap:10px; padding:0 14px; background:#141E33; color:#F0F3F8; font-size:15px}
+.nav button{height:32px; min-width:44px; padding:0 12px; border:1px solid #3A4558; border-radius:8px; background:#182030; color:#F0F3F8; font-size:15px; font-family:inherit; cursor:pointer}
+.nav button:disabled{opacity:.4; cursor:default}
+.nav button:focus-visible{outline:2px solid #8DB0FF; outline-offset:2px}
+.nav select{height:32px; border:1px solid #3A4558; border-radius:8px; background:#182030; color:#F0F3F8; font-size:15px; font-family:inherit; padding:0 8px; max-width:50vw}
+.nav .sp{flex:1}
+.nav .hint{color:#A3AEC0; white-space:nowrap}
+@media (max-width:700px){ .nav .hint{display:none} }
+</style>
+</head>
+<body>
+<div class="stage"><div class="box" id="box">
+<iframe title="1. 표지" data-name="표지" srcdoc="&lt;!doctype html&gt;&lt;html lang=&quot;ko&quot;&gt;&lt;head&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&lt;title&gt;표지&lt;/title&gt;&lt;style&gt;:root{
+  --bg:#F6F5F1; --surface:#FFFFFF; --ink:#141E33; --ink-2:#36425A; --ink-3:#556178; --line:#C9CFDA; --soft:#EEF1F5;
+  --accent:#1747C7; --accent-bg:#E4ECFF; --ok:#17663F; --ok-bg:#DDF3E8; --warn:#7A4800; --warn-bg:#FDF0D5; --pain:#A3201A; --pain-bg:#FCE4E2; --dg:#5B2DA8; --dg-bg:#EEE7FB;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#11161F; --surface:#182030; --ink:#F0F3F8; --ink-2:#C3CBD8; --ink-3:#A3AEC0; --line:#3A4558; --soft:#222C3C;
+  --accent:#8DB0FF; --accent-bg:#1E2D52; --ok:#6EDBAC; --ok-bg:#143429; --warn:#F2B656; --warn-bg:#3A2C12; --pain:#FF9A9E; --pain-bg:#3D1C1F; --dg:#C9B0FF; --dg-bg:#2C2147;
+}}
+*{box-sizing:border-box}
+html{font-size:min(.8333vw, 1.4815vh)}
+body{margin:0; height:100vh; display:grid; place-items:center; background:var(--bg); color:var(--ink); font-family:&#x27;Pretendard&#x27;,&#x27;Malgun Gothic&#x27;,system-ui,-apple-system,sans-serif; line-height:1.4; word-break:keep-all; overflow:hidden}
+.slide{width:120rem; height:67.5rem; padding:2.2rem 2.8rem 1.8rem; display:flex; flex-direction:column; gap:1.1rem}
+h1{font-size:2.6rem; margin:0; letter-spacing:-.05rem}
+h2{font-size:1.6rem; margin:0}
+h3{font-size:1.25rem; margin:0}
+p{margin:0}
+.lead{color:var(--ink-2); font-size:1.3rem; margin-top:.2rem}
+.fill{flex:1; min-height:0}
+.tag{display:inline-block; font-size:.95rem; font-weight:700; padding:.05rem .6rem; border-radius:99rem; white-space:nowrap}
+.t-data{color:var(--accent); background:var(--accent-bg)} .t-team{color:var(--warn); background:var(--warn-bg)} .t-src{color:var(--ok); background:var(--ok-bg)} .t-hyp{color:var(--ink-2); background:var(--soft)}
+.t-have{color:var(--ok); background:var(--ok-bg)} .t-todo{color:var(--dg); background:var(--dg-bg)} .t-p{color:var(--pain); background:var(--pain-bg)}
+.card{background:var(--surface); border:.12rem solid var(--line); border-radius:.9rem; padding:1rem 1.2rem; min-height:0; overflow:hidden}
+.card ul{margin:.3rem 0 0; padding-left:1.15rem; color:var(--ink-2); font-size:1.38rem}
+.card li + li{margin-top:.25rem}
+.card p{color:var(--ink-2); font-size:1.3rem; margin-top:.3rem}
+.note{font-size:1.05rem; color:var(--ink-3)}
+.g2{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem}
+.g3{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem}
+.g4{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:1rem}
+.g5{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:.8rem}
+.big{font-size:4.2rem; font-weight:700; line-height:1.05; letter-spacing:-.1rem; font-variant-numeric:tabular-nums}
+.big small{font-size:1.6rem; font-weight:700}
+.bar{background:var(--ink); color:var(--bg); border-radius:.9rem; padding:1rem 1.4rem; font-size:1.45rem; font-weight:700}
+.bar span{font-weight:400; opacity:.85}
+table{border-collapse:collapse; width:100%; font-size:1.22rem}
+th,td{border-bottom:.08rem solid var(--line); padding:.5rem .7rem; text-align:left; vertical-align:top}
+th{background:var(--soft); white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.c{text-align:center; font-weight:700}
+.o{color:var(--ok)} .x{color:var(--pain)} .t{color:var(--warn)}
+tr.us td{background:var(--accent-bg); font-weight:700}
+
+&lt;/style&gt;&lt;/head&gt;&lt;body&gt;&lt;div class=&quot;slide&quot; style=&quot;justify-content:center; gap:2rem; padding:4rem 7rem&quot;&gt;
+  &lt;p style=&quot;font-size:1.4rem; font-weight:700; color:var(--accent)&quot;&gt;DAX PROJECT · 2026.11.13&lt;/p&gt;
+  &lt;h1 style=&quot;font-size:5.2rem; line-height:1.15; letter-spacing:-.15rem&quot;&gt;대구 빈 상가 찾기&lt;/h1&gt;
+  &lt;p style=&quot;font-size:2.2rem; color:var(--ink-2); max-width:70rem&quot;&gt;하려는 가게에 맞는 빈 상가를 골라 주는&lt;br&gt;용도 맞춤 추천 서비스&lt;/p&gt;
+  &lt;div class=&quot;g5&quot; style=&quot;margin-top:2rem; max-width:96rem&quot;&gt;
+    &lt;div class=&quot;card&quot;&gt;&lt;h3&gt;1. 문제&lt;/h3&gt;&lt;p&gt;대구 상가 공실&lt;/p&gt;&lt;/div&gt;
+    &lt;div class=&quot;card&quot;&gt;&lt;h3&gt;2. 사람&lt;/h3&gt;&lt;p&gt;임차인의 어려움 8가지&lt;/p&gt;&lt;/div&gt;
+    &lt;div class=&quot;card&quot;&gt;&lt;h3&gt;3. 해법&lt;/h3&gt;&lt;p&gt;서비스 화면, 차별성, 유저플로우&lt;/p&gt;&lt;/div&gt;
+    &lt;div class=&quot;card&quot;&gt;&lt;h3&gt;4. 구조&lt;/h3&gt;&lt;p&gt;에이전트 구성, 밸류체인&lt;/p&gt;&lt;/div&gt;
+    &lt;div class=&quot;card&quot;&gt;&lt;h3&gt;5. 사업&lt;/h3&gt;&lt;p&gt;BM 캔버스, 남은 과제&lt;/p&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;document.addEventListener(&quot;keydown&quot;,function(e){parent.postMessage({deckKey:e.key},&quot;*&quot;)});&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;" class="on"></iframe>
+<iframe title="2. 문제: 대구 공실" data-name="문제: 대구 공실" srcdoc="&lt;!doctype html&gt;&lt;html lang=&quot;ko&quot;&gt;&lt;head&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&lt;title&gt;문제&lt;/title&gt;&lt;style&gt;:root{
+  --bg:#F6F5F1; --surface:#FFFFFF; --ink:#141E33; --ink-2:#36425A; --ink-3:#556178; --line:#C9CFDA; --soft:#EEF1F5;
+  --accent:#1747C7; --accent-bg:#E4ECFF; --ok:#17663F; --ok-bg:#DDF3E8; --warn:#7A4800; --warn-bg:#FDF0D5; --pain:#A3201A; --pain-bg:#FCE4E2; --dg:#5B2DA8; --dg-bg:#EEE7FB;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#11161F; --surface:#182030; --ink:#F0F3F8; --ink-2:#C3CBD8; --ink-3:#A3AEC0; --line:#3A4558; --soft:#222C3C;
+  --accent:#8DB0FF; --accent-bg:#1E2D52; --ok:#6EDBAC; --ok-bg:#143429; --warn:#F2B656; --warn-bg:#3A2C12; --pain:#FF9A9E; --pain-bg:#3D1C1F; --dg:#C9B0FF; --dg-bg:#2C2147;
+}}
+*{box-sizing:border-box}
+html{font-size:min(.8333vw, 1.4815vh)}
+body{margin:0; height:100vh; display:grid; place-items:center; background:var(--bg); color:var(--ink); font-family:&#x27;Pretendard&#x27;,&#x27;Malgun Gothic&#x27;,system-ui,-apple-system,sans-serif; line-height:1.4; word-break:keep-all; overflow:hidden}
+.slide{width:120rem; height:67.5rem; padding:2.2rem 2.8rem 1.8rem; display:flex; flex-direction:column; gap:1.1rem}
+h1{font-size:2.6rem; margin:0; letter-spacing:-.05rem}
+h2{font-size:1.6rem; margin:0}
+h3{font-size:1.25rem; margin:0}
+p{margin:0}
+.lead{color:var(--ink-2); font-size:1.3rem; margin-top:.2rem}
+.fill{flex:1; min-height:0}
+.tag{display:inline-block; font-size:.95rem; font-weight:700; padding:.05rem .6rem; border-radius:99rem; white-space:nowrap}
+.t-data{color:var(--accent); background:var(--accent-bg)} .t-team{color:var(--warn); background:var(--warn-bg)} .t-src{color:var(--ok); background:var(--ok-bg)} .t-hyp{color:var(--ink-2); background:var(--soft)}
+.t-have{color:var(--ok); background:var(--ok-bg)} .t-todo{color:var(--dg); background:var(--dg-bg)} .t-p{color:var(--pain); background:var(--pain-bg)}
+.card{background:var(--surface); border:.12rem solid var(--line); border-radius:.9rem; padding:1rem 1.2rem; min-height:0; overflow:hidden}
+.card ul{margin:.3rem 0 0; padding-left:1.15rem; color:var(--ink-2); font-size:1.38rem}
+.card li + li{margin-top:.25rem}
+.card p{color:var(--ink-2); font-size:1.3rem; margin-top:.3rem}
+.note{font-size:1.05rem; color:var(--ink-3)}
+.g2{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem}
+.g3{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem}
+.g4{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:1rem}
+.g5{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:.8rem}
+.big{font-size:4.2rem; font-weight:700; line-height:1.05; letter-spacing:-.1rem; font-variant-numeric:tabular-nums}
+.big small{font-size:1.6rem; font-weight:700}
+.bar{background:var(--ink); color:var(--bg); border-radius:.9rem; padding:1rem 1.4rem; font-size:1.45rem; font-weight:700}
+.bar span{font-weight:400; opacity:.85}
+table{border-collapse:collapse; width:100%; font-size:1.22rem}
+th,td{border-bottom:.08rem solid var(--line); padding:.5rem .7rem; text-align:left; vertical-align:top}
+th{background:var(--soft); white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.c{text-align:center; font-weight:700}
+.o{color:var(--ok)} .x{color:var(--pain)} .t{color:var(--warn)}
+tr.us td{background:var(--accent-bg); font-weight:700}
+
+&lt;/style&gt;&lt;/head&gt;&lt;body&gt;&lt;div class=&quot;slide&quot;&gt;
+  &lt;div&gt;&lt;h1&gt;대구의 빈 상가는 전국보다 많고, 계속 늘고 있습니다&lt;/h1&gt;&lt;p class=&quot;lead&quot;&gt;그런데 빈 상가가 많아도 가게 자리를 구하는 사람은 여전히 고르기 어렵습니다.&lt;/p&gt;&lt;/div&gt;
+  &lt;div class=&quot;g4&quot;&gt;
+    &lt;div class=&quot;card&quot;&gt;&lt;p style=&quot;margin:0&quot;&gt;중대형 상가 공실률 (2026년 2분기)&lt;/p&gt;&lt;div class=&quot;big&quot; style=&quot;color:var(--pain)&quot;&gt;18.9&lt;small&gt;%&lt;/small&gt;&lt;/div&gt;&lt;p&gt;전국 14.3% · 서울 9.7%&lt;/p&gt;&lt;/div&gt;
+    &lt;div class=&quot;card&quot;&gt;&lt;p style=&quot;margin:0&quot;&gt;소규모 상가 공실률&lt;/p&gt;&lt;div class=&quot;big&quot; style=&quot;color:var(--pain)&quot;&gt;3.6&lt;small&gt;배&lt;/small&gt;&lt;/div&gt;&lt;p&gt;2019년 3.0% → 2026년 10.8%&lt;/p&gt;&lt;/div&gt;
+    &lt;div class=&quot;card&quot;&gt;&lt;p style=&quot;margin:0&quot;&gt;동성로 중심 상권 공실률&lt;/p&gt;&lt;div class=&quot;big&quot; style=&quot;color:var(--pain)&quot;&gt;25.8&lt;small&gt;%&lt;/small&gt;&lt;/div&gt;&lt;p&gt;서문시장·청라언덕은 38.3%&lt;/p&gt;&lt;/div&gt;
+    &lt;div class=&quot;card&quot;&gt;&lt;p style=&quot;margin:0&quot;&gt;개업 대비 폐업 비율 (2025)&lt;/p&gt;&lt;div class=&quot;big&quot; style=&quot;color:var(--pain)&quot;&gt;91.2&lt;small&gt;%&lt;/small&gt;&lt;/div&gt;&lt;p&gt;2019년에는 75.6%&lt;/p&gt;&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;g2 fill&quot;&gt;
+    &lt;div class=&quot;card&quot;&gt;&lt;h2&gt;빈 상가는 늘어도 월세는 안 내립니다&lt;/h2&gt;
+      &lt;div style=&quot;display:flex; align-items:flex-end; gap:2.5rem; margin-top:1rem&quot;&gt;
+        &lt;div&gt;&lt;div class=&quot;big&quot;&gt;222&lt;/div&gt;&lt;p&gt;공실 지수&lt;/p&gt;&lt;/div&gt;
+        &lt;div&gt;&lt;div class=&quot;big&quot; style=&quot;color:var(--ink-3)&quot;&gt;103&lt;/div&gt;&lt;p&gt;임대료 지수&lt;/p&gt;&lt;/div&gt;
+        &lt;p style=&quot;flex:1; font-size:1.2rem&quot;&gt;2020년 1분기를 100으로 봤을 때. 빈 상가는 2배 넘게 늘었지만 월세는 거의 그대로입니다. 건물주도 어떤 업종이 맞는지, 얼마가 적당한지 모릅니다.&lt;/p&gt;
+      &lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;card&quot;&gt;&lt;h2&gt;임차인 쪽에서 보면&lt;/h2&gt;
+      &lt;ul style=&quot;font-size:1.25rem&quot;&gt;
+        &lt;li&gt;매물은 많은데 &lt;b&gt;내 업종에 맞는 자리&lt;/b&gt;인지 알려 주는 곳이 없습니다&lt;/li&gt;
+        &lt;li&gt;우리 매물 2,717건 중 음식점이 서류상 바로 가능한 곳은 &lt;b&gt;38.3%&lt;/b&gt;뿐입니다&lt;/li&gt;
+        &lt;li&gt;관리비가 적히지 않은 매물이 &lt;b&gt;61.0%&lt;/b&gt;입니다&lt;/li&gt;
+      &lt;/ul&gt;&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;p class=&quot;note&quot;&gt;&lt;span class=&quot;tag t-team&quot;&gt;팀 자료&lt;/span&gt; 「대구 상가 공실, 얼마나 심각하고 어떻게 활용할 것인가」(2026.10.29). 원출처 한국부동산원 R-ONE, 국세청 TASIS · &lt;span class=&quot;tag t-data&quot;&gt;우리 데이터&lt;/span&gt; 데모 매물 2,717건(2026-11-10 기준)&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;script&gt;document.addEventListener(&quot;keydown&quot;,function(e){parent.postMessage({deckKey:e.key},&quot;*&quot;)});&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;"></iframe>
+<iframe title="3. 고객여정지도" data-name="고객여정지도" srcdoc="&lt;!doctype html&gt;&lt;html lang=&quot;ko&quot;&gt;&lt;head&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&lt;title&gt;고객여정지도&lt;/title&gt;&lt;style&gt;:root{
+  --bg:#F6F5F1; --surface:#FFFFFF; --ink:#141E33; --ink-2:#36425A; --ink-3:#556178; --line:#C9CFDA; --soft:#EEF1F5;
+  --accent:#1747C7; --accent-bg:#E4ECFF; --ok:#17663F; --ok-bg:#DDF3E8; --warn:#7A4800; --warn-bg:#FDF0D5; --pain:#A3201A; --pain-bg:#FCE4E2; --dg:#5B2DA8; --dg-bg:#EEE7FB;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#11161F; --surface:#182030; --ink:#F0F3F8; --ink-2:#C3CBD8; --ink-3:#A3AEC0; --line:#3A4558; --soft:#222C3C;
+  --accent:#8DB0FF; --accent-bg:#1E2D52; --ok:#6EDBAC; --ok-bg:#143429; --warn:#F2B656; --warn-bg:#3A2C12; --pain:#FF9A9E; --pain-bg:#3D1C1F; --dg:#C9B0FF; --dg-bg:#2C2147;
+}}
+*{box-sizing:border-box}
+html{font-size:min(.8333vw, 1.4815vh)}
+body{margin:0; height:100vh; display:grid; place-items:center; background:var(--bg); color:var(--ink); font-family:&#x27;Pretendard&#x27;,&#x27;Malgun Gothic&#x27;,system-ui,-apple-system,sans-serif; line-height:1.4; word-break:keep-all; overflow:hidden}
+.slide{width:120rem; height:67.5rem; padding:2.2rem 2.8rem 1.8rem; display:flex; flex-direction:column; gap:1.1rem}
+h1{font-size:2.6rem; margin:0; letter-spacing:-.05rem}
+h2{font-size:1.6rem; margin:0}
+h3{font-size:1.25rem; margin:0}
+p{margin:0}
+.lead{color:var(--ink-2); font-size:1.3rem; margin-top:.2rem}
+.fill{flex:1; min-height:0}
+.tag{display:inline-block; font-size:.95rem; font-weight:700; padding:.05rem .6rem; border-radius:99rem; white-space:nowrap}
+.t-data{color:var(--accent); background:var(--accent-bg)} .t-team{color:var(--warn); background:var(--warn-bg)} .t-src{color:var(--ok); background:var(--ok-bg)} .t-hyp{color:var(--ink-2); background:var(--soft)}
+.t-have{color:var(--ok); background:var(--ok-bg)} .t-todo{color:var(--dg); background:var(--dg-bg)} .t-p{color:var(--pain); background:var(--pain-bg)}
+.card{background:var(--surface); border:.12rem solid var(--line); border-radius:.9rem; padding:1rem 1.2rem; min-height:0; overflow:hidden}
+.card ul{margin:.3rem 0 0; padding-left:1.15rem; color:var(--ink-2); font-size:1.38rem}
+.card li + li{margin-top:.25rem}
+.card p{color:var(--ink-2); font-size:1.3rem; margin-top:.3rem}
+.note{font-size:1.05rem; color:var(--ink-3)}
+.g2{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem}
+.g3{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem}
+.g4{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:1rem}
+.g5{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:.8rem}
+.big{font-size:4.2rem; font-weight:700; line-height:1.05; letter-spacing:-.1rem; font-variant-numeric:tabular-nums}
+.big small{font-size:1.6rem; font-weight:700}
+.bar{background:var(--ink); color:var(--bg); border-radius:.9rem; padding:1rem 1.4rem; font-size:1.45rem; font-weight:700}
+.bar span{font-weight:400; opacity:.85}
+table{border-collapse:collapse; width:100%; font-size:1.22rem}
+th,td{border-bottom:.08rem solid var(--line); padding:.5rem .7rem; text-align:left; vertical-align:top}
+th{background:var(--soft); white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.c{text-align:center; font-weight:700}
+.o{color:var(--ok)} .x{color:var(--pain)} .t{color:var(--warn)}
+tr.us td{background:var(--accent-bg); font-weight:700}
+
+&lt;/style&gt;&lt;/head&gt;&lt;body&gt;&lt;div class=&quot;slide&quot;&gt;
+  &lt;div style=&quot;display:flex; justify-content:space-between; align-items:flex-end; gap:2rem&quot;&gt;
+    &lt;div&gt;&lt;h1&gt;임차인은 일곱 단계에서 여덟 가지 어려움을 겪습니다&lt;/h1&gt;&lt;p class=&quot;lead&quot;&gt;주인공 두 사람: 50대 퇴직자 첫 창업(A), 20~30대 청년 첫 창업(B)&lt;/p&gt;&lt;/div&gt;
+    &lt;div style=&quot;font-size:1.05rem; color:var(--ink-2); white-space:nowrap&quot;&gt;&lt;span class=&quot;tag t-data&quot;&gt;우리 데이터&lt;/span&gt; &lt;span class=&quot;tag t-team&quot;&gt;팀 자료&lt;/span&gt; &lt;span class=&quot;tag t-src&quot;&gt;공개 자료&lt;/span&gt; &lt;span class=&quot;tag t-hyp&quot;&gt;가설&lt;/span&gt;&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;card fill&quot; style=&quot;padding:0&quot;&gt;
+  &lt;table style=&quot;height:100%; table-layout:fixed&quot;&gt;
+    &lt;thead&gt;&lt;tr&gt;&lt;th style=&quot;width:7rem&quot;&gt;단계&lt;/th&gt;&lt;th&gt;1. 결심&lt;/th&gt;&lt;th&gt;2. 동네 알아보기&lt;/th&gt;&lt;th&gt;3. 매물 찾기&lt;/th&gt;&lt;th&gt;4. 현장 방문&lt;/th&gt;&lt;th&gt;5. 가능 여부 확인&lt;/th&gt;&lt;th&gt;6. 계약&lt;/th&gt;&lt;th&gt;7. 개업 준비&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+    &lt;tbody&gt;
+      &lt;tr&gt;&lt;td&gt;&lt;b&gt;하는 일&lt;/b&gt;&lt;/td&gt;&lt;td&gt;할 가게 정하기&lt;/td&gt;&lt;td&gt;어느 동네가 좋을지 알아보기&lt;/td&gt;&lt;td&gt;사이트에서 월세·넓이 비교&lt;/td&gt;&lt;td&gt;중개사와 보러 다니기&lt;/td&gt;&lt;td&gt;내 업종이 되는 건물인지 확인&lt;/td&gt;&lt;td&gt;월세·권리금 협의&lt;/td&gt;&lt;td&gt;영업 신고, 공사&lt;/td&gt;&lt;/tr&gt;
+      &lt;tr&gt;&lt;td&gt;&lt;b&gt;기분&lt;/b&gt;&lt;br&gt;&lt;span class=&quot;tag t-hyp&quot;&gt;가설&lt;/span&gt;&lt;/td&gt;&lt;td&gt;기대 반 걱정 반&lt;/td&gt;&lt;td&gt;말이 다 달라 헷갈림&lt;/td&gt;&lt;td&gt;많은데 뭐가 맞는지 모름&lt;/td&gt;&lt;td&gt;지치고 헛걸음도 함&lt;/td&gt;&lt;td style=&quot;background:var(--pain-bg); font-weight:700&quot;&gt;가장 막막함&lt;/td&gt;&lt;td&gt;손해 볼까 불안&lt;/td&gt;&lt;td&gt;후련하지만 걱정&lt;/td&gt;&lt;/tr&gt;
+      &lt;tr style=&quot;background:var(--pain-bg)&quot;&gt;&lt;td&gt;&lt;b&gt;어려움&lt;/b&gt;&lt;/td&gt;
+        &lt;td&gt;&lt;b&gt;P1&lt;/b&gt; 내 업종에 맞는 자리 기준을 모름&lt;/td&gt;
+        &lt;td&gt;&lt;b&gt;P2&lt;/b&gt; 동네 차이를 비교할 방법이 없음&lt;/td&gt;
+        &lt;td&gt;&lt;b&gt;P3&lt;/b&gt; 매물 정보가 비어 있음&lt;br&gt;&lt;b&gt;P4&lt;/b&gt; 가격이 적당한지 모름&lt;/td&gt;
+        &lt;td&gt;&lt;b&gt;P5&lt;/b&gt; 가 보니 이미 나갔거나 설명과 다름&lt;/td&gt;
+        &lt;td&gt;&lt;b&gt;P6&lt;/b&gt; 내 가게를 할 수 있는 건물인지 모름&lt;/td&gt;
+        &lt;td&gt;&lt;b&gt;P7&lt;/b&gt; 계약 조건을 따질 줄 모름&lt;/td&gt;
+        &lt;td&gt;&lt;b&gt;P8&lt;/b&gt; 열고 나서가 더 걱정&lt;/td&gt;&lt;/tr&gt;
+      &lt;tr&gt;&lt;td&gt;&lt;b&gt;근거&lt;/b&gt;&lt;/td&gt;
+        &lt;td&gt;&lt;span class=&quot;tag t-src&quot;&gt;공개 자료&lt;/span&gt; 60대 신규 자영업자 65.7%가 시작하기 쉬운 업종에 몰림&lt;/td&gt;
+        &lt;td&gt;&lt;span class=&quot;tag t-team&quot;&gt;팀 자료&lt;/span&gt; 상권별 공실률 20.0~38.3%&lt;/td&gt;
+        &lt;td&gt;&lt;span class=&quot;tag t-data&quot;&gt;우리 데이터&lt;/span&gt; 관리비 미기재 61.0%. 시세보다 20% 넘게 싸거나 비싼 매물 64.7%&lt;/td&gt;
+        &lt;td&gt;&lt;span class=&quot;tag t-data&quot;&gt;우리 데이터&lt;/span&gt; 30일 넘은 매물 12.7%&lt;br&gt;&lt;span class=&quot;tag t-hyp&quot;&gt;가설&lt;/span&gt; 헛걸음 경험&lt;/td&gt;
+        &lt;td&gt;&lt;span class=&quot;tag t-data&quot;&gt;우리 데이터&lt;/span&gt; 음식점 기준 바로 가능 38.3%뿐&lt;/td&gt;
+        &lt;td&gt;&lt;span class=&quot;tag t-src&quot;&gt;공개 자료&lt;/span&gt; 상담 사례 상위: 계약 해지, 권리금, 임대료 (서울)&lt;/td&gt;
+        &lt;td&gt;&lt;span class=&quot;tag t-src&quot;&gt;공개 자료&lt;/span&gt; 폐업 이유 1위 매출 부진 70.9%&lt;/td&gt;&lt;/tr&gt;
+      &lt;tr&gt;&lt;td&gt;&lt;b&gt;서비스&lt;/b&gt;&lt;/td&gt;
+        &lt;td&gt;&lt;span class=&quot;tag t-have&quot;&gt;있음&lt;/span&gt; 업종별 점수&lt;/td&gt;
+        &lt;td&gt;&lt;span class=&quot;tag t-have&quot;&gt;있음&lt;/span&gt; 동네별 지도&lt;br&gt;&lt;span class=&quot;tag t-todo&quot;&gt;보완&lt;/span&gt; 공실 흐름&lt;/td&gt;
+        &lt;td&gt;&lt;span class=&quot;tag t-have&quot;&gt;있음&lt;/span&gt; 시세 대비 가격, 빈 정보 표시&lt;/td&gt;
+        &lt;td&gt;&lt;span class=&quot;tag t-have&quot;&gt;있음&lt;/span&gt; 확인일, 비교·엑셀&lt;br&gt;&lt;span class=&quot;tag t-todo&quot;&gt;보완&lt;/span&gt; 오래됨 표시&lt;/td&gt;
+        &lt;td&gt;&lt;span class=&quot;tag t-have&quot;&gt;있음&lt;/span&gt; 건물 용도 등급&lt;br&gt;&lt;span class=&quot;tag t-todo&quot;&gt;보완&lt;/span&gt; 위반건축물&lt;/td&gt;
+        &lt;td&gt;&lt;span class=&quot;tag t-todo&quot;&gt;보완&lt;/span&gt; 중개사 질문 목록&lt;/td&gt;
+        &lt;td&gt;범위 밖&lt;/td&gt;&lt;/tr&gt;
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;bar&quot;&gt;가장 막막한 곳은 5단계입니다. &lt;span&gt;&quot;이 건물에서 내 가게를 할 수 있나&quot;는 매물 사이트가 답해 주지 않는 질문입니다.&lt;/span&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;document.addEventListener(&quot;keydown&quot;,function(e){parent.postMessage({deckKey:e.key},&quot;*&quot;)});&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;"></iframe>
+<iframe title="4. 서비스 화면" data-name="서비스 화면" srcdoc="&lt;!doctype html&gt;&lt;html lang=&quot;ko&quot;&gt;&lt;head&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&lt;title&gt;서비스 화면&lt;/title&gt;&lt;style&gt;:root{
+  --bg:#F6F5F1; --surface:#FFFFFF; --ink:#141E33; --ink-2:#36425A; --ink-3:#556178; --line:#C9CFDA; --soft:#EEF1F5;
+  --accent:#1747C7; --accent-bg:#E4ECFF; --ok:#17663F; --ok-bg:#DDF3E8; --warn:#7A4800; --warn-bg:#FDF0D5; --pain:#A3201A; --pain-bg:#FCE4E2; --dg:#5B2DA8; --dg-bg:#EEE7FB;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#11161F; --surface:#182030; --ink:#F0F3F8; --ink-2:#C3CBD8; --ink-3:#A3AEC0; --line:#3A4558; --soft:#222C3C;
+  --accent:#8DB0FF; --accent-bg:#1E2D52; --ok:#6EDBAC; --ok-bg:#143429; --warn:#F2B656; --warn-bg:#3A2C12; --pain:#FF9A9E; --pain-bg:#3D1C1F; --dg:#C9B0FF; --dg-bg:#2C2147;
+}}
+*{box-sizing:border-box}
+html{font-size:min(.8333vw, 1.4815vh)}
+body{margin:0; height:100vh; display:grid; place-items:center; background:var(--bg); color:var(--ink); font-family:&#x27;Pretendard&#x27;,&#x27;Malgun Gothic&#x27;,system-ui,-apple-system,sans-serif; line-height:1.4; word-break:keep-all; overflow:hidden}
+.slide{width:120rem; height:67.5rem; padding:2.2rem 2.8rem 1.8rem; display:flex; flex-direction:column; gap:1.1rem}
+h1{font-size:2.6rem; margin:0; letter-spacing:-.05rem}
+h2{font-size:1.6rem; margin:0}
+h3{font-size:1.25rem; margin:0}
+p{margin:0}
+.lead{color:var(--ink-2); font-size:1.3rem; margin-top:.2rem}
+.fill{flex:1; min-height:0}
+.tag{display:inline-block; font-size:.95rem; font-weight:700; padding:.05rem .6rem; border-radius:99rem; white-space:nowrap}
+.t-data{color:var(--accent); background:var(--accent-bg)} .t-team{color:var(--warn); background:var(--warn-bg)} .t-src{color:var(--ok); background:var(--ok-bg)} .t-hyp{color:var(--ink-2); background:var(--soft)}
+.t-have{color:var(--ok); background:var(--ok-bg)} .t-todo{color:var(--dg); background:var(--dg-bg)} .t-p{color:var(--pain); background:var(--pain-bg)}
+.card{background:var(--surface); border:.12rem solid var(--line); border-radius:.9rem; padding:1rem 1.2rem; min-height:0; overflow:hidden}
+.card ul{margin:.3rem 0 0; padding-left:1.15rem; color:var(--ink-2); font-size:1.38rem}
+.card li + li{margin-top:.25rem}
+.card p{color:var(--ink-2); font-size:1.3rem; margin-top:.3rem}
+.note{font-size:1.05rem; color:var(--ink-3)}
+.g2{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem}
+.g3{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem}
+.g4{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:1rem}
+.g5{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:.8rem}
+.big{font-size:4.2rem; font-weight:700; line-height:1.05; letter-spacing:-.1rem; font-variant-numeric:tabular-nums}
+.big small{font-size:1.6rem; font-weight:700}
+.bar{background:var(--ink); color:var(--bg); border-radius:.9rem; padding:1rem 1.4rem; font-size:1.45rem; font-weight:700}
+.bar span{font-weight:400; opacity:.85}
+table{border-collapse:collapse; width:100%; font-size:1.22rem}
+th,td{border-bottom:.08rem solid var(--line); padding:.5rem .7rem; text-align:left; vertical-align:top}
+th{background:var(--soft); white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.c{text-align:center; font-weight:700}
+.o{color:var(--ok)} .x{color:var(--pain)} .t{color:var(--warn)}
+tr.us td{background:var(--accent-bg); font-weight:700}
+
+&lt;/style&gt;&lt;/head&gt;&lt;body&gt;&lt;div class=&quot;slide&quot;&gt;
+  &lt;div&gt;&lt;h1&gt;그래서 만든 것: 가게 종류만 고르면 맞는 빈 상가를 보여 줍니다&lt;/h1&gt;&lt;p class=&quot;lead&quot;&gt;26.11.13 데모. 대구 8개 구·군의 실제 매물 2,717건에 공공데이터 5종을 붙였습니다.&lt;/p&gt;&lt;/div&gt;
+  &lt;div class=&quot;g4 fill&quot;&gt;
+    &lt;div class=&quot;card&quot;&gt;&lt;h2&gt;① 큰 버튼으로 조건 고르기&lt;/h2&gt;
+      &lt;ul&gt;&lt;li&gt;가게 종류 8가지&lt;/li&gt;&lt;li&gt;한 달 월세 상한&lt;/li&gt;&lt;li&gt;지역(구)&lt;/li&gt;&lt;li&gt;글자 크기 &quot;보통 / 크게&quot;&lt;/li&gt;&lt;/ul&gt;
+      &lt;p style=&quot;margin-top:1rem&quot;&gt;&lt;span class=&quot;tag t-p&quot;&gt;P1&lt;/span&gt; 업종마다 다른 기준으로 점수를 냅니다&lt;/p&gt;&lt;/div&gt;
+    &lt;div class=&quot;card&quot;&gt;&lt;h2&gt;② 점수와 쉬운 말&lt;/h2&gt;
+      &lt;ul&gt;&lt;li&gt;&quot;92점 · 아주 좋음&quot;&lt;/li&gt;&lt;li&gt;좋은 점 / 확인할 점 문장&lt;/li&gt;&lt;li&gt;넓이는 평, 거리는 &quot;걸어서 약 5분&quot;&lt;/li&gt;&lt;li&gt;항목별 점수 성적표&lt;/li&gt;&lt;/ul&gt;
+      &lt;p style=&quot;margin-top:1rem&quot;&gt;&lt;span class=&quot;tag t-p&quot;&gt;P3&lt;/span&gt; &lt;span class=&quot;tag t-p&quot;&gt;P4&lt;/span&gt; 빈 정보와 시세 대비 가격을 드러냅니다&lt;/p&gt;&lt;/div&gt;
+    &lt;div class=&quot;card&quot;&gt;&lt;h2&gt;③ 내 업종이 되는 건물인지&lt;/h2&gt;
+      &lt;ul&gt;&lt;li&gt;건축물대장의 층별 용도를 매물에 연결&lt;/li&gt;&lt;li&gt;A~D 등급과 이유&lt;/li&gt;&lt;li&gt;&quot;구청 건축과에 확인하세요&quot; 안내&lt;/li&gt;&lt;li&gt;카카오맵, 로드뷰, 토지이음&lt;/li&gt;&lt;/ul&gt;
+      &lt;p style=&quot;margin-top:1rem&quot;&gt;&lt;span class=&quot;tag t-p&quot;&gt;P6&lt;/span&gt; 가장 막막한 5단계를 풉니다&lt;/p&gt;&lt;/div&gt;
+    &lt;div class=&quot;card&quot;&gt;&lt;h2&gt;④ 담고, 비교하고, 가져가기&lt;/h2&gt;
+      &lt;ul&gt;&lt;li&gt;마음에 드는 상가 담기&lt;/li&gt;&lt;li&gt;나란히 비교, 가장 좋은 값에 👍&lt;/li&gt;&lt;li&gt;엑셀 파일로 받기&lt;/li&gt;&lt;li&gt;추천이 맞았는지 👍 / 👎&lt;/li&gt;&lt;/ul&gt;
+      &lt;p style=&quot;margin-top:1rem&quot;&gt;&lt;span class=&quot;tag t-p&quot;&gt;P5&lt;/span&gt; 중개사 상담에 들고 갑니다&lt;/p&gt;&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;g3&quot;&gt;
+    &lt;div class=&quot;card&quot;&gt;&lt;h3&gt;점수 4묶음 · 11개 항목&lt;/h3&gt;&lt;p&gt;비용(월세 부담, 시세 대비, 보증금) · 공간(층, 넓이, 건물 나이) · 위치(교통, 주변 상권, 주변 손님) · 업종 맞춤(추천 용도, 건물 용도)&lt;/p&gt;&lt;/div&gt;
+    &lt;div class=&quot;card&quot;&gt;&lt;h3&gt;붙인 공공데이터&lt;/h3&gt;&lt;p&gt;건축물대장(국토교통부) · 상가 정보(소상공인시장진흥공단) · 인구·사업체(통계청 SGIS) · 주민등록 인구(행정안전부) · 지도(브이월드)&lt;/p&gt;&lt;/div&gt;
+    &lt;div class=&quot;card&quot; style=&quot;border-color:var(--accent)&quot;&gt;&lt;h3&gt;실제 화면 보기&lt;/h3&gt;&lt;p&gt;같은 폴더의 &lt;b&gt;26.11.13 데모.html&lt;/b&gt;을 엽니다. 발표 때는 이 장에서 데모 화면으로 넘어가 직접 눌러 보여 줍니다.&lt;/p&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;document.addEventListener(&quot;keydown&quot;,function(e){parent.postMessage({deckKey:e.key},&quot;*&quot;)});&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;"></iframe>
+<iframe title="5. 차별성" data-name="차별성" srcdoc="&lt;!doctype html&gt;&lt;html lang=&quot;ko&quot;&gt;&lt;head&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&lt;title&gt;차별성&lt;/title&gt;&lt;style&gt;:root{
+  --bg:#F6F5F1; --surface:#FFFFFF; --ink:#141E33; --ink-2:#36425A; --ink-3:#556178; --line:#C9CFDA; --soft:#EEF1F5;
+  --accent:#1747C7; --accent-bg:#E4ECFF; --ok:#17663F; --ok-bg:#DDF3E8; --warn:#7A4800; --warn-bg:#FDF0D5; --pain:#A3201A; --pain-bg:#FCE4E2; --dg:#5B2DA8; --dg-bg:#EEE7FB;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#11161F; --surface:#182030; --ink:#F0F3F8; --ink-2:#C3CBD8; --ink-3:#A3AEC0; --line:#3A4558; --soft:#222C3C;
+  --accent:#8DB0FF; --accent-bg:#1E2D52; --ok:#6EDBAC; --ok-bg:#143429; --warn:#F2B656; --warn-bg:#3A2C12; --pain:#FF9A9E; --pain-bg:#3D1C1F; --dg:#C9B0FF; --dg-bg:#2C2147;
+}}
+*{box-sizing:border-box}
+html{font-size:min(.8333vw, 1.4815vh)}
+body{margin:0; height:100vh; display:grid; place-items:center; background:var(--bg); color:var(--ink); font-family:&#x27;Pretendard&#x27;,&#x27;Malgun Gothic&#x27;,system-ui,-apple-system,sans-serif; line-height:1.4; word-break:keep-all; overflow:hidden}
+.slide{width:120rem; height:67.5rem; padding:2.2rem 2.8rem 1.8rem; display:flex; flex-direction:column; gap:1.1rem}
+h1{font-size:2.6rem; margin:0; letter-spacing:-.05rem}
+h2{font-size:1.6rem; margin:0}
+h3{font-size:1.25rem; margin:0}
+p{margin:0}
+.lead{color:var(--ink-2); font-size:1.3rem; margin-top:.2rem}
+.fill{flex:1; min-height:0}
+.tag{display:inline-block; font-size:.95rem; font-weight:700; padding:.05rem .6rem; border-radius:99rem; white-space:nowrap}
+.t-data{color:var(--accent); background:var(--accent-bg)} .t-team{color:var(--warn); background:var(--warn-bg)} .t-src{color:var(--ok); background:var(--ok-bg)} .t-hyp{color:var(--ink-2); background:var(--soft)}
+.t-have{color:var(--ok); background:var(--ok-bg)} .t-todo{color:var(--dg); background:var(--dg-bg)} .t-p{color:var(--pain); background:var(--pain-bg)}
+.card{background:var(--surface); border:.12rem solid var(--line); border-radius:.9rem; padding:1rem 1.2rem; min-height:0; overflow:hidden}
+.card ul{margin:.3rem 0 0; padding-left:1.15rem; color:var(--ink-2); font-size:1.38rem}
+.card li + li{margin-top:.25rem}
+.card p{color:var(--ink-2); font-size:1.3rem; margin-top:.3rem}
+.note{font-size:1.05rem; color:var(--ink-3)}
+.g2{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem}
+.g3{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem}
+.g4{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:1rem}
+.g5{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:.8rem}
+.big{font-size:4.2rem; font-weight:700; line-height:1.05; letter-spacing:-.1rem; font-variant-numeric:tabular-nums}
+.big small{font-size:1.6rem; font-weight:700}
+.bar{background:var(--ink); color:var(--bg); border-radius:.9rem; padding:1rem 1.4rem; font-size:1.45rem; font-weight:700}
+.bar span{font-weight:400; opacity:.85}
+table{border-collapse:collapse; width:100%; font-size:1.22rem}
+th,td{border-bottom:.08rem solid var(--line); padding:.5rem .7rem; text-align:left; vertical-align:top}
+th{background:var(--soft); white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.c{text-align:center; font-weight:700}
+.o{color:var(--ok)} .x{color:var(--pain)} .t{color:var(--warn)}
+tr.us td{background:var(--accent-bg); font-weight:700}
+
+&lt;/style&gt;&lt;/head&gt;&lt;body&gt;&lt;div class=&quot;slide&quot;&gt;
+  &lt;div&gt;&lt;h1&gt;다른 서비스가 답하지 않는 질문에 답하고, 대구의 색을 더합니다&lt;/h1&gt;&lt;p class=&quot;lead&quot;&gt;매물 사이트는 매물만, 상권 분석은 동네만 보여 줍니다.&lt;/p&gt;&lt;/div&gt;
+  &lt;div class=&quot;card&quot; style=&quot;padding:0&quot;&gt;
+  &lt;table&gt;
+    &lt;thead&gt;&lt;tr&gt;&lt;th&gt;서비스 종류&lt;/th&gt;&lt;th&gt;예&lt;/th&gt;&lt;th&gt;매물 보기&lt;/th&gt;&lt;th&gt;업종별 맞춤 점수&lt;/th&gt;&lt;th&gt;시세 대비 가격&lt;/th&gt;&lt;th&gt;빈 정보 드러내기&lt;/th&gt;&lt;th&gt;내 업종 가능 건물인지&lt;/th&gt;&lt;th&gt;대구 지역 맥락&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+    &lt;tbody&gt;
+      &lt;tr&gt;&lt;td&gt;매물 사이트&lt;/td&gt;&lt;td&gt;네이버 부동산, 직방, 다방&lt;/td&gt;&lt;td class=&quot;c o&quot;&gt;○&lt;/td&gt;&lt;td class=&quot;c x&quot;&gt;×&lt;/td&gt;&lt;td class=&quot;c x&quot;&gt;×&lt;/td&gt;&lt;td class=&quot;c x&quot;&gt;×&lt;/td&gt;&lt;td class=&quot;c x&quot;&gt;×&lt;/td&gt;&lt;td class=&quot;c x&quot;&gt;×&lt;/td&gt;&lt;/tr&gt;
+      &lt;tr&gt;&lt;td&gt;상가 전문 서비스&lt;/td&gt;&lt;td&gt;네모, 알스퀘어&lt;/td&gt;&lt;td class=&quot;c o&quot;&gt;○&lt;/td&gt;&lt;td class=&quot;c t&quot;&gt;△&lt;/td&gt;&lt;td class=&quot;c t&quot;&gt;△&lt;/td&gt;&lt;td class=&quot;c x&quot;&gt;×&lt;/td&gt;&lt;td class=&quot;c x&quot;&gt;×&lt;/td&gt;&lt;td class=&quot;c x&quot;&gt;×&lt;/td&gt;&lt;/tr&gt;
+      &lt;tr&gt;&lt;td&gt;상권 분석 서비스&lt;/td&gt;&lt;td&gt;상권정보시스템, 오픈업&lt;/td&gt;&lt;td class=&quot;c x&quot;&gt;×&lt;/td&gt;&lt;td class=&quot;c t&quot;&gt;△ 동네 단위&lt;/td&gt;&lt;td class=&quot;c x&quot;&gt;×&lt;/td&gt;&lt;td class=&quot;c x&quot;&gt;×&lt;/td&gt;&lt;td class=&quot;c x&quot;&gt;×&lt;/td&gt;&lt;td class=&quot;c t&quot;&gt;△&lt;/td&gt;&lt;/tr&gt;
+      &lt;tr&gt;&lt;td&gt;지자체 공실 사업&lt;/td&gt;&lt;td&gt;동성로 상권 활성화, 팝업스토어&lt;/td&gt;&lt;td class=&quot;c x&quot;&gt;×&lt;/td&gt;&lt;td class=&quot;c x&quot;&gt;×&lt;/td&gt;&lt;td class=&quot;c x&quot;&gt;×&lt;/td&gt;&lt;td class=&quot;c x&quot;&gt;×&lt;/td&gt;&lt;td class=&quot;c x&quot;&gt;×&lt;/td&gt;&lt;td class=&quot;c o&quot;&gt;○ 일부&lt;/td&gt;&lt;/tr&gt;
+      &lt;tr class=&quot;us&quot;&gt;&lt;td&gt;대구 빈 상가 찾기&lt;/td&gt;&lt;td&gt;지금 데모&lt;/td&gt;&lt;td class=&quot;c o&quot;&gt;○&lt;/td&gt;&lt;td class=&quot;c o&quot;&gt;○&lt;/td&gt;&lt;td class=&quot;c o&quot;&gt;○&lt;/td&gt;&lt;td class=&quot;c o&quot;&gt;○&lt;/td&gt;&lt;td class=&quot;c o&quot;&gt;○ 건축물대장&lt;/td&gt;&lt;td class=&quot;c t&quot;&gt;△ → 아래 제안&lt;/td&gt;&lt;/tr&gt;
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;g2 fill&quot;&gt;
+    &lt;div class=&quot;card&quot; style=&quot;border-color:var(--dg)&quot;&gt;&lt;h2&gt;대구 제안 A. 특화거리와 상권 성격 알려 주기&lt;/h2&gt;
+      &lt;ul&gt;
+        &lt;li&gt;매물이 어떤 거리 안에 있는지 설명에 넣습니다. 점수에는 넣지 않습니다&lt;/li&gt;
+        &lt;li&gt;&quot;봉산문화거리 안에 있어요. 화랑과 공방이 모여 있는 거리예요.&quot;&lt;/li&gt;
+        &lt;li&gt;중구 명물거리 14곳, 2024년 대구시 특화골목 6곳 선정&lt;/li&gt;
+        &lt;li&gt;필요한 것: 거리 범위 목록(구청·대구시 자료로 직접 제작)&lt;/li&gt;
+      &lt;/ul&gt;&lt;/div&gt;
+    &lt;div class=&quot;card&quot; style=&quot;border-color:var(--dg)&quot;&gt;&lt;h2&gt;대구 제안 B. 대구 지원사업 연결&lt;/h2&gt;
+      &lt;ul&gt;
+        &lt;li&gt;지원사업 대상 지역 안의 매물에 &quot;알아볼 수 있는 지원&quot;과 문의처를 보여 줍니다&lt;/li&gt;
+        &lt;li&gt;동성로 상권 활성화 사업(2028년까지 60억 원), 임대료 분납 선택제&lt;/li&gt;
+        &lt;li&gt;&quot;지원받을 수 있어요&quot;가 아니라 &quot;문의해 보세요&quot;로 안내&lt;/li&gt;
+        &lt;li&gt;필요한 것: 지원사업 목록표와 정기 관리&lt;/li&gt;
+      &lt;/ul&gt;&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;p class=&quot;note&quot;&gt;다른 서비스 칸은 일반적으로 알려진 기능 기준이며 직접 써 보고 확인하지 않았습니다. 특화거리가 장사에 유리한지는 근거가 없어 정보로만 보여 줍니다.&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;script&gt;document.addEventListener(&quot;keydown&quot;,function(e){parent.postMessage({deckKey:e.key},&quot;*&quot;)});&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;"></iframe>
+<iframe title="6. 유저플로우" data-name="유저플로우" srcdoc="&lt;!doctype html&gt;
+&lt;html lang=&quot;ko&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1&quot;&gt;
+&lt;title&gt;대구 빈 상가 찾기 · 유저플로우&lt;/title&gt;
+&lt;style&gt;
+/* 16:9 한 화면. 1920×1080에서 1rem = 16px, 화면 크기에 맞춰 통째로 줄거나 늘어난다 */
+:root{
+  --bg:#F6F5F1; --surface:#FFFFFF; --ink:#141E33; --ink-2:#36425A; --ink-3:#556178; --line:#C9CFDA; --soft:#EEF1F5;
+  --accent:#1747C7; --new:#17663F; --new-bg:#DDF3E8; --dg:#5B2DA8; --dg-bg:#EEE7FB; --pain:#A3201A; --pain-bg:#FCE4E2; --warn:#7A4800; --warn-bg:#FDF0D5;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#11161F; --surface:#182030; --ink:#F0F3F8; --ink-2:#C3CBD8; --ink-3:#A3AEC0; --line:#3A4558; --soft:#222C3C;
+  --accent:#8DB0FF; --new:#6EDBAC; --new-bg:#143429; --dg:#C9B0FF; --dg-bg:#2C2147; --pain:#FF9A9E; --pain-bg:#3D1C1F; --warn:#F2B656; --warn-bg:#3A2C12;
+}}
+*{box-sizing:border-box}
+html{font-size:min(.8333vw, 1.4815vh)}
+body{margin:0; height:100vh; display:grid; place-items:center; background:var(--bg); color:var(--ink); font-family:&#x27;Pretendard&#x27;,&#x27;Malgun Gothic&#x27;,system-ui,-apple-system,sans-serif; line-height:1.4; word-break:keep-all; overflow:hidden}
+.slide{width:120rem; height:67.5rem; padding:2.2rem 2.6rem 1.8rem; display:flex; flex-direction:column; gap:1.1rem}
+h1{font-size:2.5rem; margin:0; letter-spacing:-.05rem}
+p{margin:0}
+.head{display:flex; align-items:flex-end; justify-content:space-between; gap:2rem}
+.lead{color:var(--ink-2); font-size:1.25rem; margin-top:.2rem}
+.legend{display:flex; gap:1.2rem; font-size:1.05rem; color:var(--ink-2); white-space:nowrap}
+.tag{display:inline-block; font-size:.92rem; font-weight:700; padding:.05rem .6rem; border-radius:99rem; white-space:nowrap}
+.t-new{color:var(--new); background:var(--new-bg)} .t-dg{color:var(--dg); background:var(--dg-bg)} .t-p{color:var(--pain); background:var(--pain-bg)} .t-out{color:var(--ink-2); background:var(--soft)}
+
+.grid{flex:1; min-height:0; display:grid; grid-template-columns:5.4rem repeat(10,minmax(0,1fr)); grid-template-rows:auto minmax(0,1fr) minmax(0,1.55fr); gap:.7rem .55rem}
+.st{background:var(--ink); color:var(--bg); border-radius:.7rem; padding:.45rem .3rem; text-align:center; font-weight:700; font-size:1.12rem; position:relative}
+.st small{display:block; font-weight:400; font-size:.9rem; opacity:.8}
+.st:not(.last)::after{content:&quot;▶&quot;; position:absolute; right:-.62rem; top:50%; transform:translateY(-50%); color:var(--ink-3); font-size:.75rem; z-index:1}
+.rowlab{display:grid; place-items:center; text-align:center; font-weight:700; font-size:1.2rem; border-radius:.7rem; padding:.3rem}
+.rowlab.now{background:var(--soft)} .rowlab.next{background:var(--accent); color:#fff}
+@media (prefers-color-scheme: dark){ .rowlab.next{color:#0C1322} }
+.card{background:var(--surface); border:.14rem solid var(--line); border-radius:.8rem; padding:.7rem .7rem .6rem; display:flex; flex-direction:column; gap:.35rem; min-height:0; overflow:hidden}
+.card b{font-size:1.32rem; line-height:1.3}
+.card ul{margin:0; padding-left:1.1rem; font-size:1.18rem; color:var(--ink-2)}
+.card li + li{margin-top:.15rem}
+.card .tags{margin-top:auto; display:flex; flex-wrap:wrap; gap:.25rem}
+.card.add{border-color:var(--new); background:var(--new-bg)}
+.card.out{border-style:dashed}
+.card.none,.card.same{border-style:dashed; background:transparent; color:var(--ink-3); align-items:center; justify-content:center; text-align:center; font-size:1.18rem}
+
+.foot{display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); gap:1rem; font-size:1.1rem}
+.foot &gt; div{border-radius:.8rem; padding:.7rem 1.1rem}
+.loop{background:var(--warn-bg); color:var(--warn); font-weight:600}
+.sum{background:var(--surface); border:.1rem solid var(--line); display:flex; align-items:center; gap:1.4rem}
+.sum b{font-size:1.5rem; color:var(--new)}
+.sum b.d{color:var(--dg)}
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div class=&quot;slide&quot;&gt;
+  &lt;div class=&quot;head&quot;&gt;
+    &lt;div&gt;&lt;h1&gt;대구 빈 상가 찾기 · 유저플로우&lt;/h1&gt;&lt;p class=&quot;lead&quot;&gt;지금 데모의 흐름에 임차인의 어려움 8가지(P1~P8)와 대구 제안을 반영했습니다.&lt;/p&gt;&lt;/div&gt;
+    &lt;div class=&quot;legend&quot;&gt;&lt;span&gt;&lt;span class=&quot;tag t-new&quot;&gt;새로 추가&lt;/span&gt; 보완 후 더해짐&lt;/span&gt;&lt;span&gt;&lt;span class=&quot;tag t-dg&quot;&gt;대구&lt;/span&gt; 지역 색&lt;/span&gt;&lt;span&gt;&lt;span class=&quot;tag t-p&quot;&gt;P1~P8&lt;/span&gt; 푸는 어려움&lt;/span&gt;&lt;span&gt;&lt;span class=&quot;tag t-out&quot;&gt;서비스 밖&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class=&quot;grid&quot;&gt;
+    &lt;div&gt;&lt;/div&gt;
+    &lt;div class=&quot;st&quot;&gt;0&lt;small&gt;들어오는 길&lt;/small&gt;&lt;/div&gt;
+    &lt;div class=&quot;st&quot;&gt;1&lt;small&gt;가게 종류&lt;/small&gt;&lt;/div&gt;
+    &lt;div class=&quot;st&quot;&gt;2&lt;small&gt;조건&lt;/small&gt;&lt;/div&gt;
+    &lt;div class=&quot;st&quot;&gt;3&lt;small&gt;추천 목록&lt;/small&gt;&lt;/div&gt;
+    &lt;div class=&quot;st&quot;&gt;4&lt;small&gt;자세히 보기&lt;/small&gt;&lt;/div&gt;
+    &lt;div class=&quot;st&quot;&gt;5&lt;small&gt;바깥 확인&lt;/small&gt;&lt;/div&gt;
+    &lt;div class=&quot;st&quot;&gt;6&lt;small&gt;고르기&lt;/small&gt;&lt;/div&gt;
+    &lt;div class=&quot;st&quot;&gt;7&lt;small&gt;상담 준비&lt;/small&gt;&lt;/div&gt;
+    &lt;div class=&quot;st&quot;&gt;8&lt;small&gt;현장&lt;/small&gt;&lt;/div&gt;
+    &lt;div class=&quot;st last&quot;&gt;9&lt;small&gt;돌아오기&lt;/small&gt;&lt;/div&gt;
+
+    &lt;div class=&quot;rowlab now&quot;&gt;지금&lt;br&gt;데모&lt;/div&gt;
+    &lt;div class=&quot;card none&quot;&gt;정해진 길 없음&lt;br&gt;(파일을 직접 엶)&lt;/div&gt;
+    &lt;div class=&quot;card&quot;&gt;&lt;b&gt;가게 종류 고르기&lt;/b&gt;&lt;ul&gt;&lt;li&gt;8가지 중 하나&lt;/li&gt;&lt;/ul&gt;&lt;div class=&quot;tags&quot;&gt;&lt;span class=&quot;tag t-p&quot;&gt;P1&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;card&quot;&gt;&lt;b&gt;월세·지역 고르기&lt;/b&gt;&lt;ul&gt;&lt;li&gt;큰 버튼으로 선택&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+    &lt;div class=&quot;card&quot;&gt;&lt;b&gt;목록과 지도&lt;/b&gt;&lt;ul&gt;&lt;li&gt;점수 높은 순&lt;/li&gt;&lt;li&gt;동네별 상가 수&lt;/li&gt;&lt;/ul&gt;&lt;div class=&quot;tags&quot;&gt;&lt;span class=&quot;tag t-p&quot;&gt;P2&lt;/span&gt;&lt;span class=&quot;tag t-p&quot;&gt;P4&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;card&quot;&gt;&lt;b&gt;상가 자세히&lt;/b&gt;&lt;ul&gt;&lt;li&gt;좋은 점·확인할 점&lt;/li&gt;&lt;li&gt;점수 성적표&lt;/li&gt;&lt;li&gt;건물 용도 등급&lt;/li&gt;&lt;/ul&gt;&lt;div class=&quot;tags&quot;&gt;&lt;span class=&quot;tag t-p&quot;&gt;P3&lt;/span&gt;&lt;span class=&quot;tag t-p&quot;&gt;P6&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;card&quot;&gt;&lt;b&gt;바깥 사이트&lt;/b&gt;&lt;ul&gt;&lt;li&gt;카카오맵·로드뷰&lt;/li&gt;&lt;li&gt;토지이음은 처음 화면만&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+    &lt;div class=&quot;card&quot;&gt;&lt;b&gt;담기·비교·엑셀&lt;/b&gt;&lt;ul&gt;&lt;li&gt;나란히 비교&lt;/li&gt;&lt;li&gt;엑셀로 받기&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+    &lt;div class=&quot;card none&quot;&gt;없음&lt;/div&gt;
+    &lt;div class=&quot;card out&quot;&gt;&lt;b&gt;중개사 상담&lt;/b&gt;&lt;ul&gt;&lt;li&gt;현장 확인&lt;/li&gt;&lt;li&gt;구청 확인, 계약&lt;/li&gt;&lt;/ul&gt;&lt;div class=&quot;tags&quot;&gt;&lt;span class=&quot;tag t-out&quot;&gt;서비스 밖&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;card&quot;&gt;&lt;b&gt;👍 / 👎 평가&lt;/b&gt;&lt;ul&gt;&lt;li&gt;화면에만 남음&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+
+    &lt;div class=&quot;rowlab next&quot;&gt;보완&lt;br&gt;후&lt;/div&gt;
+    &lt;div class=&quot;card add&quot;&gt;&lt;b&gt;세 갈래로 들어옴&lt;/b&gt;&lt;ul&gt;&lt;li&gt;창업 지원 기관&lt;/li&gt;&lt;li&gt;검색·SNS&lt;/li&gt;&lt;li&gt;대구시 공공 채널&lt;/li&gt;&lt;/ul&gt;&lt;div class=&quot;tags&quot;&gt;&lt;span class=&quot;tag t-new&quot;&gt;새로 추가&lt;/span&gt;&lt;span class=&quot;tag t-dg&quot;&gt;대구&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;card same&quot;&gt;지금과 같음&lt;/div&gt;
+    &lt;div class=&quot;card same&quot;&gt;지금과 같음&lt;/div&gt;
+    &lt;div class=&quot;card add&quot;&gt;&lt;b&gt;목록과 지도 +&lt;/b&gt;&lt;ul&gt;&lt;li&gt;90일 넘은 매물에 &quot;오래됨&quot; 표시&lt;/li&gt;&lt;li&gt;동네별 공실 흐름&lt;/li&gt;&lt;/ul&gt;&lt;div class=&quot;tags&quot;&gt;&lt;span class=&quot;tag t-new&quot;&gt;새로 추가&lt;/span&gt;&lt;span class=&quot;tag t-dg&quot;&gt;대구&lt;/span&gt;&lt;span class=&quot;tag t-p&quot;&gt;P2&lt;/span&gt;&lt;span class=&quot;tag t-p&quot;&gt;P5&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;card add&quot;&gt;&lt;b&gt;상가 자세히 +&lt;/b&gt;&lt;ul&gt;&lt;li&gt;특화거리 설명&lt;/li&gt;&lt;li&gt;지원사업 안내&lt;/li&gt;&lt;li&gt;위반건축물 여부&lt;/li&gt;&lt;/ul&gt;&lt;div class=&quot;tags&quot;&gt;&lt;span class=&quot;tag t-new&quot;&gt;새로 추가&lt;/span&gt;&lt;span class=&quot;tag t-dg&quot;&gt;대구&lt;/span&gt;&lt;span class=&quot;tag t-p&quot;&gt;P6&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;card add&quot;&gt;&lt;b&gt;바깥 사이트 +&lt;/b&gt;&lt;ul&gt;&lt;li&gt;토지이음에서 그 땅 페이지가 바로 열림&lt;/li&gt;&lt;/ul&gt;&lt;div class=&quot;tags&quot;&gt;&lt;span class=&quot;tag t-new&quot;&gt;새로 추가&lt;/span&gt;&lt;span class=&quot;tag t-p&quot;&gt;P6&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;card same&quot;&gt;지금과 같음&lt;/div&gt;
+    &lt;div class=&quot;card add&quot;&gt;&lt;b&gt;중개사 질문 받기&lt;/b&gt;&lt;ul&gt;&lt;li&gt;상가마다 최대 5개&lt;/li&gt;&lt;li&gt;빈 정보를 질문으로&lt;/li&gt;&lt;li&gt;구청에 물을 것 구분&lt;/li&gt;&lt;/ul&gt;&lt;div class=&quot;tags&quot;&gt;&lt;span class=&quot;tag t-new&quot;&gt;새로 추가&lt;/span&gt;&lt;span class=&quot;tag t-p&quot;&gt;P3&lt;/span&gt;&lt;span class=&quot;tag t-p&quot;&gt;P7&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;card out&quot;&gt;&lt;b&gt;중개사 상담&lt;/b&gt;&lt;ul&gt;&lt;li&gt;질문 목록과 엑셀을 들고 감&lt;/li&gt;&lt;/ul&gt;&lt;div class=&quot;tags&quot;&gt;&lt;span class=&quot;tag t-out&quot;&gt;서비스 밖&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;card add&quot;&gt;&lt;b&gt;평가를 모아 개선&lt;/b&gt;&lt;ul&gt;&lt;li&gt;익명으로 서버에 모음&lt;/li&gt;&lt;li&gt;30건 넘으면 기준 개선 제안&lt;/li&gt;&lt;/ul&gt;&lt;div class=&quot;tags&quot;&gt;&lt;span class=&quot;tag t-new&quot;&gt;새로 추가&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class=&quot;foot&quot;&gt;
+    &lt;div class=&quot;loop&quot;&gt;↻ 3번에서 마음에 드는 곳이 없으면 2번으로 돌아가 조건을 바꿉니다. 담아 둔 상가는 그대로 남습니다.&lt;/div&gt;
+    &lt;div class=&quot;sum&quot;&gt;&lt;span&gt;더해지는 것 &lt;b&gt;8&lt;/b&gt;가지&lt;/span&gt;&lt;span&gt;그중 대구 색 &lt;b class=&quot;d&quot;&gt;4&lt;/b&gt;가지&lt;/span&gt;&lt;span style=&quot;color:var(--ink-3)&quot;&gt;보완 후는 계획 단계&lt;/span&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;script&gt;document.addEventListener(&quot;keydown&quot;,function(e){parent.postMessage({deckKey:e.key},&quot;*&quot;)});&lt;/script&gt;&lt;/body&gt;
+&lt;/html&gt;
+"></iframe>
+<iframe title="7. 서브에이전트 구성" data-name="서브에이전트 구성" srcdoc="&lt;!doctype html&gt;&lt;html lang=&quot;ko&quot;&gt;&lt;head&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&lt;title&gt;서브에이전트 구성&lt;/title&gt;&lt;style&gt;:root{
+  --bg:#F6F5F1; --surface:#FFFFFF; --ink:#141E33; --ink-2:#36425A; --ink-3:#556178; --line:#C9CFDA; --soft:#EEF1F5;
+  --accent:#1747C7; --accent-bg:#E4ECFF; --ok:#17663F; --ok-bg:#DDF3E8; --warn:#7A4800; --warn-bg:#FDF0D5; --pain:#A3201A; --pain-bg:#FCE4E2; --dg:#5B2DA8; --dg-bg:#EEE7FB;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#11161F; --surface:#182030; --ink:#F0F3F8; --ink-2:#C3CBD8; --ink-3:#A3AEC0; --line:#3A4558; --soft:#222C3C;
+  --accent:#8DB0FF; --accent-bg:#1E2D52; --ok:#6EDBAC; --ok-bg:#143429; --warn:#F2B656; --warn-bg:#3A2C12; --pain:#FF9A9E; --pain-bg:#3D1C1F; --dg:#C9B0FF; --dg-bg:#2C2147;
+}}
+*{box-sizing:border-box}
+html{font-size:min(.8333vw, 1.4815vh)}
+body{margin:0; height:100vh; display:grid; place-items:center; background:var(--bg); color:var(--ink); font-family:&#x27;Pretendard&#x27;,&#x27;Malgun Gothic&#x27;,system-ui,-apple-system,sans-serif; line-height:1.4; word-break:keep-all; overflow:hidden}
+.slide{width:120rem; height:67.5rem; padding:2.2rem 2.8rem 1.8rem; display:flex; flex-direction:column; gap:1.1rem}
+h1{font-size:2.6rem; margin:0; letter-spacing:-.05rem}
+h2{font-size:1.6rem; margin:0}
+h3{font-size:1.25rem; margin:0}
+p{margin:0}
+.lead{color:var(--ink-2); font-size:1.3rem; margin-top:.2rem}
+.fill{flex:1; min-height:0}
+.tag{display:inline-block; font-size:.95rem; font-weight:700; padding:.05rem .6rem; border-radius:99rem; white-space:nowrap}
+.t-data{color:var(--accent); background:var(--accent-bg)} .t-team{color:var(--warn); background:var(--warn-bg)} .t-src{color:var(--ok); background:var(--ok-bg)} .t-hyp{color:var(--ink-2); background:var(--soft)}
+.t-have{color:var(--ok); background:var(--ok-bg)} .t-todo{color:var(--dg); background:var(--dg-bg)} .t-p{color:var(--pain); background:var(--pain-bg)}
+.card{background:var(--surface); border:.12rem solid var(--line); border-radius:.9rem; padding:1rem 1.2rem; min-height:0; overflow:hidden}
+.card ul{margin:.3rem 0 0; padding-left:1.15rem; color:var(--ink-2); font-size:1.38rem}
+.card li + li{margin-top:.25rem}
+.card p{color:var(--ink-2); font-size:1.3rem; margin-top:.3rem}
+.note{font-size:1.05rem; color:var(--ink-3)}
+.g2{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem}
+.g3{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem}
+.g4{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:1rem}
+.g5{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:.8rem}
+.big{font-size:4.2rem; font-weight:700; line-height:1.05; letter-spacing:-.1rem; font-variant-numeric:tabular-nums}
+.big small{font-size:1.6rem; font-weight:700}
+.bar{background:var(--ink); color:var(--bg); border-radius:.9rem; padding:1rem 1.4rem; font-size:1.45rem; font-weight:700}
+.bar span{font-weight:400; opacity:.85}
+table{border-collapse:collapse; width:100%; font-size:1.22rem}
+th,td{border-bottom:.08rem solid var(--line); padding:.5rem .7rem; text-align:left; vertical-align:top}
+th{background:var(--soft); white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.c{text-align:center; font-weight:700}
+.o{color:var(--ok)} .x{color:var(--pain)} .t{color:var(--warn)}
+tr.us td{background:var(--accent-bg); font-weight:700}
+
+&lt;/style&gt;&lt;/head&gt;&lt;body&gt;&lt;div class=&quot;slide&quot;&gt;
+  &lt;div&gt;&lt;h1&gt;서비스 안은 상담 에이전트 하나와 서브에이전트 다섯으로 나눕니다&lt;/h1&gt;&lt;p class=&quot;lead&quot;&gt;점수는 AI가 아니라 규칙 코드로 계산하고, AI는 말을 알아듣고 쉬운 말로 풀어 쓰는 일만 맡습니다.&lt;/p&gt;&lt;/div&gt;
+  &lt;div style=&quot;display:flex; flex-direction:column; align-items:center; gap:.5rem&quot;&gt;
+    &lt;div class=&quot;card&quot; style=&quot;border-radius:99rem; padding:.5rem 2rem; font-weight:700; font-size:1.2rem&quot;&gt;사용자 (가게 자리를 찾는 예비 창업자)&lt;/div&gt;
+    &lt;div style=&quot;width:.2rem; height:1rem; background:var(--line)&quot;&gt;&lt;/div&gt;
+    &lt;div style=&quot;background:var(--accent); color:#fff; border-radius:1rem; padding:.8rem 3rem; text-align:center&quot;&gt;&lt;b style=&quot;font-size:1.5rem&quot;&gt;상담 에이전트 (오케스트레이터)&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:1.15rem&quot;&gt;사용자와 대화하며 서브에이전트를 순서대로 부르고 결과를 모아 답함&lt;/span&gt;&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;g5 fill&quot;&gt;
+    &lt;div class=&quot;card&quot; style=&quot;border-color:var(--ok)&quot;&gt;&lt;h2&gt;① 조건 파악&lt;/h2&gt;&lt;p&gt;&lt;span class=&quot;tag t-have&quot;&gt;대화 중&lt;/span&gt; &lt;span class=&quot;tag t-todo&quot;&gt;AI&lt;/span&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;업종 분류&lt;/li&gt;&lt;li&gt;월세·지역 뽑기&lt;/li&gt;&lt;li&gt;빠진 조건 되묻기&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+    &lt;div class=&quot;card&quot; style=&quot;border-color:var(--warn)&quot;&gt;&lt;h2&gt;② 매물 수집·검증&lt;/h2&gt;&lt;p&gt;&lt;span class=&quot;tag t-team&quot;&gt;주 1회&lt;/span&gt; &lt;span class=&quot;tag t-data&quot;&gt;규칙 코드&lt;/span&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;매물 수집, 중복 제거&lt;/li&gt;&lt;li&gt;좌표·동네 검증&lt;/li&gt;&lt;li&gt;건축물대장 연결&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+    &lt;div class=&quot;card&quot; style=&quot;border-color:var(--warn)&quot;&gt;&lt;h2&gt;③ 입지·상권 분석&lt;/h2&gt;&lt;p&gt;&lt;span class=&quot;tag t-team&quot;&gt;미리 준비&lt;/span&gt; &lt;span class=&quot;tag t-data&quot;&gt;규칙 코드&lt;/span&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;역·정류장 거리&lt;/li&gt;&lt;li&gt;주변 가게, 같은 업종 수&lt;/li&gt;&lt;li&gt;주변 손님 수&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+    &lt;div class=&quot;card&quot; style=&quot;border-color:var(--ok)&quot;&gt;&lt;h2&gt;④ 점수·추천&lt;/h2&gt;&lt;p&gt;&lt;span class=&quot;tag t-have&quot;&gt;대화 중&lt;/span&gt; &lt;span class=&quot;tag t-data&quot;&gt;규칙 코드&lt;/span&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;4가지 점수&lt;/li&gt;&lt;li&gt;상위 5곳씩&lt;/li&gt;&lt;li&gt;정보 부족 매물 제외&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+    &lt;div class=&quot;card&quot; style=&quot;border-color:var(--ok)&quot;&gt;&lt;h2&gt;⑤ 설명·보고&lt;/h2&gt;&lt;p&gt;&lt;span class=&quot;tag t-have&quot;&gt;대화 중&lt;/span&gt; &lt;span class=&quot;tag t-todo&quot;&gt;AI&lt;/span&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;좋은 점 3, 확인할 점 2&lt;/li&gt;&lt;li&gt;점수 성적표&lt;/li&gt;&lt;li&gt;비교, 엑셀&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;g3&quot;&gt;
+    &lt;div class=&quot;card&quot;&gt;&lt;h3&gt;공통 금지 4가지&lt;/h3&gt;&lt;p&gt;데이터에 없는 내용 지어내기 · 장사 성공 보장 · 입점·계약 가능 단정 · 다른 에이전트 일 침범&lt;/p&gt;&lt;/div&gt;
+    &lt;div class=&quot;card&quot;&gt;&lt;h3&gt;나중에 붙일 것&lt;/h3&gt;&lt;p&gt;⑦ 상담 준비: 중개사에게 물어볼 질문 목록 · ⑥ 피드백 학습: 👍/👎로 기준 개선 제안(사람이 승인)&lt;/p&gt;&lt;/div&gt;
+    &lt;div class=&quot;card&quot;&gt;&lt;h3&gt;지금 상태&lt;/h3&gt;&lt;p&gt;데모는 ②③④의 결과를 화면에 보여 주는 단계입니다. ①과 대화형 ⑤는 명세만 있고 아직 만들지 않았습니다.&lt;/p&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;document.addEventListener(&quot;keydown&quot;,function(e){parent.postMessage({deckKey:e.key},&quot;*&quot;)});&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;"></iframe>
+<iframe title="8. 밸류체인" data-name="밸류체인" srcdoc="&lt;!doctype html&gt;
+&lt;html lang=&quot;ko&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1&quot;&gt;
+&lt;title&gt;대구 빈 상가 찾기 · 밸류체인&lt;/title&gt;
+&lt;style&gt;
+/* 16:9 한 화면. 1920×1080에서 1rem = 16px */
+:root{
+  --bg:#F6F5F1; --surface:#FFFFFF; --ink:#141E33; --ink-2:#36425A; --ink-3:#556178; --line:#C9CFDA; --soft:#EEF1F5;
+  --accent:#1747C7; --accent-bg:#E4ECFF; --gap:#A3201A; --gap-bg:#FCE4E2; --us:#17663F; --us-bg:#DDF3E8; --next:#5B2DA8; --next-bg:#EEE7FB; --money:#7A4800; --money-bg:#FDF0D5;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#11161F; --surface:#182030; --ink:#F0F3F8; --ink-2:#C3CBD8; --ink-3:#A3AEC0; --line:#3A4558; --soft:#222C3C;
+  --accent:#8DB0FF; --accent-bg:#1E2D52; --gap:#FF9A9E; --gap-bg:#3D1C1F; --us:#6EDBAC; --us-bg:#143429; --next:#C9B0FF; --next-bg:#2C2147; --money:#F2B656; --money-bg:#3A2C12;
+}}
+*{box-sizing:border-box}
+html{font-size:min(.8333vw, 1.4815vh)}
+body{margin:0; height:100vh; display:grid; place-items:center; background:var(--bg); color:var(--ink); font-family:&#x27;Pretendard&#x27;,&#x27;Malgun Gothic&#x27;,system-ui,-apple-system,sans-serif; line-height:1.38; word-break:keep-all; overflow:hidden}
+.slide{width:120rem; height:67.5rem; padding:2rem 2.6rem 1.6rem; display:flex; flex-direction:column; gap:.9rem}
+h1{font-size:2.5rem; margin:0; letter-spacing:-.05rem}
+p{margin:0}
+.head{display:flex; align-items:flex-end; justify-content:space-between; gap:2rem}
+.lead{color:var(--ink-2); font-size:1.25rem; margin-top:.2rem}
+.legend{display:flex; gap:1.2rem; font-size:1.05rem; color:var(--ink-2); white-space:nowrap}
+.tag{display:inline-block; font-size:.95rem; font-weight:700; padding:.05rem .6rem; border-radius:99rem; white-space:nowrap}
+.t-data{color:var(--accent); background:var(--accent-bg)} .t-team{color:var(--money); background:var(--money-bg)}
+
+.grid{flex:1; min-height:0; display:grid; grid-template-columns:6.2rem repeat(7,minmax(0,1fr)); grid-template-rows:auto minmax(0,.62fr) minmax(0,.82fr) minmax(0,1.25fr) minmax(0,1.15fr) auto; gap:.5rem .5rem}
+.st{background:var(--ink); color:var(--bg); padding:.5rem .4rem .5rem 1.4rem; font-weight:700; font-size:1.2rem; text-align:center; clip-path:polygon(0 0, calc(100% - 1rem) 0, 100% 50%, calc(100% - 1rem) 100%, 0 100%, 1rem 50%)}
+.st.first{clip-path:polygon(0 0, calc(100% - 1rem) 0, 100% 50%, calc(100% - 1rem) 100%, 0 100%); padding-left:.4rem}
+.st small{display:block; font-weight:400; font-size:.92rem; opacity:.85}
+.lab{display:grid; place-items:center; text-align:center; font-weight:700; font-size:1.1rem; background:var(--soft); border-radius:.7rem; padding:.3rem}
+.c{background:var(--surface); border:.1rem solid var(--line); border-radius:.7rem; padding:.55rem .7rem; font-size:1.05rem; color:var(--ink-2); min-height:0; overflow:hidden}
+.c b{color:var(--ink)}
+.c ul{margin:0; padding-left:1rem}
+.c li + li{margin-top:.1rem}
+.c.money{background:var(--money-bg); border-color:transparent; color:var(--money)}
+.c.money b{color:var(--money)}
+.c.gapc{background:var(--gap-bg); border-color:transparent}
+.c.gapc b{color:var(--gap)}
+.c .ev{display:block; margin-top:.25rem; font-size:.95rem}
+.t-src{color:var(--us); background:var(--us-bg)}
+.lab.gl{background:var(--gap-bg); color:var(--gap)}
+.band-lab{display:grid; place-items:center; text-align:center; font-weight:700; font-size:1.1rem; background:var(--us); color:#fff; border-radius:.7rem; padding:.3rem}
+@media (prefers-color-scheme: dark){ .band-lab{color:#0C1322} }
+.band-next{grid-column:2 / 3; background:var(--next-bg); color:var(--next); border:.14rem dashed var(--next); border-radius:.7rem; padding:.5rem .7rem; font-size:1.02rem}
+.band-skip{grid-column:3 / 4; display:grid; place-items:center; color:var(--ink-3); font-size:1rem; text-align:center}
+.band-us{grid-column:4 / 6; background:var(--us-bg); border:.16rem solid var(--us); border-radius:.7rem; padding:.5rem .9rem; font-size:1.08rem; display:flex; align-items:center; gap:1rem}
+.band-us b{color:var(--us); font-size:1.25rem; white-space:nowrap}
+.band-link{grid-column:6 / 9; background:var(--surface); border:.1rem dashed var(--line); border-radius:.7rem; padding:.5rem .8rem; font-size:1.02rem; color:var(--ink-2)}
+.band-link b,.band-next b{display:block}
+
+.foot{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.8rem}
+.foot &gt; div{background:var(--surface); border:.1rem solid var(--line); border-left:.4rem solid var(--accent); border-radius:.7rem; padding:.6rem 1rem; font-size:1.08rem; color:var(--ink-2)}
+.foot b{display:block; color:var(--ink); font-size:1.18rem}
+.cave{font-size:.95rem; color:var(--ink-3)}
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div class=&quot;slide&quot;&gt;
+  &lt;div class=&quot;head&quot;&gt;
+    &lt;div&gt;&lt;h1&gt;상가 임대 산업의 밸류체인과 우리 서비스의 자리&lt;/h1&gt;&lt;p class=&quot;lead&quot;&gt;빈 상가가 생겨서 새 가게가 열리기까지 누가 무엇을 하고, 돈이 어디로 흐르고, 어디가 비어 있는지 봅니다.&lt;/p&gt;&lt;/div&gt;
+    &lt;div class=&quot;legend&quot;&gt;&lt;span&gt;&lt;span class=&quot;tag t-data&quot;&gt;우리 데이터&lt;/span&gt; 매물 2,717건&lt;/span&gt;&lt;span&gt;&lt;span class=&quot;tag t-team&quot;&gt;팀 자료&lt;/span&gt; 공실 현황 보고&lt;/span&gt;&lt;span&gt;&lt;span class=&quot;tag t-src&quot;&gt;공개 자료&lt;/span&gt; 조사·보도&lt;/span&gt;&lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class=&quot;grid&quot;&gt;
+    &lt;div&gt;&lt;/div&gt;
+    &lt;div class=&quot;st first&quot;&gt;1. 빈 상가 발생&lt;small&gt;공급&lt;/small&gt;&lt;/div&gt;
+    &lt;div class=&quot;st&quot;&gt;2. 매물 등록&lt;small&gt;광고&lt;/small&gt;&lt;/div&gt;
+    &lt;div class=&quot;st&quot;&gt;3. 찾기&lt;small&gt;탐색·비교&lt;/small&gt;&lt;/div&gt;
+    &lt;div class=&quot;st&quot;&gt;4. 확인&lt;small&gt;용도·서류·현장&lt;/small&gt;&lt;/div&gt;
+    &lt;div class=&quot;st&quot;&gt;5. 계약&lt;small&gt;조건 협의&lt;/small&gt;&lt;/div&gt;
+    &lt;div class=&quot;st&quot;&gt;6. 개업 준비&lt;small&gt;공사·인허가&lt;/small&gt;&lt;/div&gt;
+    &lt;div class=&quot;st&quot;&gt;7. 운영&lt;small&gt;장사, 폐업하면 1로&lt;/small&gt;&lt;/div&gt;
+
+    &lt;div class=&quot;lab&quot;&gt;참여자&lt;/div&gt;
+    &lt;div class=&quot;c&quot;&gt;&lt;b&gt;건물주&lt;/b&gt;, 자산 관리 회사&lt;/div&gt;
+    &lt;div class=&quot;c&quot;&gt;&lt;b&gt;공인중개사&lt;/b&gt;, 매물 사이트(네이버 부동산, 직방, 네모)&lt;/div&gt;
+    &lt;div class=&quot;c&quot;&gt;&lt;b&gt;임차인&lt;/b&gt;, 상권 분석 서비스, 창업 컨설팅&lt;/div&gt;
+    &lt;div class=&quot;c&quot;&gt;&lt;b&gt;임차인 혼자&lt;/b&gt;, 구청 건축과, 건축사·행정사&lt;/div&gt;
+    &lt;div class=&quot;c&quot;&gt;&lt;b&gt;중개사&lt;/b&gt;, 건물주, 임차인&lt;/div&gt;
+    &lt;div class=&quot;c&quot;&gt;&lt;b&gt;인테리어·설비 업체&lt;/b&gt;, 금융(대출·보증), 구청, 세무서&lt;/div&gt;
+    &lt;div class=&quot;c&quot;&gt;&lt;b&gt;임차인(사장님)&lt;/b&gt;, 지자체, 소상공인 지원 기관&lt;/div&gt;
+
+    &lt;div class=&quot;lab&quot;&gt;하는 일&lt;/div&gt;
+    &lt;div class=&quot;c&quot;&gt;&lt;ul&gt;&lt;li&gt;임차인이 나가 상가가 빔&lt;/li&gt;&lt;li&gt;월세·보증금 정함&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+    &lt;div class=&quot;c&quot;&gt;&lt;ul&gt;&lt;li&gt;중개사가 매물을 받아 사이트에 올림&lt;/li&gt;&lt;li&gt;사진·조건 작성&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+    &lt;div class=&quot;c&quot;&gt;&lt;ul&gt;&lt;li&gt;지역·월세로 걸러 봄&lt;/li&gt;&lt;li&gt;상권 정보는 다른 곳에서 따로 봄&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+    &lt;div class=&quot;c&quot;&gt;&lt;ul&gt;&lt;li&gt;건축물대장 떼기&lt;/li&gt;&lt;li&gt;내 업종 가능한지 구청에 문의&lt;/li&gt;&lt;li&gt;현장 방문&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+    &lt;div class=&quot;c&quot;&gt;&lt;ul&gt;&lt;li&gt;월세·보증금·권리금 협의&lt;/li&gt;&lt;li&gt;계약서 작성&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+    &lt;div class=&quot;c&quot;&gt;&lt;ul&gt;&lt;li&gt;인테리어, 간판, 설비&lt;/li&gt;&lt;li&gt;영업 신고, 사업자 등록&lt;/li&gt;&lt;li&gt;자금 마련&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+    &lt;div class=&quot;c&quot;&gt;&lt;ul&gt;&lt;li&gt;장사, 월세 납부&lt;/li&gt;&lt;li&gt;상권 활성화 사업 참여&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+
+    &lt;div class=&quot;lab&quot;&gt;돈의 흐름&lt;/div&gt;
+    &lt;div class=&quot;c money&quot;&gt;비어 있는 동안 &lt;b&gt;월세 수입 0&lt;/b&gt;&lt;span class=&quot;ev&quot;&gt;&lt;span class=&quot;tag t-data&quot;&gt;우리 데이터&lt;/span&gt; 매물 2,717건이 부르는 월세를 더하면 한 달 약 56.6억 원&lt;/span&gt;&lt;/div&gt;
+    &lt;div class=&quot;c money&quot;&gt;중개사 → 매물 사이트 &lt;b&gt;광고비&lt;/b&gt;&lt;span class=&quot;ev&quot;&gt;&lt;span class=&quot;tag t-src&quot;&gt;공개 자료&lt;/span&gt; 중개소 한 곳당 약 150만 원 부담이라는 보도 (시점 불명)&lt;/span&gt;&lt;/div&gt;
+    &lt;div class=&quot;c money&quot;&gt;대부분 &lt;b&gt;무료&lt;/b&gt;. 컨설팅은 임차인이 비용 부담&lt;/div&gt;
+    &lt;div class=&quot;c money&quot;&gt;임차인의 &lt;b&gt;시간과 발품&lt;/b&gt;. 일부 대행 수수료&lt;/div&gt;
+    &lt;div class=&quot;c money&quot;&gt;&lt;b&gt;중개 보수 0.9% 이내&lt;/b&gt; (보증금 + 월세×100 기준)&lt;span class=&quot;ev&quot;&gt;&lt;span class=&quot;tag t-data&quot;&gt;우리 데이터&lt;/span&gt; 중간 매물(보증금 2,000만·월세 120만)이면 최대 126만 원&lt;/span&gt;&lt;span class=&quot;ev&quot;&gt;&lt;span class=&quot;tag t-src&quot;&gt;공개 자료&lt;/span&gt; 권리금 전국 평균 3,443만 원 (2024)&lt;/span&gt;&lt;/div&gt;
+    &lt;div class=&quot;c money&quot;&gt;&lt;b&gt;창업 비용 평균 8,300만 원&lt;/b&gt;&lt;span class=&quot;ev&quot;&gt;&lt;span class=&quot;tag t-src&quot;&gt;공개 자료&lt;/span&gt; 본인 부담 5,900만 원 (2024년 소상공인 실태조사)&lt;/span&gt;&lt;/div&gt;
+    &lt;div class=&quot;c money&quot;&gt;임차인 → 건물주 &lt;b&gt;월세&lt;/b&gt;&lt;span class=&quot;ev&quot;&gt;&lt;span class=&quot;tag t-src&quot;&gt;공개 자료&lt;/span&gt; 동성로 상권 활성화 사업 5년 60억 원&lt;/span&gt;&lt;/div&gt;
+
+    &lt;div class=&quot;lab gl&quot;&gt;빈틈&lt;/div&gt;
+    &lt;div class=&quot;c gapc&quot;&gt;&lt;b&gt;비어도 월세를 안 내림&lt;/b&gt;&lt;span class=&quot;ev&quot;&gt;&lt;span class=&quot;tag t-team&quot;&gt;팀 자료&lt;/span&gt; 공실 지수 222, 임대료 지수 103. 어떤 업종이 맞는지 건물주도 모름&lt;/span&gt;&lt;/div&gt;
+    &lt;div class=&quot;c gapc&quot;&gt;&lt;b&gt;올리는 쪽 중심의 정보&lt;/b&gt;&lt;span class=&quot;ev&quot;&gt;&lt;span class=&quot;tag t-data&quot;&gt;우리 데이터&lt;/span&gt; 관리비 미기재 61.0%, 추천 용도 빈칸 25.3%&lt;/span&gt;&lt;/div&gt;
+    &lt;div class=&quot;c gapc&quot;&gt;&lt;b&gt;매물과 상권 정보가 따로&lt;/b&gt;&lt;span class=&quot;ev&quot;&gt;&lt;span class=&quot;tag t-data&quot;&gt;우리 데이터&lt;/span&gt; 시세보다 20% 넘게 싸거나 비싼 매물 64.7%인데 비교 기준이 없음&lt;/span&gt;&lt;/div&gt;
+    &lt;div class=&quot;c gapc&quot;&gt;&lt;b&gt;도와주는 서비스가 없음&lt;/b&gt;&lt;span class=&quot;ev&quot;&gt;&lt;span class=&quot;tag t-data&quot;&gt;우리 데이터&lt;/span&gt; 음식점 기준 서류상 바로 가능한 매물 38.3%뿐. 임차인이 직접 알아내야 함&lt;/span&gt;&lt;/div&gt;
+    &lt;div class=&quot;c gapc&quot;&gt;&lt;b&gt;경험 없는 임차인이 불리&lt;/b&gt;&lt;span class=&quot;ev&quot;&gt;&lt;span class=&quot;tag t-team&quot;&gt;팀 자료&lt;/span&gt; 권리금을 포기해도 임차인을 못 구하는 사례&lt;/span&gt;&lt;/div&gt;
+    &lt;div class=&quot;c gapc&quot;&gt;&lt;b&gt;계약 뒤에야 문제를 앎&lt;/b&gt;&lt;span class=&quot;ev&quot;&gt;용도가 안 맞으면 공사·신고 단계에서 막힘&lt;/span&gt;&lt;/div&gt;
+    &lt;div class=&quot;c gapc&quot;&gt;&lt;b&gt;닫는 가게가 여는 가게만큼&lt;/b&gt;&lt;span class=&quot;ev&quot;&gt;&lt;span class=&quot;tag t-team&quot;&gt;팀 자료&lt;/span&gt; 대구 개업 대비 폐업 91.2%. 다시 1번으로&lt;/span&gt;&lt;/div&gt;
+
+    &lt;div class=&quot;band-lab&quot;&gt;우리&lt;br&gt;서비스&lt;/div&gt;
+    &lt;div class=&quot;band-next&quot;&gt;&lt;b&gt;다음 단계: 건물주에게&lt;/b&gt;이 자리에 맞는 업종과 주변 시세 대비 월세 알려 주기&lt;/div&gt;
+    &lt;div class=&quot;band-skip&quot;&gt;매물은&lt;br&gt;가져다 씀&lt;/div&gt;
+    &lt;div class=&quot;band-us&quot;&gt;&lt;b&gt;지금 자리: 3 + 4&lt;/b&gt;&lt;span&gt;매물 하나하나에 업종별 점수, 시세 대비 가격, 건물 용도 등급을 붙여 임차인 편에서 보여 줌. 찾기와 확인을 한 화면에서 끝냄&lt;/span&gt;&lt;/div&gt;
+    &lt;div class=&quot;band-link&quot;&gt;&lt;b&gt;넘겨주기&lt;/b&gt;5: 중개사에게 물어볼 질문 목록 · 6: 구청 확인 안내 · 7: 대구 지원사업 안내&lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class=&quot;foot&quot;&gt;
+    &lt;div&gt;&lt;b&gt;4단계가 비어 있다&lt;/b&gt;&quot;내 업종이 되는 건물인가&quot;를 풀어 주는 사업자가 없어 임차인이 혼자 합니다. 우리 서비스의 가장 뚜렷한 자리입니다.&lt;/div&gt;
+    &lt;div&gt;&lt;b&gt;지금 사이트는 올리는 쪽이 돈을 낸다&lt;/b&gt;매물 사이트의 수입은 중개사 광고비입니다. 임차인 편에서 빈칸과 단점을 드러내는 서비스가 들어갈 틈이 여기서 생깁니다.&lt;/div&gt;
+    &lt;div&gt;&lt;b&gt;공실은 1번에서 풀린다&lt;/b&gt;임차인을 돕는 것만으로는 월세가 안 내리는 문제를 못 풉니다. 그래서 다음 단계로 건물주에게 맞는 업종과 시세를 알려 줍니다.&lt;span class=&quot;cave&quot;&gt; 권리금·창업 비용은 전국 수치이고, 대구만의 수치는 찾지 못했습니다.&lt;/span&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;script&gt;document.addEventListener(&quot;keydown&quot;,function(e){parent.postMessage({deckKey:e.key},&quot;*&quot;)});&lt;/script&gt;&lt;/body&gt;
+&lt;/html&gt;
+"></iframe>
+<iframe title="9. BM 캔버스" data-name="BM 캔버스" srcdoc="&lt;!doctype html&gt;
+&lt;html lang=&quot;ko&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1&quot;&gt;
+&lt;title&gt;대구 빈 상가 찾기 · BM 캔버스&lt;/title&gt;
+&lt;style&gt;
+/* 16:9 한 화면. 1920×1080에서 1rem = 16px */
+:root{
+  --bg:#F6F5F1; --surface:#FFFFFF; --ink:#141E33; --ink-2:#36425A; --ink-3:#556178; --line:#C9CFDA; --soft:#EEF1F5;
+  --accent:#1747C7; --accent-bg:#E4ECFF; --vp:#17663F; --vp-bg:#DDF3E8; --rev:#7A4800; --rev-bg:#FDF0D5; --risk:#A3201A; --risk-bg:#FCE4E2; --next:#5B2DA8; --next-bg:#EEE7FB;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#11161F; --surface:#182030; --ink:#F0F3F8; --ink-2:#C3CBD8; --ink-3:#A3AEC0; --line:#3A4558; --soft:#222C3C;
+  --accent:#8DB0FF; --accent-bg:#1E2D52; --vp:#6EDBAC; --vp-bg:#143429; --rev:#F2B656; --rev-bg:#3A2C12; --risk:#FF9A9E; --risk-bg:#3D1C1F; --next:#C9B0FF; --next-bg:#2C2147;
+}}
+*{box-sizing:border-box}
+html{font-size:min(.8333vw, 1.4815vh)}
+body{margin:0; height:100vh; display:grid; place-items:center; background:var(--bg); color:var(--ink); font-family:&#x27;Pretendard&#x27;,&#x27;Malgun Gothic&#x27;,system-ui,-apple-system,sans-serif; line-height:1.36; word-break:keep-all; overflow:hidden}
+.slide{width:120rem; height:67.5rem; padding:1.8rem 2.4rem 1.4rem; display:flex; flex-direction:column; gap:.8rem}
+h1{font-size:2.4rem; margin:0; letter-spacing:-.05rem}
+p{margin:0}
+.head{display:flex; align-items:flex-end; justify-content:space-between; gap:2rem}
+.lead{color:var(--ink-2); font-size:1.2rem; margin-top:.15rem}
+.legend{display:flex; gap:1.1rem; font-size:1.02rem; color:var(--ink-2); white-space:nowrap}
+.tag{display:inline-block; font-size:.9rem; font-weight:700; padding:.05rem .55rem; border-radius:99rem; white-space:nowrap}
+.t-next{color:var(--next); background:var(--next-bg)} .t-tbd{color:var(--risk); background:var(--risk-bg)} .t-pay{color:var(--rev); background:var(--rev-bg)}
+
+.canvas{flex:1; min-height:0; display:grid; grid-template-columns:repeat(10,minmax(0,1fr)); grid-template-rows:minmax(0,1fr) minmax(0,1fr) minmax(0,.86fr); gap:.6rem}
+.b{background:var(--surface); border:.12rem solid var(--line); border-radius:.8rem; padding:.7rem .9rem; min-height:0; overflow:hidden; display:flex; flex-direction:column; gap:.3rem}
+.b h2{margin:0; font-size:1.22rem; display:flex; align-items:center; gap:.5rem}
+.b h2 i{font-style:normal; width:1.7rem; height:1.7rem; border-radius:50%; background:var(--ink); color:var(--bg); display:grid; place-items:center; font-size:.95rem; flex:none}
+.b ul{margin:0; padding-left:1.05rem; font-size:1.04rem; color:var(--ink-2)}
+.b li + li{margin-top:.18rem}
+.b li b{color:var(--ink)}
+.b h3{margin:.25rem 0 0; font-size:1.02rem; color:var(--ink)}
+.kp{grid-column:1 / 3; grid-row:1 / 3}
+.ka{grid-column:3 / 5; grid-row:1}
+.kr{grid-column:3 / 5; grid-row:2}
+.vp{grid-column:5 / 7; grid-row:1 / 3; border-color:var(--vp); background:var(--vp-bg)}
+.vp h2 i{background:var(--vp)}
+.cr{grid-column:7 / 9; grid-row:1}
+.ch{grid-column:7 / 9; grid-row:2}
+.cs{grid-column:9 / 11; grid-row:1 / 3}
+.co{grid-column:1 / 5; grid-row:3}
+.rv{grid-column:5 / 11; grid-row:3; border-color:var(--rev); background:var(--rev-bg)}
+.rv h2 i{background:var(--rev)}
+.rvgrid{display:grid; grid-template-columns:1.25fr 1fr 1fr; gap:.9rem; min-height:0}
+.rvgrid &gt; div{min-width:0}
+.foot{display:grid; grid-template-columns:1.3fr 1fr; gap:.8rem; font-size:1.02rem}
+.foot &gt; div{border-radius:.7rem; padding:.5rem 1rem}
+.rule{background:var(--accent-bg); color:var(--ink)}
+.rule b{color:var(--accent)}
+.risk{background:var(--risk-bg); color:var(--ink-2)}
+.risk b{color:var(--risk)}
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div class=&quot;slide&quot;&gt;
+  &lt;div class=&quot;head&quot;&gt;
+    &lt;div&gt;&lt;h1&gt;대구 빈 상가 찾기 · BM 캔버스&lt;/h1&gt;&lt;p class=&quot;lead&quot;&gt;임차인 편에서 &quot;내 업종이 되는 상가&quot;를 찾아 주고, 지자체·중개사·임차인 구독으로 운영합니다.&lt;/p&gt;&lt;/div&gt;
+    &lt;div class=&quot;legend&quot;&gt;&lt;span&gt;&lt;span class=&quot;tag t-pay&quot;&gt;돈 냄&lt;/span&gt; 수입이 나오는 고객&lt;/span&gt;&lt;span&gt;&lt;span class=&quot;tag t-next&quot;&gt;다음 단계&lt;/span&gt; 2단계 확장&lt;/span&gt;&lt;span&gt;&lt;span class=&quot;tag t-tbd&quot;&gt;미정&lt;/span&gt; 아직 못 정함&lt;/span&gt;&lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class=&quot;canvas&quot;&gt;
+    &lt;section class=&quot;b kp&quot;&gt;&lt;h2&gt;&lt;i&gt;8&lt;/i&gt;핵심 파트너&lt;/h2&gt;
+      &lt;ul&gt;
+        &lt;li&gt;&lt;b&gt;대구시·구청&lt;/b&gt;, 대구전통시장진흥재단: 공실 사업과 연결, 지원사업 목록 제공&lt;/li&gt;
+        &lt;li&gt;&lt;b&gt;소상공인 지원 기관&lt;/b&gt;, 창업·퇴직자 교육: 상담 창구에서 서비스 안내&lt;/li&gt;
+        &lt;li&gt;&lt;b&gt;공인중개사&lt;/b&gt;: 매물의 빈 정보를 채움, 계약 단계 이어받음&lt;/li&gt;
+        &lt;li&gt;&lt;b&gt;공공데이터 제공처&lt;/b&gt;: 건축물대장(국토교통부), 인구·사업체(통계청), 상가 정보(소상공인시장진흥공단), 지도(브이월드)&lt;/li&gt;
+        &lt;li&gt;&lt;b&gt;매물 출처&lt;/b&gt;: 지금은 네이버 부동산 수집 &lt;span class=&quot;tag t-tbd&quot;&gt;미정&lt;/span&gt; 정식 제휴나 중개사 직접 등록으로 바꿔야 함&lt;/li&gt;
+      &lt;/ul&gt;&lt;/section&gt;
+
+    &lt;section class=&quot;b ka&quot;&gt;&lt;h2&gt;&lt;i&gt;7&lt;/i&gt;핵심 활동&lt;/h2&gt;
+      &lt;ul&gt;
+        &lt;li&gt;매물을 주 1회 모으고 검증&lt;/li&gt;
+        &lt;li&gt;건축물대장과 연결해 업종 가능 여부 판정&lt;/li&gt;
+        &lt;li&gt;점수 기준 관리, 평가 반영&lt;/li&gt;
+        &lt;li&gt;특화거리·지원사업 목록 갱신&lt;/li&gt;
+        &lt;li&gt;기관·중개사 협력&lt;/li&gt;
+      &lt;/ul&gt;&lt;/section&gt;
+
+    &lt;section class=&quot;b kr&quot;&gt;&lt;h2&gt;&lt;i&gt;6&lt;/i&gt;핵심 자원&lt;/h2&gt;
+      &lt;ul&gt;
+        &lt;li&gt;매물 2,717건 + 공공데이터 5종을 묶은 데이터&lt;/li&gt;
+        &lt;li&gt;업종 8개별 점수 엔진&lt;/li&gt;
+        &lt;li&gt;건축물대장 층별 용도 매칭&lt;/li&gt;
+        &lt;li&gt;쉬운 말 설명 규칙 (50대도 읽는 화면)&lt;/li&gt;
+        &lt;li&gt;쌓이는 👍/👎 평가&lt;/li&gt;
+      &lt;/ul&gt;&lt;/section&gt;
+
+    &lt;section class=&quot;b vp&quot;&gt;&lt;h2&gt;&lt;i&gt;2&lt;/i&gt;가치 제안&lt;/h2&gt;
+      &lt;h3&gt;임차인에게&lt;/h3&gt;
+      &lt;ul&gt;
+        &lt;li&gt;&lt;b&gt;&quot;내 업종이 되는 건물인가&quot;&lt;/b&gt;를 계약 전에 알려 줌&lt;/li&gt;
+        &lt;li&gt;시세 대비 가격으로 비싼지 싼지 판단&lt;/li&gt;
+        &lt;li&gt;빈 정보와 단점을 숨기지 않음&lt;/li&gt;
+        &lt;li&gt;큰 글씨, 쉬운 말, 평·걸어서 몇 분&lt;/li&gt;
+        &lt;li&gt;대구 특화거리·지원사업 안내&lt;/li&gt;
+      &lt;/ul&gt;
+      &lt;h3&gt;지자체·기관에게&lt;/h3&gt;
+      &lt;ul&gt;&lt;li&gt;공실 해소 사업에 쓰는 매칭 도구, 상담 창구용 화면&lt;/li&gt;&lt;/ul&gt;
+      &lt;h3&gt;중개사에게&lt;/h3&gt;
+      &lt;ul&gt;&lt;li&gt;질문을 준비해 온 손님, 상담용 성적표·비교표&lt;/li&gt;&lt;/ul&gt;&lt;/section&gt;
+
+    &lt;section class=&quot;b cr&quot;&gt;&lt;h2&gt;&lt;i&gt;4&lt;/i&gt;고객 관계&lt;/h2&gt;
+      &lt;ul&gt;
+        &lt;li&gt;가입 없이 무료로 찾기 시작&lt;/li&gt;
+        &lt;li&gt;담은 상가는 다시 와도 남음&lt;/li&gt;
+        &lt;li&gt;중개사 질문 목록으로 상담까지 동행&lt;/li&gt;
+        &lt;li&gt;👍/👎 평가가 다음 추천에 반영&lt;/li&gt;
+        &lt;li&gt;판단은 사람에게: 구청·중개사 확인 안내&lt;/li&gt;
+      &lt;/ul&gt;&lt;/section&gt;
+
+    &lt;section class=&quot;b ch&quot;&gt;&lt;h2&gt;&lt;i&gt;3&lt;/i&gt;채널&lt;/h2&gt;
+      &lt;ul&gt;
+        &lt;li&gt;&lt;b&gt;창업 지원 기관&lt;/b&gt;: 소상공인 센터, 창업·퇴직자 교육&lt;/li&gt;
+        &lt;li&gt;&lt;b&gt;검색·SNS&lt;/b&gt;: &quot;대구 상가 임대&quot; 검색, 인스타그램·유튜브&lt;/li&gt;
+        &lt;li&gt;&lt;b&gt;대구시 공공 채널&lt;/b&gt;: 시·구청 누리집, 상권 활성화 사업 안내&lt;/li&gt;
+      &lt;/ul&gt;&lt;/section&gt;
+
+    &lt;section class=&quot;b cs&quot;&gt;&lt;h2&gt;&lt;i&gt;1&lt;/i&gt;고객&lt;/h2&gt;
+      &lt;h3&gt;쓰는 사람&lt;/h3&gt;
+      &lt;ul&gt;
+        &lt;li&gt;&lt;b&gt;대구에서 가게 자리를 찾는 임차인&lt;/b&gt;&lt;/li&gt;
+        &lt;li&gt;50대 퇴직자 첫 창업&lt;/li&gt;
+        &lt;li&gt;20~30대 청년 창업&lt;/li&gt;
+      &lt;/ul&gt;
+      &lt;h3&gt;돈 내는 고객&lt;/h3&gt;
+      &lt;ul&gt;
+        &lt;li&gt;&lt;span class=&quot;tag t-pay&quot;&gt;돈 냄&lt;/span&gt; 대구시·구청·공공기관&lt;/li&gt;
+        &lt;li&gt;&lt;span class=&quot;tag t-pay&quot;&gt;돈 냄&lt;/span&gt; 공인중개사&lt;/li&gt;
+        &lt;li&gt;&lt;span class=&quot;tag t-pay&quot;&gt;돈 냄&lt;/span&gt; 임차인 (단기 구독)&lt;/li&gt;
+      &lt;/ul&gt;
+      &lt;h3&gt;다음 단계&lt;/h3&gt;
+      &lt;ul&gt;&lt;li&gt;&lt;span class=&quot;tag t-next&quot;&gt;다음 단계&lt;/span&gt; 오래 빈 상가의 건물주&lt;/li&gt;&lt;/ul&gt;&lt;/section&gt;
+
+    &lt;section class=&quot;b co&quot;&gt;&lt;h2&gt;&lt;i&gt;9&lt;/i&gt;비용&lt;/h2&gt;
+      &lt;ul&gt;
+        &lt;li&gt;&lt;b&gt;데이터&lt;/b&gt;: 매물 수집·검증, 서버, 지도&lt;/li&gt;
+        &lt;li&gt;&lt;b&gt;사람&lt;/b&gt;: 개발·운영, 특화거리·지원사업 목록 관리, 기관 협력 담당&lt;/li&gt;
+        &lt;li&gt;&lt;b&gt;AI 사용료&lt;/b&gt;: 대화형 상담 기능을 붙이면 발생&lt;/li&gt;
+        &lt;li&gt;&lt;span class=&quot;tag t-tbd&quot;&gt;미정&lt;/span&gt; 금액은 아직 계산하지 않음&lt;/li&gt;
+      &lt;/ul&gt;&lt;/section&gt;
+
+    &lt;section class=&quot;b rv&quot;&gt;&lt;h2&gt;&lt;i&gt;5&lt;/i&gt;수입&lt;/h2&gt;
+      &lt;div class=&quot;rvgrid&quot;&gt;
+        &lt;div&gt;&lt;h3&gt;① 임차인 단기 구독&lt;/h3&gt;
+          &lt;ul&gt;
+            &lt;li&gt;&lt;b&gt;무료&lt;/b&gt;: 추천 상위 5곳, 점수, 좋은 점·확인할 점&lt;/li&gt;
+            &lt;li&gt;&lt;b&gt;체험&lt;/b&gt;: 처음 7일은 모든 기능&lt;/li&gt;
+            &lt;li&gt;&lt;b&gt;이용권&lt;/b&gt;: 전체 순위, 조건 바꿔 다시 찾기, 나란히 비교, 엑셀, 중개사 질문 목록, 점수 성적표&lt;/li&gt;
+            &lt;li&gt;&lt;span class=&quot;tag t-tbd&quot;&gt;미정&lt;/span&gt; 가격, 이용권 기간, 체험 일수&lt;/li&gt;
+          &lt;/ul&gt;&lt;/div&gt;
+        &lt;div&gt;&lt;h3&gt;② 지자체·공공기관 용역&lt;/h3&gt;
+          &lt;ul&gt;
+            &lt;li&gt;공실 해소 사업의 도구로 운영 계약&lt;/li&gt;
+            &lt;li&gt;기관을 통해 온 임차인은 이용권 무료 (기관이 대신 부담)&lt;/li&gt;
+          &lt;/ul&gt;&lt;/div&gt;
+        &lt;div&gt;&lt;h3&gt;③ 중개사 구독&lt;/h3&gt;
+          &lt;ul&gt;
+            &lt;li&gt;상담 도구: 성적표·비교표·건물 용도 확인&lt;/li&gt;
+            &lt;li&gt;매물 정보 보강: 관리비·권리금 등 빈칸 채우기&lt;/li&gt;
+          &lt;/ul&gt;&lt;/div&gt;
+      &lt;/div&gt;&lt;/section&gt;
+  &lt;/div&gt;
+
+  &lt;div class=&quot;foot&quot;&gt;
+    &lt;div class=&quot;rule&quot;&gt;&lt;b&gt;지키는 원칙&lt;/b&gt; · 돈을 내도 매물의 점수와 순위는 바뀌지 않습니다. 중개사가 정보를 채우면 &quot;정보 부족&quot; 표시만 사라지고, 확인할 점은 그대로 보입니다.&lt;/div&gt;
+    &lt;div class=&quot;risk&quot;&gt;&lt;b&gt;아직 확인 못 한 것&lt;/b&gt; · 임차인·중개사가 실제로 돈을 낼지, 매물을 계속 수집해도 되는지(출처 약관), 비용 규모&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;script&gt;document.addEventListener(&quot;keydown&quot;,function(e){parent.postMessage({deckKey:e.key},&quot;*&quot;)});&lt;/script&gt;&lt;/body&gt;
+&lt;/html&gt;
+"></iframe>
+<iframe title="10. 남은 과제" data-name="남은 과제" srcdoc="&lt;!doctype html&gt;&lt;html lang=&quot;ko&quot;&gt;&lt;head&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&lt;title&gt;남은 과제&lt;/title&gt;&lt;style&gt;:root{
+  --bg:#F6F5F1; --surface:#FFFFFF; --ink:#141E33; --ink-2:#36425A; --ink-3:#556178; --line:#C9CFDA; --soft:#EEF1F5;
+  --accent:#1747C7; --accent-bg:#E4ECFF; --ok:#17663F; --ok-bg:#DDF3E8; --warn:#7A4800; --warn-bg:#FDF0D5; --pain:#A3201A; --pain-bg:#FCE4E2; --dg:#5B2DA8; --dg-bg:#EEE7FB;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#11161F; --surface:#182030; --ink:#F0F3F8; --ink-2:#C3CBD8; --ink-3:#A3AEC0; --line:#3A4558; --soft:#222C3C;
+  --accent:#8DB0FF; --accent-bg:#1E2D52; --ok:#6EDBAC; --ok-bg:#143429; --warn:#F2B656; --warn-bg:#3A2C12; --pain:#FF9A9E; --pain-bg:#3D1C1F; --dg:#C9B0FF; --dg-bg:#2C2147;
+}}
+*{box-sizing:border-box}
+html{font-size:min(.8333vw, 1.4815vh)}
+body{margin:0; height:100vh; display:grid; place-items:center; background:var(--bg); color:var(--ink); font-family:&#x27;Pretendard&#x27;,&#x27;Malgun Gothic&#x27;,system-ui,-apple-system,sans-serif; line-height:1.4; word-break:keep-all; overflow:hidden}
+.slide{width:120rem; height:67.5rem; padding:2.2rem 2.8rem 1.8rem; display:flex; flex-direction:column; gap:1.1rem}
+h1{font-size:2.6rem; margin:0; letter-spacing:-.05rem}
+h2{font-size:1.6rem; margin:0}
+h3{font-size:1.25rem; margin:0}
+p{margin:0}
+.lead{color:var(--ink-2); font-size:1.3rem; margin-top:.2rem}
+.fill{flex:1; min-height:0}
+.tag{display:inline-block; font-size:.95rem; font-weight:700; padding:.05rem .6rem; border-radius:99rem; white-space:nowrap}
+.t-data{color:var(--accent); background:var(--accent-bg)} .t-team{color:var(--warn); background:var(--warn-bg)} .t-src{color:var(--ok); background:var(--ok-bg)} .t-hyp{color:var(--ink-2); background:var(--soft)}
+.t-have{color:var(--ok); background:var(--ok-bg)} .t-todo{color:var(--dg); background:var(--dg-bg)} .t-p{color:var(--pain); background:var(--pain-bg)}
+.card{background:var(--surface); border:.12rem solid var(--line); border-radius:.9rem; padding:1rem 1.2rem; min-height:0; overflow:hidden}
+.card ul{margin:.3rem 0 0; padding-left:1.15rem; color:var(--ink-2); font-size:1.38rem}
+.card li + li{margin-top:.25rem}
+.card p{color:var(--ink-2); font-size:1.3rem; margin-top:.3rem}
+.note{font-size:1.05rem; color:var(--ink-3)}
+.g2{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem}
+.g3{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem}
+.g4{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:1rem}
+.g5{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:.8rem}
+.big{font-size:4.2rem; font-weight:700; line-height:1.05; letter-spacing:-.1rem; font-variant-numeric:tabular-nums}
+.big small{font-size:1.6rem; font-weight:700}
+.bar{background:var(--ink); color:var(--bg); border-radius:.9rem; padding:1rem 1.4rem; font-size:1.45rem; font-weight:700}
+.bar span{font-weight:400; opacity:.85}
+table{border-collapse:collapse; width:100%; font-size:1.22rem}
+th,td{border-bottom:.08rem solid var(--line); padding:.5rem .7rem; text-align:left; vertical-align:top}
+th{background:var(--soft); white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.c{text-align:center; font-weight:700}
+.o{color:var(--ok)} .x{color:var(--pain)} .t{color:var(--warn)}
+tr.us td{background:var(--accent-bg); font-weight:700}
+
+&lt;/style&gt;&lt;/head&gt;&lt;body&gt;&lt;div class=&quot;slide&quot;&gt;
+  &lt;div&gt;&lt;h1&gt;남은 과제: 확인하지 못한 것을 확인할 차례입니다&lt;/h1&gt;&lt;p class=&quot;lead&quot;&gt;지금까지의 근거 가운데 무엇이 단단하고 무엇이 아직 가설인지 나눠 봤습니다.&lt;/p&gt;&lt;/div&gt;
+  &lt;div class=&quot;g3 fill&quot;&gt;
+    &lt;div class=&quot;card&quot; style=&quot;border-color:var(--ok)&quot;&gt;&lt;h2&gt;단단한 근거&lt;/h2&gt;
+      &lt;ul&gt;
+        &lt;li&gt;대구 공실 통계 (한국부동산원, 국세청)&lt;/li&gt;
+        &lt;li&gt;매물 2,717건에서 직접 센 값: 바로 가능한 건물 38.3%, 관리비 미기재 61.0%, 시세 편차 64.7%&lt;/li&gt;
+        &lt;li&gt;동작하는 데모 화면&lt;/li&gt;
+      &lt;/ul&gt;&lt;/div&gt;
+    &lt;div class=&quot;card&quot; style=&quot;border-color:var(--warn)&quot;&gt;&lt;h2&gt;아직 가설&lt;/h2&gt;
+      &lt;ul&gt;
+        &lt;li&gt;두 주인공의 성격, 감정, 헛걸음 경험 → &lt;b&gt;임차인 인터뷰&lt;/b&gt;&lt;/li&gt;
+        &lt;li&gt;다른 서비스의 기능 → &lt;b&gt;직접 써 보기&lt;/b&gt;&lt;/li&gt;
+        &lt;li&gt;공개 자료 숫자 → &lt;b&gt;원문 확인&lt;/b&gt;&lt;/li&gt;
+        &lt;li&gt;특화거리가 장사에 유리한지&lt;/li&gt;
+      &lt;/ul&gt;&lt;/div&gt;
+    &lt;div class=&quot;card&quot; style=&quot;border-color:var(--pain)&quot;&gt;&lt;h2&gt;사업으로 가려면&lt;/h2&gt;
+      &lt;ul&gt;
+        &lt;li&gt;임차인·중개사·지자체가 실제로 &lt;b&gt;돈을 낼지&lt;/b&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;b&gt;매물 출처&lt;/b&gt;: 지금은 네이버 부동산 수집. 약관과 권리 확인, 제휴나 직접 등록으로 전환&lt;/li&gt;
+        &lt;li&gt;구독 가격, 기간, 비용 규모&lt;/li&gt;
+      &lt;/ul&gt;&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;card&quot;&gt;&lt;h2&gt;다음에 할 일 (제안 순서)&lt;/h2&gt;
+    &lt;div class=&quot;g4&quot; style=&quot;margin-top:.6rem&quot;&gt;
+      &lt;div&gt;&lt;h3&gt;1. 임차인 5~10명 인터뷰&lt;/h3&gt;&lt;p&gt;여정지도의 가설과 지불 의사를 한 번에 확인&lt;/p&gt;&lt;/div&gt;
+      &lt;div&gt;&lt;h3&gt;2. 중개사 질문 목록 만들기&lt;/h3&gt;&lt;p&gt;우리 데이터로 근거가 가장 뚜렷한 어려움(P3)&lt;/p&gt;&lt;/div&gt;
+      &lt;div&gt;&lt;h3&gt;3. 특화거리 설명 넣기&lt;/h3&gt;&lt;p&gt;대구 색이 화면에서 바로 보임&lt;/p&gt;&lt;/div&gt;
+      &lt;div&gt;&lt;h3&gt;4. 대구시·구청과 이야기&lt;/h3&gt;&lt;p&gt;지원사업 연결과 용역 가능성 확인&lt;/p&gt;&lt;/div&gt;
+    &lt;/div&gt;&lt;/div&gt;
+  &lt;div class=&quot;bar&quot;&gt;빈 상가는 많습니다. &lt;span&gt;부족한 것은 &quot;내 가게에 맞는 자리&quot;를 알려 주는 사람 편의 정보입니다.&lt;/span&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;script&gt;document.addEventListener(&quot;keydown&quot;,function(e){parent.postMessage({deckKey:e.key},&quot;*&quot;)});&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;"></iframe>
+</div></div>
+<div class="nav">
+  <button type="button" id="prev" aria-label="이전 장">◀</button>
+  <button type="button" id="next" aria-label="다음 장">▶</button>
+  <select id="pick" aria-label="장 고르기"></select>
+  <span id="count"></span>
+  <span class="sp"></span>
+  <span class="hint">← → 키나 스페이스로 넘기기 · F 전체 화면</span>
+</div>
+<script>
+(function(){
+  var frames = Array.prototype.slice.call(document.querySelectorAll('iframe')), cur = 0;
+  var pick = document.getElementById('pick');
+  frames.forEach(function(f, i){ var o = document.createElement('option'); o.value = i; o.textContent = (i + 1) + '. ' + f.dataset.name; pick.appendChild(o); });
+  function show(i){
+    cur = Math.max(0, Math.min(frames.length - 1, i));
+    frames.forEach(function(f, k){ f.classList.toggle('on', k === cur); });
+    pick.value = cur;
+    document.getElementById('count').textContent = (cur + 1) + ' / ' + frames.length;
+    document.getElementById('prev').disabled = cur === 0;
+    document.getElementById('next').disabled = cur === frames.length - 1;
+    try { history.replaceState(null, '', '#' + (cur + 1)); } catch (e) {}
+  }
+  function key(k){
+    if (k === 'ArrowRight' || k === 'PageDown' || k === ' ' || k === 'Enter') show(cur + 1);
+    else if (k === 'ArrowLeft' || k === 'PageUp' || k === 'Backspace') show(cur - 1);
+    else if (k === 'Home') show(0);
+    else if (k === 'End') show(frames.length - 1);
+    else if (k === 'f' || k === 'F'){ if (document.fullscreenElement) document.exitFullscreen(); else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen(); }
+  }
+  document.addEventListener('keydown', function(e){ if (e.target === pick) return; key(e.key); });
+  window.addEventListener('message', function(e){ if (e.data && e.data.deckKey) key(e.data.deckKey); });
+  document.getElementById('prev').addEventListener('click', function(){ show(cur - 1); });
+  document.getElementById('next').addEventListener('click', function(){ show(cur + 1); });
+  pick.addEventListener('change', function(){ show(+pick.value); });
+  var h = parseInt(location.hash.slice(1), 10);
+  show(h >= 1 && h <= frames.length ? h - 1 : 0);
+})();
+</script>
+</body>
+</html>
