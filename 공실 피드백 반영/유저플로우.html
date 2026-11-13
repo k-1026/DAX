@@ -5,137 +5,100 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>대구 빈 상가 찾기 · 유저플로우</title>
 <style>
+/* 16:9 한 화면. 1920×1080에서 1rem = 16px, 화면 크기에 맞춰 통째로 줄거나 늘어난다 */
 :root{
   --bg:#F6F5F1; --surface:#FFFFFF; --ink:#141E33; --ink-2:#36425A; --ink-3:#556178; --line:#C9CFDA; --soft:#EEF1F5;
-  --accent:#1747C7; --accent-bg:#E4ECFF; --new:#17663F; --new-bg:#DDF3E8; --dg:#5B2DA8; --dg-bg:#EEE7FB; --pain:#A3201A; --pain-bg:#FCE4E2; --warn:#7A4800; --warn-bg:#FDF0D5;
+  --accent:#1747C7; --new:#17663F; --new-bg:#DDF3E8; --dg:#5B2DA8; --dg-bg:#EEE7FB; --pain:#A3201A; --pain-bg:#FCE4E2; --warn:#7A4800; --warn-bg:#FDF0D5;
 }
 @media (prefers-color-scheme: dark){:root{
   --bg:#11161F; --surface:#182030; --ink:#F0F3F8; --ink-2:#C3CBD8; --ink-3:#A3AEC0; --line:#3A4558; --soft:#222C3C;
-  --accent:#8DB0FF; --accent-bg:#1E2D52; --new:#6EDBAC; --new-bg:#143429; --dg:#C9B0FF; --dg-bg:#2C2147; --pain:#FF9A9E; --pain-bg:#3D1C1F; --warn:#F2B656; --warn-bg:#3A2C12;
+  --accent:#8DB0FF; --new:#6EDBAC; --new-bg:#143429; --dg:#C9B0FF; --dg-bg:#2C2147; --pain:#FF9A9E; --pain-bg:#3D1C1F; --warn:#F2B656; --warn-bg:#3A2C12;
 }}
 *{box-sizing:border-box}
-html{font-size:17px}
-body{margin:0; background:var(--bg); color:var(--ink); font-family:'Pretendard','Malgun Gothic',system-ui,-apple-system,sans-serif; line-height:1.55; word-break:keep-all}
-.wrap{max-width:1400px; margin:0 auto; padding:28px 24px 48px}
-h1{font-size:1.9rem; margin:0 0 4px; letter-spacing:-.5px}
-h2{font-size:1.3rem; margin:36px 0 12px; letter-spacing:-.3px}
-h3{font-size:1.08rem; margin:0}
+html{font-size:min(.8333vw, 1.4815vh)}
+body{margin:0; height:100vh; display:grid; place-items:center; background:var(--bg); color:var(--ink); font-family:'Pretendard','Malgun Gothic',system-ui,-apple-system,sans-serif; line-height:1.4; word-break:keep-all; overflow:hidden}
+.slide{width:120rem; height:67.5rem; padding:2.2rem 2.6rem 1.8rem; display:flex; flex-direction:column; gap:1.1rem}
+h1{font-size:2.5rem; margin:0; letter-spacing:-.05rem}
 p{margin:0}
-.lead{color:var(--ink-2); font-size:1.05rem}
-.tag{display:inline-block; font-size:.8rem; font-weight:700; padding:1px 9px; border-radius:999px; white-space:nowrap}
+.head{display:flex; align-items:flex-end; justify-content:space-between; gap:2rem}
+.lead{color:var(--ink-2); font-size:1.25rem; margin-top:.2rem}
+.legend{display:flex; gap:1.2rem; font-size:1.05rem; color:var(--ink-2); white-space:nowrap}
+.tag{display:inline-block; font-size:.92rem; font-weight:700; padding:.05rem .6rem; border-radius:99rem; white-space:nowrap}
 .t-new{color:var(--new); background:var(--new-bg)} .t-dg{color:var(--dg); background:var(--dg-bg)} .t-p{color:var(--pain); background:var(--pain-bg)} .t-out{color:var(--ink-2); background:var(--soft)}
-.legend{display:flex; flex-wrap:wrap; gap:8px 18px; margin-top:14px; font-size:.93rem; color:var(--ink-2)}
 
-.flow{display:grid; grid-template-columns:8.5rem minmax(0,1fr) minmax(0,1fr); gap:0 16px; margin-top:22px}
-.colhead{font-weight:700; font-size:1.1rem; padding:10px 14px; border-radius:12px 12px 0 0; text-align:center}
-.colhead.now{background:var(--soft)} .colhead.next{background:var(--accent); color:#fff}
-@media (prefers-color-scheme: dark){ .colhead.next{color:#0C1322} }
-.stage{display:flex; align-items:center; font-weight:700; color:var(--ink-2); padding:8px 0}
-.cell{position:relative; padding:8px 0 22px}
-.cell::after{content:"▼"; position:absolute; left:50%; bottom:2px; transform:translateX(-50%); color:var(--line); font-size:.8rem}
-.cell.last::after,.cell.none::after{content:none}
-.card{background:var(--surface); border:2px solid var(--line); border-radius:14px; padding:12px 14px; height:100%}
-.card h3{margin-bottom:4px}
-.card ul{margin:4px 0 0; padding-left:1.05em; color:var(--ink-2); font-size:.95rem}
-.card li + li{margin-top:2px}
+.grid{flex:1; min-height:0; display:grid; grid-template-columns:5.4rem repeat(10,minmax(0,1fr)); grid-template-rows:auto minmax(0,1fr) minmax(0,1.55fr); gap:.7rem .55rem}
+.st{background:var(--ink); color:var(--bg); border-radius:.7rem; padding:.45rem .3rem; text-align:center; font-weight:700; font-size:1.12rem; position:relative}
+.st small{display:block; font-weight:400; font-size:.9rem; opacity:.8}
+.st:not(.last)::after{content:"▶"; position:absolute; right:-.62rem; top:50%; transform:translateY(-50%); color:var(--ink-3); font-size:.75rem; z-index:1}
+.rowlab{display:grid; place-items:center; text-align:center; font-weight:700; font-size:1.2rem; border-radius:.7rem; padding:.3rem}
+.rowlab.now{background:var(--soft)} .rowlab.next{background:var(--accent); color:#fff}
+@media (prefers-color-scheme: dark){ .rowlab.next{color:#0C1322} }
+.card{background:var(--surface); border:.14rem solid var(--line); border-radius:.8rem; padding:.7rem .7rem .6rem; display:flex; flex-direction:column; gap:.35rem; min-height:0; overflow:hidden}
+.card b{font-size:1.32rem; line-height:1.3}
+.card ul{margin:0; padding-left:1.1rem; font-size:1.18rem; color:var(--ink-2)}
+.card li + li{margin-top:.15rem}
+.card .tags{margin-top:auto; display:flex; flex-wrap:wrap; gap:.25rem}
 .card.add{border-color:var(--new); background:var(--new-bg)}
 .card.out{border-style:dashed}
-.none .card{border-style:dashed; color:var(--ink-3); display:grid; place-items:center; text-align:center; background:transparent}
-.tags{display:flex; flex-wrap:wrap; gap:5px; margin-top:8px}
-.back{grid-column:2 / -1; background:var(--warn-bg); color:var(--warn); border-radius:12px; padding:10px 16px; font-weight:600; margin:2px 0 18px}
+.card.none,.card.same{border-style:dashed; background:transparent; color:var(--ink-3); align-items:center; justify-content:center; text-align:center; font-size:1.18rem}
 
-.scroll{overflow-x:auto; border:1px solid var(--line); border-radius:14px; background:var(--surface)}
-table{border-collapse:collapse; width:100%; min-width:900px}
-th,td{border-bottom:1px solid var(--line); padding:11px 14px; text-align:left; vertical-align:top; font-size:.96rem}
-th{background:var(--soft); white-space:nowrap}
-tr:last-child td{border-bottom:0}
-.note{background:var(--warn-bg); color:var(--warn); border-radius:12px; padding:12px 16px; font-weight:600; margin-top:14px}
-@media (max-width:860px){
-  .flow{grid-template-columns:minmax(0,1fr)}
-  .stage{padding-top:14px; border-top:1px solid var(--line); margin-top:6px}
-  .colhead{display:none}
-  .cell::before{display:block; font-size:.82rem; font-weight:700; color:var(--ink-3); margin-bottom:4px}
-  .cell.c-now::before{content:"지금"} .cell.c-next::before{content:"보완 후"}
-  .cell::after{content:none}
-  .back{grid-column:1}
-  .wrap{padding:20px 16px 36px} h1{font-size:1.5rem}
-}
+.foot{display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); gap:1rem; font-size:1.1rem}
+.foot > div{border-radius:.8rem; padding:.7rem 1.1rem}
+.loop{background:var(--warn-bg); color:var(--warn); font-weight:600}
+.sum{background:var(--surface); border:.1rem solid var(--line); display:flex; align-items:center; gap:1.4rem}
+.sum b{font-size:1.5rem; color:var(--new)}
+.sum b.d{color:var(--dg)}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>대구 빈 상가 찾기 · 유저플로우</h1>
-  <p class="lead">지금 데모의 흐름과, 고객여정지도의 어려움 8가지와 대구 제안을 반영한 흐름을 나란히 놓았습니다.</p>
-  <div class="legend">
-    <span><span class="tag t-new">새로 추가</span> 보완 후에 더해지는 것</span>
-    <span><span class="tag t-dg">대구</span> 대구 지역 색을 넣는 것</span>
-    <span><span class="tag t-p">P1~P8</span> 푸는 어려움 번호</span>
-    <span><span class="tag t-out">서비스 밖</span> 사용자가 서비스 바깥에서 하는 일</span>
+<div class="slide">
+  <div class="head">
+    <div><h1>대구 빈 상가 찾기 · 유저플로우</h1><p class="lead">지금 데모의 흐름에 임차인의 어려움 8가지(P1~P8)와 대구 제안을 반영했습니다.</p></div>
+    <div class="legend"><span><span class="tag t-new">새로 추가</span> 보완 후 더해짐</span><span><span class="tag t-dg">대구</span> 지역 색</span><span><span class="tag t-p">P1~P8</span> 푸는 어려움</span><span><span class="tag t-out">서비스 밖</span></span></div>
   </div>
 
-  <div class="flow">
-    <div></div><div class="colhead now">지금 (26.11.13 데모)</div><div class="colhead next">보완 후</div>
+  <div class="grid">
+    <div></div>
+    <div class="st">0<small>들어오는 길</small></div>
+    <div class="st">1<small>가게 종류</small></div>
+    <div class="st">2<small>조건</small></div>
+    <div class="st">3<small>추천 목록</small></div>
+    <div class="st">4<small>자세히 보기</small></div>
+    <div class="st">5<small>바깥 확인</small></div>
+    <div class="st">6<small>고르기</small></div>
+    <div class="st">7<small>상담 준비</small></div>
+    <div class="st">8<small>현장</small></div>
+    <div class="st last">9<small>돌아오기</small></div>
 
-    <div class="stage">0. 들어오는 길</div>
-    <div class="cell c-now none"><div class="card">정해진 길 없음<br>(파일을 직접 열어 사용)</div></div>
-    <div class="cell c-next"><div class="card add"><h3>세 갈래로 들어옴</h3><ul><li>창업 지원 기관: 소상공인 센터, 창업·퇴직자 교육에서 안내</li><li>검색·SNS: "대구 상가 임대" 검색, 인스타그램·유튜브</li><li>대구시 공공 채널: 시·구청 누리집, 상권 활성화 사업 안내</li></ul><div class="tags"><span class="tag t-new">새로 추가</span><span class="tag t-dg">대구</span></div></div></div>
+    <div class="rowlab now">지금<br>데모</div>
+    <div class="card none">정해진 길 없음<br>(파일을 직접 엶)</div>
+    <div class="card"><b>가게 종류 고르기</b><ul><li>8가지 중 하나</li></ul><div class="tags"><span class="tag t-p">P1</span></div></div>
+    <div class="card"><b>월세·지역 고르기</b><ul><li>큰 버튼으로 선택</li></ul></div>
+    <div class="card"><b>목록과 지도</b><ul><li>점수 높은 순</li><li>동네별 상가 수</li></ul><div class="tags"><span class="tag t-p">P2</span><span class="tag t-p">P4</span></div></div>
+    <div class="card"><b>상가 자세히</b><ul><li>좋은 점·확인할 점</li><li>점수 성적표</li><li>건물 용도 등급</li></ul><div class="tags"><span class="tag t-p">P3</span><span class="tag t-p">P6</span></div></div>
+    <div class="card"><b>바깥 사이트</b><ul><li>카카오맵·로드뷰</li><li>토지이음은 처음 화면만</li></ul></div>
+    <div class="card"><b>담기·비교·엑셀</b><ul><li>나란히 비교</li><li>엑셀로 받기</li></ul></div>
+    <div class="card none">없음</div>
+    <div class="card out"><b>중개사 상담</b><ul><li>현장 확인</li><li>구청 확인, 계약</li></ul><div class="tags"><span class="tag t-out">서비스 밖</span></div></div>
+    <div class="card"><b>👍 / 👎 평가</b><ul><li>화면에만 남음</li></ul></div>
 
-    <div class="stage">1. 가게 종류</div>
-    <div class="cell c-now"><div class="card"><h3>가게 종류 고르기</h3><ul><li>음식점·카페, 학원 등 8가지 중 하나</li></ul><div class="tags"><span class="tag t-p">P1</span></div></div></div>
-    <div class="cell c-next"><div class="card"><h3>가게 종류 고르기</h3><ul><li>지금과 같음</li></ul><div class="tags"><span class="tag t-p">P1</span></div></div></div>
-
-    <div class="stage">2. 조건</div>
-    <div class="cell c-now"><div class="card"><h3>월세와 지역 고르기</h3><ul><li>큰 버튼으로 고름</li><li>보증금·넓이·동네·중요하게 볼 것은 선택</li></ul></div></div>
-    <div class="cell c-next"><div class="card"><h3>월세와 지역 고르기</h3><ul><li>지금과 같음</li></ul></div></div>
-
-    <div class="stage">3. 추천 목록</div>
-    <div class="cell c-now"><div class="card"><h3>추천 목록과 지도 보기</h3><ul><li>점수 높은 순, "아주 좋음" 같은 말</li><li>지도에 동네별 빈 상가 수</li></ul><div class="tags"><span class="tag t-p">P2</span><span class="tag t-p">P4</span></div></div></div>
-    <div class="cell c-next"><div class="card add"><h3>추천 목록과 지도 보기</h3><ul><li>지금 기능 그대로</li><li>확인된 지 90일 넘은 매물에 "오래됨" 표시</li><li>동네별 공실 흐름(늘고 있는지, 줄고 있는지)</li></ul><div class="tags"><span class="tag t-new">새로 추가</span><span class="tag t-p">P2</span><span class="tag t-p">P5</span></div></div></div>
-
-    <div class="back">↻ 마음에 드는 곳이 없으면 2번으로 돌아가 조건을 바꿉니다. 담아 둔 상가는 그대로 남습니다.</div>
-
-    <div class="stage">4. 자세히 보기</div>
-    <div class="cell c-now"><div class="card"><h3>상가 눌러 자세히 보기</h3><ul><li>좋은 점, 확인할 점</li><li>점수 성적표</li><li>건물 용도 등급, 구청 확인 안내</li></ul><div class="tags"><span class="tag t-p">P3</span><span class="tag t-p">P4</span><span class="tag t-p">P6</span></div></div></div>
-    <div class="cell c-next"><div class="card add"><h3>상가 눌러 자세히 보기</h3><ul><li>지금 기능 그대로</li><li>특화거리 설명: "봉산문화거리 안에 있어요"</li><li>지원사업 안내: "이 지역에서 알아볼 수 있는 지원"</li><li>위반건축물 여부 표시</li></ul><div class="tags"><span class="tag t-new">새로 추가</span><span class="tag t-dg">대구</span><span class="tag t-p">P6</span></div></div></div>
-
-    <div class="stage">5. 바깥 확인</div>
-    <div class="cell c-now"><div class="card"><h3>바깥 사이트에서 확인</h3><ul><li>카카오맵, 로드뷰, 네이버 부동산</li><li>토지이음은 처음 화면만 열림</li></ul></div></div>
-    <div class="cell c-next"><div class="card add"><h3>바깥 사이트에서 확인</h3><ul><li>지금 기능 그대로</li><li>토지이음에서 그 땅 페이지가 바로 열림 (번지 데이터 필요)</li></ul><div class="tags"><span class="tag t-new">새로 추가</span><span class="tag t-p">P6</span></div></div></div>
-
-    <div class="stage">6. 고르기</div>
-    <div class="cell c-now"><div class="card"><h3>담기 → 나란히 비교 → 엑셀</h3><ul><li>마음에 드는 상가 담기</li><li>가장 좋은 값에 👍</li><li>엑셀 파일로 받기</li></ul></div></div>
-    <div class="cell c-next"><div class="card"><h3>담기 → 나란히 비교 → 엑셀</h3><ul><li>지금과 같음</li></ul></div></div>
-
-    <div class="stage">7. 상담 준비</div>
-    <div class="cell c-now none"><div class="card">없음</div></div>
-    <div class="cell c-next"><div class="card add"><h3>중개사에게 물어볼 질문 받기</h3><ul><li>고른 상가마다 질문 최대 5개</li><li>빈 정보(관리비 등)와 확인할 점을 질문으로 바꿈</li><li>중개사에게 물을 것과 구청에 확인할 것을 나눔</li></ul><div class="tags"><span class="tag t-new">새로 추가</span><span class="tag t-p">P3</span><span class="tag t-p">P7</span></div></div></div>
-
-    <div class="stage">8. 현장</div>
-    <div class="cell c-now"><div class="card out"><h3>중개사 상담, 현장 확인</h3><ul><li>구청에 입점 가능 여부 확인</li><li>계약</li></ul><div class="tags"><span class="tag t-out">서비스 밖</span></div></div></div>
-    <div class="cell c-next"><div class="card out"><h3>중개사 상담, 현장 확인</h3><ul><li>질문 목록과 엑셀을 들고 감</li><li>구청 확인, 계약</li></ul><div class="tags"><span class="tag t-out">서비스 밖</span></div></div></div>
-
-    <div class="stage">9. 돌아오기</div>
-    <div class="cell c-now last"><div class="card"><h3>추천이 도움이 됐나요</h3><ul><li>👍 / 👎 누르기</li><li>이 화면에만 남고 모이지 않음</li></ul></div></div>
-    <div class="cell c-next last"><div class="card add"><h3>추천이 도움이 됐나요</h3><ul><li>👍 / 👎와 안 맞은 이유</li><li>누가 했는지 없이 서버에 모음</li><li>30건 넘게 쌓이면 점수 기준 개선 제안 (사람이 승인)</li></ul><div class="tags"><span class="tag t-new">새로 추가</span></div></div></div>
+    <div class="rowlab next">보완<br>후</div>
+    <div class="card add"><b>세 갈래로 들어옴</b><ul><li>창업 지원 기관</li><li>검색·SNS</li><li>대구시 공공 채널</li></ul><div class="tags"><span class="tag t-new">새로 추가</span><span class="tag t-dg">대구</span></div></div>
+    <div class="card same">지금과 같음</div>
+    <div class="card same">지금과 같음</div>
+    <div class="card add"><b>목록과 지도 +</b><ul><li>90일 넘은 매물에 "오래됨" 표시</li><li>동네별 공실 흐름</li></ul><div class="tags"><span class="tag t-new">새로 추가</span><span class="tag t-dg">대구</span><span class="tag t-p">P2</span><span class="tag t-p">P5</span></div></div>
+    <div class="card add"><b>상가 자세히 +</b><ul><li>특화거리 설명</li><li>지원사업 안내</li><li>위반건축물 여부</li></ul><div class="tags"><span class="tag t-new">새로 추가</span><span class="tag t-dg">대구</span><span class="tag t-p">P6</span></div></div>
+    <div class="card add"><b>바깥 사이트 +</b><ul><li>토지이음에서 그 땅 페이지가 바로 열림</li></ul><div class="tags"><span class="tag t-new">새로 추가</span><span class="tag t-p">P6</span></div></div>
+    <div class="card same">지금과 같음</div>
+    <div class="card add"><b>중개사 질문 받기</b><ul><li>상가마다 최대 5개</li><li>빈 정보를 질문으로</li><li>구청에 물을 것 구분</li></ul><div class="tags"><span class="tag t-new">새로 추가</span><span class="tag t-p">P3</span><span class="tag t-p">P7</span></div></div>
+    <div class="card out"><b>중개사 상담</b><ul><li>질문 목록과 엑셀을 들고 감</li></ul><div class="tags"><span class="tag t-out">서비스 밖</span></div></div>
+    <div class="card add"><b>평가를 모아 개선</b><ul><li>익명으로 서버에 모음</li><li>30건 넘으면 기준 개선 제안</li></ul><div class="tags"><span class="tag t-new">새로 추가</span></div></div>
   </div>
 
-  <h2>보완 후에 더해지는 것</h2>
-  <div class="scroll">
-  <table>
-    <thead><tr><th>더해지는 것</th><th>단계</th><th>푸는 어려움</th><th>대구 색</th><th>필요한 것</th></tr></thead>
-    <tbody>
-      <tr><td>세 갈래 들어오는 길</td><td>0</td><td>–</td><td>○ 대구시 공공 채널</td><td>지원 기관·대구시와 협력</td></tr>
-      <tr><td>오래된 매물 표시</td><td>3</td><td>P5 헛걸음</td><td>–</td><td>화면에 표시 추가 (기준 90일)</td></tr>
-      <tr><td>동네별 공실 흐름</td><td>3</td><td>P2 동네 비교</td><td>○ 대구 상권별 통계</td><td>한국부동산원 상권별 공실률 시계열</td></tr>
-      <tr><td>특화거리 설명</td><td>4</td><td>P2 동네 비교</td><td>○</td><td>특화거리 범위 목록</td></tr>
-      <tr><td>지원사업 안내</td><td>4</td><td>–</td><td>○</td><td>지원사업 목록표, 정기 관리</td></tr>
-      <tr><td>위반건축물 여부, 토지이음 바로 열기</td><td>4, 5</td><td>P6 가능한 건물인지</td><td>–</td><td>위반건축물 표시, 번지 데이터</td></tr>
-      <tr><td>중개사 질문 목록</td><td>7</td><td>P3 빈 정보, P7 계약 조건</td><td>–</td><td>업종별 질문 표</td></tr>
-      <tr><td>평가를 모아 기준 개선</td><td>9</td><td>–</td><td>–</td><td>서버 저장</td></tr>
-    </tbody>
-  </table>
+  <div class="foot">
+    <div class="loop">↻ 3번에서 마음에 드는 곳이 없으면 2번으로 돌아가 조건을 바꿉니다. 담아 둔 상가는 그대로 남습니다.</div>
+    <div class="sum"><span>더해지는 것 <b>8</b>가지</span><span>그중 대구 색 <b class="d">4</b>가지</span><span style="color:var(--ink-3)">보완 후는 계획 단계</span></div>
   </div>
-  <p class="note">보완 후 흐름은 계획입니다. 아직 만들지 않았고, 표의 "필요한 것"이 갖춰져야 만들 수 있습니다. P8(개업 뒤 걱정)은 이 흐름에서도 풀지 않습니다.</p>
 </div>
 </body>
 </html>
