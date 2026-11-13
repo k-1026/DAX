@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>대구 빈 상가 찾기 · 밸류체인</title>
+<style>
+/* 16:9 한 화면. 1920×1080에서 1rem = 16px */
+:root{
+  --bg:#F6F5F1; --surface:#FFFFFF; --ink:#141E33; --ink-2:#36425A; --ink-3:#556178; --line:#C9CFDA; --soft:#EEF1F5;
+  --accent:#1747C7; --accent-bg:#E4ECFF; --gap:#A3201A; --gap-bg:#FCE4E2; --us:#17663F; --us-bg:#DDF3E8; --next:#5B2DA8; --next-bg:#EEE7FB; --money:#7A4800; --money-bg:#FDF0D5;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#11161F; --surface:#182030; --ink:#F0F3F8; --ink-2:#C3CBD8; --ink-3:#A3AEC0; --line:#3A4558; --soft:#222C3C;
+  --accent:#8DB0FF; --accent-bg:#1E2D52; --gap:#FF9A9E; --gap-bg:#3D1C1F; --us:#6EDBAC; --us-bg:#143429; --next:#C9B0FF; --next-bg:#2C2147; --money:#F2B656; --money-bg:#3A2C12;
+}}
+*{box-sizing:border-box}
+html{font-size:min(.8333vw, 1.4815vh)}
+body{margin:0; height:100vh; display:grid; place-items:center; background:var(--bg); color:var(--ink); font-family:'Pretendard','Malgun Gothic',system-ui,-apple-system,sans-serif; line-height:1.38; word-break:keep-all; overflow:hidden}
+.slide{width:120rem; height:67.5rem; padding:2rem 2.6rem 1.6rem; display:flex; flex-direction:column; gap:.9rem}
+h1{font-size:2.5rem; margin:0; letter-spacing:-.05rem}
+p{margin:0}
+.head{display:flex; align-items:flex-end; justify-content:space-between; gap:2rem}
+.lead{color:var(--ink-2); font-size:1.25rem; margin-top:.2rem}
+.legend{display:flex; gap:1.2rem; font-size:1.05rem; color:var(--ink-2); white-space:nowrap}
+.tag{display:inline-block; font-size:.95rem; font-weight:700; padding:.05rem .6rem; border-radius:99rem; white-space:nowrap}
+.t-data{color:var(--accent); background:var(--accent-bg)} .t-team{color:var(--money); background:var(--money-bg)}
+
+.grid{flex:1; min-height:0; display:grid; grid-template-columns:6.2rem repeat(7,minmax(0,1fr)); grid-template-rows:auto minmax(0,.8fr) minmax(0,1fr) minmax(0,.8fr) minmax(0,1.15fr) auto; gap:.5rem .5rem}
+.st{background:var(--ink); color:var(--bg); padding:.5rem .4rem .5rem 1.4rem; font-weight:700; font-size:1.2rem; text-align:center; clip-path:polygon(0 0, calc(100% - 1rem) 0, 100% 50%, calc(100% - 1rem) 100%, 0 100%, 1rem 50%)}
+.st.first{clip-path:polygon(0 0, calc(100% - 1rem) 0, 100% 50%, calc(100% - 1rem) 100%, 0 100%); padding-left:.4rem}
+.st small{display:block; font-weight:400; font-size:.92rem; opacity:.85}
+.lab{display:grid; place-items:center; text-align:center; font-weight:700; font-size:1.1rem; background:var(--soft); border-radius:.7rem; padding:.3rem}
+.c{background:var(--surface); border:.1rem solid var(--line); border-radius:.7rem; padding:.55rem .7rem; font-size:1.05rem; color:var(--ink-2); min-height:0; overflow:hidden}
+.c b{color:var(--ink)}
+.c ul{margin:0; padding-left:1rem}
+.c li + li{margin-top:.1rem}
+.c.money{background:var(--money-bg); border-color:transparent; color:var(--money)}
+.c.money b{color:var(--money)}
+.c.gapc{background:var(--gap-bg); border-color:transparent}
+.c.gapc b{color:var(--gap)}
+.c.gapc .ev{display:block; margin-top:.25rem; font-size:.95rem}
+.lab.gl{background:var(--gap-bg); color:var(--gap)}
+.band-lab{display:grid; place-items:center; text-align:center; font-weight:700; font-size:1.1rem; background:var(--us); color:#fff; border-radius:.7rem; padding:.3rem}
+@media (prefers-color-scheme: dark){ .band-lab{color:#0C1322} }
+.band-next{grid-column:2 / 3; background:var(--next-bg); color:var(--next); border:.14rem dashed var(--next); border-radius:.7rem; padding:.5rem .7rem; font-size:1.02rem}
+.band-skip{grid-column:3 / 4; display:grid; place-items:center; color:var(--ink-3); font-size:1rem; text-align:center}
+.band-us{grid-column:4 / 6; background:var(--us-bg); border:.16rem solid var(--us); border-radius:.7rem; padding:.5rem .9rem; font-size:1.08rem; display:flex; align-items:center; gap:1rem}
+.band-us b{color:var(--us); font-size:1.25rem; white-space:nowrap}
+.band-link{grid-column:6 / 9; background:var(--surface); border:.1rem dashed var(--line); border-radius:.7rem; padding:.5rem .8rem; font-size:1.02rem; color:var(--ink-2)}
+.band-link b,.band-next b{display:block}
+
+.foot{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.8rem}
+.foot > div{background:var(--surface); border:.1rem solid var(--line); border-left:.4rem solid var(--accent); border-radius:.7rem; padding:.6rem 1rem; font-size:1.08rem; color:var(--ink-2)}
+.foot b{display:block; color:var(--ink); font-size:1.18rem}
+.cave{font-size:.95rem; color:var(--ink-3)}
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="head">
+    <div><h1>상가 임대 산업의 밸류체인과 우리 서비스의 자리</h1><p class="lead">빈 상가가 생겨서 새 가게가 열리기까지 누가 무엇을 하고, 돈이 어디로 흐르고, 어디가 비어 있는지 봅니다.</p></div>
+    <div class="legend"><span><span class="tag t-data">우리 데이터</span> 매물 2,717건</span><span><span class="tag t-team">팀 자료</span> 공실 현황 보고</span></div>
+  </div>
+
+  <div class="grid">
+    <div></div>
+    <div class="st first">1. 빈 상가 발생<small>공급</small></div>
+    <div class="st">2. 매물 등록<small>광고</small></div>
+    <div class="st">3. 찾기<small>탐색·비교</small></div>
+    <div class="st">4. 확인<small>용도·서류·현장</small></div>
+    <div class="st">5. 계약<small>조건 협의</small></div>
+    <div class="st">6. 개업 준비<small>공사·인허가</small></div>
+    <div class="st">7. 운영<small>장사, 폐업하면 1로</small></div>
+
+    <div class="lab">참여자</div>
+    <div class="c"><b>건물주</b>, 자산 관리 회사</div>
+    <div class="c"><b>공인중개사</b>, 매물 사이트(네이버 부동산, 직방, 네모)</div>
+    <div class="c"><b>임차인</b>, 상권 분석 서비스, 창업 컨설팅</div>
+    <div class="c"><b>임차인 혼자</b>, 구청 건축과, 건축사·행정사</div>
+    <div class="c"><b>중개사</b>, 건물주, 임차인</div>
+    <div class="c"><b>인테리어·설비 업체</b>, 금융(대출·보증), 구청, 세무서</div>
+    <div class="c"><b>임차인(사장님)</b>, 지자체, 소상공인 지원 기관</div>
+
+    <div class="lab">하는 일</div>
+    <div class="c"><ul><li>임차인이 나가 상가가 빔</li><li>월세·보증금 정함</li></ul></div>
+    <div class="c"><ul><li>중개사가 매물을 받아 사이트에 올림</li><li>사진·조건 작성</li></ul></div>
+    <div class="c"><ul><li>지역·월세로 걸러 봄</li><li>상권 정보는 다른 곳에서 따로 봄</li></ul></div>
+    <div class="c"><ul><li>건축물대장 떼기</li><li>내 업종 가능한지 구청에 문의</li><li>현장 방문</li></ul></div>
+    <div class="c"><ul><li>월세·보증금·권리금 협의</li><li>계약서 작성</li></ul></div>
+    <div class="c"><ul><li>인테리어, 간판, 설비</li><li>영업 신고, 사업자 등록</li><li>자금 마련</li></ul></div>
+    <div class="c"><ul><li>장사, 월세 납부</li><li>상권 활성화 사업 참여</li></ul></div>
+
+    <div class="lab">돈의 흐름</div>
+    <div class="c money">비어 있는 동안 건물주는 <b>월세 수입 0</b></div>
+    <div class="c money">중개사 → 매물 사이트 <b>광고비</b></div>
+    <div class="c money">대부분 <b>무료</b>. 컨설팅은 임차인이 비용 부담</div>
+    <div class="c money">임차인의 <b>시간과 발품</b>. 일부 대행 수수료</div>
+    <div class="c money">임차인·건물주 → 중개사 <b>중개 보수</b>. 임차인 → 건물주 보증금·월세·권리금</div>
+    <div class="c money">임차인 → 업체 <b>공사비</b>. 금융 → 임차인 대출</div>
+    <div class="c money">임차인 → 건물주 <b>월세</b>. 지자체 → 상권 <b>지원 예산</b></div>
+
+    <div class="lab gl">빈틈</div>
+    <div class="c gapc"><b>비어도 월세를 안 내림</b><span class="ev"><span class="tag t-team">팀 자료</span> 공실 지수 222, 임대료 지수 103. 어떤 업종이 맞는지 건물주도 모름</span></div>
+    <div class="c gapc"><b>올리는 쪽 중심의 정보</b><span class="ev"><span class="tag t-data">우리 데이터</span> 관리비 미기재 61.0%, 추천 용도 빈칸 25.3%</span></div>
+    <div class="c gapc"><b>매물과 상권 정보가 따로</b><span class="ev"><span class="tag t-data">우리 데이터</span> 시세보다 20% 넘게 싸거나 비싼 매물 64.7%인데 비교 기준이 없음</span></div>
+    <div class="c gapc"><b>도와주는 서비스가 없음</b><span class="ev"><span class="tag t-data">우리 데이터</span> 음식점 기준 서류상 바로 가능한 매물 38.3%뿐. 임차인이 직접 알아내야 함</span></div>
+    <div class="c gapc"><b>경험 없는 임차인이 불리</b><span class="ev"><span class="tag t-team">팀 자료</span> 권리금을 포기해도 임차인을 못 구하는 사례</span></div>
+    <div class="c gapc"><b>계약 뒤에야 문제를 앎</b><span class="ev">용도가 안 맞으면 공사·신고 단계에서 막힘</span></div>
+    <div class="c gapc"><b>닫는 가게가 여는 가게만큼</b><span class="ev"><span class="tag t-team">팀 자료</span> 대구 개업 대비 폐업 91.2%. 다시 1번으로</span></div>
+
+    <div class="band-lab">우리<br>서비스</div>
+    <div class="band-next"><b>다음 단계: 건물주에게</b>이 자리에 맞는 업종과 주변 시세 대비 월세 알려 주기</div>
+    <div class="band-skip">매물은<br>가져다 씀</div>
+    <div class="band-us"><b>지금 자리: 3 + 4</b><span>매물 하나하나에 업종별 점수, 시세 대비 가격, 건물 용도 등급을 붙여 임차인 편에서 보여 줌. 찾기와 확인을 한 화면에서 끝냄</span></div>
+    <div class="band-link"><b>넘겨주기</b>5: 중개사에게 물어볼 질문 목록 · 6: 구청 확인 안내 · 7: 대구 지원사업 안내</div>
+  </div>
+
+  <div class="foot">
+    <div><b>4단계가 비어 있다</b>"내 업종이 되는 건물인가"를 풀어 주는 사업자가 없어 임차인이 혼자 합니다. 우리 서비스의 가장 뚜렷한 자리입니다.</div>
+    <div><b>지금 사이트는 올리는 쪽이 돈을 낸다</b>매물 사이트의 수입은 중개사 광고비입니다. 임차인 편에서 빈칸과 단점을 드러내는 서비스가 들어갈 틈이 여기서 생깁니다.</div>
+    <div><b>공실은 1번에서 풀린다</b>임차인을 돕는 것만으로는 월세가 안 내리는 문제를 못 풉니다. 그래서 다음 단계로 건물주에게 맞는 업종과 시세를 알려 줍니다.<span class="cave"> 돈의 흐름은 일반적인 구조이며 대구 시장 규모 수치는 조사하지 않았습니다.</span></div>
+  </div>
+</div>
+</body>
+</html>
