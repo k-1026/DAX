@@ -26,7 +26,7 @@ p{margin:0}
 .tag{display:inline-block; font-size:.95rem; font-weight:700; padding:.05rem .6rem; border-radius:99rem; white-space:nowrap}
 .t-data{color:var(--accent); background:var(--accent-bg)} .t-team{color:var(--money); background:var(--money-bg)}
 
-.grid{flex:1; min-height:0; display:grid; grid-template-columns:6.2rem repeat(7,minmax(0,1fr)); grid-template-rows:auto minmax(0,.8fr) minmax(0,1fr) minmax(0,.8fr) minmax(0,1.15fr) auto; gap:.5rem .5rem}
+.grid{flex:1; min-height:0; display:grid; grid-template-columns:6.2rem repeat(7,minmax(0,1fr)); grid-template-rows:auto minmax(0,.62fr) minmax(0,.82fr) minmax(0,1.25fr) minmax(0,1.15fr) auto; gap:.5rem .5rem}
 .st{background:var(--ink); color:var(--bg); padding:.5rem .4rem .5rem 1.4rem; font-weight:700; font-size:1.2rem; text-align:center; clip-path:polygon(0 0, calc(100% - 1rem) 0, 100% 50%, calc(100% - 1rem) 100%, 0 100%, 1rem 50%)}
 .st.first{clip-path:polygon(0 0, calc(100% - 1rem) 0, 100% 50%, calc(100% - 1rem) 100%, 0 100%); padding-left:.4rem}
 .st small{display:block; font-weight:400; font-size:.92rem; opacity:.85}
@@ -39,7 +39,8 @@ p{margin:0}
 .c.money b{color:var(--money)}
 .c.gapc{background:var(--gap-bg); border-color:transparent}
 .c.gapc b{color:var(--gap)}
-.c.gapc .ev{display:block; margin-top:.25rem; font-size:.95rem}
+.c .ev{display:block; margin-top:.25rem; font-size:.95rem}
+.t-src{color:var(--us); background:var(--us-bg)}
 .lab.gl{background:var(--gap-bg); color:var(--gap)}
 .band-lab{display:grid; place-items:center; text-align:center; font-weight:700; font-size:1.1rem; background:var(--us); color:#fff; border-radius:.7rem; padding:.3rem}
 @media (prefers-color-scheme: dark){ .band-lab{color:#0C1322} }
@@ -60,7 +61,7 @@ p{margin:0}
 <div class="slide">
   <div class="head">
     <div><h1>상가 임대 산업의 밸류체인과 우리 서비스의 자리</h1><p class="lead">빈 상가가 생겨서 새 가게가 열리기까지 누가 무엇을 하고, 돈이 어디로 흐르고, 어디가 비어 있는지 봅니다.</p></div>
-    <div class="legend"><span><span class="tag t-data">우리 데이터</span> 매물 2,717건</span><span><span class="tag t-team">팀 자료</span> 공실 현황 보고</span></div>
+    <div class="legend"><span><span class="tag t-data">우리 데이터</span> 매물 2,717건</span><span><span class="tag t-team">팀 자료</span> 공실 현황 보고</span><span><span class="tag t-src">공개 자료</span> 조사·보도</span></div>
   </div>
 
   <div class="grid">
@@ -92,13 +93,13 @@ p{margin:0}
     <div class="c"><ul><li>장사, 월세 납부</li><li>상권 활성화 사업 참여</li></ul></div>
 
     <div class="lab">돈의 흐름</div>
-    <div class="c money">비어 있는 동안 건물주는 <b>월세 수입 0</b></div>
-    <div class="c money">중개사 → 매물 사이트 <b>광고비</b></div>
+    <div class="c money">비어 있는 동안 <b>월세 수입 0</b><span class="ev"><span class="tag t-data">우리 데이터</span> 매물 2,717건이 부르는 월세를 더하면 한 달 약 56.6억 원</span></div>
+    <div class="c money">중개사 → 매물 사이트 <b>광고비</b><span class="ev"><span class="tag t-src">공개 자료</span> 중개소 한 곳당 약 150만 원 부담이라는 보도 (시점 불명)</span></div>
     <div class="c money">대부분 <b>무료</b>. 컨설팅은 임차인이 비용 부담</div>
     <div class="c money">임차인의 <b>시간과 발품</b>. 일부 대행 수수료</div>
-    <div class="c money">임차인·건물주 → 중개사 <b>중개 보수</b>. 임차인 → 건물주 보증금·월세·권리금</div>
-    <div class="c money">임차인 → 업체 <b>공사비</b>. 금융 → 임차인 대출</div>
-    <div class="c money">임차인 → 건물주 <b>월세</b>. 지자체 → 상권 <b>지원 예산</b></div>
+    <div class="c money"><b>중개 보수 0.9% 이내</b> (보증금 + 월세×100 기준)<span class="ev"><span class="tag t-data">우리 데이터</span> 중간 매물(보증금 2,000만·월세 120만)이면 최대 126만 원</span><span class="ev"><span class="tag t-src">공개 자료</span> 권리금 전국 평균 3,443만 원 (2024)</span></div>
+    <div class="c money"><b>창업 비용 평균 8,300만 원</b><span class="ev"><span class="tag t-src">공개 자료</span> 본인 부담 5,900만 원 (2024년 소상공인 실태조사)</span></div>
+    <div class="c money">임차인 → 건물주 <b>월세</b><span class="ev"><span class="tag t-src">공개 자료</span> 동성로 상권 활성화 사업 5년 60억 원</span></div>
 
     <div class="lab gl">빈틈</div>
     <div class="c gapc"><b>비어도 월세를 안 내림</b><span class="ev"><span class="tag t-team">팀 자료</span> 공실 지수 222, 임대료 지수 103. 어떤 업종이 맞는지 건물주도 모름</span></div>
@@ -119,7 +120,7 @@ p{margin:0}
   <div class="foot">
     <div><b>4단계가 비어 있다</b>"내 업종이 되는 건물인가"를 풀어 주는 사업자가 없어 임차인이 혼자 합니다. 우리 서비스의 가장 뚜렷한 자리입니다.</div>
     <div><b>지금 사이트는 올리는 쪽이 돈을 낸다</b>매물 사이트의 수입은 중개사 광고비입니다. 임차인 편에서 빈칸과 단점을 드러내는 서비스가 들어갈 틈이 여기서 생깁니다.</div>
-    <div><b>공실은 1번에서 풀린다</b>임차인을 돕는 것만으로는 월세가 안 내리는 문제를 못 풉니다. 그래서 다음 단계로 건물주에게 맞는 업종과 시세를 알려 줍니다.<span class="cave"> 돈의 흐름은 일반적인 구조이며 대구 시장 규모 수치는 조사하지 않았습니다.</span></div>
+    <div><b>공실은 1번에서 풀린다</b>임차인을 돕는 것만으로는 월세가 안 내리는 문제를 못 풉니다. 그래서 다음 단계로 건물주에게 맞는 업종과 시세를 알려 줍니다.<span class="cave"> 권리금·창업 비용은 전국 수치이고, 대구만의 수치는 찾지 못했습니다.</span></div>
   </div>
 </div>
 </body>
