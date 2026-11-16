@@ -1,0 +1,806 @@
+<title>대구 공실 스코어링 설계</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: 왼쪽 단계 레일(데스크톱 고정) + 오른쪽 단계별 본문. 지적도 청색을 강조색으로, 서늘한 회녹색 종이 바탕. */
+:root{
+  --bg:#F3F5F4; --surface:#FFFFFF; --ink:#18212E; --ink-2:#4D5868; --line:#D8DEDB; --soft:#E8EDEA;
+  --accent:#2453C9; --accent-bg:#E4EBFB;
+  --ok:#17795A; --ok-bg:#DDF2E9; --wait:#9A5B00; --wait-bg:#FCEFD6; --off:#6B7280; --off-bg:#ECEEF0; --no:#B4262C; --no-bg:#FBE3E3;
+  --g1:#2a78d6; --g2:#eb6834; --g3:#1baf7a; --g4:#eda100; --on-g:#FFFFFF; --on-g4:#0b0b0b;
+  --f-body:'IBM Plex Sans KR',system-ui,-apple-system,'Malgun Gothic',sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
+  --s1:12px; --s2:13.5px; --s3:15px; --s4:18px; --s5:23px; --s6:32px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121821; --surface:#1A222D; --ink:#E6EBF1; --ink-2:#A4AFBD; --line:#2C3644; --soft:#222C38;
+  --accent:#7EA2FF; --accent-bg:#1F2C4A;
+  --ok:#5FD3A6; --ok-bg:#143429; --wait:#F2B656; --wait-bg:#3A2C12; --off:#A0A8B4; --off-bg:#262E39; --no:#FF8A8F; --no-bg:#3D1C1F;
+  --g1:#3987e5; --g2:#d95926; --g3:#199e70; --g4:#c98500; --on-g:#FFFFFF; --on-g4:#FFFFFF;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121821; --surface:#1A222D; --ink:#E6EBF1; --ink-2:#A4AFBD; --line:#2C3644; --soft:#222C38;
+  --accent:#7EA2FF; --accent-bg:#1F2C4A;
+  --ok:#5FD3A6; --ok-bg:#143429; --wait:#F2B656; --wait-bg:#3A2C12; --off:#A0A8B4; --off-bg:#262E39; --no:#FF8A8F; --no-bg:#3D1C1F;
+  --g1:#3987e5; --g2:#d95926; --g3:#199e70; --g4:#c98500; --on-g:#FFFFFF; --on-g4:#FFFFFF;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg); color:var(--ink); font-family:var(--f-body); font-size:var(--s3); line-height:1.7; word-break:keep-all;}
+.wrap{max-width:none; width:100%; margin:0; padding-block:32px 72px; padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px));
+  display:grid; grid-template-columns:240px minmax(0,1fr); gap:48px; align-items:start}
+h1,h2,h3{margin:0; text-wrap:balance; letter-spacing:-.3px; line-height:1.3}
+p{margin:0}
+a{color:var(--accent)}
+code,.mono{font-family:var(--f-mono); font-size:.92em}
+.num{font-variant-numeric:tabular-nums}
+
+/* rail */
+.rail{position:sticky; top:calc(env(safe-area-inset-top, 0px) + 20px); display:flex; flex-direction:column; gap:2px; font-size:var(--s2)}
+.rail .brand{font-weight:700; font-size:var(--s3); margin-bottom:10px}
+.rail .brand small{display:block; font-weight:400; color:var(--ink-2); font-size:var(--s1)}
+.rail a{display:grid; grid-template-columns:26px 1fr; gap:6px; align-items:baseline; color:var(--ink-2); text-decoration:none; padding:5px 8px; border-radius:6px}
+.rail a b{font-family:var(--f-mono); font-weight:500; color:var(--accent); font-size:var(--s1)}
+.rail a:hover,.rail a:focus-visible{background:var(--soft); color:var(--ink); outline:none}
+
+main{min-width:0; display:flex; flex-direction:column; gap:56px}
+header.hero{display:flex; flex-direction:column; gap:14px; padding-bottom:28px; border-bottom:1px solid var(--line)}
+.eyebrow{font-size:var(--s1); letter-spacing:1.4px; text-transform:uppercase; color:var(--accent); font-weight:600}
+.hero h1{font-size:var(--s6); font-weight:700; max-width:36ch}
+.hero .lead{font-size:var(--s4); color:var(--ink-2); max-width:90ch; line-height:1.6}
+.thesis{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; margin-top:6px}
+.thesis div{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:20px 22px; display:flex; flex-direction:column; gap:4px}
+.thesis b{font-size:var(--s1); color:var(--ink-2); font-weight:600; letter-spacing:.4px}
+.thesis span{font-weight:600}
+
+section{display:flex; flex-direction:column; gap:18px; scroll-margin-top:24px}
+.sec-head{display:grid; grid-template-columns:auto minmax(0,1fr); gap:6px 16px; align-items:baseline}
+.sec-head .no{font-family:var(--f-mono); font-size:var(--s4); color:var(--accent); font-weight:500}
+.sec-head h2{font-size:var(--s5); font-weight:700}
+.sec-head .why{grid-column:2; color:var(--ink-2); max-width:100ch}
+h3{font-size:var(--s4); font-weight:600; margin-top:6px}
+.body{display:flex; flex-direction:column; gap:14px; max-width:none}
+.body p{color:var(--ink)}
+ul.plain{margin:0; padding-left:1.1em; display:flex; flex-direction:column; gap:6px}
+ul.plain li::marker{color:var(--accent)}
+
+/* pipeline */
+.pipe{display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:8px; counter-reset:p}
+.pipe li{list-style:none; background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:18px 16px; min-height:110px; display:flex; flex-direction:column; gap:6px; font-size:var(--s2); min-width:0}
+.pipe li .k{font-family:var(--f-mono); color:var(--accent); font-size:var(--s1)}
+.pipe li strong{font-size:var(--s2); line-height:1.4}
+.pipe{margin:0; padding:0}
+
+.pill{display:inline-block; font-size:var(--s1); font-weight:600; padding:1px 9px; border-radius:999px; white-space:nowrap; line-height:1.7}
+.ok{color:var(--ok); background:var(--ok-bg)} .wait{color:var(--wait); background:var(--wait-bg)} .off{color:var(--off); background:var(--off-bg)} .no{color:var(--no); background:var(--no-bg)} .acc{color:var(--accent); background:var(--accent-bg)}
+
+/* tables */
+.tbl{overflow-x:auto; border:1px solid var(--line); border-radius:10px; background:var(--surface)}
+table{border-collapse:collapse; width:100%; font-size:var(--s2); min-width:560px}
+th,td{padding:9px 12px; text-align:left; vertical-align:top; border-bottom:1px solid var(--line)}
+th{font-weight:600; color:var(--ink-2); background:var(--soft); font-size:var(--s1); letter-spacing:.3px; white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.n,th.n{text-align:right; font-variant-numeric:tabular-nums; font-family:var(--f-mono); font-size:var(--s1)}
+td.hi{background:var(--accent-bg); color:var(--accent); font-weight:600}
+.cap{font-size:var(--s1); color:var(--ink-2)}
+
+/* callouts */
+.note{border-left:3px solid var(--accent); background:var(--surface); padding:12px 16px; border-radius:0 8px 8px 0; font-size:var(--s2); display:flex; flex-direction:column; gap:6px; max-width:none}
+.note.warn{border-color:var(--wait)}
+.note b.t{font-size:var(--s1); letter-spacing:.4px; color:var(--ink-2)}
+
+/* decision cards */
+.decisions{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr)); gap:16px}
+.dec{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:22px 24px; min-height:150px; display:flex; flex-direction:column; gap:8px; min-width:0}
+.dec .top{display:flex; justify-content:space-between; gap:10px; align-items:baseline; flex-wrap:wrap}
+.dec h4{margin:0; font-size:var(--s3); font-weight:600}
+.dec p{font-size:var(--s2); color:var(--ink-2)}
+
+/* formula */
+.formula{font-family:var(--f-mono); font-size:var(--s2); background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:14px 16px; overflow-x:auto; white-space:pre; line-height:1.8}
+
+/* preset explorer */
+.tabs{display:flex; flex-wrap:wrap; gap:6px}
+.tabs button{font-family:var(--f-body); font-size:var(--s2); font-weight:600; border:1px solid var(--line); background:var(--surface); color:var(--ink-2); padding:6px 14px; border-radius:999px; cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--ink); color:var(--bg); border-color:var(--ink)}
+.tabs button:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+.preset{display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,1fr); gap:16px}
+.panel{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:22px 24px; display:flex; flex-direction:column; gap:12px; min-width:0}
+.panel h4{margin:0; font-size:var(--s2); color:var(--ink-2); font-weight:600}
+.bars{display:flex; flex-direction:column; gap:10px}
+.bar{display:grid; grid-template-columns:76px minmax(0,1fr) 40px; gap:10px; align-items:center; font-size:var(--s2)}
+.bar .track{height:12px; background:var(--soft); border-radius:6px; overflow:hidden}
+.bar .fill{height:100%; background:var(--accent); border-radius:6px; transition:width .35s ease}
+.bar .sub{grid-column:2 / 4; font-size:var(--s1); color:var(--ink-2); margin-top:-6px}
+.kv{display:grid; grid-template-columns:auto minmax(0,1fr); gap:6px 14px; font-size:var(--s2)}
+.kv dt{color:var(--ink-2)} .kv dd{margin:0; font-weight:500}
+.floors{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px}
+.floors div{border:1px solid var(--line); border-radius:8px; padding:8px; text-align:center; font-size:var(--s1); color:var(--ink-2)}
+.floors div b{display:block; font-family:var(--f-mono); font-size:var(--s4); color:var(--ink); font-weight:500}
+.floors div.top{border-color:var(--accent); background:var(--accent-bg)}
+.floors div.top b{color:var(--accent)}
+
+/* stats */
+.stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr)); gap:16px}
+.stat{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:20px 22px; min-height:120px; display:flex; flex-direction:column; gap:2px; min-width:0}
+.stat .k{font-size:var(--s1); color:var(--ink-2)}
+.stat .v{font-size:var(--s5); font-weight:700; font-variant-numeric:tabular-nums}
+.stat .s{font-size:var(--s1); color:var(--ink-2)}
+
+/* grade ladder */
+.ladder{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px}
+.ladder div{border:1px solid var(--line); background:var(--surface); border-radius:10px; padding:12px; display:flex; flex-direction:column; gap:4px; font-size:var(--s2)}
+.ladder b{font-family:var(--f-mono); font-size:var(--s5); font-weight:500}
+
+/* 100점 배점 차트 */
+.legend{display:flex; flex-wrap:wrap; gap:6px 16px; font-size:var(--s1); color:var(--ink-2)}
+.legend i{display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px; vertical-align:-1px}
+.seg100{display:flex; gap:2px; height:52px; width:100%}
+.seg100 .sg{display:flex; flex-direction:column; justify-content:center; align-items:center; overflow:hidden; color:var(--on-g); font-size:var(--s1); line-height:1.25; text-align:center; cursor:default; min-width:0}
+.seg100 .sg:first-child{border-radius:4px 0 0 4px} .seg100 .sg:last-child{border-radius:0 4px 4px 0}
+.seg100 .sg b{font-family:var(--f-mono); font-weight:500; font-size:var(--s2)}
+.seg100 .sg:focus-visible{outline:2px solid var(--ink); outline-offset:2px}
+.scale{display:flex; justify-content:space-between; font-family:var(--f-mono); font-size:11px; color:var(--ink-2); margin-top:-6px}
+.flist{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px 28px}
+.fi{display:grid; grid-template-columns:96px minmax(0,1fr) 44px; gap:10px; align-items:center; font-size:var(--s2)}
+.fi .t{height:10px; background:var(--soft); border-radius:0 4px 4px 0}
+.fi .t span{display:block; height:100%; border-radius:0 4px 4px 0; transition:width .35s ease}
+.fi .v{font-family:var(--f-mono); font-size:var(--s1); text-align:right; font-variant-numeric:tabular-nums}
+.allbars{display:flex; flex-direction:column; gap:8px}
+.ab{display:grid; grid-template-columns:72px minmax(0,1fr); gap:10px; align-items:center; font-size:var(--s2)}
+.ab .row{display:flex; gap:2px; height:22px}
+.ab .row span{display:block; height:100%; outline:none}
+.ab .row span:first-child{border-radius:4px 0 0 4px} .ab .row span:last-child{border-radius:0 4px 4px 0}
+.ab .row span:focus-visible{outline:2px solid var(--ink); outline-offset:1px}
+.ab.cur > span{font-weight:700}
+.tip{position:fixed; z-index:20; pointer-events:none; background:var(--ink); color:var(--bg); font-size:var(--s1); padding:6px 10px; border-radius:6px; max-width:260px; line-height:1.5}
+td.heat{text-align:right; font-family:var(--f-mono); font-size:var(--s1); font-variant-numeric:tabular-nums}
+th.grp{background:var(--surface); color:var(--ink); font-size:var(--s2)}
+th.grp i{display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px; vertical-align:-1px}
+@media (max-width:860px){ .flist{grid-template-columns:1fr} }
+@media (prefers-reduced-motion: reduce){.fi .t span{transition:none}}
+
+.rules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.rc{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.rc h4{margin:0;font-size:var(--s3);font-weight:600}
+.rc .src{font-size:11px;color:var(--ink-2)}
+.rc svg{width:100%;height:auto;display:block}
+.rc svg text{fill:var(--ink-2);font-family:var(--f-mono);font-size:10px}
+.rc svg .gl{stroke:var(--line);stroke-width:1}
+.rc .rule{font-size:var(--s1);color:var(--ink-2)}
+.rgrp{font-size:var(--s2);font-weight:600;display:flex;align-items:center;gap:8px;margin-top:4px}
+.rgrp i{width:10px;height:10px;border-radius:3px;display:inline-block}
+@media (max-width:1000px){.rules{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.rules{grid-template-columns:1fr}}
+footer{font-size:var(--s1); color:var(--ink-2); border-top:1px solid var(--line); padding-top:18px; display:flex; flex-direction:column; gap:6px}
+
+@media (max-width:1000px){
+  .pipe{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media (max-width:860px){
+  .wrap{grid-template-columns:1fr; gap:24px}
+  .rail{position:static; flex-direction:row; flex-wrap:wrap; gap:4px}
+  .rail .brand{width:100%}
+  .rail a{grid-template-columns:auto auto; padding:4px 8px; border:1px solid var(--line)}
+  .thesis,.preset{grid-template-columns:1fr}
+  .stats,.ladder{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .pipe{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .hero h1{font-size:26px}
+}
+@media (prefers-reduced-motion: reduce){.bar .fill{transition:none}}
+</style>
+
+<div class="wrap">
+  <nav class="rail" aria-label="단계 목차">
+    <div class="brand">스코어링 설계 근거<small>대구 공실 추천 · 2026-11-10</small></div>
+    <a href="#s0"><b>00</b>전체 흐름</a>
+    <a href="#s1"><b>01</b>목표와 정답</a>
+    <a href="#s2"><b>02</b>데모 로직 폐기</a>
+    <a href="#s3"><b>03</b>데이터 제약</a>
+    <a href="#s4"><b>04</b>업종 분류</a>
+    <a href="#s5"><b>05</b>인자 선정</a>
+    <a href="#s6"><b>06</b>인자별 데이터·계산</a>
+    <a href="#s7"><b>07</b>업종 차이 장치</a>
+    <a href="#s8"><b>08</b>가중치 구조</a>
+    <a href="#s9"><b>09</b>계산 원칙</a>
+    <a href="#s9b"><b>09-2</b>사용자 입력·필터·정렬</a>
+    <a href="#s10"><b>10</b>데이터 검증</a>
+    <a href="#s11e"><b>11</b>점수 엔진 결과</a>
+    <a href="#s11"><b>12</b>피드백 루프와 남은 일</a>
+  </nav>
+
+  <main>
+    <header class="hero">
+      <span class="eyebrow">팀 공유용 · 설계 결정 기록</span>
+      <h1>업종을 고르면, 그 용도에 맞는 공실을 근거와 함께 추천한다</h1>
+      <p class="lead">대구 공실 매물 2,717건을 업종별로 순위 매기는 스코어링 모델이 어떤 순서로, 어떤 근거와 데이터로 만들어졌는지 정리했습니다. 모든 값은 기본 CSV 또는 무료·공공데이터에서 나왔고, 가중치는 가설로 시작해 사용자 피드백으로 보정합니다.</p>
+      <div class="thesis">
+        <div><b>사용자</b><span>매물을 찾는 임차 희망자</span></div>
+        <div><b>질문</b><span>"이 업종이면 어느 공실이 좋은가"</span></div>
+        <div><b>정답 라벨</b><span>사용자의 good / bad 평가</span></div>
+      </div>
+    </header>
+
+    <!-- 00 -->
+    <section id="s0">
+      <div class="sec-head"><span class="no">00</span><h2>전체 흐름</h2>
+        <p class="why">모델은 "인자 × 가중치"입니다. 그래서 인자를 먼저 정하고, 가중치는 피드백으로 고쳐 나갈 수 있게 처음부터 저장 구조를 함께 설계했습니다.</p></div>
+      <ol class="pipe">
+        <li><span class="k">①</span><strong>목표·정답 정의</strong><span class="pill ok">완료</span></li>
+        <li><span class="k">②</span><strong>피드백 저장 설계</strong><span class="pill wait">원칙 확정</span></li>
+        <li><span class="k">③</span><strong>업종 분류·인자 선정</strong><span class="pill ok">완료</span></li>
+        <li><span class="k">④</span><strong>인자별 점수 규칙</strong><span class="pill ok">초안 확정</span></li>
+        <li><span class="k">⑤</span><strong>외부 데이터 계산</strong><span class="pill ok">3종 완료</span></li>
+        <li><span class="k">⑥</span><strong>가중치·스코어링 보드</strong><span class="pill wait">가설 초안</span></li>
+        <li><span class="k">⑦</span><strong>good/bad 개선 루프</strong><span class="pill off">운영 단계</span></li>
+      </ol>
+    </section>
+
+    <!-- 01 -->
+    <section id="s1">
+      <div class="sec-head"><span class="no">01</span><h2>목표와 정답을 먼저 정했다</h2>
+        <p class="why">무엇을 "좋은 매물"로 볼지에 따라 인자와 가중치가 전부 달라지기 때문입니다.</p></div>
+      <div class="tbl"><table>
+        <thead><tr><th>항목</th><th>결정</th><th>설계에 미친 영향</th></tr></thead>
+        <tbody>
+          <tr><td>누가 쓰나</td><td>매물을 찾는 사람</td><td>점수는 임차인 관점(비용, 공간, 입지, 업종 적합)으로 구성</td></tr>
+          <tr><td>질문 방향</td><td>업종 → 공실 추천</td><td>업종을 바꾸면 순위가 바뀌어야 함 (07단계의 장치들)</td></tr>
+          <tr><td>좋은 매물</td><td>사용자 용도에 적합한 매물</td><td>생존율·매출이 아니라 "적합도"가 목표</td></tr>
+          <tr><td>우리 역할</td><td>추천까지. 계약·매칭은 사용자가 중개사와 직접</td><td>점수 근거와 원본 매물 링크를 함께 보여줌</td></tr>
+          <tr><td>정답 라벨</td><td>사용자가 현장 확인·중개사 상담 후 남기는 good / bad</td><td>good 비율 = 신뢰도 지표, bad가 많으면 가중치 수정</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- 02 -->
+    <section id="s2">
+      <div class="sec-head"><span class="no">02</span><h2>데모의 점수 로직은 버리고 처음부터 다시 만들었다</h2>
+        <p class="why">기존 데모(<code>대구_공실매칭_데모_3구_v2</code>)를 코드 단위로 확인한 결과, 새 목표에 쓰기 어려운 구조였습니다.</p></div>
+      <div class="tbl"><table>
+        <thead><tr><th>데모에서 확인한 사실</th><th>문제</th></tr></thead>
+        <tbody>
+          <tr><td>점수 = 300m 동종 상가 수의 저·중·고 등급을 고정 점수로 바꾼 값 (소매 0/34/100, 사무 0/44/100)</td><td>변수 1개뿐이라 조정할 가중치가 없음. 34·44점의 산출 근거가 파일에 없음</td></tr>
+          <tr><td>생존 분석은 점수를 줄 업종을 고르는 데만 사용 (6개 중 소매·사무 2개)</td><td>나머지 4개 업종은 점수 자체가 없음</td></tr>
+          <tr><td>생존 오즈비(OR)는 배지 표시에만 사용, 등급 기준값(<code>CAT_CUT</code>)은 정의만 되고 쓰이지 않음</td><td>근거처럼 보이지만 점수에 반영되지 않음</td></tr>
+          <tr><td>정답 기준이 "생존(영업 지속)"</td><td>우리 정답은 "사용자 적합도". 기준이 다름</td></tr>
+        </tbody>
+      </table></div>
+      <p class="cap">유지한 것: 필터(예산·면적·구/동), 지도, 원본 링크, 중개사 정보 같은 화면 구성.</p>
+    </section>
+
+    <!-- 03 -->
+    <section id="s3">
+      <div class="sec-head"><span class="no">03</span><h2>데이터 제약 세 가지가 선택지를 좁혔다</h2>
+        <p class="why">이 세 조건이 아래 모든 인자 선정과 데이터 출처 선택의 필터입니다.</p></div>
+      <div class="decisions">
+        <div class="dec"><div class="top"><h4>무료·공공데이터만</h4><span class="pill acc">출처 필터</span></div><p>유료 카드매출, 민간 유동인구는 사용하지 않습니다. 대구 무료 유동인구와 지하철 역별 승하차는 찾지 못해 제외 또는 대체했습니다.</p></div>
+        <div class="dec"><div class="top"><h4>현장조사 불가</h4><span class="pill acc">검증 방식</span></div><p>현장 검증 대신 ① 공공데이터 교차검증, ② 중개사 추천 패턴(기본 CSV), ③ 사용자 good/bad로 검증합니다.</p></div>
+        <div class="dec"><div class="top"><h4>정확성 우선</h4><span class="pill acc">매칭 방식</span></div><p>키 발급이 더 필요해도 정확한 방식을 택했습니다. 예: "가까운 상가 지번 빌려오기" 대신 연속지적도 필지 판별 → 건축물대장 층별 용도.</p></div>
+        <div class="dec"><div class="top"><h4>기본 데이터는 하나</h4><span class="pill acc">기준 파일</span></div><p><code>대구_구역별_매물 (최종).csv</code>: 2,717건, 8개 구·군, 전부 월세, 2,715건이 "공실" 명시. 모든 외부 데이터는 이 파일에 붙입니다.</p></div>
+      </div>
+    </section>
+
+    <!-- 04 -->
+    <section id="s4">
+      <div class="sec-head"><span class="no">04</span><h2>업종은 8개로 나눴다</h2>
+        <p class="why">기본 CSV에서 중개사가 업종을 추천한 매물들의 층·면적 분포를 보면, 같은 카테고리 안에서도 선호가 정반대인 업종이 있었습니다.</p></div>
+      <div class="tbl"><table>
+        <thead><tr><th>업종</th><th class="n">추천 매물</th><th class="n">1층</th><th class="n">2층</th><th class="n">3층 이상</th><th class="n">면적 중앙값</th><th>결정</th></tr></thead>
+        <tbody>
+          <tr><td>(전체 매물)</td><td class="n">2,717</td><td class="n">54%</td><td class="n">18%</td><td class="n">24%</td><td class="n">95㎡</td><td class="cap">비교 기준</td></tr>
+          <tr><td>식음료</td><td class="n">697</td><td class="n hi">76%</td><td class="n">12%</td><td class="n">9%</td><td class="n">77㎡</td><td>유지</td></tr>
+          <tr><td>소매</td><td class="n">359</td><td class="n hi">84%</td><td class="n">7%</td><td class="n">6%</td><td class="n">70㎡</td><td>유지</td></tr>
+          <tr><td>뷰티</td><td class="n">385</td><td class="n hi">64%</td><td class="n">18%</td><td class="n">14%</td><td class="n">60㎡</td><td><span class="pill acc">의료뷰티에서 분리</span></td></tr>
+          <tr><td>의료</td><td class="n">413</td><td class="n">15%</td><td class="n">27%</td><td class="n hi">56%</td><td class="n">239㎡</td><td><span class="pill acc">의료뷰티에서 분리</span></td></tr>
+          <tr><td>운동시설</td><td class="n">167</td><td class="n">5%</td><td class="n">36%</td><td class="n hi">54%</td><td class="n">230㎡</td><td><span class="pill acc">새로 추가</span></td></tr>
+          <tr><td>교육</td><td class="n">498</td><td class="n">10%</td><td class="n">31%</td><td class="n hi">56%</td><td class="n">172㎡</td><td>유지</td></tr>
+          <tr><td>사무업무</td><td class="n">869</td><td class="n">29%</td><td class="n">26%</td><td class="n hi">43%</td><td class="n">130㎡</td><td>유지</td></tr>
+          <tr><td>공연문화</td><td class="n">210</td><td class="n">50%</td><td class="n">22%</td><td class="n">20%</td><td class="n">101㎡</td><td>유지</td></tr>
+        </tbody>
+      </table></div>
+      <ul class="plain body">
+        <li><b>의료 / 뷰티 분리:</b> 의료는 1층 15%, 뷰티는 1층 64%로 반대입니다. 둘 다 언급한 매물은 32건뿐이었습니다. 하나의 층 점수표로는 둘 중 하나가 반드시 어긋납니다.</li>
+        <li><b>운동시설 추가:</b> 헬스·필라테스·요가·체육도장은 1층 5%, 230㎡로 교육·의료와 비슷한 별도 집단이었습니다.</li>
+      </ul>
+      <p class="cap">업종 분류는 추천용도·특징 텍스트 키워드 매칭입니다. 한 매물이 여러 업종에 동시에 들어갈 수 있습니다.</p>
+    </section>
+
+    <!-- 05 -->
+    <section id="s5">
+      <div class="sec-head"><span class="no">05</span><h2>인자는 "점수 / 정보 / 제외"로 나눠 선정했다</h2>
+        <p class="why">원칙은 하나입니다. 방향(+/−)과 데이터가 분명한 것만 점수에 넣고, 사람마다 해석이 갈리는 것은 정보로 보여주고, 무료 데이터가 없는 것은 제외합니다.</p></div>
+
+      <h3>동종 밀집도: 하나의 숫자를 둘로 나눴다</h3>
+      <div class="body">
+        <p>같은 업종 상가가 많은 것은 손님이 모이는 <b>집적 효과(+)</b>일 수도, 손님을 나눠 갖는 <b>경쟁 효과(−)</b>일 수도 있습니다. 업종과 사용자 전략에 따라 방향이 바뀌어서 하나로 고정할 근거가 없었습니다. 그래서 두 신호로 분리했습니다.</p>
+      </div>
+      <div class="decisions">
+        <div class="dec"><div class="top"><h4>상권 활성도</h4><span class="pill ok">점수 인자</span></div><p>반경 안 <b>전체 업종</b> 상가 수. 사람이 다니는 상권인지를 뜻하며, 높을수록 좋다는 방향이 분명합니다.</p></div>
+        <div class="dec"><div class="top"><h4>주변 동종 상가 수</h4><span class="pill wait">정보로만 표시</span></div><p>점수에서 빼고 [주변 동종 상가 보기] 버튼과 중립 색 칩으로 보여줍니다. good/bad를 남길 때 이 값과 버튼 열람 여부를 저장해, 근거가 쌓이면 점수 인자로 올릴지 검토합니다.</p></div>
+      </div>
+
+      <h3>전체 인자 선정 결과</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>후보</th><th>판정</th><th>이유</th></tr></thead>
+        <tbody>
+          <tr><td>임대료 부담, 가성비, 보증금, 면적, 층, 건물 연식, 교통</td><td><span class="pill ok">점수</span></td><td>기본 CSV로 모든 매물에서 계산 가능, 방향이 분명</td></tr>
+          <tr><td>상권 활성도, 배후 수요(거주인구)</td><td><span class="pill ok">점수</span></td><td>무료 공공데이터(상가정보, 주민등록 인구)로 계산 완료</td></tr>
+          <tr><td>용도 일치도, 건물 용도 적합성</td><td><span class="pill ok">점수</span></td><td>업종마다 값이 달라지는 핵심 인자. 건축물대장으로 법적 입점 가능성을 판정</td></tr>
+          <tr><td>주변 동종 상가 수</td><td><span class="pill wait">정보</span></td><td>사용자마다 +/−가 다름</td></tr>
+          <tr><td>정보 신뢰도 (확인일, 사진, 관리비 기재)</td><td><span class="pill wait">배지</span></td><td>매물의 질이 아니라 정보의 질이라 점수와 분리</td></tr>
+          <tr><td>직장인구 (사업체 종사자)</td><td><span class="pill off">보완 예정</span></td><td>SGIS 키 필요. 건물 용도 작업 다음 순서</td></tr>
+          <tr><td>지하철 : 버스 비율</td><td><span class="pill off">보완 예정</span></td><td>별도 조사 중. 현재 기본값 지하철 60 : 버스 40</td></tr>
+          <tr><td>유동인구, 상권 추정매출, 지하철 역별 승하차</td><td><span class="pill no">제외</span></td><td>대구 무료 데이터·API를 확인하지 못함</td></tr>
+          <tr><td>업종 생존율(오즈비)</td><td><span class="pill no">제외</span></td><td>02단계 결정. 폐업 데이터는 나중에 검증 용도로만 고려</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- 06 -->
+    <section id="s6">
+      <div class="sec-head"><span class="no">06</span><h2>인자별 데이터와 점수 계산 규칙</h2>
+        <p class="why">구간 기준값은 기본 CSV 2,717건의 대구 분포(하위 10·25%, 중앙값, 상위 25·10%)에서 잡았습니다. 구간 사이는 선형 보간합니다.</p></div>
+
+      <h3>한눈에 보기: 인자 값 → 점수</h3>
+      <p class="cap">가로축은 매물의 실제 값, 세로축은 0~100점입니다. 점은 구간 기준값(대구 분포에서 잡은 값)이고, 그 사이는 직선으로 이어 계산합니다. 아래 표는 세부 근거입니다.</p>
+      <div id="rules"></div>
+      <h3>💰 비용</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>인자</th><th>데이터</th><th>계산</th><th>점수 구간</th><th>근거</th></tr></thead>
+        <tbody>
+          <tr><td>임대료 부담</td><td>CSV 월세·관리비 + 사용자 예산</td><td>(월세+관리비) ÷ 예산</td><td class="num">50% 이하 100 → 100% 40, 초과는 필터 제외</td><td>예산 미입력 시 인자 제외. 관리비 빈값 61%는 0 처리 + 배지</td></tr>
+          <tr><td>가성비</td><td>CSV 월세·전용면적·법정동·층</td><td>㎡당 월세 ÷ <b>같은 동·같은 층대</b> 중앙값</td><td class="num">0.5배 100 · 1.0배 60 · 1.5배 20 · 1.75배+ 0</td><td>1층 단가(1.6만/㎡)가 2층 이상(1.0만/㎡)보다 60% 비쌈 → 층대 분리 안 하면 층 점수와 중복. 동·층대 표본 10건 이상이 79%, 나머지는 구·층대(최소 69건)</td></tr>
+          <tr><td>보증금</td><td>CSV 보증금, 특징</td><td>금액</td><td class="num">500만 100 · 2,000만 60 · 8,000만 20 · 1억+ 10</td><td>대구 p10 / 중앙값 / p90. "무권리" 명시(38%)는 +10점 가점</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>📐 공간</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>인자</th><th>데이터</th><th>계산</th><th>점수 구간</th><th>근거</th></tr></thead>
+        <tbody>
+          <tr><td>면적 적합도</td><td>CSV 전용면적 + 희망 면적(없으면 업종 중앙값)</td><td>(실제−목표) ÷ 목표</td><td class="num">±20% 100 · 넓음 +50% 70, +100% 40 · 좁음 −30% 60, −50% 20</td><td>좁으면 영업이 불가능해 더 크게 감점, 넓으면 분할 사용 가능</td></tr>
+          <tr><td>층</td><td>CSV 층</td><td>업종별 층 점수표 (07단계)</td><td class="num">40~100</td><td>중개사 추천 패턴 기반</td></tr>
+          <tr><td>건물 연식</td><td>CSV 사용승인일</td><td>경과 연수</td><td class="num">5년 100 · 10년 85 · 20년 65 · 30년 45 · 40년+ 30</td><td>대구 중앙값 22.7년. 리모델링 가능성 때문에 하한 30</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>📍 입지</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>인자</th><th>데이터</th><th>계산</th><th>점수 구간</th><th>근거</th></tr></thead>
+        <tbody>
+          <tr><td>지하철 접근성</td><td>CSV 역거리_m</td><td>역까지 거리</td><td class="num">250m 100 · 500m 75 · 850m 50 · 1.5km 20 · 2km+ 10</td><td>대구 p25 / 중앙값 / p75. 도보 분당 80m 기준 3·6·11분</td></tr>
+          <tr><td>버스 접근성</td><td>CSV 정류소거리_m</td><td>정류소까지 거리</td><td class="num">60m 100 · 100m 80 · 150m 60 · 250m 30</td><td>대구 p25 / 중앙값 / p75 / p95</td></tr>
+          <tr><td>상권 활성도</td><td>소상공인 상가(상권)정보 2026-09-30, 대구 116,628곳</td><td>업종 반경(300·500m) 안 전체 상가 수 → 대구 매물 중 백분위</td><td class="num">0~100</td><td>300m 중앙값 302곳, 500m 734곳</td></tr>
+          <tr><td>배후 수요</td><td>행안부 주민등록 인구 2026-10-31 + 행정동 경계</td><td>업종별 연령대 인구밀도(명/㎢) → 대구 행정동 150개 중 백분위</td><td class="num">0~100</td><td>행정동 평균값이라 동 안에서는 같은 점수</td></tr>
+        </tbody>
+      </table></div>
+      <p class="cap">교통 점수는 현재 지하철 60% + 버스 40%(사무업무는 70 : 30)로 섞으며, 이 비율은 조사 결과로 보완합니다.</p>
+
+      <h3>🎯 업종 적합</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>인자</th><th>데이터</th><th>계산</th><th>점수</th><th>근거</th></tr></thead>
+        <tbody>
+          <tr><td>용도 일치도</td><td>CSV 추천용도·특징 텍스트</td><td>업종 키워드 매칭</td><td class="num">명시 100 · 다용도 60 · 신호 없음 50 · 다른 업종만 30</td><td>업종 명시 8~32%, 다용도 47%, 신호 없음 20%. "불가" 언급은 사실상 없음</td></tr>
+          <tr><td>건물 용도 적합성</td><td>브이월드 연속지적도 + 건축물대장(표제부·층별개요)</td><td>매물 층의 등록 용도 → 업종별 등급</td><td class="num">A 100 · B 80 · C 40 · D 30</td><td>건축법 시행령 별표1 단순화 (07단계)</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- 07 -->
+    <section id="s7">
+      <div class="sec-head"><span class="no">07</span><h2>업종을 바꾸면 순위가 바뀌게 만든 장치</h2>
+        <p class="why">비용·교통 같은 인자는 업종과 상관없이 같은 값입니다. 이것만 있으면 카페를 골라도 학원을 골라도 순위가 같아집니다. 그래서 네 가지 장치로 업종 차이를 만듭니다.</p></div>
+      <div class="decisions">
+        <div class="dec"><div class="top"><h4>① 업종별 층 점수표</h4><span class="pill acc">점수 기준이 다름</span></div><p>같은 2층이라도 식음료 68점, 교육 84점.</p></div>
+        <div class="dec"><div class="top"><h4>② 업종별 기본 면적·반경·배후 수요 지표</h4><span class="pill acc">점수 기준이 다름</span></div><p>뷰티 60㎡ vs 의료 239㎡, 교육은 6~18세 인구밀도.</p></div>
+        <div class="dec"><div class="top"><h4>③ 업종 적합 인자</h4><span class="pill acc">값 자체가 다름</span></div><p>용도 일치도와 건물 용도 등급은 업종마다 다르게 나옴.</p></div>
+        <div class="dec"><div class="top"><h4>④ 업종별 가중치 프리셋</h4><span class="pill acc">비중이 다름</span></div><p>사무는 비용 35%, 의료는 업종 적합 35% (08단계).</p></div>
+      </div>
+
+      <h3>층 점수표는 이렇게 계산했다</h3>
+      <div class="formula">리프트 = (해당 업종 추천 매물의 층 비율) ÷ (전체 매물의 층 비율)
+층 점수 = 40 + 60 × (리프트 ÷ 그 업종의 최대 리프트)
+
+예) 식음료 1층: 76% ÷ 54% = 1.41 (최대) → 100점
+    식음료 2층: 12% ÷ 18% = 0.67 → 40 + 60 × 0.47 = 68점</div>
+      <ul class="plain body">
+        <li><b>전체 비율로 나누는 이유:</b> 1층 매물이 원래 54%로 많아서, 단순 비율이면 모든 업종에서 1층이 유리하게 나옵니다.</li>
+        <li><b>하한 40점:</b> 비싼 1층의 불리함은 이미 비용 인자에 있어서 층에서 이중으로 크게 깎지 않습니다.</li>
+        <li><b>지하:</b> 매물이 2%뿐이라 일괄 40점. 공연문화 지하는 표본 약 8건이라 보류.</li>
+      </ul>
+
+      <h3>건물 용도 등급</h3>
+      <div class="ladder">
+        <div><b>A</b><span class="pill ok">100점</span><span>등록 용도 그대로 입점 가능</span></div>
+        <div><b>B</b><span class="pill acc">80점</span><span>같은 근린생활시설군 안 기재변경 수준, 또는 업종 일부만 가능</span></div>
+        <div><b>C</b><span class="pill wait">40점</span><span>다른 시설군이라 용도변경(신고·허가) 필요</span></div>
+        <div><b>D</b><span class="pill no">30점</span><span>주거용도(단독·공동주택)라 변경 부담 큼</span></div>
+      </div>
+      <div class="tbl"><table>
+        <thead><tr><th>업종</th><th>A가 되는 등록 용도</th><th>면적 조건 (전용면적으로 근사)</th></tr></thead>
+        <tbody>
+          <tr><td>식음료</td><td>제2종근생(일반음식점), 위락시설(주점)</td><td>제1종근생은 휴게음식점·제과점 300㎡ 미만만 → B</td></tr>
+          <tr><td>소매</td><td>제1종근생(소매점), 판매시설</td><td>제1종근생 1,000㎡ 미만</td></tr>
+          <tr><td>뷰티</td><td>제1종근생(미용원)</td><td>-</td></tr>
+          <tr><td>의료</td><td>제1종근생(의원·치과·한의원), 의료시설</td><td>-</td></tr>
+          <tr><td>교육</td><td>제2종근생(학원), 교육연구시설</td><td>제2종근생 500㎡ 미만</td></tr>
+          <tr><td>운동시설</td><td>제2종근생(체력단련장 등), 운동시설</td><td>500㎡ 미만. 제1종은 체육도장·탁구장만 → B</td></tr>
+          <tr><td>사무업무</td><td>업무시설, 제2종근생(사무소), 제1종근생(사무소)</td><td>제2종 500㎡ 미만, 제1종 30㎡ 미만</td></tr>
+          <tr><td>공연문화</td><td>문화및집회시설, 제2종근생(공연장·사진관)</td><td>제2종 500㎡ 미만</td></tr>
+        </tbody>
+      </table></div>
+      <div class="note warn"><b class="t">주의</b><span>법령의 면적 기준은 "같은 건물에서 해당 용도로 쓰는 바닥면적 합계"입니다. 여기서는 매물 전용면적으로 근사했습니다. 화면에는 "참고용, 실제 입점 가능 여부는 관할 구청 건축과 확인" 문구를 함께 표시합니다.</span></div>
+    </section>
+
+    <!-- 08 -->
+    <section id="s8">
+      <div class="sec-head"><span class="no">08</span><h2>가중치는 4개 그룹 슬라이더로 묶었다</h2>
+        <p class="why">인자 11개에 슬라이더 11개를 주면 사용자가 쓰지 못합니다. 사용자는 4개 그룹만 조정하고, 그룹 안 세부 비중은 업종 프리셋으로 고정합니다. 사용자가 슬라이더를 움직이는 패턴도 선호 데이터가 됩니다.</p></div>
+      <div class="tabs" role="tablist" aria-label="업종 프리셋 선택" id="tabs"></div>
+      <div class="preset" id="preset">
+        <div class="panel">
+          <h4>그룹 가중치 (합계 100) · <span id="pName"></span></h4>
+          <div class="bars" id="bars"></div>
+        </div>
+        <div class="panel">
+          <h4>업종별 기준값</h4>
+          <dl class="kv" id="kv"></dl>
+          <h4>층 점수</h4>
+          <div class="floors" id="floors"></div>
+        </div>
+      </div>
+      <p class="cap">모든 가중치는 초기 가설입니다. 식음료·소매·뷰티는 그룹 가중치가 같아서 층 점수표, 기본 면적, 용도 적합에서만 차이가 납니다. 모델 구현 후 업종 간 상위 10개가 80% 넘게 겹치면 가중치를 벌립니다.</p>
+
+      <h3>100점 안에서 인자별 배점</h3>
+      <div class="formula">인자 배점 = 그룹 가중치 × 그룹 안 세부 비중 ÷ 100
+예) 식음료 상권 활성도 = 입지 35 × 활성도 40% = 14점</div>
+      <div class="panel">
+        <div class="legend" id="legend1"></div>
+        <h4 id="segTitle"></h4>
+        <div class="seg100" id="seg100" role="img"></div>
+        <div class="scale" aria-hidden="true"><span>0</span><span>25</span><span>50</span><span>75</span><span>100점</span></div>
+        <h4>배점이 큰 순서</h4>
+        <div class="flist" id="flist"></div>
+      </div>
+
+      <h3>8개 업종 비교</h3>
+      <div class="panel">
+        <div class="legend" id="legend2"></div>
+        <div class="allbars" id="allbars"></div>
+        <p class="cap">막대에 마우스를 올리거나 키보드로 이동하면 인자와 배점이 나옵니다. 위의 업종 탭을 누르면 해당 업종이 굵게 표시됩니다.</p>
+      </div>
+      <div class="tbl"><table id="matrix"></table></div>
+      <p class="cap">교통 배점은 지하철 60% + 버스 40%(사무업무 70 : 30)로 다시 나뉘며, 이 비율은 조사 결과로 보완합니다. 사무업무 배후 수요(9점)는 직장인구 데이터를 확보하기 전까지 비어 있어서, 계산 시 같은 입지 그룹의 교통(21.4점)과 활성도(8.6점)로 재분배됩니다.</p>
+      <div class="tip" id="tip" hidden></div>
+    </section>
+
+    <!-- 09 -->
+    <section id="s9">
+      <div class="sec-head"><span class="no">09</span><h2>계산 원칙 세 가지</h2>
+        <p class="why">good/bad 피드백을 학습 데이터로 쓰려면, 같은 매물의 점수가 상황에 따라 흔들리면 안 됩니다.</p></div>
+      <div class="formula">총점 = Σ (그룹 가중치 × 그룹 점수) ÷ 100
+그룹 점수 = Σ (세부 비중 × 인자 점수)   ← 데이터 없는 인자는 빼고 같은 그룹 안에서 비중 재분배</div>
+      <div class="decisions">
+        <div class="dec"><div class="top"><h4>절대평가</h4><span class="pill acc">안정성</span></div><p>기준값은 대구 전체 분포로 고정합니다. 필터를 바꿀 때마다 점수가 바뀌는 상대평가는 피드백 학습에 쓸 수 없습니다. 예외는 사용자 입력에 맞추는 임대료 부담과 면적 적합도뿐입니다.</p></div>
+        <div class="dec"><div class="top"><h4>결측은 채우지 않고 뺀다</h4><span class="pill acc">왜곡 방지</span></div><p>임의로 채우면 결측 매물이 유리하거나 불리해집니다. 화면에는 "데이터 없음"으로 표시합니다.</p></div>
+        <div class="dec"><div class="top"><h4>기준값 버전 관리</h4><span class="pill acc">재현성</span></div><p>매물 데이터가 갱신되면 기준값을 다시 계산하고 버전을 올립니다. 피드백에는 당시 버전과 점수 스냅샷을 저장합니다.</p></div>
+        <div class="dec"><div class="top"><h4>모든 값은 가설로 표시</h4><span class="pill acc">투명성</span></div><p>구간 값과 가중치는 데이터 근거가 있지만, 사용자 적합도로 검증되기 전까지는 초기값입니다.</p></div>
+      </div>
+    </section>
+
+    <!-- 09-2 -->
+    <section id="s9b">
+      <div class="sec-head"><span class="no">09-2</span><h2>사용자 입력은 세 종류로 나눠 처리한다</h2>
+        <p class="why">수요자는 데모처럼 업종을 고르고 임대료 상한, 희망 면적, 위치를 입력합니다. 입력마다 "목록을 거르는 것"과 "점수에 들어가는 것"을 구분해야, 같은 매물의 점수가 누가 보든 같게 유지되고 good/bad를 학습에 쓸 수 있습니다.</p></div>
+      <ol class="pipe" style="grid-template-columns:repeat(5,minmax(0,1fr))">
+        <li><span class="k">①</span><strong>업종 선택</strong><span class="cap">프리셋 결정</span></li>
+        <li><span class="k">②</span><strong>조건 입력</strong><span class="cap">상한·면적·위치</span></li>
+        <li><span class="k">③</span><strong>필터 → 점수 계산</strong><span class="cap">조건 밖은 숨김</span></li>
+        <li><span class="k">④</span><strong>목록·지도 정렬</strong><span class="cap">기본: 추천 점수 순</span></li>
+        <li><span class="k">⑤</span><strong>근거 보기 → good/bad</strong><span class="cap">점수 분해 표시</span></li>
+      </ol>
+      <div class="tbl"><table>
+        <thead><tr><th>종류</th><th>항목</th><th>작동</th><th>점수 영향</th></tr></thead>
+        <tbody>
+          <tr><td><span class="pill acc">필수 선택</span></td><td>업종 (8개)</td><td>가중치, 층 점수표, 기본 면적, 반경, 배후 수요 지표 결정</td><td>프리셋 전체</td></tr>
+          <tr><td><span class="pill wait">조건 필터</span></td><td>임대료 상한 (월세 + 관리비), 면적 최소~최대, 구·법정동 (여러 개), 보증금 상한 (선택)</td><td>조건 밖 매물을 목록·지도에서 숨김</td><td>없음 (점수 고정)</td></tr>
+          <tr><td><span class="pill ok">점수 입력</span></td><td>임대료 상한, 희망 면적, 그룹 가중치 슬라이더 4개</td><td>사용자에게 맞춘 점수 계산</td><td>임대료 부담, 면적 적합도, 그룹 비중</td></tr>
+        </tbody>
+      </table></div>
+      <div class="decisions">
+        <div class="dec"><div class="top"><h4>위치는 점수가 아니라 필터</h4><span class="pill acc">원칙</span></div><p>어느 구를 원하는지는 사용자의 선호입니다. 점수에 넣으면 우리 판단을 강요하게 되고, 필터를 바꿀 때마다 점수가 흔들립니다.</p></div>
+        <div class="dec"><div class="top"><h4>점수에 들어가는 사용자 입력은 둘뿐</h4><span class="pill acc">원칙</span></div><p>임대료 상한 → 임대료 부담, 희망 면적 → 면적 적합도. 입력이 없으면 각각 제외 / 업종 중앙값을 씁니다.</p></div>
+        <div class="dec"><div class="top"><h4>정렬 옵션</h4><span class="pill acc">화면</span></div><p>기본은 추천 점수 순. 그 밖에 월세 낮은 순, 희망 면적 가까운 순, 최근 확인 순, 주변 동종 상가 적은 순 / 많은 순(사용자가 경쟁 회피·상권 집중을 직접 선택).</p></div>
+        <div class="dec"><div class="top"><h4>근거 화면</h4><span class="pill acc">화면</span></div><p>총점, 그룹 점수 4개, 인자 점수, 건물 용도 등급과 사유, 데이터 반영률(예: "반영 88% · 건물 용도 확인필요"), 원본 매물·중개사 링크. 결과가 0건이면 조건을 넓히라는 안내를 보여줍니다.</p></div>
+      </div>
+    </section>
+
+    <!-- 10 -->
+    <section id="s10">
+      <div class="sec-head"><span class="no">10</span><h2>외부 데이터 매칭은 교차검증으로 확인했다</h2>
+        <p class="why">현장조사를 못 하므로, 서로 다른 출처의 값이 같은 답을 내는지로 정확도를 확인했습니다.</p></div>
+      <h3>행정동 매칭 (배후 수요용)</h3>
+      <div class="stats">
+        <div class="stat"><span class="k">행정동 ↔ 인구</span><span class="v">150 / 150</span><span class="s">대구 행정동 전부 연결</span></div>
+        <div class="stat"><span class="k">매물 → 행정동</span><span class="v">2,669</span><span class="s">좌표 있는 매물 전부 (좌표 없는 48건 제외)</span></div>
+        <div class="stat"><span class="k">법정동 교차검증</span><span class="v">99.8%</span><span class="s">2,648 / 2,654건 일치 (보정 전 98.5%)</span></div>
+        <div class="stat"><span class="k">플래그 표시</span><span class="v">6건</span><span class="s">구 불일치 2, 경계 근처 4</span></div>
+      </div>
+      <p class="cap">행정동 경계 파일은 일부 경계가 근사치라, 매물 20m 안 상가들의 주소 기반 행정동이 다른 곳을 가리키면 그쪽으로 보정했습니다(20건).</p>
+
+      <h3>건물·층 매칭 (건물 용도용)</h3>
+      <div class="body"><p>좌표가 들어 있는 필지를 찾고(점포함), 그 필지에 건물이 없으면 30m 안 가장 가까운 건물 있는 필지를 씁니다(근사). 매칭이 맞는지는 매물 CSV의 사용승인일·전체 층수·건물명을 건축물대장과 대조해 확인합니다.</p></div>
+      <div class="stats" id="bldStats">
+        <div class="stat"><span class="k">건물 매칭</span><span class="v">2,664</span><span class="s">좌표 있는 2,669건 중 (건물 없음 5)</span></div>
+        <div class="stat"><span class="k">사용승인일 일치</span><span class="v">85.3%</span><span class="s">2,246 / 2,633건 (62일 이내 근접 139건 포함)</span></div>
+        <div class="stat"><span class="k">층수 일치</span><span class="v">88.1%</span><span class="s">2,346 / 2,664건</span></div>
+        <div class="stat"><span class="k">해당 층 용도로 판정</span><span class="v">97.6%</span><span class="s">2,600 / 2,664건 (나머지는 건물 주용도)</span></div>
+      </div>
+      <div class="tbl"><table>
+        <thead><tr><th>매칭 방법</th><th class="n">건수</th><th>뜻</th></tr></thead>
+        <tbody>
+          <tr><td>점포함</td><td class="n">1,733</td><td>좌표가 들어 있는 필지의 건물</td></tr>
+          <tr><td>검증보정</td><td class="n">507</td><td>사용승인일·층수가 둘 다 틀려 30m 안 이웃 건물 중 사용승인일이 맞는 건물로 바꿈</td></tr>
+          <tr><td>근사</td><td class="n">424</td><td>좌표 필지에 건물이 없어(도로 위 등) 30m 안 가장 가까운 건물 필지 사용</td></tr>
+          <tr><td>매칭 신뢰도 확인필요</td><td class="n">133</td><td>검증 항목이 모두 불일치 → 점수 엔진에서 건물 용도 인자를 쓰지 않음</td></tr>
+        </tbody>
+      </table></div>
+      <div class="note"><b class="t">고친 문제 3가지</b>
+        <span>① 첫 실행에서 공공데이터포털 속도 제한(HTTP 429)으로 1,084건이 실패했고, 실패를 "건물 없음"으로 오인해 옆 건물로 매칭했습니다. 요청 간격을 제한하고, 실패 시 근사 매칭을 하지 않도록 고쳐 오류 0건으로 다시 실행했습니다.</span>
+        <span>② 네이버 매물의 사용승인일은 대장과 하루~두 달 차이 나거나 연월만 있는 경우가 있어, 62일 이내는 근접일치로 봅니다. 이것과 이웃 건물 보정으로 사용승인일 일치율이 53% → 85%가 됐습니다.</span>
+        <span>③ 아파트 단지 내 상가가 아파트 동으로 잘못 선택되던 문제를 고쳤습니다(비주거동 우선 93건). 단지 내 상가(복리·부대시설)는 B등급("관리규약 확인")으로 판정합니다. 주거용도 D 판정은 284 → 115건이 됐습니다.</span>
+      </div>
+    </section>
+
+    <!-- 11 engine -->
+    <section id="s11e">
+      <div class="sec-head"><span class="no">11</span><h2>점수 엔진 첫 결과</h2>
+        <p class="why">설계 규칙을 그대로 코드로 옮겨(<code>scoring_engine.py</code>) 2,717건 × 8개 업종의 총점을 계산했습니다. 예산·희망 면적을 입력하지 않은 기본 상태 기준입니다.</p></div>
+      <div class="tbl"><table>
+        <thead><tr><th>업종</th><th class="n">하위 10%</th><th class="n">중앙값</th><th class="n">상위 10%</th><th class="n">최고점</th><th class="n">데이터 반영률</th><th class="n">추천 제외</th></tr></thead>
+        <tbody>
+          <tr><td>식음료</td><td class="n">51.1</td><td class="n">63.4</td><td class="n">75.1</td><td class="n">88.0</td><td class="n">87.5</td><td class="n">48</td></tr>
+          <tr><td>소매</td><td class="n">50.3</td><td class="n">62.5</td><td class="n">74.3</td><td class="n">88.4</td><td class="n">87.5</td><td class="n">48</td></tr>
+          <tr><td>뷰티</td><td class="n">51.9</td><td class="n">63.9</td><td class="n">75.5</td><td class="n">86.4</td><td class="n">87.5</td><td class="n">48</td></tr>
+          <tr><td>공연문화</td><td class="n">46.6</td><td class="n">61.7</td><td class="n">75.7</td><td class="n">90.8</td><td class="n">86.0</td><td class="n">48</td></tr>
+          <tr><td>사무업무</td><td class="n">47.2</td><td class="n">62.6</td><td class="n">76.9</td><td class="n">94.9</td><td class="n">73.5</td><td class="n">49</td></tr>
+          <tr><td>교육</td><td class="n">46.9</td><td class="n">61.2</td><td class="n">75.0</td><td class="n">90.9</td><td class="n">85.0</td><td class="n">48</td></tr>
+          <tr><td>의료</td><td class="n">48.6</td><td class="n">60.8</td><td class="n">72.7</td><td class="n">89.6</td><td class="n">90.0</td><td class="n">48</td></tr>
+          <tr><td>운동시설</td><td class="n">43.9</td><td class="n">57.6</td><td class="n">72.4</td><td class="n">89.6</td><td class="n">85.0</td><td class="n">48</td></tr>
+        </tbody>
+      </table></div>
+      <p class="cap">데이터 반영률 = 100점 배점 중 실제 값이 들어간 배점(중앙값). 예산을 넣으면 임대료 부담 배점(10~17.5점)이 더해집니다. 사무업무는 배후 수요(직장인구)가 비어 있어 낮습니다.</p>
+
+      <h3>엔진에서 발견해 고친 규칙</h3>
+      <div class="note warn"><b class="t">데이터 부족 매물은 추천에서 제외</b><span>첫 계산에서 식음료 1위가 좌표 없는 매물(93.9점)이었습니다. 입지 그룹이 통째로 비면서 남은 그룹으로 비중이 몰려 점수가 부풀었습니다. 그래서 데이터 반영률이 60점 미만이면 추천 순위에서 빼고 "데이터 부족"으로 표시합니다(좌표 없는 48건).</span></div>
+
+      <h3>업종을 바꾸면 순위가 바뀌는가</h3>
+      <div class="stats">
+        <div class="stat"><span class="k">대구 전체 · 상위 10개 최대 겹침</span><span class="v">5 / 10</span><span class="s">공연문화·사무업무. 나머지 쌍은 3개 이하</span></div>
+        <div class="stat"><span class="k">구 단위 · 소매·뷰티</span><span class="v">최대 8 / 10</span><span class="s">남구·북구 8, 서구·달성군 7</span></div>
+        <div class="stat"><span class="k">구 단위 · 식음료·뷰티</span><span class="v">최대 6 / 10</span><span class="s">건물 용도(제2종 근생) 차이로 분리됨</span></div>
+        <div class="stat"><span class="k">뷰티 가중치 3개 안 시뮬레이션</span><span class="v">8 → 8</span><span class="s">가중치만으로는 겹침이 줄지 않음</span></div>
+      </div>
+      <div class="body">
+        <p><b>소매·뷰티가 겹치는 이유:</b> 두 업종이 원하는 공간이 실제로 비슷합니다. 둘 다 1층, 60~70㎡, 제1종 근린생활시설이 A등급입니다. 차이를 줄 수 있는 배후 수요는 행정동 단위 값이라, 같은 구 안에서는 변별력이 작습니다.</p>
+      </div>
+      <div class="note"><b class="t">결정 · 2026-11-10 · 겹침 인정</b>
+        <span>같은 공간을 두 업종이 모두 좋게 보는 것은 틀린 추천이 아니라고 판단했습니다. 소매·뷰티의 구분은 주변 동종 상가 정보와 사용자 필터로 하고, good/bad가 쌓이면 다시 판단합니다.</span>
+        <span>SGIS 직장인구 작업 때, 행정동보다 작은 집계구 단위 20~40대 인구를 뷰티 배후 수요로 쓸 수 있는지 함께 검토합니다.</span>
+      </div>
+    </section>
+
+    <!-- 11 -->
+    <section id="s11">
+      <div class="sec-head"><span class="no">12</span><h2>피드백 루프와 남은 일</h2>
+        <p class="why">이 모델은 good/bad가 쌓이면서 고쳐지는 것을 전제로 설계했습니다. 그래서 첫날부터 저장할 것을 정해 두었습니다.</p></div>
+      <div class="tbl"><table>
+        <thead><tr><th>피드백 때 저장할 것</th><th>이유</th></tr></thead>
+        <tbody>
+          <tr><td>good / bad + bad 사유 태그</td><td>어떤 인자가 틀렸는지 알 수 있음</td></tr>
+          <tr><td>당시 업종, 가중치, 인자별 점수, 기준값 버전</td><td>점수 스냅샷이 없으면 나중에 학습에 못 씀</td></tr>
+          <tr><td>당시 입력 조건(임대료 상한, 희망 면적, 위치 필터)과 정렬 방식</td><td>추천 점수 순이 아닌 정렬로 본 매물의 평가는 모델 검증 때 따로 구분</td></tr>
+          <tr><td>주변 동종 상가 수, 버튼 열람 여부, "판단에 영향을 줬나" 응답</td><td>동종 밀집의 +/− 방향을 업종별로 데이터로 확인</td></tr>
+        </tbody>
+      </table></div>
+      <div class="decisions">
+        <div class="dec"><div class="top"><h4>노출 편향 막기</h4><span class="pill wait">운영 규칙</span></div><p>사용자는 상위 매물만 평가합니다. 일부(예: 10%)는 하위권도 섞어 보여줘야 모델을 검증할 수 있습니다.</p></div>
+        <div class="dec"><div class="top"><h4>기준선과 비교</h4><span class="pill wait">운영 규칙</span></div><p>good 비율만으로는 부족합니다. "월세 낮은 순" 기본 정렬보다 good이 많은지 버전별로 비교합니다.</p></div>
+      </div>
+      <h3>남은 작업 순서</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>순서</th><th>작업</th><th>상태</th></tr></thead>
+        <tbody>
+          <tr><td class="n">1</td><td>상권 활성도</td><td><span class="pill ok">완료</span></td></tr>
+          <tr><td class="n">2</td><td>배후 수요 (거주인구)</td><td><span class="pill ok">완료</span></td></tr>
+          <tr><td class="n">3</td><td>건물 용도 적합성</td><td><span class="pill ok">완료</span></td></tr>
+          <tr><td class="n">4</td><td>SGIS 직장인구 → 사무업무·식음료 배후 수요 보완 (+ 뷰티용 집계구 인구 검토)</td><td><span class="pill off">다음</span></td></tr>
+          <tr><td class="n">5</td><td>지하철 : 버스 비율 보완</td><td><span class="pill off">조사 중</span></td></tr>
+          <tr><td class="n">6</td><td>점수 엔진 구현 → 업종 간 상위 10개 겹침 검사</td><td><span class="pill ok">완료</span> <span class="pill acc">소매·뷰티 겹침 인정</span></td></tr>
+          <tr><td class="n">7</td><td>스코어링 보드 화면 + good/bad 저장</td><td><span class="pill off">예정</span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <footer>
+      <span><b>데이터 출처</b> · 기본 매물: 대구_구역별_매물 (최종).csv (네이버부동산 공개 매물 기반) · 소상공인시장진흥공단_상가(상권)정보 2026-09-30 (공공데이터포털) · 행정안전부 지역별(행정동) 성별 연령별 주민등록 인구수 2026-10-31 (공공데이터포털) · 행정동 경계 vuski/admdongkor ver20261001 (CC BY 4.0, 원자료 통계청 SGIS) · 국토교통부 건축HUB 건축물대장정보 서비스 · 브이월드 2D 데이터 API 연속지적도</span>
+      <span><b>재현</b> · <code>py -I data/scripts/external_factors.py</code> · <code>py -I data/scripts/building_use.py</code> · <code>py -I data/scripts/scoring_engine.py</code> · 결과는 <code>data/09.스코어링/</code></span>
+      <span>점수는 추천 참고 지표이며 임대·창업 성과를 보장하지 않습니다. 건물 용도 판정은 참고용이고 실제 입점 가능 여부는 관할 구청 확인이 필요합니다.</span>
+    </footer>
+  </main>
+</div>
+
+<script>
+(function(){
+  var S3 = [[50,30,20],[50,35,15],[30,40,30],[40,60]];
+  var SB = [[50,30,20],[35,45,20],[25,25,50],[40,60]];
+  var P = {
+    '식음료':  {g:[25,20,35,20], s:S3, fl:[100,68,56,40], area:'77㎡', r:'300m', d:'20~59세 인구밀도'},
+    '소매':    {g:[25,20,35,20], s:S3, fl:[100,55,50,40], area:'70㎡', r:'300m', d:'전체 인구밀도'},
+    '뷰티':    {g:[25,20,35,20], s:S3, fl:[100,90,69,40], area:'60㎡', r:'300m', d:'20~49세 인구밀도'},
+    '공연문화':{g:[35,30,20,15], s:[[40,30,30],[30,50,20],[40,40,20],[40,60]], fl:[86,100,81,null], area:'101㎡', r:'300m', d:'20~39세 인구밀도'},
+    '사무업무':{g:[35,25,30,10], s:[[50,30,20],[35,45,20],[50,20,30],[40,60]], fl:[58,88,100,40], area:'130㎡', r:'500m', d:'직장인구 (SGIS 확보 전 미산출)'},
+    '교육':    {g:[30,20,25,25], s:SB, fl:[45,84,100,40], area:'172㎡', r:'500m', d:'6~18세 인구밀도'},
+    '의료':    {g:[20,20,25,35], s:SB, fl:[47,78,100,40], area:'239㎡', r:'300m', d:'전체 50% + 65세 이상 50%'},
+    '운동시설':{g:[30,30,20,20], s:SB, fl:[42,93,100,40], area:'230㎡', r:'500m', d:'20~49세 인구밀도'}
+  };
+  var G = ['💰 비용','📐 공간','📍 입지','🎯 업종 적합'];
+  var GN = ['비용','공간','입지','업종 적합'];
+  var GC = ['var(--g1)','var(--g2)','var(--g3)','var(--g4)'];
+  var GT = ['var(--on-g)','var(--on-g)','var(--on-g)','var(--on-g4)'];
+  var F = [['임대료 부담','가성비','보증금'],['층','면적 적합도','건물 연식'],['교통','상권 활성도','배후 수요'],['용도 일치도','건물 용도']];
+  var FS = [['임대','가성비','보증금'],['층','면적','연식'],['교통','활성도','배후'],['용도일치','건물용도']];
+  var FL = ['1층','2층','3층 이상','지하'];
+  var KEYS = Object.keys(P);
+  var $ = function(id){ return document.getElementById(id); };
+  function fmt(v){ return (Math.round(v*100)/100).toString(); }
+  function pts(k){
+    var p = P[k], out = [];
+    p.g.forEach(function(gw, gi){ p.s[gi].forEach(function(sw, fi){
+      out.push({gi:gi, fi:fi, name:F[gi][fi], short:FS[gi][fi], v:gw*sw/100});
+    }); });
+    return out;
+  }
+  function tipText(k, x){ return k + ' · ' + GN[x.gi] + ' › ' + x.name + ' ' + fmt(x.v) + '점'; }
+
+  var tabs = $('tabs');
+  var cur = '식음료';
+  try { var saved = localStorage.getItem('preset'); if (saved && P[saved]) cur = saved; } catch(e) {}
+  KEYS.forEach(function(k){
+    var b = document.createElement('button');
+    b.type = 'button'; b.id = 'tab-' + k; b.setAttribute('role','tab'); b.textContent = k;
+    b.addEventListener('click', function(){ cur = k; try { localStorage.setItem('preset', k); } catch(e) {} render(); });
+    tabs.appendChild(b);
+  });
+
+  var legendHtml = G.map(function(g,i){ return '<span><i style="background:' + GC[i] + '"></i>' + g + '</span>'; }).join('');
+  $('legend1').innerHTML = legendHtml;
+  $('legend2').innerHTML = legendHtml;
+
+  function renderPreset(){
+    var p = P[cur];
+    Array.prototype.forEach.call(tabs.children, function(b){ b.setAttribute('aria-selected', String(b.textContent === cur)); });
+    $('pName').textContent = cur;
+    $('bars').innerHTML = p.g.map(function(v,i){
+      var sub = FS[i].map(function(n,j){ return n + ' ' + p.s[i][j]; }).join(' · ');
+      return '<div class="bar"><span>' + G[i] + '</span><span class="track"><span class="fill" style="width:' + (v/40*100) + '%;display:block;background:' + GC[i] + '"></span></span><span class="num mono">' + v + '</span><span class="sub">' + sub + '</span></div>';
+    }).join('');
+    $('kv').innerHTML =
+      '<dt>기본 면적</dt><dd>' + p.area + ' (희망 면적 미입력 시)</dd>' +
+      '<dt>주변 반경</dt><dd>' + p.r + ' (상권 활성도·동종 상가)</dd>' +
+      '<dt>배후 수요 지표</dt><dd>' + p.d + '</dd>';
+    var mx = Math.max.apply(null, p.fl.filter(function(x){ return x != null; }));
+    $('floors').innerHTML = p.fl.map(function(v,i){
+      return '<div class="' + (v === mx ? 'top' : '') + '"><b>' + (v == null ? '보류' : v) + '</b>' + FL[i] + '</div>';
+    }).join('');
+  }
+
+  function renderPoints(){
+    var list = pts(cur);
+    $('segTitle').textContent = cur + ' · 100점 구성';
+    var seg = $('seg100');
+    seg.setAttribute('aria-label', cur + ' 100점 구성: ' + list.map(function(x){ return x.name + ' ' + fmt(x.v) + '점'; }).join(', '));
+    seg.innerHTML = list.map(function(x){
+      var lab = x.v >= 6 ? '<span>' + x.short + '</span><b>' + fmt(x.v) + '</b>' : (x.v >= 4 ? '<b>' + fmt(x.v) + '</b>' : '');
+      return '<span class="sg" tabindex="0" data-tip="' + tipText(cur, x) + '" style="flex:' + x.v + ' 0 0;background:' + GC[x.gi] + ';color:' + GT[x.gi] + '">' + lab + '</span>';
+    }).join('');
+    var sorted = list.slice().sort(function(a,b){ return b.v - a.v; });
+    $('flist').innerHTML = sorted.map(function(x){
+      return '<div class="fi"><span>' + x.name + '</span><span class="t"><span style="width:' + (x.v/25*100) + '%;background:' + GC[x.gi] + '"></span></span><span class="v">' + fmt(x.v) + '</span></div>';
+    }).join('');
+  }
+
+  function renderAll(){
+    $('allbars').innerHTML = KEYS.map(function(k){
+      return '<div class="ab' + (k === cur ? ' cur' : '') + '"><span>' + k + '</span><div class="row" role="img" aria-label="' + k + ' 100점 구성">' +
+        pts(k).map(function(x){
+          return '<span tabindex="0" data-tip="' + tipText(k, x) + '" style="flex:' + x.v + ' 0 0;background:' + GC[x.gi] + '"></span>';
+        }).join('') + '</div></div>';
+    }).join('');
+  }
+
+  function renderMatrix(){
+    var all = {}; KEYS.forEach(function(k){ all[k] = pts(k); });
+    var max = 0; KEYS.forEach(function(k){ all[k].forEach(function(x){ if (x.v > max) max = x.v; }); });
+    var h = '<thead><tr><th>인자 (점)</th>' + KEYS.map(function(k){ return '<th class="n"' + (k === cur ? ' style="color:var(--accent)"' : '') + '>' + k + '</th>'; }).join('') + '</tr></thead><tbody>';
+    var idx = 0;
+    F.forEach(function(row, gi){
+      h += '<tr><th class="grp" colspan="' + (KEYS.length + 1) + '"><i style="background:' + GC[gi] + '"></i>' + G[gi] + '</th></tr>';
+      row.forEach(function(name){
+        h += '<tr><td>' + name + '</td>' + KEYS.map(function(k){
+          var v = all[k][idx].v;
+          return '<td class="heat" style="background:color-mix(in srgb, var(--accent) ' + Math.round(v/max*42) + '%, transparent)">' + fmt(v) + '</td>';
+        }).join('') + '</tr>';
+        idx++;
+      });
+    });
+    h += '<tr><td><b>합계</b></td>' + KEYS.map(function(){ return '<td class="heat"><b>100</b></td>'; }).join('') + '</tr></tbody>';
+    $('matrix').innerHTML = h;
+  }
+
+  var tip = $('tip');
+  function showTip(el){
+    var t = el.getAttribute('data-tip'); if (!t) return;
+    tip.textContent = t; tip.hidden = false;
+    var r = el.getBoundingClientRect();
+    var x = Math.min(Math.max(8, r.left + r.width/2 - tip.offsetWidth/2), window.innerWidth - tip.offsetWidth - 8);
+    var y = r.top - tip.offsetHeight - 8; if (y < 8) y = r.bottom + 8;
+    tip.style.left = x + 'px'; tip.style.top = y + 'px';
+  }
+  function hideTip(){ tip.hidden = true; }
+  document.addEventListener('mouseover', function(e){ var el = e.target.closest('[data-tip]'); if (el) showTip(el); else hideTip(); });
+  document.addEventListener('focusin', function(e){ var el = e.target.closest('[data-tip]'); if (el) showTip(el); else hideTip(); });
+  document.addEventListener('scroll', hideTip, true);
+
+  function render(){ renderPreset(); renderPoints(); renderAll(); renderMatrix(); }
+  render();
+})();
+
+(function(){
+  var C=['var(--g1)','var(--g2)','var(--g3)','var(--g4)'];
+  var GRP=['💰 비용','📐 공간','📍 입지','🎯 업종 적합'];
+  function pct(v){return v+'%';}
+  function km(v){return v>=1000?(v/1000)+'km':String(v);}
+  var R=[
+   {g:0,n:'임대료 부담',src:'CSV 월세+관리비 ÷ 사용자 예산',t:'line',x:[0,50,100],y:[100,100,40],xl:'예산 대비 %',fx:pct,rule:'예산의 50% 이하 만점, 100%에서 40점. 예산 초과는 목록에서 제외'},
+   {g:0,n:'가성비',src:'CSV ㎡당 월세 ÷ 같은 동·층대 중앙값',t:'line',x:[0.25,0.5,1,1.5,1.75,2],y:[100,100,60,20,0,0],xl:'동 평균 대비 배수',fx:function(v){return v+'배';},rule:'동 평균의 절반이면 만점, 평균이면 60점, 1.75배 이상 0점'},
+   {g:0,n:'보증금',src:'CSV 보증금 (무권리 명시 +10점)',t:'line',x:[0,500,2000,8000,10000,12000],y:[100,100,60,20,10,10],xl:'만원',fx:function(v){return v>=1000?(v/1000)+'천':String(v);},rule:'500만 이하 만점, 2,000만 60점, 1억 이상 10점'},
+   {g:1,n:'면적 적합도',src:'CSV 전용면적 vs 희망 면적(없으면 업종 중앙값)',t:'line',x:[-50,-30,-20,20,50,100],y:[20,60,100,100,70,40],xl:'목표 대비 차이 %',fx:function(v){return (v>0?'+':'')+v+'%';},rule:'±20% 이내 만점. 좁은 쪽을 더 크게 감점'},
+   {g:1,n:'층',src:'CSV 층 × 업종별 층 점수표',t:'bar',cats:['1층','2층','3층+','지하'],sets:[['식음료',[100,68,56,40]],['교육',[45,84,100,40]]],rule:'예시: 식음료는 1층, 교육은 3층 이상이 만점 (07단계 표)'},
+   {g:1,n:'건물 연식',src:'CSV 사용승인일',t:'line',x:[0,5,10,20,30,40,50],y:[100,100,85,65,45,30,30],xl:'경과 연수',fx:function(v){return v+'년';},rule:'5년 이하 만점, 40년 이상 30점(하한)'},
+   {g:2,n:'지하철 접근성',src:'CSV 역거리_m',t:'line',x:[0,250,500,850,1500,2000,2500],y:[100,100,75,50,20,10,10],xl:'역까지 거리',fx:km,rule:'250m(도보 3분) 이내 만점, 2km 이상 10점'},
+   {g:2,n:'버스 접근성',src:'CSV 정류소거리_m',t:'line',x:[0,60,100,150,250,350],y:[100,100,80,60,30,30],xl:'정류소까지 m',fx:String,rule:'60m 이내 만점, 250m 이상 30점'},
+   {g:2,n:'상권 활성도',src:'상가정보 · 반경 안 전체 상가 수',t:'line',x:[0,203,302,426,601,900],y:[0,25,50,75,90,99],xl:'300m 안 상가 수(곳)',fx:String,rule:'대구 매물 중 백분위 = 점수. 중앙값 302곳 → 50점'},
+   {g:2,n:'배후 수요',src:'주민등록 인구 · 업종별 연령대 인구밀도',t:'line',x:[0,25,50,75,100],y:[0,25,50,75,100],xl:'행정동 150개 중 백분위',fx:String,rule:'인구밀도 백분위 = 점수 (업종마다 연령대가 다름)'},
+   {g:3,n:'용도 일치도',src:'CSV 추천용도·특징 텍스트',t:'bar',cats:['업종 명시','다용도','신호 없음','다른 업종'],sets:[['',[100,60,50,30]]],rule:'중개사가 해당 업종을 적어 두면 만점'},
+   {g:3,n:'건물 용도',src:'연속지적도 + 건축물대장 층별 용도',t:'bar',cats:['A 그대로','B 기재변경','C 용도변경','D 주거'],sets:[['',[100,80,40,30]]],rule:'매물 층의 등록 용도로 업종별 등급 판정'}
+  ];
+  var W=260,H=132,L=30,B=26,T=10,RR=10,pw=W-L-RR,ph=H-T-B;
+  function Y(v){return T+ph-ph*v/100;}
+  function axes(){var s='';[0,50,100].forEach(function(v){s+='<line class="gl" x1="'+L+'" x2="'+(W-RR)+'" y1="'+Y(v)+'" y2="'+Y(v)+'"/><text x="'+(L-4)+'" y="'+(Y(v)+3)+'" text-anchor="end">'+v+'</text>';});return s;}
+  function line(r){
+    var x0=r.x[0],x1=r.x[r.x.length-1];function X(v){return L+pw*(v-x0)/(x1-x0);}
+    var pts=r.x.map(function(v,i){return X(v)+','+Y(r.y[i]);}).join(' '),c=C[r.g];
+    var s=axes()+'<polygon points="'+X(x0)+','+Y(0)+' '+pts+' '+X(x1)+','+Y(0)+'" fill="'+c+'" fill-opacity=".12"/><polyline points="'+pts+'" fill="none" stroke="'+c+'" stroke-width="2" stroke-linejoin="round"/>';
+    r.x.forEach(function(v,i){ if(i===0||i===r.x.length-1) return;
+      s+='<circle cx="'+X(v)+'" cy="'+Y(r.y[i])+'" r="3.5" fill="'+c+'" stroke="var(--surface)" stroke-width="2"><title>'+r.fx(v)+' → '+r.y[i]+'점</title></circle>'+
+         '<text x="'+X(v)+'" y="'+(H-B+13)+'" text-anchor="middle">'+r.fx(v)+'</text>';});
+    return s+'<text x="'+(W-RR)+'" y="'+(H-2)+'" text-anchor="end">'+r.xl+'</text>';
+  }
+  function bar(r){
+    var n=r.cats.length,m=r.sets.length,gw=pw/n,bw=Math.min(22,(gw-10)/m),s=axes();
+    r.cats.forEach(function(cn,i){
+      r.sets.forEach(function(st,j){var v=st[1][i],x=L+gw*i+(gw-bw*m-2*(m-1))/2+j*(bw+2);
+        s+='<rect x="'+x+'" y="'+Y(v)+'" width="'+bw+'" height="'+(ph*v/100)+'" rx="3" fill="'+C[r.g]+'" fill-opacity="'+(j?'.45':'1')+'"><title>'+(st[0]?st[0]+' ':'')+cn+' '+v+'점</title></rect><text x="'+(x+bw/2)+'" y="'+(Y(v)-3)+'" text-anchor="middle">'+v+'</text>';});
+      s+='<text x="'+(L+gw*i+gw/2)+'" y="'+(H-B+13)+'" text-anchor="middle">'+cn+'</text>';});
+    if(m>1) s+='<text x="'+(W-RR)+'" y="'+(H-2)+'" text-anchor="end">진한색 '+r.sets[0][0]+' · 연한색 '+r.sets[1][0]+'</text>';
+    return s;
+  }
+  var out='',last=-1;
+  R.forEach(function(r){
+    if(r.g!==last){ if(last>=0) out+='</div>'; out+='<div class="rgrp"><i style="background:'+C[r.g]+'"></i>'+GRP[r.g]+'</div><div class="rules">'; last=r.g; }
+    out+='<div class="rc"><h4>'+r.n+'</h4><span class="src">'+r.src+'</span><svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+r.n+': '+r.rule+'">'+(r.t==='line'?line(r):bar(r))+'</svg><p class="rule">'+r.rule+'</p></div>';
+  });
+  document.getElementById('rules').innerHTML=out+'</div>';
+})();
+</script>
