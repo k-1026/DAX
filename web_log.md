@@ -15,7 +15,7 @@
 | 2 | 필수 도구 설치 | 완료 |
 | 3 | Next.js 앱 뼈대 생성, 로컬 실행 확인 | 완료 |
 | 4 | GitHub 로그인 후 뼈대 업로드 | 완료 |
-| 5 | Supabase 프로젝트 연결 | 예정 |
+| 5 | Supabase 프로젝트 연결 | 진행 중 (환경값 입력 대기) |
 | 6 | Vercel 첫 배포 | 예정 |
 | 7 | 팀원용 설치 안내서 작성 | 예정 |
 
@@ -86,6 +86,26 @@
 - DAX 저장소는 누구나 볼 수 있다.
 - Supabase 키, Claude API 키 같은 비밀값은 절대 코드에 적지 않는다. `web/.env.local` 파일에만 두며, 이 파일은 GitHub에 올라가지 않도록 이미 제외되어 있다.
 
+### 5단계. Supabase 연결 준비 (진행 중)
+
+- Supabase 대시보드에서 프로젝트를 만들었다. (지역: 서울 권장, DB 비밀번호는 각자 안전한 곳에 보관)
+- 연결 라이브러리 설치: `npm install @supabase/supabase-js @supabase/ssr`
+- 추가한 파일
+
+| 파일 | 역할 |
+|---|---|
+| `web/lib/supabase/client.ts` | 브라우저에서 Supabase에 접속하는 도구 |
+| `web/lib/supabase/server.ts` | 서버에서 접속하는 도구 (로그인 쿠키 포함) |
+| `web/.env.local.example` | 필요한 환경값 목록 예시 (GitHub에 올라감) |
+| `web/.env.local` | 실제 값을 넣는 파일 (GitHub에 올라가지 않음) |
+
+- 첫 화면(`web/app/page.tsx`)을 서비스 이름과 "Supabase 연결 상태" 표시로 바꿨다.
+- 사이트 제목을 "대구 공실 매칭"으로, 언어를 한국어로 바꿨다.
+- 겪은 문제: `export const dynamic = "force-dynamic"`을 쓰니 빌드 오류가 났다. 이 버전의 Next.js는 `cacheComponents` 방식이라 그 설정을 쓸 수 없다. 실시간으로 확인하는 부분을 `<Suspense>`로 감싸서 해결했다.
+- 겪은 문제: `.gitignore`의 `.env*` 규칙 때문에 예시 파일도 제외됐다. `!.env.local.example` 예외를 추가했다.
+- 현재 화면: "○ .env.local 에 Supabase 값이 아직 없습니다." (값을 넣으면 "● Supabase 연결 정상"으로 바뀐다)
+
 ### 남은 일
 
-- 5단계: Supabase 프로젝트 만들고 연결하기
+- `web/.env.local`에 Supabase 주소와 공개용 키(Publishable key) 넣기
+- 6단계: Vercel 첫 배포
