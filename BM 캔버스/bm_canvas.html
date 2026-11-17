@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1280">
+<title>대구 공실 매칭 AI BM 캔버스</title>
+<style>
+  :root {
+    --bg: #f6f5f1;
+    --ink: #1f2328;
+    --muted: #7a7f87;
+    --line: #d9d6cc;
+    --card: #ffffff;
+    --accent: #2b5fa8;
+    --orange: #e8710a;
+    --loop: #2e8b6a;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); }
+  body {
+    width: 1280px; height: 720px; overflow: hidden; position: relative;
+    font-family: "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    color: var(--ink);
+  }
+  header {
+    position: absolute; left: 16px; right: 16px; top: 8px; height: 30px;
+    display: flex; align-items: baseline; justify-content: space-between;
+  }
+  header h1 { margin: 0; font-size: 17px; }
+  header .legend { font-size: 11px; color: var(--muted); }
+  .a { color: var(--orange); font-weight: 700; }
+  .tag {
+    display: inline-block; font-size: 9px; line-height: 1; padding: 2px 4px; margin-left: 3px;
+    border: 1px solid var(--line); border-radius: 3px; color: var(--muted); vertical-align: 1px; white-space: nowrap;
+  }
+
+  .canvas {
+    position: absolute; left: 16px; right: 16px; top: 42px; height: 462px;
+    display: grid; gap: 6px;
+    grid-template-columns: 1fr 1fr .65fr .65fr 1fr 1fr;
+    grid-template-rows: 150px 150px 150px;
+  }
+  .blk {
+    background: var(--card); border: 1px solid var(--line); border-radius: 8px;
+    padding: 8px 10px; overflow: hidden; display: flex; flex-direction: column; min-width: 0;
+  }
+  .blk h3 { margin: 0 0 5px; font-size: 13px; color: var(--accent); }
+  .blk h4 { margin: 4px 0 2px; font-size: 10.5px; color: var(--muted); font-weight: 700; }
+  .blk ul { list-style: none; margin: 0; padding: 0; }
+  .blk li { font-size: 12px; line-height: 1.5; padding-left: 10px; position: relative; }
+  .blk li::before { content: "•"; position: absolute; left: 0; color: var(--muted); }
+  .src { margin-top: auto; padding-top: 4px; font-size: 9px; line-height: 1.3; color: var(--muted); }
+  .value { background: #eef4fb; border-color: #b7cdea; }
+  .value li { font-size: 14px; line-height: 1.7; }
+  .value h3 { font-size: 15px; }
+
+  .partners { grid-column: 1; grid-row: 1 / 3; }
+  .activities { grid-column: 2; grid-row: 1; }
+  .resources { grid-column: 2; grid-row: 2; }
+  .value { grid-column: 3 / 5; grid-row: 1 / 3; }
+  .relations { grid-column: 5; grid-row: 1; }
+  .channels { grid-column: 5; grid-row: 2; }
+  .segments { grid-column: 6; grid-row: 1 / 3; }
+  .cost { grid-column: 1 / 4; grid-row: 3; }
+  .revenue { grid-column: 4 / 7; grid-row: 3; }
+
+  .strip {
+    position: absolute; left: 16px; right: 16px; top: 514px; height: 156px;
+  }
+  .strip .row { display: flex; align-items: stretch; height: 114px; }
+  .strip .blk { width: 392px; background: #f1f8f4; border-color: #b9dcca; }
+  .strip .blk h3 { color: var(--loop); }
+  .strip .blk li { font-size: 12px; }
+  .strip .arrow {
+    width: 36px; display: flex; align-items: center; justify-content: center;
+    font-size: 22px; color: var(--loop);
+  }
+  .strip svg { position: absolute; left: 0; top: 114px; width: 1248px; height: 40px; overflow: visible; }
+
+  footer {
+    position: absolute; left: 16px; right: 16px; top: 678px; height: 30px;
+    font-size: 10.5px; color: var(--muted); line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>대구 공실 매칭 AI · BM 캔버스 <span style="font-weight:400;font-size:12px;color:var(--muted)">초안 · 팀 결정 전</span></h1>
+  <div class="legend"><span class="a">주황색 숫자</span> = 가정값 · <span class="tag" style="margin-left:0">가정</span> = 파일 근거 없음 · 작은 글씨 = 근거 파일</div>
+</header>
+
+<main class="canvas">
+  <section class="blk partners" id="b-partners">
+    <h3>핵심 파트너</h3>
+    <ul>
+      <li>네이버 부동산(매물 수집)<span class="tag">가정</span></li>
+      <li>공공데이터 제공기관 5곳</li>
+      <li>수집 약관·이용 조건 확인</li>
+    </ul>
+    <div class="src">11.13_ppt_contents.md<br>revenue_options.md</div>
+  </section>
+
+  <section class="blk activities" id="b-activities">
+    <h3>핵심 활동</h3>
+    <ul>
+      <li>매물 수집·갱신<span class="tag">가정</span></li>
+      <li>점수 산출·교차검증</li>
+      <li>good/bad로 가중치 보정</li>
+    </ul>
+    <div class="src">11.13_ppt_contents.md</div>
+  </section>
+
+  <section class="blk resources" id="b-resources">
+    <h3>핵심 자원</h3>
+    <ul>
+      <li>실매물 2,717건</li>
+      <li>11개 인자 점수 엔진</li>
+      <li>수집·로그인 에이전트<span class="tag">가정</span></li>
+    </ul>
+    <div class="src">11.13_ppt_contents.md</div>
+  </section>
+
+  <section class="blk value" id="b-value">
+    <h3>가치 제안</h3>
+    <ul>
+      <li>11개 인자 점수로 공실 추천</li>
+      <li>확인일 표기로 허위매물 부담↓</li>
+      <li>구독: 새 매물 알림·24시간 선공개</li>
+    </ul>
+    <div class="src">11.13_ppt_contents.md<br>고객여정지도_페인포인트.md</div>
+  </section>
+
+  <section class="blk relations" id="b-relations">
+    <h3>고객 관계</h3>
+    <ul>
+      <li>good/bad로 점수 보정 참여</li>
+      <li>문의 전 확인 질문 안내</li>
+      <li>담은 매물 변동 알림<span class="tag">가정</span></li>
+    </ul>
+    <div class="src">11.13_ppt_contents.md<br>reconnect.md</div>
+  </section>
+
+  <section class="blk channels" id="b-channels">
+    <h3>채널</h3>
+    <ul>
+      <li>스코어링 보드 데모(웹)</li>
+      <li>창업 커뮤니티·블로그</li>
+      <li>로그인 구독자 알림<span class="tag">가정</span></li>
+    </ul>
+    <div class="src">11.13_ppt_contents.md</div>
+  </section>
+
+  <section class="blk segments" id="b-segments">
+    <h3>고객 세그먼트</h3>
+    <h4>사용자</h4>
+    <ul>
+      <li>창업·이전 준비 임차인</li>
+      <li>업종 정한 예비 사업자</li>
+    </ul>
+    <h4>지불자</h4>
+    <ul>
+      <li>임차인 본인(월 구독)<span class="tag">가정</span></li>
+    </ul>
+    <div class="src">11.13_ppt_contents.md<br>revenue_options.md</div>
+  </section>
+
+  <section class="blk cost" id="b-cost">
+    <h3>비용 구조</h3>
+    <ul>
+      <li>데이터 비용 0원 원칙: 무료·공공데이터만</li>
+      <li>개발·운영 인건비·서버<span class="tag">가정</span></li>
+      <li>매물 수집·알림 발송·로그인 운영<span class="tag">가정</span></li>
+    </ul>
+    <div class="src">v2.스코어링 모델 구축 설계(보고서형).html</div>
+  </section>
+
+  <section class="blk revenue" id="b-revenue">
+    <h3>수익원</h3>
+    <ul>
+      <li>월 구독 1종: 알림+24시간 선공개 <span class="a">5,000~20,000원</span> <span class="a">(가정값)</span></li>
+      <li>무료: 담기 3곳·비교 2곳</li>
+      <li>구독: 담기 무제한·비교 최대 5곳</li>
+    </ul>
+    <div class="src">revenue_options.md · tier_features.md</div>
+  </section>
+</main>
+
+<section class="strip">
+  <div class="row">
+    <div class="blk" id="b-source">
+      <h3>데이터 원천</h3>
+      <ul>
+        <li>네이버 부동산 신규·나간 매물<span class="tag">가정</span></li>
+        <li>공공데이터 5종 · 실매물 2,717건</li>
+        <li>사용자 good/bad 평가</li>
+      </ul>
+      <div class="src">11.13_ppt_contents.md · v2.스코어링 모델 구축 설계(보고서형).html</div>
+    </div>
+    <div class="arrow">▶</div>
+    <div class="blk" id="b-ai">
+      <h3>AI 역할</h3>
+      <ul>
+        <li>11개 인자 점수 계산·8개 업종 추천</li>
+        <li>점수 근거를 쉬운 문장으로 설명</li>
+        <li>매물 갱신·알림 에이전트<span class="tag">가정</span></li>
+      </ul>
+      <div class="src">11.13_ppt_contents.md · 26.11.13 데모.html</div>
+    </div>
+    <div class="arrow">▶</div>
+    <div class="blk" id="b-loop">
+      <h3>학습 루프</h3>
+      <ul>
+        <li>good/bad 평가 누적</li>
+        <li>8개 업종 가중치 보정(가중치는 가설)</li>
+        <li>보정된 점수가 다음 추천에 반영</li>
+      </ul>
+      <div class="src">11.13_ppt_contents.md 9번</div>
+    </div>
+  </div>
+  <svg viewBox="0 0 1248 40" aria-label="학습 루프에서 데이터 원천으로 돌아가는 화살표">
+    <defs>
+      <marker id="ah" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+        <path d="M0,10 L5,0 L10,10 z" fill="#2e8b6a"/>
+      </marker>
+    </defs>
+    <path d="M1052,2 V22 H196 V4" fill="none" stroke="#2e8b6a" stroke-width="2" stroke-dasharray="5 3" marker-end="url(#ah)"/>
+    <text x="624" y="36" text-anchor="middle" font-size="11" fill="#2e8b6a" font-family="Malgun Gothic, Apple SD Gothic Neo, sans-serif">보정 결과와 새 평가가 데이터 원천으로 돌아간다</text>
+  </svg>
+</section>
+
+<footer>
+  결정은 팀이 합니다. 근거 파일이 없는 항목은 “가정”입니다. 스코어링은 최종본 전이라 현재 버전 기준입니다. 상세는 bm_canvas.md · revenue_options.md · tier_features.md 참고.
+</footer>
+</body>
+</html>
