@@ -15,7 +15,7 @@
 | 2 | 필수 도구 설치 | 완료 |
 | 3 | Next.js 앱 뼈대 생성, 로컬 실행 확인 | 완료 |
 | 4 | GitHub 로그인 후 뼈대 업로드 | 완료 |
-| 5 | Supabase 프로젝트 연결 | 진행 중 (환경값 입력 대기) |
+| 5 | Supabase 프로젝트 연결 | 완료 |
 | 6 | Vercel 첫 배포 | 예정 |
 | 7 | 팀원용 설치 안내서 작성 | 예정 |
 
@@ -105,7 +105,12 @@
 - 겪은 문제: `.gitignore`의 `.env*` 규칙 때문에 예시 파일도 제외됐다. `!.env.local.example` 예외를 추가했다.
 - 현재 화면: "○ .env.local 에 Supabase 값이 아직 없습니다." (값을 넣으면 "● Supabase 연결 정상"으로 바뀐다)
 
+### 5단계 완료. Supabase 연결 확인
+
+- `web/.env.local`에 Project URL과 Publishable key를 넣었다. (Supabase 대시보드의 Connect 버튼에서 확인)
+- 첫 화면에 "● Supabase 연결 정상"이 표시되는 것을 확인했다.
+- Secret key(`sb_secret_`)는 넣지 않았다. 관리자용이라 나중에 서버 전용으로 따로 다룬다.
+
 ### 남은 일
 
-- `web/.env.local`에 Supabase 주소와 공개용 키(Publishable key) 넣기
-- 6단계: Vercel 첫 배포
+- 6단계: Vercel 첫 배포. 그 전에 `dev-setup`을 `main`에 합쳐야 한다. (Vercel은 기본적으로 main을 배포하는데 main에는 아직 `web/`이 없다)
