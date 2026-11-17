@@ -16,7 +16,7 @@
 | 3 | Next.js 앱 뼈대 생성, 로컬 실행 확인 | 완료 |
 | 4 | GitHub 로그인 후 뼈대 업로드 | 완료 |
 | 5 | Supabase 프로젝트 연결 | 완료 |
-| 6 | Vercel 첫 배포 | 예정 |
+| 6 | Vercel 첫 배포 | 완료 (https://dax-mocha.vercel.app) |
 | 7 | 팀원용 설치 안내서 작성 | 완료 (`web/README.md`) |
 
 ## 전체 구조 (계획)
@@ -120,6 +120,41 @@
 
 - `web/README.md`를 한국어 안내서로 바꿨다. 프로그램 설치, 코드 내려받기, 환경값 파일 만들기, 실행, 브랜치 작업 규칙을 담았다.
 
-### 남은 일
+### 6단계. Vercel 첫 배포
 
-- 6단계: Vercel 첫 배포. 저장소 주인이 `k-1026` 계정이라, Vercel 연결을 누가 할지 정해야 한다.
+- 배포 주소: https://dax-mocha.vercel.app (같은 사이트: https://dax-2530.vercel.app)
+- 배포된 주소에서 "● Supabase 연결 정상"이 표시되는 것을 확인했다.
+
+**결정. 배포 방식**
+
+- 저장소 주인이 팀원 계정(`k-1026`)이라 GitHub 자동 연결에는 그 팀원의 허락이 필요하다.
+- 지금은 `dcmeoh-web`의 Vercel 계정으로, 이 컴퓨터에서 직접 올리는 방식을 썼다.
+- 나중에 `k-1026` 팀원과 함께 GitHub 연결로 바꾸면 main에 올릴 때마다 자동 배포된다.
+
+**한 일**
+
+1. `npx.cmd vercel login`으로 로그인 (브라우저에서 승인)
+2. `npx vercel link --yes --project dax`로 Vercel 프로젝트 `dax` 생성·연결
+3. Supabase 값 두 개를 Vercel 환경값으로 등록 (Production·Preview·Development). `.env.local`은 GitHub에 올라가지 않으므로 Vercel에 따로 알려줘야 한다.
+4. `npx vercel deploy --prod --yes`로 배포
+
+**다시 배포하는 방법**: `web` 폴더에서 `npx.cmd vercel deploy --prod`
+
+**겪은 문제. PowerShell에서 npx 실행이 막힘**
+
+- 증상: `이 시스템에서 스크립트를 실행할 수 없으므로 npx.ps1 파일을 로드할 수 없습니다`
+- 원인: Windows PowerShell의 보안 설정이 `.ps1` 스크립트를 막는다.
+- 해결: 보안 설정은 그대로 두고 `npx.cmd`, `npm.cmd`처럼 `.cmd`를 붙여 실행한다.
+
+**참고**: `vercel link`가 `web/.env.local`에 `VERCEL_OIDC_TOKEN` 줄을 자동으로 추가했다. 이 파일은 GitHub에 올라가지 않는다.
+
+### 3.1 개발환경 세팅 마무리
+
+계정·저장소·Supabase·Vercel 셋업과 개발환경 설치 안내까지 끝났다.
+
+### 다음 할 일 (3.2, 3.3)
+
+- 팀원 3명이 `web/README.md`를 따라 각자 컴퓨터에 설치
+- `k-1026` 팀원과 Vercel–GitHub 자동 배포 연결
+- 3.2 기술 검증: 로그인, 메일 발송, 예약 작업(스케줄), Claude API 최소 동작
+- 3.3 DB 설계: 매물·점수·회원·리뷰·로그 테이블과 접근 규칙(RLS)

@@ -38,6 +38,23 @@ npm run dev
 
 브라우저에서 http://localhost:3000 을 열어 "● Supabase 연결 정상"이 보이면 성공이다.
 
+### 자주 만나는 오류
+
+**`이 시스템에서 스크립트를 실행할 수 없으므로 npm.ps1 파일을 로드할 수 없습니다`**
+
+Windows PowerShell의 보안 설정 때문이다. 명령에 `.cmd`를 붙이면 된다.
+
+```bash
+npm.cmd install
+npm.cmd run dev
+```
+
+## 배포
+
+- 배포 주소: https://dax-mocha.vercel.app
+- 현재는 Vercel 프로젝트 담당자가 자기 컴퓨터의 `web` 폴더에서 `npx.cmd vercel deploy --prod`로 올린다.
+- GitHub 자동 배포 연결은 추후 진행 예정.
+
 ## 작업 규칙
 
 - `main`에 직접 올리지 않는다. 자기 브랜치를 만들어 작업하고 Pull Request로 합친다.
