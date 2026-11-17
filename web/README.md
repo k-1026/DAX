@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 대구 공실 매칭 — 웹앱
 
-## Getting Started
+업종에 맞는 대구 공실을 추천하는 AI 서비스의 웹앱 코드입니다.
+개발 과정은 저장소 최상위의 [web_log.md](../web_log.md)에 기록합니다.
 
-First, run the development server:
+## 팀원 개발환경 설치 (처음 한 번)
+
+### 1. 프로그램 설치
+
+| 프로그램 | 용도 | 받는 곳 |
+|---|---|---|
+| Git | 코드 이력 관리 | https://git-scm.com |
+| Node.js (LTS) | 웹앱 실행 | https://nodejs.org |
+| VS Code | 코드 편집기 | https://code.visualstudio.com |
+
+설치 확인: 터미널에서 `git --version`, `node --version`을 입력해 버전이 나오면 된다.
+
+### 2. 코드 내려받기
+
+```bash
+git clone https://github.com/k-1026/DAX
+cd DAX/web
+npm install
+```
+
+### 3. 환경값 파일 만들기
+
+1. `web/.env.local.example`을 복사해 `web/.env.local`로 이름을 바꾼다.
+2. Supabase 대시보드의 **Connect** 버튼에서 Project URL과 Publishable key를 복사해 붙여넣는다. (값은 팀 내부 채널로 공유)
+
+`.env.local`은 GitHub에 올라가지 않는다. 이 저장소는 공개 상태이므로 비밀 키를 코드나 커밋에 절대 넣지 않는다.
+
+### 4. 실행
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+브라우저에서 http://localhost:3000 을 열어 "● Supabase 연결 정상"이 보이면 성공이다.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 작업 규칙
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `main`에 직접 올리지 않는다. 자기 브랜치를 만들어 작업하고 Pull Request로 합친다.
 
-## Learn More
+```bash
+git switch main
+git pull
+git switch -c 기능이름
+# 작업 후
+git add .
+git commit -m "무엇을 했는지"
+git push -u origin 기능이름
+```
 
-To learn more about Next.js, take a look at the following resources:
+- 작업 시작 전에 항상 `git pull`로 최신 코드를 받는다.
+- 새 라이브러리를 설치했으면 `package.json`, `package-lock.json`도 함께 커밋한다.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 폴더 구조
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| 위치 | 내용 |
+|---|---|
+| `app/` | 화면(페이지). `app/page.tsx`가 첫 화면 |
+| `lib/supabase/` | Supabase 접속 도구 (브라우저용 `client.ts`, 서버용 `server.ts`) |
+| `public/` | 이미지 등 정적 파일 |
+| `.env.local.example` | 필요한 환경값 목록 |
 
-## Deploy on Vercel
+## 기술 구성
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Next.js 16 · React 19 · TypeScript · Tailwind CSS 4 · Supabase · Vercel
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+주의: Next.js 16은 이전 버전과 달라진 점이 많다. 코드를 쓰기 전에 `node_modules/next/dist/docs/`의 안내를 확인한다. (`AGENTS.md` 참고)
