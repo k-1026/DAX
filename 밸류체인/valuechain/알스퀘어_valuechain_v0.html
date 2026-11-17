@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>알스퀘어 데이터·서비스 체인</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  :root{
+    --teal:#2b8a7e; --teal-ink:#1f6f65; --teal-soft:#e6f3f0; --teal-line:#bfe0d9;
+    --ink:#1b2326; --sub:#5b6668; --line:#d9dedd; --dark:#1c2a2e;
+    --mark-blue:#e8eefc; --mark-yellow:#fdf3d8;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#f3f5f5;font-family:"Pretendard",-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:var(--ink)}
+  .slide{max-width:1160px;margin:24px auto;background:#fff;padding:14px 34px 22px;display:flex;flex-direction:column}
+  .accent{width:32px;height:3px;background:var(--teal);margin-top:2px}
+  header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-top:8px}
+  h1{font-size:24px;font-weight:800;letter-spacing:-.02em;margin:0;line-height:1.3;word-break:keep-all}
+  td,th,.lede{word-break:keep-all}
+  h1 .chain{color:var(--teal)}
+  .pill{flex:none;background:var(--teal-soft);color:var(--teal-ink);font-size:11px;font-weight:700;letter-spacing:.08em;padding:8px 16px;border-radius:999px;white-space:nowrap}
+  .lede{margin:8px 0 18px;color:var(--sub);font-size:13.5px}
+  .stages{display:grid;grid-template-columns:repeat(5,1fr);gap:24px;margin-bottom:14px}
+  .stage{position:relative;background:var(--teal-soft);border:1px solid var(--teal-line);border-radius:10px;padding:14px 14px 16px}
+  .stage b{display:block;font-size:14px;margin-bottom:6px}
+  .stage span{font-size:11.5px;color:var(--sub)}
+  .stage:not(:last-child)::after{content:"›";position:absolute;right:-17px;top:50%;transform:translateY(-50%);color:#9aa6a5;font-size:18px}
+  .stage.dark{background:var(--dark);border-color:var(--dark);color:#fff}
+  .stage.dark span{color:#c7d2d0}
+  table{width:100%;border-collapse:collapse;table-layout:fixed}
+  col.c0{width:92px}
+  thead th{background:var(--teal-soft);color:var(--teal-ink);font-size:11.5px;font-weight:700;text-align:left;padding:20px 10px}
+  tbody th{font-size:12.5px;font-weight:700;text-align:left;vertical-align:top;padding:14px 10px}
+  tbody td{font-size:12.5px;vertical-align:top;padding:14px 10px;line-height:1.5}
+  tbody tr{border-bottom:1px solid var(--line)}
+  tbody tr:last-child{border-bottom:none}
+  .inf{color:var(--sub)}
+  .src{color:#8a9593;font-size:10.5px}
+  .mark-blue{background:var(--mark-blue)}
+  .mark-yellow{background:var(--mark-yellow)}
+  .tag{display:block;color:var(--teal-ink);font-weight:700;margin-bottom:4px}
+  .legend{display:block;margin-top:6px;font-size:10px;font-weight:500;color:var(--sub);line-height:1.5}
+  footer{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-top:12px;font-size:10px;color:var(--sub);line-height:1.6}
+  .page{flex:none;background:var(--teal);color:#fff;font-weight:700;font-size:11px;padding:4px 8px;border-radius:5px}
+
+  .mk-bottleneck{background:#fdecec}
+  .mk-bottleneck .tag{color:#b42318}
+  .mk-cost{background:#fdf3d8}
+  .mk-cost .tag{color:#8a5a00}
+  .mk-opp{background:#e8eefc}
+  .mk-opp .tag{color:#1d4ed8}
+  .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:middle}
+  .dot.b{background:#e5484d}.dot.c{background:#e0a100}.dot.o{background:#3b6fe0}
+</style>
+</head>
+<body>
+<section class="slide">
+  <div class="accent"></div>
+  <header>
+    <h1>데이터·서비스 체인 — <span class="chain">원천·소싱 → 가공·제작 → 플랫폼·유통 → 주문·구매 → 전달·서비스</span></h1>
+    <div class="pill">알스퀘어 · 데이터·서비스 · v0</div>
+  </header>
+  <p class="lede">상업용 부동산 데이터와 공간 서비스가 기업 고객에게 닿는 다섯 단계와, 단계마다 어떤 데이터가 어디서 생기는지를 함께 표시했다. 2025년 연결 매출은 200,058,110,585원이고, 이 중 76.8%가 공사수입금이다.</p>
+
+  <div class="stages">
+    <div class="stage"><b>1 원천·소싱</b><span>건물·기업·공공 데이터·고객 의뢰</span></div>
+    <div class="stage"><b>2 가공·제작</b><span>데이터 가공·설계·시공·자문</span></div>
+    <div class="stage"><b>3 플랫폼·유통</b><span>RA·데이터허브·중개 법인</span></div>
+    <div class="stage"><b>4 주문·구매</b><span>RA 구독·중개·공사 계약</span></div>
+    <div class="stage dark"><b>5 전달·서비스</b><span>PM·LM·RA 기능 개선</span></div>
+  </div>
+
+  <table>
+    <colgroup><col class="c0"><col><col><col><col><col></colgroup>
+    <thead><tr><th>층</th><th>1 원천</th><th>2 가공</th><th>3 플랫폼</th><th>4 주문</th><th>5 서비스</th></tr></thead>
+    <tbody>
+      <tr>
+        <th>이해관계자</th>
+        <td><b>나라장터·임차 기업·건물주</b> <span class="inf">· (스틱스페셜시츄에이션리얼티 28.07%)</span> <span class="src">[출처 1·6·14·32]</span></td>
+        <td><b>알스퀘어·㈜알스퀘어디자인</b> <span class="inf">· (젠스타메이트·부동산플래닛·빅밸류·밸류맵)</span> <span class="src">[출처 1·40·49·50]</span></td>
+        <td><b>RA·데이터허브·중개 법인 3곳·RSQUARE VN</b> <span class="inf">· (RSQUARE SG)</span> <span class="src">[출처 1·5·14]</span></td>
+        <td><b>우리은행·GIC 등 금융기관 7곳·임차 기업·베리시·IBK기업은행</b> <span class="inf">· (한울회계법인)</span> <span class="src">[출처 2·5·7·31]</span></td>
+        <td><b>알스퀘어 PM·LM·자산 컨설팅</b> <span class="inf">· (이존우/이용균 대표 표기 충돌)</span> <span class="src">[출처 2·9·14]</span></td>
+      </tr>
+      <tr>
+        <th>돈 흐름 ⇐</th>
+        <td>지분 투자 (금액 [U]) · 누적 투자 1,140억 원 <span class="src">[출처 12]</span></td>
+        <td>공사대금 153,640,005,841원 · 자재·외주 납품 단가 [U] <span class="src">[출처 1]</span></td>
+        <td>디자인 → 본사 차입 37,485,061천원 · 본사 → VN 대여 2,946,015천원 <span class="src">[출처 2]</span></td>
+        <td>RA 이용료·중개·자문 수수료 (요율 [U]) · 서비스매출 43,433,140,219원 <span class="src">[출처 1]</span></td>
+        <td>관리 보수 (원페이저 근거 없음 [U])</td>
+      </tr>
+      <tr>
+        <th>데이터 ⇢</th>
+        <td>공사 계약 데이터 (나라장터) · 임대료·공실·실거래 40만 빌딩 (원천 [U]) <span class="src">[출처 32]</span></td>
+        <td>건물 + 250만 기업 연결 데이터 · 실질 캡레이트·LEED 지표 (알스퀘어) <span class="src">[출처 8·32]</span></td>
+        <td>동남아 10만 건물 데이터 (RSQUARE VN [I]) → RA <span class="src">[출처 7]</span></td>
+        <td>RA 데이터·투자 지표 (알스퀘어 → 금융기관 60여 곳) <span class="src">[출처 7]</span></td>
+        <td>입주·임대 관리 데이터 → 1·2로 피드백 [I]</td>
+      </tr>
+      <tr>
+        <th>마커 후보<span class="legend"><span class="dot b"></span>병목 = 막히는 곳<br><span class="dot c"></span>비용 = 돈이 새는 곳<br><span class="dot o"></span>기회 = 새로 열 수 있는 곳</span></th>
+        <td class="mk-bottleneck"><span class="tag">병목 · 데이터 출처가 안 보인다</span>RA가 쓰는 건물 임대료·실거래 데이터를 어디서 가져오는지 공개돼 있지 않다 [U]. 이 원천이 막히면 RA 서비스 전체가 흔들린다 [I].</td>
+        <td class="mk-cost"><span class="tag">비용 · 매출 대부분이 남는 게 적은 공사다</span>매출 10원 중 약 8원(76.8%)이 인테리어 공사에서 나온다 <span class="src">[출처 1]</span>. 그런데 건설 주문은 줄고(7월 −30.6%) 공사비는 올라(+5.8%) 이익이 더 줄 수 있다 <span class="src">[출처 51]</span> [I].</td>
+        <td class="mk-opp"><span class="tag">기회 · 상가 입지 분석을 예고했다</span>RA에 '상권분석' 기능을 하반기에 붙이겠다고 발표했다 <span class="src">[출처 8]</span>. 실제 출시는 아직 확인되지 않았다 [U]. 나오면 상가 입지 추천까지 하게 되어, 공실매칭과 겹치거나 제휴할 수 있다 [I].</td>
+        <td class="mk-opp"><span class="tag">기회 · 금융 고객을 이미 확보했다</span>은행·운용사 60여 곳이 RA를 쓴다 <span class="src">[출처 7]</span>. 경쟁사들도 AI로 건물 가격을 매기는 서비스(AVM)를 내놓고 있지만 <span class="src">[출처 50]</span>, 고객을 먼저 잡은 점이 강점이다 [I].</td>
+        <td class="mk-bottleneck"><span class="tag">병목 · 아직 적자이고 해외도 손실이다</span>회사 전체 영업손실이 (1,322,019,317)원(약 13억 원 [I])이다. 베트남 법인도 (766,440)천원(약 7.7억 원 [I]) 손실이라 본사 돈으로 버틴다 <span class="src">[출처 1·2]</span>. 해외로 넓히기 전에 수익 구조부터 풀어야 한다 [I].</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <footer>
+    <div>※ 근거는 research/company/알스퀘어/onepager.md와 valuechain/알스퀘어_valuechain_v0.md다. [출처 n]은 원페이저 출처 번호다. [U]는 미확인, [I]는 추정이다. 굵은 글씨는 하는 사람, (괄호)는 영향 주는 사람이다.<br>공실매칭 팀 · 밸류체인 v0 · 2026-11-16</div>
+    <div class="page">01</div>
+  </footer>
+</section>
+</body>
+</html>

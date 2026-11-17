@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>다방 데이터·서비스 체인</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  :root{
+    --teal:#2b8a7e; --teal-ink:#1f6f65; --teal-soft:#e6f3f0; --teal-line:#bfe0d9;
+    --ink:#1b2326; --sub:#5b6668; --line:#d9dedd; --dark:#1c2a2e;
+    --mark-blue:#e8eefc; --mark-yellow:#fdf3d8;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#f3f5f5;font-family:"Pretendard",-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:var(--ink)}
+  .slide{max-width:1160px;margin:24px auto;background:#fff;padding:14px 34px 22px;display:flex;flex-direction:column}
+  .accent{width:32px;height:3px;background:var(--teal);margin-top:2px}
+  header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-top:8px}
+  h1{font-size:24px;font-weight:800;letter-spacing:-.02em;margin:0;line-height:1.3;word-break:keep-all}
+  td,th,.lede{word-break:keep-all}
+  h1 .chain{color:var(--teal)}
+  .pill{flex:none;background:var(--teal-soft);color:var(--teal-ink);font-size:11px;font-weight:700;letter-spacing:.08em;padding:8px 16px;border-radius:999px;white-space:nowrap}
+  .lede{margin:8px 0 18px;color:var(--sub);font-size:13.5px}
+  .stages{display:grid;grid-template-columns:repeat(5,1fr);gap:24px;margin-bottom:14px}
+  .stage{position:relative;background:var(--teal-soft);border:1px solid var(--teal-line);border-radius:10px;padding:14px 14px 16px}
+  .stage b{display:block;font-size:14px;margin-bottom:6px}
+  .stage span{font-size:11.5px;color:var(--sub)}
+  .stage:not(:last-child)::after{content:"›";position:absolute;right:-17px;top:50%;transform:translateY(-50%);color:#9aa6a5;font-size:18px}
+  .stage.dark{background:var(--dark);border-color:var(--dark);color:#fff}
+  .stage.dark span{color:#c7d2d0}
+  table{width:100%;border-collapse:collapse;table-layout:fixed}
+  col.c0{width:92px}
+  thead th{background:var(--teal-soft);color:var(--teal-ink);font-size:11.5px;font-weight:700;text-align:left;padding:20px 10px}
+  tbody th{font-size:12.5px;font-weight:700;text-align:left;vertical-align:top;padding:14px 10px}
+  tbody td{font-size:12.5px;vertical-align:top;padding:14px 10px;line-height:1.5}
+  tbody tr{border-bottom:1px solid var(--line)}
+  tbody tr:last-child{border-bottom:none}
+  .inf{color:var(--sub)}
+  .src{color:#8a9593;font-size:10.5px}
+  .mark-blue{background:var(--mark-blue)}
+  .mark-yellow{background:var(--mark-yellow)}
+  .tag{display:block;color:var(--teal-ink);font-weight:700;margin-bottom:4px}
+  .legend{display:block;margin-top:6px;font-size:10px;font-weight:500;color:var(--sub);line-height:1.5}
+  footer{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-top:12px;font-size:10px;color:var(--sub);line-height:1.6}
+  .page{flex:none;background:var(--teal);color:#fff;font-weight:700;font-size:11px;padding:4px 8px;border-radius:5px}
+
+  .mk-bottleneck{background:#fdecec}
+  .mk-bottleneck .tag{color:#b42318}
+  .mk-cost{background:#fdf3d8}
+  .mk-cost .tag{color:#8a5a00}
+  .mk-opp{background:#e8eefc}
+  .mk-opp .tag{color:#1d4ed8}
+  .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:middle}
+  .dot.b{background:#e5484d}.dot.c{background:#e0a100}.dot.o{background:#3b6fe0}
+</style>
+</head>
+<body>
+<section class="slide">
+  <div class="accent"></div>
+  <header>
+    <h1>데이터·서비스 체인 — <span class="chain">원천·소싱 → 가공·제작 → 플랫폼·유통 → 주문·구매 → 전달·서비스</span></h1>
+    <div class="pill">다방 · 데이터·서비스 · v0</div>
+  </header>
+  <p class="lede">원룸·주거 매물이 2030 이용자에게 닿는 다섯 단계와, 단계마다 어떤 데이터가 어디서 생기는지를 함께 표시했다. 2025년 영업수익은 20,653,782,678원이고, 이 중 73.1% [I]가 지배회사 (주)미디어윌 대상이다.</p>
+
+  <div class="stages">
+    <div class="stage"><b>1 원천·소싱</b><span>중개사·임대인 매물·시세</span></div>
+    <div class="stage"><b>2 가공·제작</b><span>AI 상세설명·추천·번역</span></div>
+    <div class="stage"><b>3 플랫폼·유통</b><span>다방 앱·다방프로·광고</span></div>
+    <div class="stage"><b>4 주문·구매</b><span>광고 구매·매물 문의·정산</span></div>
+    <div class="stage dark"><b>5 전달·서비스</b><span>안심번호·허위매물·거주 관리</span></div>
+  </div>
+
+  <table>
+    <colgroup><col class="c0"><col><col><col><col><col></colgroup>
+    <thead><tr><th>층</th><th>1 원천</th><th>2 가공</th><th>3 플랫폼</th><th>4 주문</th><th>5 서비스</th></tr></thead>
+    <tbody>
+      <tr>
+        <th>이해관계자</th>
+        <td><b>공인중개사·임대인</b> <span class="inf">· (국토부)</span> <span class="src">[출처 8·12·30·46]</span></td>
+        <td><b>스테이션3(다방)</b> <span class="inf">· (직방·KB부동산)</span> <span class="src">[출처 3·4·20·43]</span></td>
+        <td><b>다방 앱·다방프로·광고 계열사 2곳</b> <span class="inf">· (영향 주체 [U])</span> <span class="src">[출처 1·7·12]</span></td>
+        <td><b>공인중개사·이용자·(주)미디어윌</b> <span class="inf">· (한국공인중개사협회)</span> <span class="src">[출처 1·7·12]</span></td>
+        <td><b>스테이션3·KISO 산하 센터</b> <span class="inf">· (영향 주체 [U])</span> <span class="src">[출처 7·30]</span></td>
+      </tr>
+      <tr>
+        <th>돈 흐름 ⇐</th>
+        <td>원천 단계의 돈 흐름은 원페이저에 없음 [U]</td>
+        <td>미디어윌에 지급수수료 8,236,065천원 <span class="src">[출처 1]</span></td>
+        <td>광고 계열사에 광고선전비 1,113,927천원·160,219천원 <span class="src">[출처 1]</span></td>
+        <td>중개사 광고비 결제 [U] → 미디어윌이 매출 15,107,425천원 정산 [I] · 단기차입 4,600,000천원 <span class="src">[출처 1]</span></td>
+        <td>이용자가 다방에 내는 돈은 보이지 않음 [I]. 수익 중심은 중개사 광고 <span class="src">[출처 12]</span></td>
+      </tr>
+      <tr>
+        <th>데이터 ⇢</th>
+        <td>매물 정보 (공인중개사) · 방 내놓기 (임대인) · 시세 (원천 [U]) <span class="src">[출처 4·12·30]</span></td>
+        <td>관심사·검색 이력·행동 패턴 (스테이션3) <span class="src">[출처 3]</span></td>
+        <td>누적 매물 5,057만 건 <span class="src">[출처 4]</span> · 노출·푸시 기록 (다방 앱) [I]</td>
+        <td>요청서·번역된 문의 (스테이션3 → 중개사) <span class="src">[출처 30·31]</span></td>
+        <td>허위매물 신고 (KISO 산하 센터) → 1로 피드백 [I] <span class="src">[출처 7]</span></td>
+      </tr>
+      <tr>
+        <th>마커 후보<span class="legend"><span class="dot b"></span>병목 = 막히는 곳<br><span class="dot c"></span>비용 = 돈이 새는 곳<br><span class="dot o"></span>기회 = 새로 열 수 있는 곳</span></th>
+        <td class="mk-bottleneck"><span class="tag">병목 · 가짜 매물 단속이 세졌다</span>정부가 대학가 원룸 광고 1,100건을 점검하니 321건(약 3건 중 1건 [I])이 위법 의심이었다 <span class="src">[출처 46]</span>. 매물이 진짜인지 확인하는 데 손이 더 들게 된다 [I].</td>
+        <td class="mk-cost"><span class="tag">비용 · 수수료로 나가는 돈이 가장 크다</span>회사가 쓰는 돈의 43.5%가 지급수수료다 <span class="src">[출처 1]</span>. 이 중 8,236,065천원을 모회사 미디어윌에 낸다 <span class="src">[출처 1]</span>. 그래서 비용을 다방이 혼자 줄이기 어렵다 [I].</td>
+        <td class="mk-opp"><span class="tag">기회 · 외국인 손님을 받을 수 있다</span>'외국인전용관'에서 매물과 계약 정보를 30개 이상 언어로 번역해 보여 준다 <span class="src">[출처 31]</span>. 외국어를 못하는 중개사도 외국인 세입자를 받을 수 있다 <span class="src">[출처 31]</span>.</td>
+        <td class="mk-bottleneck"><span class="tag">병목 · 모회사 없이는 서기 어렵다</span>매출 10원 중 약 7원(73.1% [I])이 모회사 미디어윌을 통해 들어온다 <span class="src">[출처 1]</span>. 1년 새 영업이익도 63.3% 줄어 [I], 혼자 성장할 힘이 약하다 [I].</td>
+        <td class="mk-opp"><span class="tag">기회 · 공실매칭과 같은 방식을 시작했다</span>'우리집 서비스'는 이용자가 원하는 조건을 적으면 중개사가 맞는 방을 제안한다 <span class="src">[출처 30]</span>. '조건을 먼저 받고 매물을 찾아 주는' 방식이 공실매칭과 같아서, 참고할 사례이자 경쟁 신호다 [I].</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <footer>
+    <div>※ 근거는 research/company/다방/onepager.md와 valuechain/다방_valuechain_v0.md다. [출처 n]은 원페이저 출처 번호다. [U]는 미확인, [I]는 추정이다. 굵은 글씨는 하는 사람, (괄호)는 영향 주는 사람이다.<br>공실매칭 팀 · 밸류체인 v0 · 2026-11-16</div>
+    <div class="page">02</div>
+  </footer>
+</section>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>네이버부동산 데이터·서비스 체인</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  :root{
+    --teal:#2b8a7e; --teal-ink:#1f6f65; --teal-soft:#e6f3f0; --teal-line:#bfe0d9;
+    --ink:#1b2326; --sub:#5b6668; --line:#d9dedd; --dark:#1c2a2e;
+    --mark-blue:#e8eefc; --mark-yellow:#fdf3d8;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#f3f5f5;font-family:"Pretendard",-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:var(--ink)}
+  .slide{max-width:1160px;margin:24px auto;background:#fff;padding:14px 34px 22px;display:flex;flex-direction:column}
+  .accent{width:32px;height:3px;background:var(--teal);margin-top:2px}
+  header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-top:8px}
+  h1{font-size:24px;font-weight:800;letter-spacing:-.02em;margin:0;line-height:1.3;word-break:keep-all}
+  td,th,.lede{word-break:keep-all}
+  h1 .chain{color:var(--teal)}
+  .pill{flex:none;background:var(--teal-soft);color:var(--teal-ink);font-size:11px;font-weight:700;letter-spacing:.08em;padding:8px 16px;border-radius:999px;white-space:nowrap}
+  .lede{margin:8px 0 18px;color:var(--sub);font-size:13.5px}
+  .stages{display:grid;grid-template-columns:repeat(5,1fr);gap:24px;margin-bottom:14px}
+  .stage{position:relative;background:var(--teal-soft);border:1px solid var(--teal-line);border-radius:10px;padding:14px 14px 16px}
+  .stage b{display:block;font-size:14px;margin-bottom:6px}
+  .stage span{font-size:11.5px;color:var(--sub)}
+  .stage:not(:last-child)::after{content:"›";position:absolute;right:-17px;top:50%;transform:translateY(-50%);color:#9aa6a5;font-size:18px}
+  .stage.dark{background:var(--dark);border-color:var(--dark);color:#fff}
+  .stage.dark span{color:#c7d2d0}
+  table{width:100%;border-collapse:collapse;table-layout:fixed}
+  col.c0{width:92px}
+  thead th{background:var(--teal-soft);color:var(--teal-ink);font-size:11.5px;font-weight:700;text-align:left;padding:20px 10px}
+  tbody th{font-size:12.5px;font-weight:700;text-align:left;vertical-align:top;padding:14px 10px}
+  tbody td{font-size:12.5px;vertical-align:top;padding:14px 10px;line-height:1.5}
+  tbody tr{border-bottom:1px solid var(--line)}
+  tbody tr:last-child{border-bottom:none}
+  .inf{color:var(--sub)}
+  .src{color:#8a9593;font-size:10.5px}
+  .mark-blue{background:var(--mark-blue)}
+  .mark-yellow{background:var(--mark-yellow)}
+  .tag{display:block;color:var(--teal-ink);font-weight:700;margin-bottom:4px}
+  .legend{display:block;margin-top:6px;font-size:10px;font-weight:500;color:var(--sub);line-height:1.5}
+  footer{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-top:12px;font-size:10px;color:var(--sub);line-height:1.6}
+  .page{flex:none;background:var(--teal);color:#fff;font-weight:700;font-size:11px;padding:4px 8px;border-radius:5px}
+
+  .mk-bottleneck{background:#fdecec}
+  .mk-bottleneck .tag{color:#b42318}
+  .mk-cost{background:#fdf3d8}
+  .mk-cost .tag{color:#8a5a00}
+  .mk-opp{background:#e8eefc}
+  .mk-opp .tag{color:#1d4ed8}
+  .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:middle}
+  .dot.b{background:#e5484d}.dot.c{background:#e0a100}.dot.o{background:#3b6fe0}
+</style>
+</head>
+<body>
+<section class="slide">
+  <div class="accent"></div>
+  <header>
+    <h1>데이터·서비스 체인 — <span class="chain">원천·소싱 → 가공·제작 → 플랫폼·유통 → 주문·구매 → 전달·서비스</span></h1>
+    <div class="pill">네이버부동산 · v0</div>
+  </header>
+  <p class="lede">중개사 매물과 시세 데이터가 네이버 검색·AI를 거쳐 이용자에게 닿는 다섯 단계와, 단계마다 어떤 데이터가 어디서 생기는지를 함께 표시했다. 부동산 매출은 따로 공시되지 않아, 운영사 네이버파이낸셜이 속한 핀테크 매출(1,690,684백만원, NAVER 연결의 14.1%)을 참고 지표로 썼다.</p>
+
+  <div class="stages">
+    <div class="stage"><b>1 원천·소싱</b><span>중개사 매물·시세·아실 데이터</span></div>
+    <div class="stage"><b>2 가공·제작</b><span>매물지도·AI 추천·상세 표시</span></div>
+    <div class="stage"><b>3 플랫폼·유통</b><span>네이버 검색·AI탭·Npay 부동산</span></div>
+    <div class="stage"><b>4 주문·구매</b><span>대출비교·광고·마이비즈</span></div>
+    <div class="stage dark"><b>5 전달·서비스</b><span>인테리어·대출 정보·VR 투어</span></div>
+  </div>
+
+  <table>
+    <colgroup><col class="c0"><col><col><col><col><col></colgroup>
+    <thead><tr><th>층</th><th>1 원천</th><th>2 가공</th><th>3 플랫폼</th><th>4 주문</th><th>5 서비스</th></tr></thead>
+    <tbody>
+      <tr>
+        <th>이해관계자</th>
+        <td><b>공인중개사·부동산뱅크·아실</b> <span class="inf">· (국토부)</span> <span class="src">[출처 2·3·40]</span></td>
+        <td><b>네이버파이낸셜</b> <span class="inf">· (KB부동산·직방)</span> <span class="src">[출처 1·44·46]</span></td>
+        <td><b>NAVER 검색·AI탭·네이버페이 부동산</b> <span class="inf">· (NAVER 지분 69.00)</span> <span class="src">[출처 2·7·32]</span></td>
+        <td><b>사업자·이용자·카카오뱅크</b> <span class="inf">· (KB부동산 대출연계)</span> <span class="src">[출처 1·5·10]</span></td>
+        <td><b>네이버페이 부동산·아실·시공 업체 [U]</b> <span class="inf">· (국토부)</span> <span class="src">[출처 30·31·40]</span></td>
+      </tr>
+      <tr>
+        <th>돈 흐름 ⇐</th>
+        <td>정보제공사 매물 정보 대가 [U] · 자회사 아실 지분 98.98 <span class="src">[출처 2]</span></td>
+        <td>연구개발비 2,221,750백만원 (NAVER 연결, 영업수익의 18.5%) · 부동산 몫 [U] <span class="src">[출처 1]</span></td>
+        <td>핀테크 매출 1,690,684백만원 안에 부동산이 섞여 있을 것으로 추정 [I] <span class="src">[출처 1]</span></td>
+        <td>중개사 광고비·대출비교 수수료 (금액·요율 [U]) <span class="src">[출처 1]</span></td>
+        <td>인테리어 시공 연결 수수료 (원페이저 근거 없음 [U])</td>
+      </tr>
+      <tr>
+        <th>데이터 ⇢</th>
+        <td>매물 정보 (중개사 → 부동산뱅크) · 시세·실거래가 (확보 방식 [U]) <span class="src">[출처 3·7]</span></td>
+        <td>현재업종·추천업종·건축물대장 (중개사 입력 [I]) <span class="src">[출처 3·8]</span></td>
+        <td>검색·AI탭 질의 → 조건 맞춤 아파트 매물 2~3개 추천 (네이버) <span class="src">[출처 32]</span></td>
+        <td>대출 금리·한도 (카카오뱅크 등 → Npay·검색 화면) <span class="src">[출처 5·7]</span></td>
+        <td>시공 포트폴리오 약 2,500건 (아실) → 1·2로 피드백 [I] <span class="src">[출처 31]</span></td>
+      </tr>
+      <tr>
+        <th>마커 후보<span class="legend"><span class="dot b"></span>병목 = 막히는 곳<br><span class="dot c"></span>비용 = 돈이 새는 곳<br><span class="dot o"></span>기회 = 새로 열 수 있는 곳</span></th>
+        <td class="mk-bottleneck"><span class="tag">병목 · 매물이 진짜인지 확인하는 과정이 안 보인다</span>매물은 중개사가 올리고 부동산뱅크를 거쳐 들어온다 <span class="src">[출처 3]</span>. 하지만 허위매물을 어떻게 거르는지는 공개되지 않았다 [U]. 온라인 허위매물 의심이 117만 건이 넘는 상황이라, 신뢰가 가장 큰 약점이 될 수 있다 <span class="src">[출처 41]</span> [I].</td>
+        <td class="mk-opp"><span class="tag">기회 · 업종은 보여 주지만, 업종으로 찾지는 못한다</span>상가 매물을 열면 '추천업종'(예: 한정식·고깃집)이 뜬다 <span class="src">[출처 8]</span>. 그런데 거꾸로 "카페 하기 좋은 자리"처럼 업종을 고르면 맞는 매물을 찾아 주는 기능은 없다 <span class="src">[출처 3]</span>. 공실매칭이 채울 수 있는 빈칸이다 [I].</td>
+        <td class="mk-opp"><span class="tag">기회 · AI 매물 추천은 아파트에만 있다</span>8월부터 AI탭이 조건에 맞는 매물을 골라 주지만, 예시는 아파트뿐이다 <span class="src">[출처 32]</span>. KB부동산·직방의 AI도 주거에 집중해 <span class="src">[출처 44·46]</span>, 상가를 AI로 추천하는 곳은 아직 없다 [I].</td>
+        <td class="mk-bottleneck"><span class="tag">병목 · 상가는 매물과 대출이 따로 논다</span>카카오뱅크 사업자 대출이 대출비교에 들어왔지만, 담보는 공동주택(아파트 등)·오피스텔만 되고 상가는 "향후 확대"다 <span class="src">[출처 5·6]</span>. 상가 화면에는 대출 버튼도 없어, 창업자는 자리와 자금을 따로 알아봐야 한다 <span class="src">[출처 8]</span>.</td>
+        <td class="mk-opp"><span class="tag">기회 · 입주 후 서비스도 아파트에만 있다</span>9월에 연 인테리어 탭은 아파트 단지의 시공 사례만 보여 준다 <span class="src">[출처 31]</span>. 가게를 열 때 필요한 인테리어·집기 준비까지 이어 주는 서비스는 비어 있다 [I].</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <footer>
+    <div>※ 근거는 research/company/네이버부동산/onepager.md와 valuechain/네이버부동산_activities_v0.md다. [출처 n]은 원페이저 출처 번호다. [U]는 미확인, [I]는 추정이다. 굵은 글씨는 하는 사람, (괄호)는 영향 주는 사람이다.<br>공실매칭 팀 · 밸류체인 v0 · 2026-11-17</div>
+    <div class="page">03</div>
+  </footer>
+</section>
+</body>
+</html>
