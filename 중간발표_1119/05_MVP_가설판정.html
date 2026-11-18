@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>5. MVP: 무엇이 돌아가고, 무엇이 검증됐나 (가설 판정)</title>
+<style>
+:root{--bg:#F6F5F1;--surface:#fff;--ink:#141E33;--ink-2:#36425A;--line:#C9CFDA;--soft:#EEF1F5;--accent:#1747C7;--note:#7A4800;--note-bg:#FDF0D5}
+@media (prefers-color-scheme: dark){:root{--bg:#11161F;--surface:#182030;--ink:#F0F3F8;--ink-2:#C3CBD8;--line:#3A4558;--soft:#222C3C;--accent:#8DB0FF;--note:#F2B656;--note-bg:#3A2C12}}
+*{box-sizing:border-box}
+html{font-size:17px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Pretendard','Malgun Gothic',system-ui,sans-serif;line-height:1.65;word-break:keep-all}
+.wrap{max-width:1100px;margin:0 auto;padding:28px 24px 48px}
+h1{font-size:1.8rem;letter-spacing:-.5px;margin:0 0 12px}
+h2{font-size:1.3rem;margin:34px 0 10px;padding-top:14px;border-top:1px solid var(--line)}
+h3{font-size:1.1rem;margin:22px 0 8px}
+p{margin:8px 0}
+a{color:var(--accent)}
+code{background:var(--soft);border-radius:6px;padding:1px 6px;font-family:Consolas,monospace;font-size:.92em}
+pre{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;overflow-x:auto}
+pre code{background:none;padding:0}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface);margin:10px 0}
+table{border-collapse:collapse;width:100%}
+th,td{border-bottom:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top;font-size:.95rem}
+th{background:var(--soft);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+blockquote{margin:12px 0;background:var(--note-bg);color:var(--note);border-radius:12px;padding:10px 16px;font-weight:600}
+blockquote p{margin:0}
+ul,ol{padding-left:1.3em}
+li{margin:3px 0}
+.meta{background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:12px;padding:12px 16px;margin-bottom:18px;color:var(--ink-2);font-size:.95rem}
+.meta b{color:var(--ink)}
+</style>
+
+<style>.al-right{text-align:right}.al-center{text-align:center}pre.mermaid{background:var(--surface)}</style>
+</head>
+<body>
+<div class="wrap">
+<!-- 원본: 05_MVP_가설판정.md (이 html은 md에서 변환한 것. 내용은 md를 고친 뒤 다시 변환) -->
+<h1 id="5-mvp-무엇이-돌아가고-무엇이-검증됐나-가설-판정">5. MVP: 무엇이 돌아가고, 무엇이 검증됐나 (가설 판정)</h1>
+<blockquote>
+<p>상태: 2026-11-18 초안(교차검증 1회 반영). 중간 발표 5번 섹션(MVP)에서 쓴다.<br />
+기준: 피치 구조 5장 "v1 URL 라이브 데모 · 가설 판정".<br />
+표기: <code>[출처]</code> 저장소 파일 / <code>[가정]</code> 근거 없는 팀 가정 / <code>확인 필요</code> 저장소에서 찾지 못한 것<br />
+위치 표기: <code>브랜치:경로</code>. spec은 <code>지해나:중간발표_1119/spec/spec.md</code>(아래 "spec")를 기준으로 한다.</p>
+</blockquote>
+<h2 id="1-슬라이드-메시지-한-문장">1. 슬라이드 메시지 (한 문장)</h2>
+<blockquote>
+<p><strong>업종별 추천 데모는 대구 매물 2,717건으로 실제로 돌아가고, 화면 점수가 엔진 점수와 같다는 것까지는 확인했다. 하지만 "추천 순이 월세 낮은 순보다 낫다"는 핵심 가설은 아직 평가 표본이 없어 판정하지 못했다.</strong></p>
+</blockquote>
+<p>통과한 것과 판정하지 못한 것을 나눠서 말한다. 판정 전인 가설을 통과한 것처럼 보여 주지 않는다.</p>
+<h2 id="2-지금-돌아가는-것-mvp-현황">2. 지금 돌아가는 것 (MVP 현황)</h2>
+<div class="tw"><table>
+<thead>
+<tr class="header">
+<th>구분</th>
+<th>무엇</th>
+<th>위치</th>
+<th>상태</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>시연용 데모 (발표에서 쓰는 것)</strong></td>
+<td>업종 선택 → 추천 점수 순 목록·지도 → 근거 → good/bad 평가</td>
+<td><code>지해나:공실 데모/26.11.13 데모.html</code> (매물 2,717건, 데이터 기준일 2026-11-10)</td>
+<td>✅ 로컬에서 동작. spec open_questions 1에서 시연 데모로 결정</td>
+</tr>
+<tr class="even">
+<td>데모 (보고서형·로직 설명)</td>
+<td>추천 데모, 스코어링 로직 화면</td>
+<td><code>권혜림:발표용 데모파일/v2.대구_공실추천(데모).html</code>, <code>스코어링_모델_로직.html</code></td>
+<td>✅ 로컬</td>
+</tr>
+<tr class="odd">
+<td>데모 (50대용 C안)</td>
+<td>담기·비교·엑셀 내려받기</td>
+<td><code>지해나:공실 데모/v3.대구_공실추천(50대용_C안)_혜림.html</code></td>
+<td>✅ 로컬</td>
+</tr>
+<tr class="even">
+<td><strong>라이브 URL</strong></td>
+<td>Next.js + Supabase 웹앱</td>
+<td><a href="https://dax-mocha.vercel.app">https://dax-mocha.vercel.app</a> (<code>old-main:web_log.md</code> 6단계)</td>
+<td>🟡 첫 화면에 "Supabase 연결 정상"만 표시. 추천 기능 없음 (<code>main:web/app/page.tsx</code>)</td>
+</tr>
+<tr class="odd">
+<td>라이브 URL 계획</td>
+<td>배포 URL에서 추천 시연</td>
+<td><code>new:공실매칭_WBS_간트차트.html</code> WBS 0.4 "중간발표 2 준비·발표(11/26 목)"의 산출물</td>
+<td>예정</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>발표에서 말하는 방법:</strong> 오늘 시연은 로컬 데모 HTML로 하고, 라이브 URL은 "배포 경로를 이미 열어 두었고(WBS 3.3 빈 화면 첫 배포), 11/26 중간발표 2에서 추천 기능을 올린다"로 말한다.</p>
+<h2 id="3-가설과-판정">3. 가설과 판정</h2>
+<div class="tw"><table>
+<thead>
+<tr class="header">
+<th>#</th>
+<th>가설</th>
+<th>통과 기준</th>
+<th>근거 문서</th>
+<th>판정</th>
+<th>이유</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>H0</td>
+<td>화면에 보이는 점수가 점수 엔진의 점수와 같다 (데모가 엔진을 제대로 보여 준다)</td>
+<td>8개 업종 × 2,717건에서 차이가 반올림 수준이고, 추천 대상 판정이 일치</td>
+<td><code>권혜림:data/09.스코어링/스코어링 모델 구축 설계.md</code> 12절</td>
+<td>✅ <strong>통과</strong></td>
+<td>차이 0.07점 이하, 추천 대상 판정 완전 일치 [출처]. <strong>단, 이 확인은 v1 데모(<code>v1.대구_공실추천_데모.html</code>) 기준이다.</strong> 시연용 11.13 데모에서 다시 확인한 기록은 없다</td>
+</tr>
+<tr class="even">
+<td>H1</td>
+<td><strong>추천 점수 순으로 본 매물이 "월세 낮은 순"으로 본 매물보다 good 비율이 높다</strong> (핵심 가설)</td>
+<td>업종별 표본 30건 이상에서 추천 순 good 비율 &gt; 월세 낮은 순 good 비율. good 비율 50% 미만 업종은 재검토</td>
+<td>설계서 12절, spec 성공 신호 1</td>
+<td>⏸ <strong>판정 보류</strong></td>
+<td>저장소 어느 브랜치에도 good/bad 평가 파일이 없다. 시연 데모는 평가를 저장하지도 내보내지도 않는다(<code>localStorage</code>에는 담기 목록·글자 크기만 저장). 누가 몇 건을 평가할지도 미정(spec open_questions 4)</td>
+</tr>
+<tr class="odd">
+<td>H2</td>
+<td>정답지 8곳을 역채점하면 추천 점수가 높게 나온다 (백테스팅)</td>
+<td>통과 기준 충족 (기준 수치는 확인 필요)</td>
+<td><code>old-main:11.13 DAX 발표 PPT.pptx</code> "실행 워크플로우"·"다음 단계" 슬라이드</td>
+<td>⏳ <strong>진행 중</strong></td>
+<td>11/13 기준 8단계 워크플로우 중 5단계(백테스팅) 진행 중. 결과 문서가 저장소에 없다</td>
+</tr>
+<tr class="even">
+<td>H3</td>
+<td>확인일 배지를 보여 주면, 정보가 실제와 달라서 생기는 bad가 줄어든다</td>
+<td>배지 전후 해당 bad 사유 비율 비교</td>
+<td>spec 성공 신호 2, <code>new:고객여정지도/문서_여정지도_원본.md</code> 3절</td>
+<td>⏸ <strong>판정 보류</strong></td>
+<td>배지 전 기준값이 없다. <strong>그리고 시연 데모에는 '정보 오류' 사유가 없다</strong>(아래 주의 1). H1과 같은 평가 표본이 필요하다</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>판정 요약:</strong> 4개 중 통과 1 · 진행 중 1 · 보류 2. 통과한 H0은 "데모가 엔진을 제대로 보여 준다"는 기술 확인이고, 사용자 가치에 대한 가설(H1·H3)은 아직 판정 전이다.</p>
+<h3 id="주의-문서끼리-맞지-않는-곳">주의: 문서끼리 맞지 않는 곳</h3>
+<ol type="1">
+<li><strong>bad 사유 목록이 세 곳에서 다르다.</strong>
+<ul>
+<li>설계서 12절: 임대료·조건 / 공간 상태 / 입지·상권 / 입점 어려움 / <strong>정보 오류</strong> / 기타 (6개)</li>
+<li>시연 데모(<code>26.11.13 데모.html</code>)와 spec 완료 기준: 월세·조건이 실제와 달라요 / 공간 상태가 달라요 / 위치가 기대와 달라요 / 이 업종은 들어가기 어려워요 / 이미 계약된 매물이에요 (5개, '정보 오류' 없음)</li>
+<li>spec 성공 신호 2와 여정지도 3절은 '정보 오류' 비율을 지표로 쓴다.</li>
+<li>→ 제안: 시연 데모 기준으로 <strong>"월세·조건이 실제와 달라요" + "이미 계약된 매물이에요"를 '정보 오류'로 묶어</strong> H3를 측정한다. 팀 확인 필요(혜림·은혜).</li>
+</ul></li>
+<li><strong>spec은 평가 저장·내보내기를 "추가하기로 결정"했지만 시연 데모에는 아직 없다.</strong> H1·H3 표본을 모으려면 이 기능이 먼저 들어가야 한다.</li>
+</ol>
+<h2 id="4-판정을-위해-필요한-것-순서대로">4. 판정을 위해 필요한 것 (순서대로)</h2>
+<div class="tw"><table>
+<thead>
+<tr class="header">
+<th>순서</th>
+<th>무엇</th>
+<th>누가</th>
+<th>언제</th>
+<th>근거</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>시연 데모에 평가 브라우저 저장 + [평가 내보내기] 추가</td>
+<td>확인 필요</td>
+<td>수집 시작 전</td>
+<td>spec 완료 기준(US-4), open_questions 4</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>bad 사유 목록 통일('정보 오류' 묶는 방법 결정)</td>
+<td>혜림·은혜</td>
+<td>수집 시작 전</td>
+<td>위 주의 1</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>평가 일부(예: 10%)에 하위권 매물 섞기 (노출 편향 방지)</td>
+<td>혜림</td>
+<td>수집 시작 전</td>
+<td>설계서 12절 피드백 운영 규칙</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>같은 평가자가 "월세 낮은 순"으로도 보게 해 기준선 만들기</td>
+<td>확인 필요</td>
+<td>수집 시작 전</td>
+<td>설계서 12절 "기준선과 비교"</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>good/bad 평가 업종별 30건 이상 수집</td>
+<td>채은·혜림</td>
+<td>확인 필요</td>
+<td>WBS 7.2 지인 테스트(5명 이상), spec open_questions 8</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>백테스팅 결과(정답지 8곳 점수, 통과 기준) 문서화</td>
+<td>혜림·은혜</td>
+<td>확인 필요</td>
+<td>PPT "다음 단계" 1번</td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td>수집 리뷰로 가중치 조정 1회 실행·전후 비교</td>
+<td>혜림 / 은혜</td>
+<td>WBS 일정</td>
+<td>WBS 7.3</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="5-남은-확인-사항">5. 남은 확인 사항</h2>
+<ul>
+<li>백테스팅의 "정답지 8곳"이 어디이고 통과 기준이 무엇인지, 결과가 어디에 있는지 혜림·은혜에게 확인한다.</li>
+<li>저장소 밖(로컬 <code>data/10.피드백/</code> 또는 claude.ai 게시본 DB)에 이미 모은 good/bad 평가가 있는지 확인한다. 있으면 H1을 바로 계산할 수 있다.</li>
+<li>H0을 시연용 11.13 데모에서도 다시 확인한다(같은 엔진 점수를 쓰는지).</li>
+</ul>
+
+</div>
+
+</body>
+</html>
