@@ -6,7 +6,8 @@
   - 인자 제거 시험: 그 인자를 결측으로 두고(엔진 규칙대로 같은 그룹 안에서 재분배) 총점을 다시 계산한다.
     "계산식을 아무리 바꿔도 이 인자가 순위에 줄 수 있는 영향"의 실측 크기다.
   - 그룹 제거 시험: 그룹 전체를 빼고 다시 계산한다.
-  - 기본 조건: 화면 기본값과 같은 임대료 상한 300만 원, 희망 면적 미입력.
+  - 기본 조건: 월세 상한 300만 원(화면 기본값), 보증금 상한 미입력, 희망 면적 미입력.
+    임대료 부담+보증금은 이 조건의 후보(월세 ≤ 300만)를 줄 세운 분위수로 점수를 매긴다.
 
 출력  data/09.스코어링/인자민감도_v2.json
 실행  py -I data/scripts/factor_sensitivity.py
@@ -20,7 +21,8 @@ from statistics import median
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import scoring_engine as se  # noqa: E402
 
-BUDGET = 300.0
+RENT_CAP = 300.0
+DEPOSIT_CAP = None
 OUT_JSON = os.path.join(se.OUT, "인자민감도_v2.json")
 
 
@@ -79,21 +81,23 @@ def main():
             gg.setdefault((L["구"], L["층"].startswith("1층")), []).append(r / a)
     value_ref = {"dong": {k: median(v) for k, v in gd.items() if len(v) >= se.VALUE_MIN_N}, "gu": {k: median(v) for k, v in gg.items()}}
 
+    cost_score, _ = se.make_cost_scorer(listings, RENT_CAP, DEPOSIT_CAP)
+    coord = {L["매물번호"]: se.has_coord(L) for L in listings}
     facs = {c: {} for c in se.CATS}
     for L in listings:
         cf = se.common_factors(L, value_ref, use[L["매물번호"]])
         for c in se.CATS:
-            _, _, fac, _ = se.score_listing(cf, ext.get(L["매물번호"]), bld.get(L["매물번호"]), c, basis, BUDGET, None)
+            _, _, fac, _ = se.score_listing(cf, ext.get(L["매물번호"]), bld.get(L["매물번호"]), c, basis, cost_score.get(L["매물번호"]), None)
             facs[c][L["매물번호"]] = fac
 
-    out = {"조건": {"임대료상한": BUDGET, "희망면적": None}, "업종": {}}
+    out = {"조건": {"월세상한": RENT_CAP, "보증금상한": DEPOSIT_CAP, "희망면적": None}, "업종": {}}
     allf = [n for g in se.GROUPS for n in se.FACTORS[g]]
     for c in se.CATS:
         p = se.PRESET[c]
         base, cov = {}, {}
         for k, fac in facs[c].items():
             t, u = aggregate(fac, c)
-            base[k] = t if u >= se.MIN_COVERAGE else None
+            base[k] = t if se.recommendable(u, coord[k]) else None
             cov[k] = u
         res = {"배점": {}, "인자제거": {}, "그룹제거": {}, "인자_결측률": {}}
         for gi, g in enumerate(se.GROUPS):

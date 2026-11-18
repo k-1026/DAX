@@ -124,6 +124,7 @@ tbody tr:last-child td{border-bottom:0}
 .na{color:var(--ink-3)}
 .floors{font-family:var(--f-mono); font-size:13px; white-space:nowrap}
 /* 근거 탭은 내용이 많아 촘촘하게 */
+.dense.withadd td{font-size:11px} .dense.withadd .small, .dense.withadd .part{font-size:10.5px} .dense.withadd .tiny{font-size:10px} .dense.withadd td.addc .part{font-size:10px} .dense.withadd td{padding:2px 6px} .dense.withadd .part{padding:1px 0}
 .dense, .dense td{font-size:12.5px} .dense th{font-size:11.5px} .dense td{padding:4px 6px}
 .dense .small{font-size:12px} .dense .tiny{font-size:11px} .dense .part{font-size:12px} .dense .lead{font-size:13px}
 </style>
@@ -179,18 +180,19 @@ var D = /*@@DATA@@*/null;
       ['층 인자 제외', '없음 → 층 분포 카이제곱 p ≥ 0.05면 제외: ' + ex.join(', ')],
       ['용도 일치도 판정', '점수표(100·60·50·30)는 그대로, 판정이 바뀐 매물 ' + D.cats.map(function(c){ return c.cat + ' ' + c.chg.use_changed; }).join(' · ')],
       ['엔진·파일', 'scoring_engine.py v2, v1 사본(scoring_engine_v1.py), 점수_v2.csv·config·검사, 분류 열·세부 업종 열 추가'],
+      ['임대료 부담+보증금', '두 인자 → 한 인자. 환산 월 임대료 = 월세 + 보증금 × 1%, 월세·보증금 상한 안 후보의 10% 분위값마다 100 → 20점, 가장 비싼 후보 10점. 관리비 제외, 무권리 +10 삭제, 비용 비중 ' + D.cost.s1['식음료'].join(' · ') + ' → ' + D.cost.s2['식음료'].join(' · ')],
       ['화면', '스코어링 보드는 아직 v1 점수를 읽음(미반영)']
     ];
     var same = [
-      ['그룹 4개 · 인자 11개 구성', D.same_cfg.groups && D.same_cfg.factors],
-      ['업종별 그룹 가중치 · 그룹 안 비중 · 지하철 비율', D.same_cfg.weights],
-      ['구간 기준값 8종 (가성비·보증금·임대료 부담·면적·연식·지하철·버스)', D.same_cfg.breakpoints],
+      ['그룹 4개 · 비용 밖 인자 8개 구성 (비용은 3 → 2개)', D.same_cfg.groups && D.same_cfg.factors_noncost],
+      ['업종별 그룹 가중치 · 비용 밖 그룹 안 비중 · 지하철 비율', D.same_cfg.weights],
+      ['구간 기준값 6종 (가성비·면적·연식·지하철·버스) — 임대료 부담·보증금 고정 구간은 삭제', D.same_cfg.breakpoints],
       ['용도 일치도 점수 100 · 60 · 50 · 30', D.same_cfg.use_score],
-      ['반영률 60 미만 추천 제외', D.same_cfg.min_coverage],
-      ['결측은 그룹 안에서 재분배 · 절대평가', true],
+      ['반영률 60 미만 추천 제외 (v2는 좌표 없는 매물도 제외)', D.same_cfg.min_coverage],
+      ['결측은 그룹 안에서 재분배 · 절대평가 (예외: 임대료 부담+보증금 · 면적 적합도)', true],
       ['외부 인자(상권 활성도 · 배후 수요) · 건물 용도 등급 — v1 결과 파일 그대로', true],
-      ['무권리 +10 · 가성비 표본 10건 · 지하 40점(공연문화 보류)', true],
-      ['추천 대상 매물 수 (업종마다 ' + D.nscored['식음료'].toLocaleString() + '건)', CATS.every(function(c){ return D.nscored[c] === D.nscored_v1[c]; })]
+      ['가성비 표본 10건 · 지하 40점(공연문화 보류)', true],
+      ['추천 대상 매물 수 (' + (CATS.every(function(c){ return D.nscored[c] === D.nscored_v1[c]; }) ? '업종마다 ' + D.nscored['식음료'].toLocaleString() + '건, 좌표 없는 매물 제외' : CATS.filter(function(c){ return D.nscored[c] !== D.nscored_v1[c]; }).map(function(c){ return c + ' ' + D.nscored_v1[c].toLocaleString() + '→' + D.nscored[c].toLocaleString(); }).join(' · ')) + ')', CATS.every(function(c){ return D.nscored[c] === D.nscored_v1[c]; })]
     ];
     return '<section class="view on rows" data-v="summary"><div class="kpis">' +
       kpi('업종 분류', 'v2', '추천용도 + 특징 칸, 규칙 파일로 분리') +
@@ -200,7 +202,7 @@ var D = /*@@DATA@@*/null;
       kpi('계산식 근거', t['있음'] + ' · ' + t['부분'] + ' · ' + t['없음'], '있음 · 부분 · 없음 (요소 ' + (t['있음'] + t['부분'] + t['없음']) + '개)') +
       kpi('화면', 'v1', '스코어링 보드는 아직 v1 점수') + '</div>' +
       '<div class="stack split-7-5" style="grid-template-columns:minmax(0,7fr) minmax(0,5fr)">' +
-      '<div class="panel"><div class="ph"><h2>바뀐 것</h2><p>v1 → v2, 12항목</p></div><ol class="list">' +
+      '<div class="panel"><div class="ph"><h2>바뀐 것</h2><p>v1 → v2, ' + changes.length + '항목</p></div><ol class="list">' +
         changes.map(function(c, i){ return '<li><span class="no">' + String(i + 1).padStart(2, '0') + '</span><b>' + c[0] + '</b><span>' + c[1] + '</span></li>'; }).join('') + '</ol></div>' +
       '<div class="panel"><div class="ph"><h2>그대로인 것</h2><p>두 config 파일을 직접 비교</p></div><ol class="list">' +
         same.map(function(c, i){ return '<li style="grid-template-columns:24px minmax(0,1fr) 70px"><span class="no">' + String(i + 1).padStart(2, '0') + '</span><span style="color:var(--ink)">' + c[0] + '</span>' +
@@ -322,7 +324,7 @@ var D = /*@@DATA@@*/null;
     return '<section class="view rows" data-v="scores">' +
       '<div class="panel" style="overflow:visible"><div class="ph"><h2>업종별 점수 분포와 v1 대비 변화</h2><p>예산·희망 면적 미입력 · 변화는 두 버전 모두 추천 대상인 매물 기준</p></div>' +
       '<table><thead><tr><th>업종</th><th class="r">하위 10%</th><th class="r">중앙값</th><th class="r">상위 10%</th><th class="r">최고점</th><th class="r">반영률</th><th class="r">추천 대상</th><th class="r">순위 상관</th><th class="r">평균 점수 차</th><th class="r">5점+ 바뀐 매물</th><th class="r">상위 10 유지</th><th class="r">상위 50 유지</th><th class="r">용도 일치도 바뀐 매물</th></tr></thead><tbody>' + rows + '</tbody></table>' +
-      '<p class="tiny">공연문화만 크게 바뀐 이유: 층 인자 제외(v1 층 점수 86 / 100 / 81이 빠짐)와 기본 면적 ' + Math.round(byCat['공연문화'].v1.area) + ' → ' + Math.round(byCat['공연문화'].v2.area) + '㎡.</p></div>' +
+      '<p class="tiny">v2 점수에는 분류 변경과 함께 임대료 부담+보증금 통합이 들어 있습니다(예산 미입력: v1은 보증금 구간 점수만, v2는 대구 매물 전체를 후보로 한 환산 월 임대료 분위 점수). 반영률이 오른 것도 이 때문입니다. 이 통합으로 좌표 없는 48건이 일부 업종에서 반영률 60을 넘게 되어, v2는 좌표 없는 매물을 반영률과 관계없이 추천에서 뺍니다. 공연문화만 크게 바뀐 이유: 층 인자 제외(v1 층 점수 86 / 100 / 81이 빠짐)와 기본 면적 ' + Math.round(byCat['공연문화'].v1.area) + ' → ' + Math.round(byCat['공연문화'].v2.area) + '㎡.</p></div>' +
       '<div class="stack" style="grid-template-columns:minmax(0,5fr) minmax(0,4fr) minmax(0,5fr)">' +
       '<div class="panel"><div class="ph"><h2>용도 일치도 판정 (매물 수)</h2><p>v1 → v2</p></div><table><thead><tr><th>업종</th><th class="r">명시 100</th><th class="r">다용도 60</th><th class="r">신호 없음 50</th><th class="r">다른 업종만 30</th></tr></thead><tbody>' + useRows + '</tbody></table></div>' +
       '<div class="panel"><div class="ph"><h2>업종 간 상위 10 겹침</h2></div><div class="kv"><dt>v1 대구</dt><dd class="small">' + top(D.overlap.v1) + '</dd><dt>v2 대구</dt><dd class="small">' + top(D.overlap.v2) + '</dd></div>' +
@@ -332,24 +334,30 @@ var D = /*@@DATA@@*/null;
   }
 
   // ------------------------------------------------------------ 탭 8·9. 계산식 근거
-  function evRow(e){
+  function addCell(e){
+    if (!e.added) return '<span class="na">—</span>';
+    return e.added.map(function(a){ return '<div class="part">' + (a[2] ? judge(a[2]) : '<span></span>') + '<div><b>[' + esc(a[0]) + '] ' + esc(a[1]) + '</b>' + (a[3] ? ' — ' + esc(a[3]) : '') + (a[4] ? ' · <span class="tiny">' + src(a[4]) + '</span>' : '') + '</div></div>'; }).join('');
+  }
+  function evRow(e, hasAdd){
     return '<tr><td style="width:6px; padding:0; background:' + GC[e.group] + '"></td><td style="width:118px"><b>' + esc(e.factor) + '</b><br><span class="tiny">' + GL[e.group] + '</span></td>' +
-      '<td class="small" style="width:25%">' + esc(e.formula) + '</td>' +
+      '<td class="small" style="width:' + (hasAdd ? '17%' : '25%') + '">' + esc(e.formula) + '</td>' +
       '<td>' + e.parts.map(function(p){ return '<div class="part">' + judge(p[1]) + '<div><b>' + esc(p[0]) + '</b>' + (p[2] ? ' — ' + esc(p[2]) : '') + (p[3] ? '<br><span class="tiny">' + src(p[3]) + '</span>' : '') + '</div></div>'; }).join('') + '</td>' +
-      '<td class="small" style="width:22%">' + (e.upgrade ? esc(e.upgrade) + (e.upsrc ? '<br><span class="tiny">' + src(e.upsrc) + '</span>' : '') : '<span class="na">—</span>') + '</td>' +
+      (hasAdd ? '<td class="addc" style="width:27%">' + addCell(e) + '</td>' : '') +
+      '<td class="small" style="width:' + (hasAdd ? '15%' : '22%') + '">' + (e.upgrade ? esc(e.upgrade) + (e.upsrc ? '<br><span class="tiny">' + src(e.upsrc) + '</span>' : '') : '<span class="na">—</span>') + '</td>' +
       '<td class="c" style="width:52px"><span class="pill p-same">' + e.level + '</span></td></tr>';
   }
   function vEvidence(groups, key, title, extra){
     var ev = D.evidence.filter(function(e){ return groups.indexOf(e.group) >= 0; });
+    var hasAdd = ev.some(function(e){ return e.added; });
     var t = {'있음':0,'부분':0,'없음':0}; ev.forEach(function(e){ e.parts.forEach(function(p){ t[p[1]]++; }); });
-    return '<section class="view dense" data-v="' + key + '" style="grid-template-rows:auto ' + (extra ? 'auto minmax(0,1fr)' : 'minmax(0,1fr)') + '">' +
+    return '<section class="view dense' + (hasAdd ? ' withadd' : '') + '" data-v="' + key + '" style="grid-template-rows:auto ' + (extra ? 'auto minmax(0,1fr)' : 'minmax(0,1fr)') + '">' +
       '<p class="lead"><b>판정</b> ' + judge('있음') + ' 그 식이나 요소를 그대로 쓰는 문헌·법령 · ' + judge('부분') + ' 형태·기준점·방향 일부만 대응 · ' + judge('없음') + ' 대응하는 근거를 찾지 못함. ' +
         '이 탭 요소 ' + (t['있음'] + t['부분'] + t['없음']) + '개 중 있음 ' + t['있음'] + ' · 부분 ' + t['부분'] + ' · 없음 ' + t['없음'] + '. <b>변경 수준</b> A = 인자 산출식만, B = 그룹 구성, C = 골격 (탭 11). 조사일 2026-11-18, 2차 자료는 출처에 표시.</p>' +
-      '<div class="panel"><div class="ph"><h2>' + title + '</h2></div><table><thead><tr><th></th><th>인자</th><th>현재 계산식</th><th>구성 요소별 근거</th><th>근거 있는 보완안</th><th class="c">수준</th></tr></thead><tbody>' + ev.map(evRow).join('') + '</tbody></table></div>' + (extra ? extra() : '') + '</section>';
+      '<div class="panel"><div class="ph"><h2>' + title + '</h2></div><table><thead><tr><th></th><th>인자</th><th>현재 계산식</th><th>구성 요소별 근거</th>' + (hasAdd ? '<th>추가 변경된 사항 (v2 이전 대비)</th>' : '') + '<th>근거 있는 보완안</th><th class="c">수준</th></tr></thead><tbody>' + ev.map(function(e){ return evRow(e, hasAdd); }).join('') + '</tbody></table></div>' + (extra ? extra() : '') + '</section>';
   }
 
   // 근거 ③ 아래: 영향이 크고 근거가 약한 인자부터
-  var EVMAP = {'임대료부담':['임대료 부담'],'가성비':['가성비'],'보증금':['보증금'],'층':['층'],'면적적합도':['면적 적합도'],'건물연식':['건물 연식'],
+  var EVMAP = {'임대료보증금':['임대료 부담+보증금'],'가성비':['가성비'],'층':['층'],'면적적합도':['면적 적합도'],'건물연식':['건물 연식'],
     '교통':['교통 · 지하철','교통 · 버스','지하철 : 버스 비율'],'상권활성도':['상권 활성도'],'배후수요':['배후 수요'],'용도일치도':['용도 일치도'],'건물용도':['건물 용도']};
   function priority(){
     var rows = D.factors.map(function(f){
@@ -372,7 +380,7 @@ var D = /*@@DATA@@*/null;
         return '<tr><td class="num">' + (i + 1) + '</td><td><b>' + D.flabel[r.f] + '</b></td><td><span class="gdot" style="background:' + GC[D.fgroup[r.f]] + '"></span>' + GL[D.fgroup[r.f]] + '</td>' +
           '<td class="r num">' + r.pts[0] + '~' + r.pts[1] + '</td><td class="r num"><b>' + r.best[0].toFixed(2) + '</b></td><td>' + r.best[1] + '</td><td class="r num">' + r.rmin.toFixed(3) + '</td><td>' + jt(r.t) + '</td></tr>';
       }).join('') +
-      '</tbody></table><p class="tiny">임대료 상한 300만 원(화면 기본값) 기준. 교통은 지하철·버스·비율 세 항목의 판정을 합쳤습니다. 그룹 안 비중·업종별 그룹 가중치는 모든 인자에 걸린 공통 가설(근거 없음)이라 따로 셈하지 않았습니다.</p></div>';
+      '</tbody></table><p class="tiny">월세 상한 300만 원(화면 기본값) · 보증금 상한 미입력 기준. 교통은 지하철·버스·비율 세 항목의 판정을 합쳤습니다. 그룹 안 비중·업종별 그룹 가중치는 모든 인자에 걸린 공통 가설(근거 없음)이라 따로 셈하지 않았습니다.</p></div>';
   }
 
   // ------------------------------------------------------------ 탭 11. 계산식 변경 영향
@@ -381,7 +389,7 @@ var D = /*@@DATA@@*/null;
     mad: {label:'평균 점수 변화', get:function(x){ return x['평균변화']; }, fmt:function(v){ return v.toFixed(1); }, max:10, note:'인자를 빼면 총점이 평균 몇 점 움직이나'},
     rho: {label:'순위 상관', get:function(x){ return x['순위상관']; }, fmt:function(v){ return v.toFixed(2); }, max:0.4, inv:true, note:'1에 가까울수록 순위가 그대로'},
     top10: {label:'상위 10 유지', get:function(x){ return x['상위10유지']; }, fmt:function(v){ return v + '/10'; }, max:10, inv10:true, note:'원래 상위 10개 중 남는 수'},
-    pts: {label:'배점', fmt:function(v){ return v.toFixed(1); }, max:21, note:'인자 점수 1점 = 총점 배점/100점 (결측 없을 때)'}
+    pts: {label:'배점', fmt:function(v){ return v.toFixed(1); }, max:25, note:'인자 점수 1점 = 총점 배점/100점 (결측 없을 때)'}
   };
   function heatColor(t){ var i = Math.max(0, Math.min(7, Math.round(t*7))); return ['var(--h0)','var(--h1)','var(--h2)','var(--h3)','var(--h4)','var(--h5)','var(--h6)','var(--h7)'][i]; }
   function heatInk(t){ return Math.round(t*7) >= 4 ? 'color:#fff' : 'color:var(--ink)'; }
@@ -420,7 +428,7 @@ var D = /*@@DATA@@*/null;
       '<div class="panel"><div class="ph"><h2>인자를 통째로 빼면 (산출식 변경의 실측 크기)</h2>' +
         '<div class="seg" role="group" aria-label="지표">' + Object.keys(MET).map(function(k){ return '<button type="button" data-m="' + k + '" aria-pressed="' + (k === METRIC) + '">' + MET[k].label + '</button>'; }).join('') + '</div></div>' +
         '<p class="small" id="heatNote"></p><div id="heat">' + heatTable() + '</div>' +
-        '<div class="legend"><span>작음</span>' + [0,1,2,3,4,5,6,7].map(function(i){ return '<i style="background:var(--h' + i + ')"></i>'; }).join('') + '<span>큼</span><span style="margin-left:auto" class="tiny">임대료 상한 300만 원(화면 기본값) · 희망 면적 미입력 · 칸에 마우스를 올리면 전체 지표</span></div>' +
+        '<div class="legend"><span>작음</span>' + [0,1,2,3,4,5,6,7].map(function(i){ return '<i style="background:var(--h' + i + ')"></i>'; }).join('') + '<span>큼</span><span style="margin-left:auto" class="tiny">월세 상한 300만 원(화면 기본값) · 보증금 상한 · 희망 면적 미입력 · 칸에 마우스를 올리면 전체 지표</span></div>' +
         '<p class="small">범위: 순위 상관 ' + lo[0]['순위상관'].toFixed(3) + ' (' + lo[1] + ' ' + D.flabel[lo[2]] + ') ~ ' + hi[0]['순위상관'].toFixed(3) + ' (' + hi[1] + ' ' + D.flabel[hi[2]] + '), 평균 점수 변화 ' + madMin.toFixed(2) + ' ~ ' + madMax.toFixed(2) + '점. 공연문화 면적 적합도가 큰 것은 층 인자가 빠져 공간 그룹 안 비중이 면적·연식에 몰렸기 때문입니다.</p></div>' +
       '<div class="panel" style="overflow:visible"><div class="ph"><h2>그룹을 통째로 빼면 (순위 상관)</h2><p>그룹 구성 변경의 상한에 가까움</p></div>' +
         '<table><thead><tr><th>그룹</th>' + CATS.map(function(c){ return '<th class="r">' + c + '</th>'; }).join('') + '</tr></thead><tbody>' + gRows + '</tbody></table></div>' +
@@ -434,6 +442,7 @@ var D = /*@@DATA@@*/null;
       ['새 파일', 'data/scripts/scoring_engine_v1.py', 'v1 엔진 사본. 실행하면 기존 점수_v1.csv와 같은 파일이 나옴(확인함)'],
       ['새 파일', 'data/09.스코어링/점수_v2.csv · 점수_v2_config.json · 점수_v2_검사.json', 'v2 결과'],
       ['수정', 'data/scripts/classify_use.py', '분류 규칙 v2, 층 검정, 문장 형태 기록'],
+      ['수정', 'data/scripts/scoring_engine.py · factor_sensitivity.py · build_compare_board.py · compare_board_template.html', '임대료 부담+보증금 통합 (2026-11-18), 점수_v2·인자민감도_v2 다시 계산'],
       ['수정', 'data/09.스코어링/용도분류_v2.csv · 용도분류_v2_meta.json', '매물별 분류, 집계'],
       ['새 파일', 'data/09.스코어링/특징칸_업종신호_v2.csv', '특징 칸에서만 나온 업종 558쌍 검토 목록'],
       ['새 파일', 'data/scripts/factor_sensitivity.py · 09.스코어링/인자민감도_v2.json', '인자·그룹 제거 시험 (탭 10)'],
@@ -450,20 +459,23 @@ var D = /*@@DATA@@*/null;
         'v1 사본이 기존 점수_v1.csv를 완전히 같게 재현',
         'v2 엔진의 층 점수표·기본 면적·표본 수 18개가 분류 결과(설계 문서 표)와 같음',
         '층 인자 제외 업종은 2,717건 모두 층 점수가 비어 있음',
-        '추천 대상 수가 8개 업종 모두 v1과 같음',
+        '임대료 부담+보증금: 문서 재현 예(월세 150만 · 보증금 2,000만 → 후보 1,499건, 점수 99.8 · 85 · 60 · 59.3 · 20 · 19.7)와 같음',
+        '좌표 없는 매물 48건 추천 제외 후 추천 대상 수가 8개 업종 모두 v1과 같음',
         '이 화면의 숫자는 결과 파일과 설계 문서 표에서 빌드할 때 읽음'
       ].map(function(t, i){ return '<li style="grid-template-columns:24px minmax(0,1fr); padding:3px 0"><span class="no">' + (i + 1) + '</span><span style="color:var(--ink)">' + t + '</span></li>'; }).join('') + '</ol></div>' +
       '<div class="panel" style="overflow:visible"><div class="ph"><h2>확인하지 않은 것</h2></div><ol class="list">' + [
         '화면 점수 = 엔진 점수 (화면이 아직 v1을 읽음)',
         '운동시설 v1 건수 167 대 재현 146의 차이 원인',
         '근거 출처 중 2차 자료(보도·해설·심판 요약)의 원문',
-        '특징 칸 규칙을 고친 뒤 추천 문장·업종 나열 513쌍 전체 재검토'
+        '특징 칸 규칙을 고친 뒤 추천 문장·업종 나열 513쌍 전체 재검토',
+        '매물 월세가 부가세 포함가인지 (부동산원 환산임대료는 부가세 제외)'
       ].map(function(t, i){ return '<li style="grid-template-columns:24px minmax(0,1fr); padding:3px 0"><span class="no">' + (i + 1) + '</span><span style="color:var(--ink)">' + t + '</span></li>'; }).join('') + '</ol></div>' +
       '<div class="panel"><div class="ph"><h2>남은 일</h2></div><ol class="list">' + [
         '스코어링 보드 화면을 v2 점수로 바꾸고 세부 업종 선택 추가',
         '경계 업종 배정 · "공연문화" 명칭 · 8업종 밖 안내 팀 확인',
         '근거 "없음" 요소의 보완안 적용 여부 결정 (탭 8~10)',
-        'good/bad 평가가 쌓이면 하한 40·구간값·가중치 보정'
+        'good/bad 평가가 쌓이면 하한 40·구간값·가중치 보정',
+        '예산을 넣었을 때 반영률 60 기준이 그대로 맞는지 (좌표 없는 매물은 2026-11-18부터 무조건 제외)'
       ].map(function(t, i){ return '<li style="grid-template-columns:24px minmax(0,1fr); padding:3px 0"><span class="no">' + (i + 1) + '</span><span style="color:var(--ink)">' + t + '</span></li>'; }).join('') + '</ol></div></div></section>';
   }
 
