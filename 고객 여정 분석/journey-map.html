@@ -1,0 +1,153 @@
+<title>공실 매칭 여정 매트릭스</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap">
+<style>
+/* Layout: one 16:9 matrix per persona (tabs above). Stages are columns; behavior, thought, emotion, touchpoint, pain and opportunity are rows. Each slide is 1280x720 and scales to the window width. */
+:root { --bg:#F3F4F0; --paper:#FFFFFF; --ink:#1B2326; --mute:#5E6868; --line:#D5DBD8; --dark:#1B2B2E;
+  --teal:#2A7F78; --red:#D9572B; --pain:#D9572B; --good:#4E7A2A; --sans:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif; color-scheme: light; }
+body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans); padding-block:14px;
+  padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); }
+.tabs { max-width:1600px; margin:0 auto 12px; display:flex; gap:8px; flex-wrap:wrap; }
+.tabs button { font-family:var(--sans); font-size:14px; font-weight:700; padding:8px 16px; border-radius:999px;
+  border:1px solid var(--line); background:var(--paper); color:var(--mute); cursor:pointer; }
+.tabs button[aria-selected="true"] { background:var(--dark); border-color:var(--dark); color:#FFFFFF; }
+.tabs button:focus-visible { outline:3px solid var(--teal); outline-offset:2px; }
+.frame { position:relative; width:100%; max-width:1600px; aspect-ratio:16/9; margin:0 auto; overflow:hidden; --k:1; }
+.stage { position:absolute; left:0; top:0; width:1280px; height:720px; box-sizing:border-box; transform:scale(var(--k));
+  transform-origin:0 0; background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:22px 28px;
+  display:flex; flex-direction:column; gap:10px; overflow:hidden; }
+.title { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; }
+.title h1 { margin:0; font-size:19px; font-weight:800; }
+.title p { margin:0; font-size:12.5px; color:var(--mute); }
+.matrix { display:grid; grid-template-columns:110px repeat(5, minmax(0,1fr)); align-items:stretch; flex:1; min-height:0; }
+.rl { font-size:13px; font-weight:700; color:var(--ink); display:flex; align-items:center; border-top:1px solid var(--line); padding-right:10px; }
+.cell { border-top:1px solid var(--line); padding:8px 10px; font-size:12px; line-height:1.45; text-align:center; display:flex; align-items:center; justify-content:center; min-width:0; word-break:keep-all; }
+.head .cell { border-top:0; padding:0 6px 10px; }
+.chip { display:block; width:100%; background:var(--teal); color:#FFFFFF; font-weight:800; font-size:13px; text-align:center; padding:8px 6px; border-radius:8px; line-height:1.3; }
+.chip.risk { background:var(--red); }
+.chip small { display:block; font-size:10.5px; font-weight:500; opacity:.92; margin-top:2px; }
+.quote { font-style:normal; color:var(--ink); }
+.touch { color:var(--ink); }
+.pain { color:var(--pain); font-weight:700; }
+.good { color:var(--good); }
+.emo { position:relative; padding:0; border-top:1px solid var(--line); }
+.emo svg { display:block; width:100%; height:100%; }
+.emo-row { grid-column: 2 / span 5; }
+.emo-label { font-size:13px; font-weight:700; color:var(--ink); display:flex; align-items:center; border-top:1px solid var(--line); }
+.emo-label span { font-size:11px; color:var(--mute); font-weight:500; margin-left:6px; }
+.foot { font-size:11.5px; color:var(--mute); }
+</style>
+
+<div class="tabs" role="tablist" aria-label="행위자 선택">
+  <button role="tab" aria-selected="true" data-i="0">A. 예비 창업자</button>
+  <button role="tab" aria-selected="false" data-i="1">B. 기존 자영업자</button>
+  <button role="tab" aria-selected="false" data-i="2">C. 프랜차이즈 본부 개발팀</button>
+</div>
+
+<div class="frame" id="frame">
+  <section class="stage" id="stage" aria-live="polite"></section>
+</div>
+
+<script>
+var PERSONAS = [
+  {
+    actor: "예비 창업자", sub: "30대 직장인 · 첫 소매 매장 · 월 100만 원 이하 · 중구·남구",
+    goal: "소매 매장을 처음 열어 예산 안에서 안정적으로 시작하기",
+    stages: [
+      {n:"목표 정하기", a:"소매 창업 의지와 예산 가늠", k:"\"어디서부터 찾지?\"", t:"검색·지인 조언", p:"업종별 생존율 근거를 알기 어려움", o:"업종 선택 전 생존율 요약", v:2},
+      {n:"조건 설정", a:"소매, 월 100만 원, 중구 설정", k:"\"조건에 맞는 곳이 있을까\"", t:"업종·예산 슬라이더", p:"면적 범위의 기준이 없음", o:"구별 평균 면적·임대료 기준선", v:3},
+      {n:"지도·목록 탐색", a:"핀과 순위를 훑어 후보를 추림", k:"\"매물이 많은데 어디가 좋지?\"", t:"지도, 순위 목록", p:"묶인 핀을 펼치고 해제하는 동작이 번거로움", o:"후보 3곳 고정 비교", v:3},
+      {n:"후보 검토", a:"밀집 등급과 생존율 근거 확인", k:"\"근거가 있어 믿을 만하다\"", t:"상세 패널, 근거 박스", p:"점수가 생존율이지 매출이 아님을 놓치기 쉬움", o:"\"매출 성과 아님\" 문구 상단 고정", v:4},
+      {n:"현장 확인", a:"중개사에 연락하고 현장 방문", k:"\"실제로 비어 있을까?\"", t:"매물 링크, 중개사", p:"공실은 중개사 기재 기준이라 실제와 다를 수 있음", o:"현장 확인 체크리스트", v:2, risk:true}
+    ]
+  },
+  {
+    actor: "기존 자영업자", sub: "식당 5년차 · 2호점 검토 · 사무·업무 · 월 150만 원 이상 · 기존 매장 인근 동",
+    goal: "2호점 자리를 찾아, 사무·업무 수요가 있는 동에서 확장 계약까지 이어가기",
+    stages: [
+      {n:"확장 판단", a:"2호점 필요성과 사무업무 수요 검토", k:"\"지금이 확장 타이밍일까\"", t:"본인 경험, 지인", p:"사무업무 수요를 확인할 방법이 없음", o:"동별 사무업무 밀집 등급 요약", v:3},
+      {n:"조건 설정", a:"사무·업무, 150만 원 이상, 기존 동", k:"\"익숙한 동이 편하다\"", t:"예산 슬라이더, 법정동", p:"예산 하한이 없어 직접 조건을 걸어야 함", o:"예산 하한 설정", v:4},
+      {n:"지도 탐색", a:"기존 매장 근처 매물을 순회", k:"\"이 동에 공실이 몇 개지?\"", t:"지도, 동 칩", p:"기존 매장 위치를 지도에서 알 수 없음", o:"내 매장 위치와 반경 거리", v:3},
+      {n:"후보 검토", a:"사무업무 점수와 생존율 비교", k:"\"점수 차이가 크지 않다\"", t:"상세 패널, 밀집 등급", p:"후보 간 점수 차가 작아 결정 근거가 약함", o:"후보 2곳 나란히 비교", v:3},
+      {n:"현장 확인·계약", a:"중개사 방문, 임대 조건 협상", k:"\"계약 조건이 맞을까\"", t:"중개사, 현장", p:"공실 여부를 현장에서 다시 확인해야 함", o:"임대 조건 체크리스트", v:2, risk:true}
+    ]
+  },
+  {
+    actor: "프랜차이즈 본부 개발팀", sub: "출점 담당 · 업종 공연·문화 · 후보 3~5곳 비교 · 보고서 작성",
+    goal: "공연·문화 출점 후보 3~5곳을 점수 근거로 비교해 보고서로 결정하기",
+    stages: [
+      {n:"출점 기준", a:"업종·상권 조건과 점수 기준을 정함", k:"\"점수로 기준을 세울 수 있을까\"", t:"내부 회의, 출점 데이터", p:"점수 산정 근거와 표본 수를 설명하기 어려움", o:"산정 방식과 표본 수 공개", v:3},
+      {n:"조건 설정", a:"구·동별 조건을 적용하고 점수순 정렬", k:"\"동별로 나눠 보자\"", t:"구·법정동, 점수순", p:"동을 하나씩 골라 반복해야 함", o:"여러 동을 한 번에 비교", v:4},
+      {n:"지도·목록 탐색", a:"점수 상위 후보를 지도에서 확인", k:"\"상위 후보가 어디에 몰렸나\"", t:"지도, 순위 목록", p:"목록을 보고서로 옮기는 기능이 없음", o:"목록 CSV 내보내기", v:3},
+      {n:"후보 검토", a:"후보 3~5곳의 점수와 근거 비교", k:"\"점수 차이가 근거로 충분한가\"", t:"상세 패널, 근거 박스", p:"점수 차가 작은 후보 사이에서 결정 근거가 약함", o:"후보 점수 나란히 비교 카드", v:3},
+      {n:"보고·의사결정", a:"후보를 보고서로 정리해 경영진 보고", k:"\"확신이 덜하다\"", t:"보고서, 회의", p:"보고 전 현장 확인 작업이 추가로 생김", o:"현장 확인 요청 기능", v:2, risk:true}
+    ]
+  }
+];
+
+var COLW = 1096 / 5;   // stage column width inside the matrix (1280 - padding - row label column)
+var EMO_H = 150;
+
+function esc(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+function smoothPath(pts) {
+  var d = "M" + pts[0][0] + "," + pts[0][1];
+  for (var i = 0; i < pts.length - 1; i++) {
+    var p0 = pts[i-1] || pts[i], p1 = pts[i], p2 = pts[i+1], p3 = pts[i+2] || p2;
+    var c1x = p1[0] + (p2[0] - p0[0]) / 6, c1y = p1[1] + (p2[1] - p0[1]) / 6;
+    var c2x = p2[0] - (p3[0] - p1[0]) / 6, c2y = p2[1] - (p3[1] - p1[1]) / 6;
+    d += " C" + c1x.toFixed(1) + "," + c1y.toFixed(1) + " " + c2x.toFixed(1) + "," + c2y.toFixed(1) + " " + p2[0] + "," + p2[1];
+  }
+  return d;
+}
+
+function render(i) {
+  var P = PERSONAS[i];
+  var S = P.stages;
+  var pts = S.map(function (s, k) {
+    var x = COLW * k + COLW / 2;
+    var y = 22 + (5 - s.v) * 28;      // emotion 5 (top) .. 1 (bottom)
+    return [Math.round(x), Math.round(y)];
+  });
+  var dots = pts.map(function (p, k) {
+    var risk = S[k].risk;
+    return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="' + (risk ? 8 : 5.5) + '" fill="' + (risk ? 'var(--red)' : 'var(--teal)') + '" stroke="#FFFFFF" stroke-width="2"/>';
+  }).join("");
+  var heads = S.map(function (s) {
+    return '<div class="cell"><span class="chip' + (s.risk ? ' risk' : '') + '">' + esc(s.n) + '</span></div>';
+  }).join("");
+  function row(label, key, cls) {
+    return '<div class="rl">' + label + '</div>' + S.map(function (s) {
+      return '<div class="cell ' + cls + '">' + (key === 'k' ? esc(s[key]) : esc(s[key])) + '</div>';
+    }).join("");
+  }
+  var emoLabel = '<div class="emo-label">감정<span>위쪽일수록 좋음</span></div>';
+  var emoSvg = '<div class="emo emo-row" style="height:' + EMO_H + 'px"><svg viewBox="0 0 ' + (COLW*5) + ' ' + EMO_H + '" preserveAspectRatio="none" role="img" aria-label="감정 곡선"><path d="' + smoothPath(pts) + '" fill="none" stroke="var(--teal)" stroke-width="2.5" stroke-linecap="round" vector-effect="non-scaling-stroke"/>' + dots + '</svg></div>';
+
+  document.getElementById("stage").innerHTML =
+    '<div class="title"><h1>' + esc(P.actor) + '</h1><p>' + esc(P.sub) + '</p></div>' +
+    '<div class="matrix">' +
+      '<div></div>' + heads +
+      '<div class="rl">행동</div>' + S.map(function (s) { return '<div class="cell">' + esc(s.a) + '</div>'; }).join("") +
+      '<div class="rl">생각</div>' + S.map(function (s) { return '<div class="cell quote">' + esc(s.k) + '</div>'; }).join("") +
+      emoLabel + emoSvg +
+      '<div class="rl">터치포인트</div>' + S.map(function (s) { return '<div class="cell touch">' + esc(s.t) + '</div>'; }).join("") +
+      '<div class="rl">페인포인트</div>' + S.map(function (s) { return '<div class="cell pain">' + esc(s.p) + '</div>'; }).join("") +
+      '<div class="rl">기회</div>' + S.map(function (s) { return '<div class="cell good">' + esc(s.o) + '</div>'; }).join("") +
+    '</div>' +
+    '<p class="foot">목표: ' + esc(P.goal) + ' · 감정 점수와 행위자 설정은 추정입니다.</p>';
+}
+
+document.querySelectorAll('[role="tab"]').forEach(function (b) {
+  b.addEventListener('click', function () {
+    document.querySelectorAll('[role="tab"]').forEach(function (x) { x.setAttribute('aria-selected', x === b ? 'true' : 'false'); });
+    render(Number(b.getAttribute('data-i')));
+  });
+});
+
+(function () {
+  var frame = document.getElementById('frame');
+  function fit() { try { frame.style.setProperty('--k', frame.clientWidth / 1280); } catch (e) {} }
+  fit(); window.addEventListener('resize', fit);
+  render(0);
+})();
+</script>

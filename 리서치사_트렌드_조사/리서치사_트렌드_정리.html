@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>리서치사 설문 트렌드</title>
+<style>
+  :root {
+    --bg: #f7f7f5; --surface: #ffffff; --text: #1d1d1f; --muted: #6b6b70; --line: #e4e4e0;
+    --accent: #2f5bd3; --accent-soft: #e8eefc;
+    --trend: #1f7a4d; --trend-bg: #e3f4ea; --signal: #9a6a00; --signal-bg: #fbf1d9;
+    --watch: #5b6170; --watch-bg: #eceef2; --risk: #b4372f; --risk-bg: #fbe6e4;
+    --bar: #2f5bd3; --bar2: #9aa9cf; --bar-neg: #c4524a; --track: #ececea;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141416; --surface: #1d1d20; --text: #ececee; --muted: #9a9aa2; --line: #2e2e33;
+      --accent: #8aa8ff; --accent-soft: #232b40;
+      --trend: #6fd29c; --trend-bg: #18301f; --signal: #e6be5a; --signal-bg: #33290f;
+      --watch: #b3b8c4; --watch-bg: #26282e; --risk: #f08a80; --risk-bg: #3a1d1b;
+      --bar: #8aa8ff; --bar2: #4a5577; --bar-neg: #f08a80; --track: #2a2a2f;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #141416; --surface: #1d1d20; --text: #ececee; --muted: #9a9aa2; --line: #2e2e33;
+    --accent: #8aa8ff; --accent-soft: #232b40;
+    --trend: #6fd29c; --trend-bg: #18301f; --signal: #e6be5a; --signal-bg: #33290f;
+    --watch: #b3b8c4; --watch-bg: #26282e; --risk: #f08a80; --risk-bg: #3a1d1b;
+    --bar: #8aa8ff; --bar2: #4a5577; --bar-neg: #f08a80; --track: #2a2a2f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", system-ui, sans-serif;
+    line-height: 1.6; -webkit-font-smoothing: antialiased;
+  }
+  main { max-width: 960px; margin: 0 auto; padding: 40px 16px 64px; }
+  header { margin-bottom: 32px; }
+  .eyebrow { color: var(--accent); font-weight: 700; font-size: 13px; letter-spacing: .04em; }
+  h1 { font-size: clamp(26px, 5vw, 38px); line-height: 1.25; margin: 6px 0 10px; letter-spacing: -0.02em; }
+  h2 { font-size: 22px; margin: 0 0 6px; letter-spacing: -0.01em; }
+  h3 { font-size: 16px; margin: 18px 0 8px; }
+  .lede { color: var(--muted); margin: 0; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  .chip { font-size: 12px; padding: 4px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+  section { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 24px; margin-bottom: 20px; }
+  .quote { font-size: clamp(17px, 2.6vw, 21px); font-weight: 700; line-height: 1.5; border-left: 4px solid var(--accent); padding: 4px 0 4px 16px; margin: 0; }
+  .sub { color: var(--muted); font-size: 14px; margin: 0 0 16px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: 12px; }
+  td.c, th.c { text-align: center; }
+  .scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .badge { display: inline-block; font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 999px; white-space: nowrap; }
+  .b-trend { color: var(--trend); background: var(--trend-bg); }
+  .b-signal { color: var(--signal); background: var(--signal-bg); }
+  .b-watch { color: var(--watch); background: var(--watch-bg); }
+  .b-risk { color: var(--risk); background: var(--risk-bg); }
+  .ok { color: var(--trend); font-weight: 700; }
+  .no { color: var(--muted); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px; background: var(--bg); }
+  .card h3 { margin-top: 0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .big { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
+  .big small { font-size: 14px; font-weight: 600; color: var(--muted); margin-left: 4px; }
+  .cap { font-size: 13px; color: var(--muted); margin: 4px 0 12px; }
+  .pair { display: grid; gap: 6px; margin: 10px 0 4px; }
+  .pair-row { display: grid; grid-template-columns: 124px 1fr 56px; gap: 8px; align-items: center; font-size: 13px; }
+  .track { background: var(--track); border-radius: 4px; height: 12px; overflow: hidden; }
+  .fill { height: 100%; background: var(--bar); border-radius: 4px; }
+  .fill.prev { background: var(--bar2); }
+  .fill.neg { background: var(--bar-neg); }
+  .num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+  .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+  .tag { font-size: 11px; border: 1px solid var(--line); border-radius: 6px; padding: 1px 7px; color: var(--muted); }
+  .legend { display: flex; gap: 14px; font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+  ul { padding-left: 20px; margin: 8px 0; }
+  li { margin: 4px 0; }
+  details summary { cursor: pointer; font-weight: 700; }
+  details ul { font-size: 13px; word-break: break-all; }
+  a { color: var(--accent); }
+  .note { font-size: 13px; color: var(--muted); background: var(--bg); border-radius: 8px; padding: 10px 12px; margin-top: 14px; }
+  footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 24px; }
+  @media (max-width: 560px) {
+    section { padding: 18px 16px; }
+    .pair-row { grid-template-columns: 96px 1fr 50px; }
+    th, td { padding: 8px 6px; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="eyebrow">TREND REPORT · 2026-11-03</div>
+    <h1>리서치 회사 설문으로 본<br>최근 2년 트렌드</h1>
+    <p class="lede">엠브레인 트렌드모니터, 오픈서베이, 한국리서치 '여론 속의 여론', 한국갤럽 — 표본과 조사 기간이 공개된 설문을 교차 분석했습니다.</p>
+    <div class="meta">
+      <span class="chip">엠브레인 7건</span>
+      <span class="chip">오픈서베이 7건</span>
+      <span class="chip">한국리서치 2건</span>
+      <span class="chip">한국갤럽 2건</span>
+      <span class="chip">2025.4 ~ 2026.10</span>
+    </div>
+  </header>
+
+  <section>
+    <p class="quote">AI는 누구나 쓰고, 차이는 고르는 눈에서 난다. 사람들은 관계를 좁히고 술을 줄이며, 아낀 시간과 돈을 '나'와 '내 취향'에 쓴다. 그런데 그만큼 외롭다.</p>
+  </section>
+
+  <section>
+    <h2>한눈에 보기</h2>
+    <p class="sub">두 곳 이상 회사에서 확인 + 반복 조사에서 같은 방향 = 트렌드 · 둘 중 하나 = 유력 시그널</p>
+    <div class="scroll">
+    <table>
+      <thead><tr><th>테마</th><th>판정</th><th class="c">회사</th><th>핵심 숫자</th></tr></thead>
+      <tbody>
+        <tr><td>① AI 일상화와 '고르는 눈'</td><td><span class="badge b-trend">트렌드</span></td><td class="c">3</td><td>업무 AI 사용 86.9%</td></tr>
+        <tr><td>② 관계 축소·외로움</td><td><span class="badge b-trend">트렌드</span></td><td class="c">2</td><td>일상 외로움 54.9%</td></tr>
+        <tr><td>③ 덜 마시는 건강 생활</td><td><span class="badge b-trend">트렌드</span></td><td class="c">2</td><td>2030 음주율 72.1% → 67.2%</td></tr>
+        <tr><td>④ 결혼 선택화·출산 분리</td><td><span class="badge b-trend">트렌드</span></td><td class="c">2</td><td>18~29세 여성 '결혼하면 아이' 12%</td></tr>
+        <tr><td>⑤ 합리적 소비 설계</td><td><span class="badge b-trend">트렌드</span></td><td class="c">2</td><td>20대 소분모임 의향 47.0%</td></tr>
+        <tr><td>⑥ 나 중심·취향 확신</td><td><span class="badge b-signal">유력 시그널</span></td><td class="c">1</td><td>덕질 34.9% → 40.6%</td></tr>
+        <tr><td>⑦ 대형 히트의 귀환</td><td><span class="badge b-signal">유력 시그널</span></td><td class="c">1</td><td>방송 1위 선호도 5.0% → 18.9%</td></tr>
+        <tr><td>⑧ 아날로그·디지털 디톡스</td><td><span class="badge b-watch">관찰 신호</span></td><td class="c">1</td><td>디지털 디톡스 관심 73.4%</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>트렌드 5가지</h2>
+    <div class="legend"><span><i style="background:var(--bar2)"></i>이전</span><span><i style="background:var(--bar)"></i>최근</span></div>
+    <div class="grid">
+      <div class="card">
+        <h3>① AI와 '고르는 눈' <span class="badge b-trend">트렌드</span></h3>
+        <div class="big">86.9<small>%</small></div>
+        <p class="cap">직장인 업무 중 AI 사용 · 엠브레인 (1,000명, 2026.7)</p>
+        <div class="pair">
+          <div class="pair-row"><span>챗GPT</span><div class="track"><div class="fill" style="width:82.3%"></div></div><span class="num">82.3%</span></div>
+          <div class="pair-row"><span>제미나이</span><div class="track"><div class="fill" style="width:72.7%"></div></div><span class="num">72.7%</span></div>
+          <div class="pair-row"><span>클로드</span><div class="track"><div class="fill" style="width:23.1%"></div></div><span class="num">23.1%</span></div>
+        </div>
+        <ul>
+          <li>만족도 Gemini <b>77.3%</b> &gt; ChatGPT 70.6% (오픈서베이)</li>
+          <li>18~29세 AI 체감 83% → <b>91%</b> (한국리서치)</li>
+          <li>AI 콘텐츠 '어색' <b>49.9%</b>, '사실 의심' 39.0%</li>
+        </ul>
+        <div class="tags"><span class="tag">엠브레인</span><span class="tag">오픈서베이</span><span class="tag">한국리서치</span></div>
+      </div>
+
+      <div class="card">
+        <h3>② 관계 축소·외로움 <span class="badge b-risk">트렌드</span></h3>
+        <div class="big">54.9<small>%</small></div>
+        <p class="cap">일상에서 외로움을 느낀다 · 엠브레인 (19~59세 1,000명, 2025.4)</p>
+        <div class="pair">
+          <div class="pair-row"><span>대면 두려움 20대</span><div class="track"><div class="fill neg" style="width:44%"></div></div><span class="num">44.0%</span></div>
+          <div class="pair-row"><span>대면 두려움 50대</span><div class="track"><div class="fill prev" style="width:22.4%"></div></div><span class="num">22.4%</span></div>
+          <div class="pair-row"><span>관계는 소수로</span><div class="track"><div class="fill" style="width:74.9%"></div></div><span class="num">74.9%</span></div>
+        </div>
+        <ul>
+          <li>'외로운 사람 많다' 89.0% → <b>91.4%</b></li>
+          <li>새 친구 사귀기 어렵다 <b>67.7%</b></li>
+          <li>청년 1인가구 4명 중 1명, 셋 중 한 명 혼자 여가 (오픈서베이)</li>
+        </ul>
+        <div class="tags"><span class="tag">엠브레인</span><span class="tag">오픈서베이</span></div>
+      </div>
+
+      <div class="card">
+        <h3>③ 덜 마시는 건강 생활 <span class="badge b-trend">트렌드</span></h3>
+        <div class="big">2<small>배</small></div>
+        <p class="cap">무알코올 최근 1개월 음용률 · 오픈서베이 (20~39세 2,000명)</p>
+        <div class="pair">
+          <div class="pair-row"><span>음주율 '24</span><div class="track"><div class="fill prev" style="width:72.1%"></div></div><span class="num">72.1%</span></div>
+          <div class="pair-row"><span>음주율 '26</span><div class="track"><div class="fill" style="width:67.2%"></div></div><span class="num">67.2%</span></div>
+          <div class="pair-row"><span>무알콜 '24</span><div class="track"><div class="fill prev" style="width:16.6%"></div></div><span class="num">16.6%</span></div>
+          <div class="pair-row"><span>무알콜 '26</span><div class="track"><div class="fill" style="width:33.3%"></div></div><span class="num">33.3%</span></div>
+        </div>
+        <ul>
+          <li>줄인 이유: 건강 <b>28.6%</b>, 경제적 부담 <b>27.9%</b></li>
+          <li>술자리 대신 러닝·운동 모임 <b>38.3%</b> (엠브레인)</li>
+        </ul>
+        <div class="tags"><span class="tag">오픈서베이</span><span class="tag">엠브레인</span></div>
+      </div>
+
+      <div class="card">
+        <h3>④ 결혼 선택화·출산 분리 <span class="badge b-trend">트렌드</span></h3>
+        <div class="big">41<small>%p</small></div>
+        <p class="cap">'결혼하면 아이를 가져야' 18~29세 남녀 차이 · 한국리서치 (2026.4)</p>
+        <div class="pair">
+          <div class="pair-row"><span>18~29세 남성</span><div class="track"><div class="fill" style="width:53%"></div></div><span class="num">53%</span></div>
+          <div class="pair-row"><span>18~29세 여성</span><div class="track"><div class="fill neg" style="width:12%"></div></div><span class="num">12%</span></div>
+          <div class="pair-row"><span>동거 결정 '21</span><div class="track"><div class="fill prev" style="width:62.7%"></div></div><span class="num">62.7%</span></div>
+          <div class="pair-row"><span>동거 결정 '26</span><div class="track"><div class="fill" style="width:67%"></div></div><span class="num">67.0%</span></div>
+        </div>
+        <ul>
+          <li>결혼 '해야' <b>48%</b> vs '선택' <b>47%</b>, 4년째 반반</li>
+          <li>희망 자녀 수 0명: 미혼 여성 <b>46.9%</b> (엠브레인)</li>
+          <li>혼인 감소 '심각' 63% → <b>46%</b></li>
+        </ul>
+        <div class="tags"><span class="tag">한국리서치</span><span class="tag">엠브레인</span></div>
+      </div>
+
+      <div class="card">
+        <h3>⑤ 합리적 소비 설계 <span class="badge b-trend">트렌드</span></h3>
+        <div class="big">89.0<small>%</small></div>
+        <p class="cap">창고형 할인마트 이용 경험 · 엠브레인 (19~69세 1,000명, 2026.7)</p>
+        <ul>
+          <li>소분모임 의향 39.6%, 20대 <b>47.0%</b></li>
+          <li>1인 가구 61.5%가 대용량 처리에 어려움</li>
+          <li>패션: SNS에서 발견 → 앱 결제, 에이블리 지출 최소 (오픈서베이)</li>
+          <li>엠브레인 연간 키워드: '압축소비'(2026) → '영점소비'(2027)</li>
+        </ul>
+        <div class="tags"><span class="tag">엠브레인</span><span class="tag">오픈서베이</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>유력 시그널 · 관찰 신호</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>⑥ 나 중심·취향 확신 <span class="badge b-signal">유력 시그널</span></h3>
+        <ul>
+          <li>'나' 관심 69.2% → <b>73.7%</b>, '타인' 관심 43.9%</li>
+          <li>내가 좋아하는 것에 돈 쓰고 싶다 <b>78.8%</b></li>
+          <li>비주류 흥미 19.8% → 23.6%, 덕질 34.9% → <b>40.6%</b></li>
+          <li>단, 10대 73.5%는 평판 관리가 중요</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>⑦ 대형 히트의 귀환 <span class="badge b-signal">유력 시그널</span></h3>
+        <ul>
+          <li>방송영상프로그램 1위 선호도 5.0%(2024.8) → <b>18.9%</b>(2026.7)</li>
+          <li>취향이 쪼개지는 흐름 속 '함께 보는 작품'의 반대 신호</li>
+          <li>올해의 가수 2025: 30대 이하 아이유, 40대 이상 임영웅</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>⑧ 아날로그·디톡스 <span class="badge b-watch">관찰 신호</span></h3>
+        <ul>
+          <li>디지털 디톡스 실천·관심 <b>73.4%</b></li>
+          <li>AI 발달할수록 아날로그 소중 64.3%</li>
+          <li>20대 41.6%가 필름카메라 콘텐츠 소비</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>네 번의 조사 종합</h2>
+    <p class="sub">① 설문·전망서 ② 카드·앱·검색 행동 데이터 ③ 공공 통계 ④ 리서치 회사 설문</p>
+    <div class="scroll">
+    <table>
+      <thead><tr><th>테마</th><th class="c">①</th><th class="c">②</th><th class="c">③</th><th class="c">④</th><th>최종</th></tr></thead>
+      <tbody>
+        <tr><td>AI 일상화</td><td class="c ok">●</td><td class="c ok">●</td><td class="c ok">●</td><td class="c ok">●</td><td><span class="badge b-trend">확정 트렌드</span></td></tr>
+        <tr><td>가성비 × 취향 소비</td><td class="c ok">●</td><td class="c ok">●</td><td class="c ok">●</td><td class="c ok">●</td><td><span class="badge b-trend">확정 트렌드</span></td></tr>
+        <tr><td>영상·숏폼 중심 소비</td><td class="c ok">●</td><td class="c ok">●</td><td class="c ok">●</td><td class="c ok">●</td><td><span class="badge b-trend">확정 트렌드</span></td></tr>
+        <tr><td>감정·회복 / 외로움·고립</td><td class="c ok">●</td><td class="c no">○</td><td class="c ok">●</td><td class="c ok">●</td><td><span class="badge b-signal">트렌드</span></td></tr>
+        <tr><td>러닝·건강 / 덜 마시기</td><td class="c no">○</td><td class="c ok">●</td><td class="c ok">●</td><td class="c ok">●</td><td><span class="badge b-signal">트렌드</span></td></tr>
+        <tr><td>서브컬처·팬덤 / 비주류 취향</td><td class="c ok">●</td><td class="c ok">●</td><td class="c no">○</td><td class="c ok">●</td><td><span class="badge b-signal">트렌드</span></td></tr>
+        <tr><td>아날로그·느린 경험</td><td class="c ok">●</td><td class="c ok">●</td><td class="c no">○</td><td class="c ok">●</td><td><span class="badge b-signal">트렌드</span></td></tr>
+        <tr><td>결혼·출산 간극</td><td class="c no">○</td><td class="c no">○</td><td class="c ok">●</td><td class="c ok">●</td><td><span class="badge b-watch">유력 시그널</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="note">지난 조사에서 '관찰 신호'였던 <b>아날로그·느린 경험</b>은 이번 엠브레인 조사로 근거가 하나 더 붙어 트렌드로 올라갔습니다. 확정 트렌드 3개는 네 종류 데이터가 모두 같은 방향입니다.</p>
+  </section>
+
+  <section>
+    <h2>시사점</h2>
+    <div class="scroll">
+    <table>
+      <tbody>
+        <tr><th>브랜드·마케터</th><td>'혼자서도 편한, 그러나 연결되는' 경험. 무알콜·저도주, 러닝·취미 모임과 결합</td></tr>
+        <tr><th>상품 기획</th><td>소용량·소분 판매. 나만의 기준을 세울 수 있는 맞춤형 구성</td></tr>
+        <tr><th>AI 서비스·콘텐츠</th><td>AI 사용 사실을 투명하게. '어색함'(49.9%)과 '의심'(39.0%)을 줄이는 것이 과제</td></tr>
+        <tr><th>발표·설득</th><td>네 종류 데이터가 같은 방향인 확정 트렌드 3개를 뼈대로. 리서치 회사 설문은 연령·성별 차이를 보여 주는 데 강점</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>한계</h2>
+    <ul>
+      <li><b>공개 범위:</b> 엠브레인 세부 그래프·통계테이블과 오픈서베이 리포트 전문은 유료 또는 다운로드가 필요해, 본문에 공개된 수치만 썼습니다.</li>
+      <li><b>한국갤럽:</b> 생활·가치관 공개 리포트가 적고 목록 인코딩이 깨져 방송 선호·가수 조사만 반영했습니다.</li>
+      <li><b>미확인 수치:</b> 한국리서치 2026 AI 인식조사의 'AI 관심 84%'는 언론 보도로만 확인했습니다.</li>
+      <li><b>패널 조사 특성:</b> 온라인 패널 1,000~3,000명 규모라 공공 통계보다 표본이 작습니다.</li>
+    </ul>
+    <details style="margin-top:14px">
+      <summary>출처 전체 보기</summary>
+      <ul>
+        <li>엠브레인 2026 '나'·'타인' 관심: <a href="https://trendmonitor.co.kr/tmweb/trend/allTrend/detail.do?code=0404&trendType=CKOREA&bIdx=3379">trendmonitor.co.kr</a></li>
+        <li>엠브레인 2026 주류 vs 비주류 문화: <a href="https://trendmonitor.co.kr/tmweb/trend/allTrend/detail.do?code=0404&trendType=CKOREA&bIdx=3374">trendmonitor.co.kr</a></li>
+        <li>엠브레인 2025 외로움 인식: <a href="https://trendmonitor.co.kr/tmweb/trend/allTrend/detail.do?code=0404&trendType=CKOREA&bIdx=3240">trendmonitor.co.kr</a></li>
+        <li>엠브레인 2026 결혼관(동거 등): <a href="https://trendmonitor.co.kr/tmweb/trend/allTrend/detail.do?code=0404&trendType=CKOREA&bIdx=3355">trendmonitor.co.kr</a></li>
+        <li>엠브레인 2026 업무 AI 활용: <a href="https://trendmonitor.co.kr/tmweb/trend/allTrend/detail.do?code=0404&trendType=CKOREA&bIdx=3369">trendmonitor.co.kr</a></li>
+        <li>엠브레인 2026 아날로그 감수성: <a href="https://trendmonitor.co.kr/tmweb/trend/allTrend/detail.do?code=0404&trendType=CKOREA&bIdx=3358">trendmonitor.co.kr</a></li>
+        <li>엠브레인 창고형 마트·소분모임: <a href="https://trendmonitor.co.kr/tmweb/trend/allTrend/detail.do?code=0404&trendType=CKOREA&bIdx=3370">trendmonitor.co.kr</a></li>
+        <li>『2027 트렌드모니터』 영점소비, 뉴스와이어: <a href="https://www.newswire.co.kr/newsRead.php?no=1045114">newswire.co.kr</a></li>
+        <li>오픈서베이 MZ세대 주류 2026: <a href="https://blog.opensurvey.co.kr/trendreport/mz-alcoholic-beverage-2026/">opensurvey.co.kr</a> · 보도 <a href="https://www.segye.com/newsView/20260911503713">세계일보</a></li>
+        <li>오픈서베이 AI 검색 2026 하반기: <a href="https://blog.opensurvey.co.kr/trendreport/ai-search-2-2026/">opensurvey.co.kr</a></li>
+        <li>오픈서베이 소셜미디어 2026: <a href="https://blog.opensurvey.co.kr/trendreport/socialmedia-2026/">opensurvey.co.kr</a></li>
+        <li>오픈서베이 MZ세대 패션앱 2026: <a href="https://blog.opensurvey.co.kr/trendreport/mz-fashion-2026/">opensurvey.co.kr</a></li>
+        <li>오픈서베이 Z-알파세대 2026: <a href="https://blog.opensurvey.co.kr/trendreport/generation-z-alpha-2026/">opensurvey.co.kr</a></li>
+        <li>오픈서베이 청년 1인가구 2025: <a href="https://blog.opensurvey.co.kr/trendreport/youth-soloeconomy-2025/">opensurvey.co.kr</a></li>
+        <li>한국리서치 2026 결혼인식조사: <a href="https://hrcopinion.co.kr/archives/36452">hrcopinion.co.kr</a> · <a href="https://hrcopinion.co.kr/archives/37118">혼인 감소 인식</a></li>
+        <li>한국리서치 인공지능 관심·체감도(2025): <a href="https://hrcopinion.co.kr/wp-content/uploads/2025/10/350-2-보고서_한국리서치-주간리포트_여론속의여론-제350-2호2025년-10월-1일_인공지능-관심-및-체감도-미래-변화-인식.pdf">hrcopinion.co.kr</a></li>
+        <li>한국갤럽 방송영상프로그램 2026년 10월: <a href="https://www.gallup.co.kr/gallupdb/reportContent.asp?seqNo=1664">gallup.co.kr</a></li>
+        <li>한국갤럽 2025 올해를 빛낸 가수: <a href="https://www.gallup.co.kr/gallupdb/reportContent.asp?seqNo=1608">gallup.co.kr</a></li>
+      </ul>
+    </details>
+  </section>
+
+  <footer>원본 데이터: 01_엠브레인_트렌드모니터 · 02_오픈서베이_트렌드리포트 · 03_한국리서치_여론속의여론 · 04_한국갤럽_갤럽리포트 · 05_교차분석_및_4단계종합 (.xlsx)</footer>
+</main>
+</body>
+</html>

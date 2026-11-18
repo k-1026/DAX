@@ -1,0 +1,268 @@
+<meta charset="utf-8">
+<title>공실 스코어링 가이드</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout: 위에서 아래로 한 번 읽으면 되는 순서. 질문 → 데이터 → 거르기 → 점수 → 감점·가점 → 순위 → 주의. */
+:root {
+  --bg: #EEF2EF;
+  --surface: #FFFFFF;
+  --ink: #17221E;
+  --muted: #56655F;
+  --line: #D3DDD7;
+  --accent: #1E6E58;
+  --accent-soft: #DDEEE6;
+  --pos: #1E6E58;
+  --neg: #A03A3A;
+  --neg-soft: #F6E3E1;
+  --warn: #8C5E0E;
+  --warn-soft: #F8EED8;
+  --font-display: "Space Grotesk", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-body: "Inter", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1512; --surface: #16201C; --ink: #E3ECE7; --muted: #97A9A1; --line: #2A3932;
+    --accent: #6FD0AE; --accent-soft: #17372C; --pos: #6FD0AE; --neg: #F09A94; --neg-soft: #3B2221;
+    --warn: #E8BE6A; --warn-soft: #37301A;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1512; --surface: #16201C; --ink: #E3ECE7; --muted: #97A9A1; --line: #2A3932;
+  --accent: #6FD0AE; --accent-soft: #17372C; --pos: #6FD0AE; --neg: #F09A94; --neg-soft: #3B2221;
+  --warn: #E8BE6A; --warn-soft: #37301A;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.65;
+  padding-block: 32px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+h1, h2, h3 { font-family: var(--font-display); margin: 0; line-height: 1.25; text-wrap: balance; }
+p { margin: 0; }
+.wrap { width: min(100%, 980px); margin: 0 auto; display: flex; flex-direction: column; gap: 40px; }
+.eyebrow { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.lede { color: var(--muted); max-width: 66ch; font-size: 16px; margin-top: 10px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; min-width: 0; }
+.step { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 14px; align-items: start; }
+.badge { width: 44px; height: 44px; border-radius: 50%; background: var(--accent); color: var(--surface); display: grid; place-items: center; font-family: var(--font-display); font-weight: 700; font-size: 18px; }
+.step-body { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.step-body h2 { font-size: 20px; }
+.say { color: var(--muted); }
+ul.plain { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+.term { font-weight: 600; }
+.tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; min-width: 560px; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 12px; color: var(--muted); font-weight: 600; background: var(--bg); }
+tr:last-child td { border-bottom: 0; }
+td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pos { color: var(--pos); font-weight: 600; }
+.neg { color: var(--neg); font-weight: 600; }
+.dim { color: var(--line); }
+.example { background: var(--accent-soft); border-radius: 10px; padding: 14px 16px; font-size: 14px; }
+.example b { font-weight: 600; }
+.bars { display: flex; flex-direction: column; gap: 6px; }
+.bar-row { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) 62px; gap: 10px; align-items: center; font-size: 14px; }
+.track { position: relative; height: 12px; background: var(--bg); border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
+.fill { position: absolute; top: 0; bottom: 0; left: 0; background: var(--pos); border-radius: 999px; }
+.val { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--font-display); font-weight: 600; }
+.total { border-top: 1px dashed var(--line); padding-top: 8px; font-weight: 600; display: flex; justify-content: space-between; }
+.warn-box { background: var(--warn-soft); border: 1px solid var(--warn); border-radius: 10px; padding: 12px 14px; color: var(--ink); }
+.warn-box b { color: var(--warn); }
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; }
+.flow { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.flow div { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 8px; text-align: center; font-size: 13px; font-weight: 600; }
+.flow div span { display: block; font-size: 12px; font-weight: 500; color: var(--muted); }
+.glossary dt { font-weight: 600; margin-top: 10px; }
+.glossary dd { margin: 2px 0 0; color: var(--muted); }
+footer { font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 12px; }
+
+@media (max-width: 760px) {
+  .two { grid-template-columns: minmax(0, 1fr); }
+  .flow { grid-template-columns: minmax(0, 1fr); }
+  .bar-row { grid-template-columns: minmax(0, 1fr) 56px; }
+  .bar-row .track { grid-column: 1 / -1; order: 3; }
+  .step { grid-template-columns: 36px minmax(0, 1fr); }
+  .badge { width: 36px; height: 36px; font-size: 15px; }
+}
+</style>
+
+<main class="wrap">
+  <header>
+    <div class="eyebrow">대구 공실 매칭 · 스코어링 가이드</div>
+    <h1 style="font-size:clamp(26px,4vw,38px); margin-top:8px">빈 상가마다 어떤 용도가 맞는지 점수로 정합니다</h1>
+    <p class="lede">지금 비어 있는 상가·사무실 매물 2,667곳을 카페, 식당, 오피스, 전시·갤러리, 창고 다섯 가지 용도로 나눠 점수를 매깁니다. 점수가 높을수록 그 용도에 입지 조건이 잘 맞는다는 뜻입니다. 아래 순서대로 읽으면 전체 흐름을 알 수 있습니다.</p>
+  </header>
+
+  <section class="card" aria-label="한눈에 보기">
+    <div class="eyebrow" style="margin-bottom:10px">전체 흐름</div>
+    <div class="flow">
+      <div>1. 데이터<span>주변 정보를 모읍니다</span></div>
+      <div>2. 거르기<span>쓸 수 없는 매물을 뺍니다</span></div>
+      <div>3. 점수 만들기<span>조건마다 점수를 줍니다</span></div>
+      <div>4. 감점·가점<span>위험과 장점을 더합니다</span></div>
+      <div>5. 순위<span>용도별로 정렬합니다</span></div>
+    </div>
+  </section>
+
+  <section class="step" aria-labelledby="s1">
+    <div class="badge" aria-hidden="true">1</div>
+    <div class="step-body">
+      <h2 id="s1">데이터를 모읍니다</h2>
+      <p class="say">매물 하나만 보면 입지를 알 수 없습니다. 주변에 무엇이 있는지도 함께 봅니다.</p>
+      <div class="tbl">
+        <table>
+          <thead><tr><th>무엇</th><th>규모</th><th>무엇을 알려 주나</th></tr></thead>
+          <tbody>
+            <tr><td>공실 매물</td><td class="num">2,717건 중 2,667건</td><td>위치, 면적, 층, 보증금, 월세, 특징 문구</td></tr>
+            <tr><td>상가업소 정보</td><td class="num">116,628곳</td><td>주변에 어떤 가게가 몇 개 있는지</td></tr>
+            <tr><td>주차장</td><td class="num">817곳</td><td>차를 댈 곳이 얼마나 있는지</td></tr>
+            <tr><td>전시관</td><td class="num">273곳</td><td>갤러리·미술관·전시 시설이 가까운지</td></tr>
+            <tr><td>물류창고</td><td class="num">30곳 (영업 중)</td><td>같은 구에 창고 업체가 얼마나 있는지</td></tr>
+            <tr><td>용도지역</td><td class="num">10,019개 구역</td><td>상업지역인지, 공업지역인지</td></tr>
+            <tr><td>침수 위험</td><td class="num">20m 격자 216,732개</td><td>물에 잠길 가능성이 있는 곳인지</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="step" aria-labelledby="s2">
+    <div class="badge" aria-hidden="true">2</div>
+    <div class="step-body">
+      <h2 id="s2">쓸 수 없는 매물을 뺍니다</h2>
+      <ul class="plain">
+        <li>위치 정보가 없는 매물 48건은 지도에 찍을 수 없어서 뺍니다.</li>
+        <li>지금 공실로 표시되지 않은 매물 2건은 뺍니다.</li>
+        <li>사용자가 면적과 보증금·월세 범위를 정하면, 그 안의 매물만 순위에 나옵니다. 처음에는 전체 범위가 기본입니다.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="step" aria-labelledby="s3">
+    <div class="badge" aria-hidden="true">3</div>
+    <div class="step-body">
+      <h2 id="s3">조건마다 점수를 줍니다</h2>
+      <p class="say">여기서 가장 중요한 개념은 <span class="term">백분위</span>입니다. 모든 매물을 줄 세웠을 때 이 매물이 몇 %쯤 되는지를 0에서 1 사이 숫자로 바꾼 것입니다. 예를 들어 주변 카페 수가 전체 매물의 80%보다 적다면 0.8 정도가 됩니다. 이렇게 하면 "몇 개가 많은가"처럼 단위가 다른 조건을 같은 기준으로 비교할 수 있습니다.</p>
+      <p class="say">그다음 각 조건의 백분위에 <span class="term">가중치</span>를 곱해 더합니다. 가중치는 그 조건이 얼마나 중요한지를 점으로 나타낸 값입니다. 모든 가중치의 합은 100입니다.</p>
+      <div class="tbl">
+        <table>
+          <thead>
+            <tr><th>조건</th><th>무엇을 보나</th><th class="num">카페</th><th class="num">식당</th><th class="num">오피스</th><th class="num">전시</th><th class="num">창고</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>동종 포화</td><td>같은 업종이 주변 300m에 적을수록 좋음</td><td class="num">20</td><td class="num">15</td><td class="num">20</td><td class="num dim">–</td><td class="num dim">–</td></tr>
+            <tr><td>보완 집적</td><td>다른 가게가 많아 사람이 모이는지</td><td class="num">25</td><td class="num">30</td><td class="num">20</td><td class="num">25</td><td class="num dim">–</td></tr>
+            <tr><td>주차장</td><td>주변 500m 안 주차장 수</td><td class="num">15</td><td class="num">15</td><td class="num">25</td><td class="num dim">–</td><td class="num">35</td></tr>
+            <tr><td>전시관 근접</td><td>주변 1km 안 전시관 수</td><td class="num dim">–</td><td class="num dim">–</td><td class="num dim">–</td><td class="num">40</td><td class="num dim">–</td></tr>
+            <tr><td>상업지역</td><td>상업지역 안에 있는지</td><td class="num">10</td><td class="num">10</td><td class="num">15</td><td class="num">5</td><td class="num dim">–</td></tr>
+            <tr><td>공업지역</td><td>공업지역 안에 있는지</td><td class="num dim">–</td><td class="num dim">–</td><td class="num dim">–</td><td class="num dim">–</td><td class="num">40</td></tr>
+            <tr><td>1층</td><td>길에서 바로 보이는 1층인지</td><td class="num">15</td><td class="num">15</td><td class="num dim">–</td><td class="num">15</td><td class="num dim">–</td></tr>
+            <tr><td>역 근접</td><td>지하철역이 가까운지</td><td class="num">8</td><td class="num">8</td><td class="num">10</td><td class="num">10</td><td class="num dim">–</td></tr>
+            <tr><td>무권리</td><td>권리금이 없다고 적혀 있는지</td><td class="num">4</td><td class="num">4</td><td class="num dim">–</td><td class="num">3</td><td class="num dim">–</td></tr>
+            <tr><td>임대료</td><td>보증금과 월세가 낮을수록 좋음</td><td class="num">3</td><td class="num">3</td><td class="num">10</td><td class="num">2</td><td class="num">15</td></tr>
+            <tr><td>구 단위 물류 <span style="color:var(--warn)">주의</span></td><td>같은 구의 영업 물류창고 수 (거친 지표)</td><td class="num dim">–</td><td class="num dim">–</td><td class="num dim">–</td><td class="num dim">–</td><td class="num">10</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="say">예를 들어 카페 조건에서 가중치 25의 보완 집적은 백분위가 0.8이면 25 × 0.8 = 20점을 받습니다.</p>
+    </div>
+  </section>
+
+  <section class="step" aria-labelledby="s4">
+    <div class="badge" aria-hidden="true">4</div>
+    <div class="step-body">
+      <h2 id="s4">감점과 가점을 더합니다</h2>
+      <p class="say">가중치로 다 담지 못하는 위험과 장점은 정해진 점수로 따로 더하거나 뺍니다.</p>
+      <div class="two">
+        <div class="card" style="padding:14px 16px">
+          <div class="term" style="margin-bottom:6px">감점 (−)</div>
+          <ul class="plain">
+            <li>지하 매물: 침수와 별개로 −10 (카페·식당·오피스·전시)</li>
+            <li>침수 등급 1: −10 / 등급 2~3: −25 / 등급 4: −40 (지하 매물과 창고 전체)</li>
+            <li>오피스의 1층: −10 (임대료 부담이 크다고 보고 뺌)</li>
+          </ul>
+        </div>
+        <div class="card" style="padding:14px 16px">
+          <div class="term" style="margin-bottom:6px">가점 (+)</div>
+          <ul class="plain">
+            <li>오피스의 2~5층: +5</li>
+            <li>창고의 1층: +2</li>
+          </ul>
+        </div>
+      </div>
+      <div class="example">
+        <b>예시로 보기:</b> 수성구 범물1동, 1층 43㎡ 카페 매물의 점수 구성입니다. 실제 계산 결과입니다.
+        <div class="bars" style="margin-top:12px" role="img" aria-label="항목별 점수 막대">
+          <div class="bar-row"><span>동종 포화 (적을수록 좋음)</span><span class="track"><span class="fill" style="width:63%"></span></span><span class="val">+12.7</span></div>
+          <div class="bar-row"><span>보완 집적</span><span class="track"><span class="fill" style="width:99%"></span></span><span class="val">+19.8</span></div>
+          <div class="bar-row"><span>주차장 (500m)</span><span class="track"><span class="fill" style="width:32%"></span></span><span class="val">+6.5</span></div>
+          <div class="bar-row"><span>상업지역</span><span class="track"><span class="fill" style="width:50%"></span></span><span class="val">+10.0</span></div>
+          <div class="bar-row"><span>1층</span><span class="track"><span class="fill" style="width:100%"></span></span><span class="val">+15.0</span></div>
+          <div class="bar-row"><span>역 근접</span><span class="track"><span class="fill" style="width:34%"></span></span><span class="val">+6.8</span></div>
+          <div class="bar-row"><span>무권리</span><span class="track"><span class="fill" style="width:100%"></span></span><span class="val">+4.0</span></div>
+          <div class="bar-row"><span>임대료 (낮을수록 좋음)</span><span class="track"><span class="fill" style="width:18%"></span></span><span class="val">+1.8</span></div>
+          <div class="total"><span>합계</span><span>76.6 → 최종 76.5점</span></div>
+        </div>
+        <p style="margin-top:8px; font-size:13px; color:var(--muted)">막대 길이는 각 항목 점수를 최대치에 대해 보여 준 것입니다. 합계는 0~100 범위로 자르고, 반올림 때문에 0.2점 안팎 차이가 날 수 있습니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="step" aria-labelledby="s5">
+    <div class="badge" aria-hidden="true">5</div>
+    <div class="step-body">
+      <h2 id="s5">용도별로 순위를 매깁니다</h2>
+      <ul class="plain">
+        <li>용도를 하나 고르면 그 용도 점수가 높은 순서로 매물이 나옵니다. 처음에는 5위까지만 보이고, <b>더보기</b>를 누르면 나머지가 펼쳐집니다.</li>
+        <li>구를 여러 개 고르면 구별 비교표로 상위 5곳의 평균을 함께 볼 수 있습니다.</li>
+        <li>같은 좌표에 여러 호가 있으면 지도에서는 한 점으로 묶습니다. 목록에서는 호마다 따로 점수와 정보가 나옵니다.</li>
+        <li>지도에서 점을 누르거나 목록에서 매물을 고르면, 그 매물의 점수 구성이 아래에 나옵니다.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="s6" style="border-color:var(--warn)">
+    <div class="step-body">
+      <h2 id="s6">꼭 알아 둘 점</h2>
+      <div class="warn-box">
+        <b>경고 표시는 허용 여부가 아닙니다.</b> 방화지구, 지구단위계획구역, 고도지구가 걸린 매물은 점수에 넣지 않고 경고만 붙습니다. 실제로 그 용도로 쓸 수 있는지는 <b>건축물대장, 토지이음, 구청 건축과</b>에서 확인해야 합니다.
+      </div>
+      <ul class="plain">
+        <li>가중치와 감점 값은 정답 데이터가 없어서, 여러 조합을 시험해 흔들림이 가장 적은 값을 골랐습니다. 입점 후 실제 결과로 다시 검증해야 합니다.</li>
+        <li>단기임대 가격 항목은 없어서, 보증금과 월세로 대신합니다.</li>
+        <li>구 단위 물류 집계는 같은 구 안의 모든 매물에 같은 값을 줍니다. 거친 지표이고, 창고 수가 많을수록 좋다는 방향은 가설입니다.</li>
+        <li>유동인구, 역 승하차량, 공시지가, 도로 폭은 아직 가져오지 못해서 점수에 넣지 않았습니다.</li>
+        <li>매물 정보는 2026-10-07부터 11-06 사이에 노출된 기록입니다. 실제로 지금도 비어 있는지는 현장에서 확인해야 합니다.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="gloss">
+    <h2 id="gloss" style="font-size:18px; margin-bottom:6px">용어 풀이</h2>
+    <dl class="glossary" style="margin:0">
+      <dt>공실 매물</dt><dd>지금 임대 중이 아니라고 표시된 상가나 사무실 매물</dd>
+      <dt>백분위</dt><dd>전체 매물 중 이 매물의 위치를 0~1 사이 숫자로 바꾼 값</dd>
+      <dt>가중치</dt><dd>조건마다 붙이는 중요도 점수. 모두 더하면 100</dd>
+      <dt>동종 포화</dt><dd>같은 업종이 주변에 많아서 경쟁이 심한 정도</dd>
+      <dt>보완 집적</dt><dd>다른 업종이 함께 있어서 사람이 모이는 정도</dd>
+      <dt>용도지역</dt><dd>도시계획에서 정한 땅의 쓰임 구분. 상업지역, 공업지역 등</dd>
+      <dt>침수 등급</dt><dd>물에 잠길 수 있는 깊이에 따른 등급. 1은 0.5m 미만, 4는 물이 깊게 찰 수 있는 곳</dd>
+      <dt>경고</dt><dd>방화지구, 지구단위계획구역, 고도지구처럼 허용 여부를 확인해야 하는 표시</dd>
+    </dl>
+  </section>
+
+  <footer>출처: 소상공인 상가(상권)정보 202609 · 전국주차장정보표준데이터 · 한국문화정보원 전시관 위치 · 행정안전부 물류창고업체 조회 · 국토계획 용도지역 · 침수 격자 자료</footer>
+</main>

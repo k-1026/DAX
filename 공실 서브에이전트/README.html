@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>대구 빈 상가 찾기 · 에이전트 명세</title>
+<style>
+:root{--bg:#F6F5F1;--surface:#fff;--ink:#141E33;--ink-2:#36425A;--line:#C9CFDA;--soft:#EEF1F5;--accent:#1747C7;--note:#7A4800;--note-bg:#FDF0D5}
+@media (prefers-color-scheme: dark){:root{--bg:#11161F;--surface:#182030;--ink:#F0F3F8;--ink-2:#C3CBD8;--line:#3A4558;--soft:#222C3C;--accent:#8DB0FF;--note:#F2B656;--note-bg:#3A2C12}}
+*{box-sizing:border-box}
+html{font-size:17px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Pretendard','Malgun Gothic',system-ui,sans-serif;line-height:1.65;word-break:keep-all}
+.wrap{max-width:1100px;margin:0 auto;padding:28px 24px 48px}
+h1{font-size:1.8rem;letter-spacing:-.5px;margin:0 0 12px}
+h2{font-size:1.3rem;margin:34px 0 10px;padding-top:14px;border-top:1px solid var(--line)}
+h3{font-size:1.1rem;margin:22px 0 8px}
+p{margin:8px 0}
+a{color:var(--accent)}
+code{background:var(--soft);border-radius:6px;padding:1px 6px;font-family:Consolas,monospace;font-size:.92em}
+pre{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;overflow-x:auto}
+pre code{background:none;padding:0}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface);margin:10px 0}
+table{border-collapse:collapse;width:100%}
+th,td{border-bottom:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top;font-size:.95rem}
+th{background:var(--soft);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+blockquote{margin:12px 0;background:var(--note-bg);color:var(--note);border-radius:12px;padding:10px 16px;font-weight:600}
+blockquote p{margin:0}
+ul,ol{padding-left:1.3em}
+li{margin:3px 0}
+.meta{background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:12px;padding:12px 16px;margin-bottom:18px;color:var(--ink-2);font-size:.95rem}
+.meta b{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>대구 빈 상가 찾기 · 에이전트 명세</h1>
+<p>상담 에이전트 1개와 서브에이전트 7개의 명세 파일이다. 각 파일은 Claude Code 서브에이전트 형식(맨 위 <code>name</code>·<code>description</code>·<code>tools</code>)이면서 본문은 기획서처럼 역할 → 입력 → 할 일 → 규칙 → 금지 사항 → 출력 형태 순서로 썼다.</p>
+<h2>파일 목록</h2>
+<div class="tw"><table><thead><tr><th>파일</th><th>에이전트</th><th>언제 실행</th><th>일하는 방식</th></tr></thead><tbody><tr><td><a href="00_상담에이전트.html">00_상담에이전트.md</a></td><td>상담 에이전트 (오케스트레이터)</td><td>대화 내내</td><td>AI</td></tr><tr><td><a href="01_조건파악.html">01_조건파악.md</a></td><td>① 조건 파악</td><td>대화 중 호출</td><td>AI</td></tr><tr><td><a href="02_매물수집검증.html">02_매물수집검증.md</a></td><td>② 매물 수집·검증</td><td>주 1회</td><td>규칙 코드</td></tr><tr><td><a href="03_입지상권분석.html">03_입지상권분석.md</a></td><td>③ 입지·상권 분석</td><td>② 다음</td><td>규칙 코드</td></tr><tr><td><a href="04_점수추천.html">04_점수추천.md</a></td><td>④ 점수·추천</td><td>대화 중 호출</td><td>규칙 코드</td></tr><tr><td><a href="05_설명보고.html">05_설명보고.md</a></td><td>⑤ 설명·보고</td><td>대화 중 호출</td><td>AI</td></tr><tr><td><a href="06_피드백학습.html">06_피드백학습.md</a></td><td>⑥ 피드백 학습 (2단계)</td><td>평가가 쌓이면</td><td>규칙 코드</td></tr><tr><td><a href="07_상담준비.html">07_상담준비.md</a></td><td>⑦ 상담 준비</td><td>대화 중 호출</td><td>AI</td></tr></tbody></table></div>
+<h2>모든 에이전트 공통</h2>
+<p><b>금지 사항</b></p>
+<ol>
+<li>데이터에 없는 내용을 지어내지 않는다. 모르면 <code>정보 없음</code>으로 둔다.</li>
+<li>장사 성공·수익을 보장하는 표현을 쓰지 않는다. 점수는 참고용이다.</li>
+<li>입점 가능 여부·계약 가능 여부를 단정하지 않는다. 구청 건축과·중개사 확인으로 넘긴다.</li>
+<li>자기 역할 밖의 일을 하지 않는다. 필요하면 상담 에이전트에 돌려보낸다.</li>
+</ol>
+<p><b>출력 형태</b>: 에이전트끼리는 마크다운 표와 목록으로 주고받는다. 양이 많은 매물표·입지표만 CSV 파일로 저장한다.</p>
+<h2>실제로 돌릴 때</h2>
+<ul>
+<li>01~07 파일을 프로젝트의 <code>.claude/agents/</code> 폴더에 넣으면 서브에이전트로 쓸 수 있다.</li>
+<li>00 파일은 서브에이전트가 아니라 메인 세션의 지시문(CLAUDE.md)으로 넣는다. Claude Code에서는 서브에이전트가 다른 서브에이전트를 부를 수 없기 때문이다.</li>
+<li>②③④⑥은 점수 엔진·수집 스크립트 같은 규칙 코드가 있어야 동작한다. 이 명세에는 코드가 들어 있지 않다.</li>
+</ul>
+<h2>아직 정하지 않은 것</h2>
+<div class="tw"><table><thead><tr><th>에이전트</th><th>미정 사항</th></tr></thead><tbody><tr><td>③</td><td>출처표의 실제 데이터 기준일, 갱신 주기</td></tr><tr><td>④</td><td>같은 업종 가게 수의 업종별 가점·감점 표</td></tr><tr><td>④</td><td>중요도 조정 폭(+25), 동점 처리(월세 낮은 순) — 임시값으로 표시</td></tr><tr><td>⑦</td><td>소매·뷰티·공연문화·사무업무의 업종 질문</td></tr></tbody></table></div>
+<h2>확정한 것 (2026-11-13)</h2>
+<div class="tw"><table><thead><tr><th>에이전트</th><th>확정 내용</th></tr></thead><tbody><tr><td>②</td><td><code>오래됨</code> 표시 기준은 90일</td></tr><tr><td>⑤</td><td>총점 구분선 80/70/60, 항목 점수 구분선 70/45</td></tr><tr><td>⑥</td><td>개별 금지 사항 4개, 최소 평가 수 30건, 평가는 서버에 익명으로 저장</td></tr></tbody></table></div>
+</div>
+</body>
+</html>

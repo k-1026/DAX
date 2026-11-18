@@ -1,0 +1,264 @@
+<meta charset="utf-8">
+<title>공실 스코어링 흐름도</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* 레이아웃: 1600×900(16:9) 한 장. 위 여섯 단계가 왼쪽에서 오른쪽으로 이어지고,
+   아래 세 칸은 그 과정에 붙는 보조 정보(경고, 계산 예시, 값을 고른 방법)입니다.
+   좁은 화면에서는 줄이지 않고 세로로 쌓습니다. */
+:root {
+  --bg: #F2F5F1; --surface: #FFFFFF; --ink: #1A2420; --muted: #5B6A63; --line: #D3DCD6;
+  --accent: #1F6F5C; --accent-soft: #E2EFE9;
+  --warn: #8F5F10; --warn-soft: #F7EEDC; --neg: #A23B3B;
+  --font-display: "Space Grotesk", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-body: "Inter", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0F1714; --surface: #17221E; --ink: #E4ECE8; --muted: #98A8A1; --line: #2B3A34;
+    --accent: #7BD3B5; --accent-soft: #163229;
+    --warn: #E7B865; --warn-soft: #35301C; --neg: #F09A94;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0F1714; --surface: #17221E; --ink: #E4ECE8; --muted: #98A8A1; --line: #2B3A34;
+  --accent: #7BD3B5; --accent-soft: #163229;
+  --warn: #E7B865; --warn-soft: #35301C; --neg: #F09A94;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 13px; line-height: 1.45;
+  padding-block: 12px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+h1, h2 { font-family: var(--font-display); margin: 0; line-height: 1.2; text-wrap: balance; }
+p, ul { margin: 0; }
+
+.viewport { position: relative; width: 100%; overflow: hidden; }
+.stage { position: absolute; left: 0; top: 0; width: 1600px; height: 900px; transform-origin: 0 0; background: var(--bg); }
+
+.head { position: absolute; left: 58px; top: 36px; width: 1484px; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: end; gap: 36px; }
+.eyebrow { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.head h1 { font-size: 30px; margin-top: 4px; }
+.lede { color: var(--muted); font-size: 13px; max-width: 62ch; justify-self: end; text-align: left; }
+
+.flow-lines { position: absolute; left: 0; top: 0; width: 1600px; height: 900px; pointer-events: none; color: var(--muted); }
+.flow-lines .solid { stroke: var(--accent); stroke-width: 2; fill: none; }
+.flow-lines .dash { stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 5 5; fill: none; }
+.flow-lines .tip { fill: var(--accent); }
+.flow-lines .tip-dash { fill: var(--muted); }
+.flow-lines .lbl { fill: var(--accent); font: 600 12px var(--font-body); }
+
+.node {
+  position: absolute; width: 214px; height: 350px; z-index: 1;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+  padding: 14px; display: flex; flex-direction: column; gap: 8px; min-width: 0;
+}
+.node header { display: flex; align-items: center; gap: 8px; }
+.no {
+  font-family: var(--font-display); font-weight: 700; font-size: 12px;
+  color: var(--accent-soft); background: var(--accent); border-radius: 999px; padding: 2px 9px;
+}
+.node h2 { font-size: 16px; }
+.node ul { padding-left: 15px; display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; line-height: 1.4; }
+.io { font-size: 13px; color: var(--muted); padding-top: 8px; border-top: 1px dashed var(--line); }
+.io b { color: var(--ink); font-weight: 600; margin-right: 4px; }
+.io.out { margin-top: auto; }
+.weights { font-size: 12px; color: var(--muted); }
+
+.side {
+  position: absolute; z-index: 1; border-radius: 10px; padding: 12px 14px;
+  display: flex; flex-direction: column; gap: 6px; min-width: 0; font-size: 12px;
+}
+.side h2 { font-size: 14px; }
+.side p { color: var(--muted); }
+.side .t { color: var(--ink); font-weight: 600; font-size: 12.5px; }
+.side.warn { background: var(--warn-soft); border: 1px dashed var(--warn); }
+.side.warn h2 { color: var(--warn); }
+.side.card { background: var(--surface); border: 1px solid var(--line); }
+.side.note { background: var(--accent-soft); border: 1px solid transparent; }
+.bars { display: flex; flex-direction: column; gap: 3px; font-size: 11.5px; }
+.bar { display: grid; grid-template-columns: minmax(0, 1fr) 46px; gap: 6px; align-items: center; }
+.bar span:last-child { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--font-display); font-weight: 600; }
+.total { border-top: 1px dashed var(--line); padding-top: 4px; font-weight: 600; display: flex; justify-content: space-between; }
+
+.foot { position: absolute; left: 58px; top: 842px; width: 1484px; font-size: 11.5px; color: var(--muted); }
+
+/* 좁은 화면: 축소하지 않고 세로로 쌓습니다 */
+@media (max-width: 899px) {
+  .viewport { height: auto !important; overflow: visible; }
+  .stage { position: relative; width: auto; height: auto; transform: none !important; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+  .head, .flow-lines, .foot { position: static; width: auto; }
+  .head { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+  .lede { justify-self: start; }
+  .flow-lines { display: none; }
+  .node, .side { position: static !important; width: auto !important; height: auto !important; }
+  .node { margin-bottom: 2px; }
+  .node:not(:last-of-type)::after { content: "↓"; display: block; text-align: center; color: var(--accent); font-size: 18px; }
+  .foot { padding-bottom: 8px; }
+}
+</style>
+
+<div class="viewport" id="vp">
+<div class="stage" id="stage">
+
+  <header class="head">
+    <div>
+      <div class="eyebrow">대구 공실 매칭 · 스코어링 흐름</div>
+      <h1>공실 스코어링 흐름도</h1>
+    </div>
+    <p class="lede">매물 2,667곳이 여섯 단계를 거쳐 용도별 순위가 됩니다. 한 단계의 출력이 바로 다음 단계의 입력입니다.</p>
+  </header>
+
+  <svg class="flow-lines" viewBox="0 0 1600 900" role="img" aria-label="여섯 단계가 왼쪽에서 오른쪽으로 이어지고, 주변 집계 단계는 경고 표시로, 감점·가점 단계는 값을 고른 방법으로, 기본 점수 단계는 계산 예시로 점선 연결됩니다.">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path class="tip" d="M0,0 L10,5 L0,10 z"/>
+      </marker>
+      <marker id="arrd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path class="tip-dash" d="M0,0 L10,5 L0,10 z"/>
+      </marker>
+    </defs>
+    <!-- 여섯 단계 사이 실선 화살표 (카드 오른쪽 끝 272, 282 …, 다음 카드 왼쪽 끝 312 …) -->
+    <line class="solid" x1="276" y1="365" x2="308" y2="365" marker-end="url(#arr)"/>
+    <line class="solid" x1="530" y1="365" x2="562" y2="365" marker-end="url(#arr)"/>
+    <line class="solid" x1="784" y1="365" x2="816" y2="365" marker-end="url(#arr)"/>
+    <line class="solid" x1="1038" y1="365" x2="1070" y2="365" marker-end="url(#arr)"/>
+    <line class="solid" x1="1292" y1="365" x2="1324" y2="365" marker-end="url(#arr)"/>
+    <text class="lbl" x="292" y="355" text-anchor="middle">매물</text>
+    <text class="lbl" x="546" y="355" text-anchor="middle">지표</text>
+    <text class="lbl" x="800" y="355" text-anchor="middle">0~1</text>
+    <text class="lbl" x="1054" y="355" text-anchor="middle">점수</text>
+    <text class="lbl" x="1308" y="355" text-anchor="middle">점수</text>
+    <!-- 보조 점선 연결 -->
+    <line class="dash" x1="419" y1="540" x2="419" y2="598" marker-end="url(#arrd)"/>
+    <line class="dash" x1="927" y1="540" x2="927" y2="598" marker-end="url(#arrd)"/>
+    <line class="dash" x1="1181" y1="540" x2="1181" y2="598" marker-end="url(#arrd)"/>
+  </svg>
+
+  <!-- 1 데이터 연결 -->
+  <article class="node" style="left:58px; top:190px" aria-label="1단계 데이터 연결">
+    <header><span class="no">01</span><h2>데이터 연결</h2></header>
+    <ul>
+      <li>위치 정보가 없는 48건 제외</li>
+      <li>공실로 표시되지 않은 2건 제외</li>
+      <li>면적·월세·보증금 범위 적용 (기본은 전체)</li>
+    </ul>
+    <p class="io out"><b>출력</b>분석 대상 2,667곳</p>
+  </article>
+
+  <!-- 2 주변 집계 -->
+  <article class="node" style="left:312px; top:190px" aria-label="2단계 주변 집계">
+    <header><span class="no">02</span><h2>주변 집계</h2></header>
+    <ul>
+      <li>상가업소 300m: 동종 포화, 보완 집적</li>
+      <li>주차장 500m</li>
+      <li>전시관 1km</li>
+      <li>같은 구의 영업 물류창고 수 (거친 지표)</li>
+      <li>용도지역, 침수 격자 붙이기</li>
+    </ul>
+    <p class="io out"><b>출력</b>매물마다 지표 값</p>
+  </article>
+
+  <!-- 3 백분위 -->
+  <article class="node" style="left:566px; top:190px" aria-label="3단계 백분위">
+    <header><span class="no">03</span><h2>백분위</h2></header>
+    <ul>
+      <li>2,667곳 전체를 줄 세움</li>
+      <li>지표마다 0~1 숫자로 바꿈</li>
+      <li>예: 주변 카페가 전체의 80%보다 적으면 0.8</li>
+      <li>단위가 다른 지표를 같은 기준으로 비교</li>
+    </ul>
+    <p class="io out"><b>출력</b>지표별 0~1 값</p>
+  </article>
+
+  <!-- 4 가중합 -->
+  <article class="node" style="left:820px; top:190px" aria-label="4단계 가중합">
+    <header><span class="no">04</span><h2>가중합</h2></header>
+    <ul>
+      <li>용도마다 가중치 합이 100</li>
+      <li>백분위 × 가중치를 모두 더함</li>
+      <li>5개 용도 모두 세트 B 사용</li>
+    </ul>
+    <p class="weights">카페 보완 25 · 동종 20 · 주차 15 · 1층 15 · 상업 10 · 역 8 · 무권리 4 · 임대료 3</p>
+    <p class="io out"><b>출력</b>용도별 기본 점수</p>
+  </article>
+
+  <!-- 5 감점·가점 -->
+  <article class="node" style="left:1074px; top:190px" aria-label="5단계 감점과 가점">
+    <header><span class="no">05</span><h2>감점·가점</h2></header>
+    <ul>
+      <li>지하 매물 −10 (침수와 별개)</li>
+      <li>침수 1등급 −10 · 2~3등급 −25 · 4등급 −40</li>
+      <li>오피스 1층 −10</li>
+      <li>오피스 2~5층 +5 · 창고 1층 +2</li>
+    </ul>
+    <p class="io out"><b>출력</b>매물별 최종 점수</p>
+  </article>
+
+  <!-- 6 자르기·순위 -->
+  <article class="node" style="left:1328px; top:190px" aria-label="6단계 자르기와 순위">
+    <header><span class="no">06</span><h2>자르기·순위</h2></header>
+    <ul>
+      <li>0~100 범위로 자름</li>
+      <li>용도별 상위 5곳, 더보기로 전체</li>
+      <li>구를 고르면 구별 비교 (상위 5곳 평균)</li>
+      <li>지도 점이나 목록을 고르면 점수 구성 표시</li>
+    </ul>
+    <p class="io out"><b>출력</b>용도별 순위와 지도</p>
+  </article>
+
+  <!-- 보조: 경고 (점수와 분리) -->
+  <aside class="side warn" style="left:312px; top:598px; width:468px; height:182px" aria-label="경고 표시">
+    <h2>경고 표시 · 점수와 분리</h2>
+    <p>방화지구, 지구단위계획구역, 고도지구가 걸린 매물은 점수에서 빼지 않고 경고만 붙입니다.</p>
+    <p>실제 허용 여부는 <span class="t">건축물대장, 토지이음, 구청 건축과</span>에서 확인합니다.</p>
+  </aside>
+
+  <!-- 보조: 계산 예시 -->
+  <aside class="side card" style="left:820px; top:598px; width:214px; height:182px; padding:10px 11px" aria-label="계산 예시">
+    <h2 style="font-size:13px">계산 예시 · 카페</h2>
+    <p style="font-size:11px">수성구 범물1동, 1층 43㎡</p>
+    <div class="bars">
+      <div class="bar"><span>동종 포화</span><span>+12.7</span></div>
+      <div class="bar"><span>보완 집적</span><span>+19.8</span></div>
+      <div class="bar"><span>주차장</span><span>+6.5</span></div>
+      <div class="bar"><span>상업지역 · 1층</span><span>+25.0</span></div>
+      <div class="bar"><span>역 · 무권리 · 임대료</span><span>+12.6</span></div>
+    </div>
+    <div class="total"><span>합계</span><span>76.6 → 76.5점</span></div>
+  </aside>
+
+  <!-- 보조: 값을 고른 방법 -->
+  <aside class="side note" style="left:1074px; top:598px; width:468px; height:182px" aria-label="가중치와 감점을 고른 방법">
+    <h2>정답 없이 고른 값</h2>
+    <p>가중치와 감점은 실제 입점 결과로 검증하지 못했습니다. 대신 가중치를 ±20% 흔들어 100번 다시 계산하고, 상위 20곳이 얼마나 유지되는지 봤습니다.</p>
+    <p>이 기준으로 세트 B, 지하 감점 −10, 오피스 1층 감점 −10을 골랐습니다. 가점은 해당 층 비율이 전체보다 10%p를 넘지 않는 선에서 5·2로 정했습니다.</p>
+  </aside>
+
+  <footer class="foot">숫자는 2026-10-07 ~ 11-06 노출 매물 기준입니다. 상가업소 · 주차장 · 전시관 · 물류창고 · 용도지역 · 침수 격자 자료를 씁니다.</footer>
+
+</div>
+</div>
+
+<script>
+(function () {
+  var vp = document.getElementById("vp");
+  var stage = document.getElementById("stage");
+  function fit() {
+    if (window.innerWidth < 900) { stage.style.transform = ""; vp.style.height = ""; return; }
+    var s = Math.min(vp.clientWidth / 1600, 1);
+    if (!isFinite(s) || s <= 0) s = 0.5;
+    stage.style.transform = "scale(" + s + ")";
+    vp.style.height = (900 * s) + "px";
+  }
+  fit();
+  window.addEventListener("resize", fit);
+})();
+</script>

@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>대구 빈 상가 찾기 · 유저플로우</title>
+<style>
+/* 16:9 한 화면. 1920×1080에서 1rem = 16px, 화면 크기에 맞춰 통째로 줄거나 늘어난다 */
+:root{
+  --bg:#F6F5F1; --surface:#FFFFFF; --ink:#141E33; --ink-2:#36425A; --ink-3:#556178; --line:#C9CFDA; --soft:#EEF1F5;
+  --accent:#1747C7; --new:#17663F; --new-bg:#DDF3E8; --dg:#5B2DA8; --dg-bg:#EEE7FB; --pain:#A3201A; --pain-bg:#FCE4E2; --warn:#7A4800; --warn-bg:#FDF0D5;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#11161F; --surface:#182030; --ink:#F0F3F8; --ink-2:#C3CBD8; --ink-3:#A3AEC0; --line:#3A4558; --soft:#222C3C;
+  --accent:#8DB0FF; --new:#6EDBAC; --new-bg:#143429; --dg:#C9B0FF; --dg-bg:#2C2147; --pain:#FF9A9E; --pain-bg:#3D1C1F; --warn:#F2B656; --warn-bg:#3A2C12;
+}}
+*{box-sizing:border-box}
+html{font-size:min(.8333vw, 1.4815vh)}
+body{margin:0; height:100vh; display:grid; place-items:center; background:var(--bg); color:var(--ink); font-family:'Pretendard','Malgun Gothic',system-ui,-apple-system,sans-serif; line-height:1.4; word-break:keep-all; overflow:hidden}
+.slide{width:120rem; height:67.5rem; padding:2.2rem 2.6rem 1.8rem; display:flex; flex-direction:column; gap:1.1rem}
+h1{font-size:2.5rem; margin:0; letter-spacing:-.05rem}
+p{margin:0}
+.head{display:flex; align-items:flex-end; justify-content:space-between; gap:2rem}
+.lead{color:var(--ink-2); font-size:1.25rem; margin-top:.2rem}
+.legend{display:flex; gap:1.2rem; font-size:1.05rem; color:var(--ink-2); white-space:nowrap}
+.tag{display:inline-block; font-size:.92rem; font-weight:700; padding:.05rem .6rem; border-radius:99rem; white-space:nowrap}
+.t-new{color:var(--new); background:var(--new-bg)} .t-dg{color:var(--dg); background:var(--dg-bg)} .t-p{color:var(--pain); background:var(--pain-bg)} .t-out{color:var(--ink-2); background:var(--soft)}
+
+.grid{flex:1; min-height:0; display:grid; grid-template-columns:5.4rem repeat(10,minmax(0,1fr)); grid-template-rows:auto minmax(0,1fr) minmax(0,1.55fr); gap:.7rem .55rem}
+.st{background:var(--ink); color:var(--bg); border-radius:.7rem; padding:.45rem .3rem; text-align:center; font-weight:700; font-size:1.12rem; position:relative}
+.st small{display:block; font-weight:400; font-size:.9rem; opacity:.8}
+.st:not(.last)::after{content:"▶"; position:absolute; right:-.62rem; top:50%; transform:translateY(-50%); color:var(--ink-3); font-size:.75rem; z-index:1}
+.rowlab{display:grid; place-items:center; text-align:center; font-weight:700; font-size:1.2rem; border-radius:.7rem; padding:.3rem}
+.rowlab.now{background:var(--soft)} .rowlab.next{background:var(--accent); color:#fff}
+@media (prefers-color-scheme: dark){ .rowlab.next{color:#0C1322} }
+.card{background:var(--surface); border:.14rem solid var(--line); border-radius:.8rem; padding:.7rem .7rem .6rem; display:flex; flex-direction:column; gap:.35rem; min-height:0; overflow:hidden}
+.card b{font-size:1.32rem; line-height:1.3}
+.card ul{margin:0; padding-left:1.1rem; font-size:1.18rem; color:var(--ink-2)}
+.card li + li{margin-top:.15rem}
+.card .tags{margin-top:auto; display:flex; flex-wrap:wrap; gap:.25rem}
+.card.add{border-color:var(--new); background:var(--new-bg)}
+.card.out{border-style:dashed}
+.card.none,.card.same{border-style:dashed; background:transparent; color:var(--ink-3); align-items:center; justify-content:center; text-align:center; font-size:1.18rem}
+
+.foot{display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); gap:1rem; font-size:1.1rem}
+.foot > div{border-radius:.8rem; padding:.7rem 1.1rem}
+.loop{background:var(--warn-bg); color:var(--warn); font-weight:600}
+.sum{background:var(--surface); border:.1rem solid var(--line); display:flex; align-items:center; gap:1.4rem}
+.sum b{font-size:1.5rem; color:var(--new)}
+.sum b.d{color:var(--dg)}
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="head">
+    <div><h1>대구 빈 상가 찾기 · 유저플로우</h1><p class="lead">지금 데모의 흐름에 임차인의 어려움 8가지(P1~P8)와 대구 제안을 반영했습니다.</p></div>
+    <div class="legend"><span><span class="tag t-new">새로 추가</span> 보완 후 더해짐</span><span><span class="tag t-dg">대구</span> 지역 색</span><span><span class="tag t-p">P1~P8</span> 푸는 어려움</span><span><span class="tag t-out">서비스 밖</span></span></div>
+  </div>
+
+  <div class="grid">
+    <div></div>
+    <div class="st">0<small>들어오는 길</small></div>
+    <div class="st">1<small>가게 종류</small></div>
+    <div class="st">2<small>조건</small></div>
+    <div class="st">3<small>추천 목록</small></div>
+    <div class="st">4<small>자세히 보기</small></div>
+    <div class="st">5<small>바깥 확인</small></div>
+    <div class="st">6<small>고르기</small></div>
+    <div class="st">7<small>상담 준비</small></div>
+    <div class="st">8<small>현장</small></div>
+    <div class="st last">9<small>돌아오기</small></div>
+
+    <div class="rowlab now">지금<br>데모</div>
+    <div class="card none">정해진 길 없음<br>(파일을 직접 엶)</div>
+    <div class="card"><b>가게 종류 고르기</b><ul><li>8가지 중 하나</li></ul><div class="tags"><span class="tag t-p">P1</span></div></div>
+    <div class="card"><b>월세·지역 고르기</b><ul><li>큰 버튼으로 선택</li></ul></div>
+    <div class="card"><b>목록과 지도</b><ul><li>점수 높은 순</li><li>동네별 상가 수</li></ul><div class="tags"><span class="tag t-p">P2</span><span class="tag t-p">P4</span></div></div>
+    <div class="card"><b>상가 자세히</b><ul><li>좋은 점·확인할 점</li><li>점수 성적표</li><li>건물 용도 등급</li></ul><div class="tags"><span class="tag t-p">P3</span><span class="tag t-p">P6</span></div></div>
+    <div class="card"><b>바깥 사이트</b><ul><li>카카오맵·로드뷰</li><li>토지이음은 처음 화면만</li></ul></div>
+    <div class="card"><b>담기·비교·엑셀</b><ul><li>나란히 비교</li><li>엑셀로 받기</li></ul></div>
+    <div class="card none">없음</div>
+    <div class="card out"><b>중개사 상담</b><ul><li>현장 확인</li><li>구청 확인, 계약</li></ul><div class="tags"><span class="tag t-out">서비스 밖</span></div></div>
+    <div class="card"><b>👍 / 👎 평가</b><ul><li>화면에만 남음</li></ul></div>
+
+    <div class="rowlab next">보완<br>후</div>
+    <div class="card add"><b>세 갈래로 들어옴</b><ul><li>창업 지원 기관</li><li>검색·SNS</li><li>대구시 공공 채널</li></ul><div class="tags"><span class="tag t-new">새로 추가</span><span class="tag t-dg">대구</span></div></div>
+    <div class="card same">지금과 같음</div>
+    <div class="card same">지금과 같음</div>
+    <div class="card add"><b>목록과 지도 +</b><ul><li>90일 넘은 매물에 "오래됨" 표시</li><li>동네별 공실 흐름</li></ul><div class="tags"><span class="tag t-new">새로 추가</span><span class="tag t-dg">대구</span><span class="tag t-p">P2</span><span class="tag t-p">P5</span></div></div>
+    <div class="card add"><b>상가 자세히 +</b><ul><li>특화거리 설명</li><li>지원사업 안내</li><li>위반건축물 여부</li></ul><div class="tags"><span class="tag t-new">새로 추가</span><span class="tag t-dg">대구</span><span class="tag t-p">P6</span></div></div>
+    <div class="card add"><b>바깥 사이트 +</b><ul><li>토지이음에서 그 땅 페이지가 바로 열림</li></ul><div class="tags"><span class="tag t-new">새로 추가</span><span class="tag t-p">P6</span></div></div>
+    <div class="card same">지금과 같음</div>
+    <div class="card add"><b>중개사 질문 받기</b><ul><li>상가마다 최대 5개</li><li>빈 정보를 질문으로</li><li>구청에 물을 것 구분</li></ul><div class="tags"><span class="tag t-new">새로 추가</span><span class="tag t-p">P3</span><span class="tag t-p">P7</span></div></div>
+    <div class="card out"><b>중개사 상담</b><ul><li>질문 목록과 엑셀을 들고 감</li></ul><div class="tags"><span class="tag t-out">서비스 밖</span></div></div>
+    <div class="card add"><b>평가를 모아 개선</b><ul><li>익명으로 서버에 모음</li><li>30건 넘으면 기준 개선 제안</li></ul><div class="tags"><span class="tag t-new">새로 추가</span></div></div>
+  </div>
+
+  <div class="foot">
+    <div class="loop">↻ 3번에서 마음에 드는 곳이 없으면 2번으로 돌아가 조건을 바꿉니다. 담아 둔 상가는 그대로 남습니다.</div>
+    <div class="sum"><span>더해지는 것 <b>8</b>가지</span><span>그중 대구 색 <b class="d">4</b>가지</span><span style="color:var(--ink-3)">보완 후는 계획 단계</span></div>
+  </div>
+</div>
+</body>
+</html>

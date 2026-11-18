@@ -1,0 +1,197 @@
+<meta charset="utf-8">
+<title>스코어링 데이터 활용표</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root {
+  --bg: #F3F6F4; --surface: #FFFFFF; --ink: #17221E; --muted: #5A6862; --line: #D5DED8;
+  --accent: #1E6E58; --accent-soft: #E1EEE8; --warn: #8C5E0E; --warn-soft: #F8EED8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1512; --surface: #16201C; --ink: #E3ECE7; --muted: #97A9A1; --line: #2A3932;
+    --accent: #6FD0AE; --accent-soft: #17372C; --warn: #E8BE6A; --warn-soft: #37301A;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1512; --surface: #16201C; --ink: #E3ECE7; --muted: #97A9A1; --line: #2A3932;
+  --accent: #6FD0AE; --accent-soft: #17372C; --warn: #E8BE6A; --warn-soft: #37301A;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", system-ui, sans-serif;
+  font-size: 14px; line-height: 1.55;
+  padding-block: 28px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { width: min(100%, 1200px); margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
+h1 { font-size: 24px; margin: 0; }
+h2 { font-size: 17px; margin: 0 0 8px; }
+.eyebrow { font-size: 12px; letter-spacing: 0.06em; color: var(--muted); text-transform: uppercase; }
+.lede { color: var(--muted); max-width: 70ch; margin: 6px 0 0; }
+.tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 760px; }
+th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+th { font-size: 12px; color: var(--muted); font-weight: 600; background: var(--bg); white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+td.src { font-weight: 600; white-space: nowrap; }
+td.num { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.tag { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); white-space: nowrap; }
+.tag.warn { background: var(--warn-soft); color: var(--warn); }
+.tag.off { background: var(--line); color: var(--muted); }
+.note { font-size: 12px; color: var(--muted); }
+.rowgroup td { background: var(--bg); font-weight: 600; font-size: 12px; color: var(--muted); }
+footer { font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 12px; }
+</style>
+
+<main class="wrap">
+  <header>
+    <div class="eyebrow">대구 공실 매칭 · 스코어링 데이터 활용</div>
+    <h1>데이터별 스코어링 활용표</h1>
+    <p class="lede">어떤 데이터를 어떤 점수 항목에 썼는지 정리했습니다. 가중치는 채택한 세트 B 기준이고, 점수는 0~100점입니다. 감점과 가점은 점수에 더하는 고정 값입니다.</p>
+  </header>
+
+  <section>
+    <h2>1. 점수에 쓰는 데이터</h2>
+    <div class="tbl">
+      <table>
+        <thead>
+          <tr><th>데이터</th><th>규모</th><th>스코어링 항목</th><th>적용 용도</th><th>반영 방식</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="src" rowspan="3">소상공인 상가(상권)정보 202609</td>
+            <td class="num" rowspan="3">대구 116,628곳<br><span class="note">좌표 있음</span></td>
+            <td>동종 포화 (300m, 적을수록 가점)</td>
+            <td>카페 20 · 식당 15 · 오피스 20</td>
+            <td>같은 업종 수를 백분위(0~1)로 바꾼 뒤 1에서 뺌</td>
+          </tr>
+          <tr>
+            <td>보완 집적 (300m, 많을수록 가점)</td>
+            <td>카페 25 (식사형·소매) · 식당 30 (카페·소매) · 오피스 20 (식사형) · 전시 25 (카페·식사형)</td>
+            <td>다른 업종 수를 백분위로 바꿈</td>
+          </tr>
+          <tr>
+            <td>업종 분류 기준</td>
+            <td>대분류·중분류·소분류</td>
+            <td>식사형 = 한식·중식·일식·서양식·동남아·기타 외국·구내식당. 과학·기술과 부동산은 오피스 동종으로 묶음</td>
+          </tr>
+          <tr>
+            <td class="src">전국주차장정보표준데이터 (15012896)</td>
+            <td class="num">대구 817곳<br><span class="note">좌표 있음 (1,035곳 중 218곳 제외)</span></td>
+            <td>주차장 수 (500m)</td>
+            <td>카페 15 · 식당 15 · 오피스 25 · 창고 35</td>
+            <td>반경 500m 안의 주차장 수를 백분위로 바꿈</td>
+          </tr>
+          <tr>
+            <td class="src">한국문화정보원 전시관 위치</td>
+            <td class="num">전시 관련 273곳<br><span class="note">공연·연극 112곳 제외</span></td>
+            <td>전시관 근접 (1km)</td>
+            <td>전시·갤러리 40</td>
+            <td>반경 1km 안의 전시관 수를 백분위로 바꿈</td>
+          </tr>
+          <tr>
+            <td class="src">행정안전부 물류창고업체 조회</td>
+            <td class="num">대구 66곳<br><span class="note">영업 중 좌표 있음 30곳</span></td>
+            <td>구 단위 물류 집계 <span class="tag warn">주의</span></td>
+            <td>창고 10</td>
+            <td>같은 구의 영업 물류창고 수를 백분위로 바꿈. 거친 지표이고 방향은 가설</td>
+          </tr>
+          <tr>
+            <td class="src" rowspan="2">국토계획 용도지역 (WGS84 폴리곤)</td>
+            <td class="num" rowspan="2">10,019개</td>
+            <td>상업지역</td>
+            <td>카페 10 · 식당 10 · 오피스 15 · 전시 5</td>
+            <td>매물 좌표가 상업지역 안에 있으면 +1</td>
+          </tr>
+          <tr>
+            <td>공업지역</td>
+            <td>창고 40</td>
+            <td>매물 좌표가 일반·준공업지역 안에 있으면 +1 (해당 매물 28곳)</td>
+          </tr>
+          <tr>
+            <td class="src" rowspan="6">공실 매물 데이터</td>
+            <td class="num" rowspan="6">2,717건 중 2,667건 분석</td>
+            <td>역 근접 (역거리_m)</td>
+            <td>카페 8 · 식당 8 · 오피스 10 · 전시 10</td>
+            <td>가까울수록 백분위가 높음. 결측 48건은 중립 0.5</td>
+          </tr>
+          <tr>
+            <td>무권리 (특징 문구)</td>
+            <td>카페 4 · 식당 4 · 전시 3</td>
+            <td>특징 문구에 "무권리"가 있으면 +1</td>
+          </tr>
+          <tr>
+            <td>임대료 (보증금·월세, 단기임대 대용)</td>
+            <td>카페 3 · 식당 3 · 오피스 10 · 전시 2 · 창고 15</td>
+            <td>낮을수록 백분위가 높음</td>
+          </tr>
+          <tr>
+            <td>층 (1층·2~5층·지하)</td>
+            <td>1층 가점: 카페·식당·전시 15 · 창고 +2 / 오피스 1층 −10 / 오피스 2~5층 +5 / 지하 −10 (카페·식당·오피스·전시)</td>
+            <td>층 정보를 고정 점수로 더하거나 뺌</td>
+          </tr>
+          <tr>
+            <td>침수 격자 (20m 격자)</td>
+            <td>216,732개 격자</td>
+            <td>침수 감점</td>
+            <td>지하 매물 (카페·식당·오피스·전시), 창고 전체</td>
+          </tr>
+          <tr>
+            <td>제외 조건</td>
+            <td>48건 · 2건</td>
+            <td>위치 정보 없음 · 공실 표시 아님</td>
+            <td>전 용도</td>
+            <td>분석에서 제외</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>2. 점수에 쓰지 않는 데이터</h2>
+    <div class="tbl">
+      <table>
+        <thead>
+          <tr><th>데이터</th><th>쓰인 곳</th><th>이유</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="src">전용면적</td><td><span class="tag off">조건 필터</span></td><td>사용자가 고르는 범위이므로 점수에는 넣지 않음</td></tr>
+          <tr><td class="src">행정안전부 박물관·미술관 조회 (39곳)</td><td><span class="tag off">검증용</span></td><td>전시관 위치 데이터와 겹쳐서 교차 확인에만 씀</td></tr>
+          <tr><td class="src">행정동 경계 (142곳, 군위군 제외)</td><td><span class="tag off">지도 표시</span></td><td>점수와 무관</td></tr>
+          <tr><td class="src">용도지역 경고 (방화·지구단위·고도)</td><td><span class="tag off">경고 표시</span></td><td>점수에 넣지 않고 허용 여부 확인 표시로만 씀</td></tr>
+          <tr><td class="src">침수 격자 요약표 (구별)</td><td><span class="tag off">검증용</span></td><td>격자 데이터와 교차 확인에만 씀</td></tr>
+          <tr><td class="src">관리비</td><td><span class="tag off">제외</span></td><td>결측이 61%라서 점수에서 뺌</td></tr>
+          <tr><td class="src">노출시작일</td><td><span class="tag off">제외</span></td><td>실제 공실 기간이 아니므로 점수에 넣지 않음</td></tr>
+          <tr><td class="src">상가업소 좌표 범위 밖 975곳</td><td><span class="tag off">제외</span></td><td>대구 밖 좌표라서 집계에서 뺌</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>3. 아직 확보하지 못한 데이터</h2>
+    <div class="tbl">
+      <table>
+        <thead>
+          <tr><th>데이터</th><th>쓸 수 있는 항목</th><th>상태</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="src">역 승하차량</td><td>역 이용량 가점</td><td><span class="tag warn">미확보</span> 대구 공개 데이터를 찾지 못함</td></tr>
+          <tr><td class="src">유동인구</td><td>집객력 가점</td><td><span class="tag warn">미확보</span> 대구 공개 데이터를 찾지 못함</td></tr>
+          <tr><td class="src">SGIS 인구·사업체</td><td>상주 인구, 사업체 수</td><td><span class="tag warn">미확보</span> 연결 방법 미확인</td></tr>
+          <tr><td class="src">공시지가</td><td>임대료 대리 변수</td><td><span class="tag warn">미확보</span> 상업용 건물 API 미확인</td></tr>
+          <tr><td class="src">도로 폭</td><td>대형 차량 진입 가능성</td><td><span class="tag warn">미확보</span> 데이터 미확인</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <span>가중치와 감점 값은 안정성 기준으로 정한 잠정값입니다. 정답 데이터(입점 후 생존 여부)가 생기면 다시 검증합니다.</span>
+  </footer>
+</main>

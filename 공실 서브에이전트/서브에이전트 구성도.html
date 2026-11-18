@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>대구 빈 상가 찾기 · 서브에이전트 구성</title>
+<style>
+:root{
+  --bg:#F6F5F1; --surface:#FFFFFF; --ink:#141E33; --ink-2:#36425A; --ink-3:#556178; --line:#C9CFDA; --soft:#EEF1F5;
+  --accent:#1747C7; --accent-bg:#E4ECFF;
+  --live:#17663F; --live-bg:#DDF3E8; --batch:#7A4800; --batch-bg:#FDF0D5;
+  --ai:#5B2DA8; --ai-bg:#EEE7FB; --code:#0C5A66; --code-bg:#DDF1F3; --later:#556178;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#11161F; --surface:#182030; --ink:#F0F3F8; --ink-2:#C3CBD8; --ink-3:#A3AEC0; --line:#3A4558; --soft:#222C3C;
+  --accent:#8DB0FF; --accent-bg:#1E2D52;
+  --live:#6EDBAC; --live-bg:#143429; --batch:#F2B656; --batch-bg:#3A2C12;
+  --ai:#C9B0FF; --ai-bg:#2C2147; --code:#7FD3DE; --code-bg:#12343A; --later:#A3AEC0;
+}}
+*{box-sizing:border-box}
+html{font-size:18px}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:'Pretendard','Malgun Gothic',system-ui,-apple-system,sans-serif; line-height:1.6; word-break:keep-all}
+.wrap{max-width:1500px; margin:0 auto; padding:28px 24px 48px}
+h1{font-size:1.9rem; margin:0 0 4px; letter-spacing:-.5px}
+h2{font-size:1.3rem; margin:36px 0 14px; letter-spacing:-.3px}
+h3{font-size:1.15rem; margin:0; letter-spacing:-.2px}
+p{margin:0}
+.lead{color:var(--ink-2); font-size:1.05rem}
+.legend{display:flex; flex-wrap:wrap; gap:8px 18px; margin-top:16px; font-size:.95rem; color:var(--ink-2)}
+.tag{display:inline-block; font-size:.85rem; font-weight:700; padding:2px 10px; border-radius:999px; white-space:nowrap}
+.t-live{color:var(--live); background:var(--live-bg)} .t-batch{color:var(--batch); background:var(--batch-bg)}
+.t-ai{color:var(--ai); background:var(--ai-bg)} .t-code{color:var(--code); background:var(--code-bg)}
+
+/* 맨 위: 사용자 → 상담 에이전트 */
+.topflow{display:flex; flex-direction:column; align-items:center; gap:0; margin-top:28px}
+.user{background:var(--soft); border:2px solid var(--line); border-radius:999px; padding:10px 26px; font-weight:700}
+.vline{width:3px; height:26px; background:var(--line)}
+.orch{width:min(100%,46rem); background:var(--accent); color:#fff; border-radius:18px; padding:18px 24px; text-align:center}
+@media (prefers-color-scheme: dark){ .orch{color:#0C1322} }
+.orch h3{font-size:1.4rem}
+.orch p{opacity:.92; margin-top:4px}
+.bus{width:100%; height:3px; background:var(--line); margin-top:26px; position:relative}
+.bus::before{content:""; position:absolute; left:50%; top:-26px; width:3px; height:26px; background:var(--line); transform:translateX(-50%)}
+
+/* 서브에이전트 5개 */
+.agents{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:16px; margin-top:0}
+.agent{position:relative; background:var(--surface); border:2px solid var(--line); border-radius:16px; padding:18px 16px 16px; margin-top:22px; display:flex; flex-direction:column; gap:10px}
+.agent::before{content:""; position:absolute; left:50%; top:-24px; width:3px; height:22px; background:var(--line); transform:translateX(-50%)}
+.agent .no{width:2.2rem; height:2.2rem; border-radius:50%; background:var(--ink); color:var(--bg); display:grid; place-items:center; font-weight:700; flex:none}
+.agent .hd{display:flex; align-items:center; gap:10px}
+.agent .job{color:var(--ink-2); min-height:3.2em}
+.agent .tags{display:flex; flex-wrap:wrap; gap:6px}
+.agent ul{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:6px}
+.agent li{background:var(--soft); border-radius:10px; padding:8px 12px; font-size:.97rem}
+.agent li b{display:block}
+.agent li span{color:var(--ink-3); font-size:.9rem}
+.agent.live{border-color:var(--live)} .agent.batch{border-color:var(--batch)}
+
+/* 흐름 */
+.steps{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px}
+.step{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:16px}
+.step .k{font-weight:700; color:var(--accent)}
+.step p{color:var(--ink-2); margin-top:4px}
+
+/* 원칙 · 나중에 */
+.cols{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px}
+.rule{background:var(--surface); border:1px solid var(--line); border-left:6px solid var(--accent); border-radius:12px; padding:16px}
+.rule p{color:var(--ink-2); margin-top:4px}
+.later{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px}
+.later .rule{border-left-color:var(--later); border-style:dashed; border-left-style:solid}
+.foot{margin-top:32px; color:var(--ink-3); font-size:.92rem}
+
+@media (max-width:1200px){ .agents{grid-template-columns:repeat(2,minmax(0,1fr))} .bus,.agent::before{display:none} .agent{margin-top:0} .agents{margin-top:20px} .steps{grid-template-columns:repeat(2,minmax(0,1fr))} .agent .job{min-height:0} }
+@media (max-width:700px){ .agents,.steps,.cols,.later{grid-template-columns:minmax(0,1fr)} .wrap{padding:20px 16px 36px} h1{font-size:1.5rem} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>대구 빈 상가 찾기 · 서브에이전트 구성</h1>
+  <p class="lead">상담 에이전트 1개가 사용자와 대화하고, 그 아래 서브에이전트 5개가 일을 나눠 맡습니다.</p>
+  <div class="legend">
+    <span><span class="tag t-live">대화 중 호출</span> 사용자가 물을 때마다 부름</span>
+    <span><span class="tag t-batch">미리 준비</span> 정해진 주기로 돌려 데이터를 쌓아 둠</span>
+    <span><span class="tag t-ai">AI</span> 말을 알아듣고 풀어 쓰는 일</span>
+    <span><span class="tag t-code">규칙 코드</span> 정해진 식으로 계산하는 일</span>
+  </div>
+
+  <div class="topflow">
+    <div class="user">사용자 (가게 자리를 찾는 예비 창업자)</div>
+    <div class="vline"></div>
+    <div class="orch">
+      <h3>상담 에이전트 (오케스트레이터)</h3>
+      <p>사용자와 대화하며 필요한 서브에이전트를 순서대로 부르고, 결과를 모아 답합니다.</p>
+    </div>
+    <div class="bus"></div>
+  </div>
+
+  <div class="agents">
+    <section class="agent live">
+      <div class="hd"><span class="no">1</span><h3>조건 파악</h3></div>
+      <p class="job">사용자의 말을 검색 조건으로 바꿉니다.</p>
+      <div class="tags"><span class="tag t-live">대화 중 호출</span><span class="tag t-ai">AI</span></div>
+      <ul>
+        <li><b>업종 분류</b><span>"국숫집" → 음식점·카페</span></li>
+        <li><b>조건 뽑기</b><span>월세, 보증금, 지역, 넓이</span></li>
+        <li><b>되묻기</b><span>빠진 조건을 한 번에 하나씩 질문</span></li>
+      </ul>
+    </section>
+
+    <section class="agent batch">
+      <div class="hd"><span class="no">2</span><h3>매물 수집·검증</h3></div>
+      <p class="job">매물 데이터를 모으고 믿을 수 있게 정리합니다.</p>
+      <div class="tags"><span class="tag t-batch">미리 준비</span><span class="tag t-code">규칙 코드</span></div>
+      <ul>
+        <li><b>매물 수집</b><span>네이버 부동산 공실 매물</span></li>
+        <li><b>정리</b><span>중복, 계약 끝난 매물 제거</span></li>
+        <li><b>위치 검증</b><span>좌표와 법정동이 맞는지 확인</span></li>
+        <li><b>건물 서류 연결</b><span>건축물대장의 층별 용도</span></li>
+      </ul>
+    </section>
+
+    <section class="agent batch">
+      <div class="hd"><span class="no">3</span><h3>입지·상권 분석</h3></div>
+      <p class="job">매물마다 주변 정보를 붙입니다.</p>
+      <div class="tags"><span class="tag t-batch">미리 준비</span><span class="tag t-code">규칙 코드</span></div>
+      <ul>
+        <li><b>교통</b><span>지하철역, 버스정류장 거리</span></li>
+        <li><b>상권</b><span>주변 가게 수, 같은 업종 수</span></li>
+        <li><b>주변 손님</b><span>사는 사람, 일하는 사람 수</span></li>
+        <li><b>땅 규제</b><span>지번이 있으면 토지이음 조회</span></li>
+      </ul>
+    </section>
+
+    <section class="agent live">
+      <div class="hd"><span class="no">4</span><h3>점수·추천</h3></div>
+      <p class="job">조건에 맞는 상가의 순위를 매깁니다.</p>
+      <div class="tags"><span class="tag t-live">대화 중 호출</span><span class="tag t-code">규칙 코드</span></div>
+      <ul>
+        <li><b>4가지 점수</b><span>비용, 공간, 위치, 업종 맞춤</span></li>
+        <li><b>중요도 조정</b><span>"싼 게 제일 중요" → 비용 비중 올림</span></li>
+        <li><b>걸러내기</b><span>정보가 부족한 매물은 순위에서 제외</span></li>
+      </ul>
+    </section>
+
+    <section class="agent live">
+      <div class="hd"><span class="no">5</span><h3>설명·보고</h3></div>
+      <p class="job">결과를 쉬운 말로 전달합니다.</p>
+      <div class="tags"><span class="tag t-live">대화 중 호출</span><span class="tag t-ai">AI</span></div>
+      <ul>
+        <li><b>좋은 점 / 확인할 점</b><span>점수를 문장으로 풀어 씀</span></li>
+        <li><b>점수 성적표</b><span>항목별 실제 값과 좋음·보통·아쉬움</span></li>
+        <li><b>나란히 비교</b><span>고른 상가를 한 표로</span></li>
+        <li><b>엑셀·상담 요약</b><span>중개사에게 가져갈 자료</span></li>
+      </ul>
+    </section>
+  </div>
+
+  <h2>한 번의 상담은 이렇게 흘러갑니다</h2>
+  <div class="steps">
+    <div class="step"><span class="k">1. 묻기</span><p>"수성구에 월 200 안쪽으로 학원 자리 있을까요?" → 조건 파악 ①이 업종·월세·지역을 뽑습니다.</p></div>
+    <div class="step"><span class="k">2. 고르기</span><p>점수·추천 ④가 미리 준비된 매물(②)과 주변 정보(③)로 순위를 매깁니다.</p></div>
+    <div class="step"><span class="k">3. 설명하기</span><p>설명·보고 ⑤가 상위 상가의 좋은 점과 확인할 점을 쉬운 말로 풀어 줍니다.</p></div>
+    <div class="step"><span class="k">4. 다시 묻기</span><p>"더 싼 곳은요?" → 상담 에이전트가 ④와 ⑤만 다시 부릅니다. ②③은 다시 돌리지 않습니다.</p></div>
+  </div>
+
+  <h2>설계할 때 지킬 세 가지</h2>
+  <div class="cols">
+    <div class="rule"><h3>점수는 AI가 아니라 코드로</h3><p>같은 조건에는 항상 같은 점수가 나와야 하고, 왜 그 점수인지 설명할 수 있어야 합니다. AI는 말 알아듣기(①)와 쉬운 말로 풀기(⑤)에만 씁니다.</p></div>
+    <div class="rule"><h3>설명은 받은 숫자만으로</h3><p>설명·보고 ⑤는 점수와 실제 값(월세, 거리 등)을 받아 문장으로 바꾸기만 합니다. 데이터에 없는 내용은 말하지 않습니다.</p></div>
+    <div class="rule"><h3>확인이 필요한 건 사람에게</h3><p>입점 가능 여부(구청 건축과)와 계약 여부(중개사)는 에이전트가 단정하지 않고 "확인할 점"으로 넘깁니다.</p></div>
+  </div>
+
+  <h2>나중에 붙일 만한 것</h2>
+  <div class="later">
+    <div class="rule"><h3>⑦ 상담 준비 <span class="tag t-ai">AI</span></h3><p>고른 상가마다 중개사에게 물어볼 질문 목록(관리비, 권리금, 용도 변경 가능 여부)을 만들어 줍니다. 사용자가 바로 체감하는 기능이라 먼저 붙일 만합니다.</p></div>
+    <div class="rule"><h3>⑥ 피드백 학습 <span class="tag t-code">규칙 코드</span></h3><p>👍/👎와 "안 맞은 이유"를 모아 중요도와 기준값을 조정합니다. 평가 데이터가 쌓인 뒤에 의미가 있어 2단계로 둡니다.</p></div>
+  </div>
+
+  <p class="foot">26.11.13 중간발표 데모(대구 빈 상가 찾기) 기준 구성안입니다. 지금 데모는 ②③④의 결과를 한 파일에 담아 보여 주는 단계이고, ①과 대화형 ⑤는 아직 만들지 않았습니다.</p>
+</div>
+</body>
+</html>
