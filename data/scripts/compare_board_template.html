@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>스코어링 v1·v2 비교</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* 1920×1080 한 장(16:9)을 화면에 맞춰 통째로 축소·확대. 탭 12개.
+   데이터는 build_compare_board.py가 넣는다 (결과 파일·설계 문서 표에서 읽은 값). */
+:root{
+  --bg:#F2F3F1; --paper:#FCFCFB; --ink:#0B0B0B; --ink-2:#52514E; --ink-3:#77756F; --line:#E1E0D9; --soft:#F0EFEC; --axis:#C3C2B7;
+  --accent:#2453C9; --accent-bg:#E4EBFB; --on-accent:#FFFFFF;
+  --g1:#2a78d6; --g2:#eb6834; --g3:#1baf7a; --g4:#eda100;
+  --ok:#006300; --ok-bg:#DDF2E2; --part:#7A5200; --part-bg:#FBF1DC; --no:#B4262C; --no-bg:#FBE3E3;
+  --new:#1747C7; --new-bg:#E4EBFB;
+  --h0:#cde2fb; --h1:#b7d3f6; --h2:#9ec5f4; --h3:#6da7ec; --h4:#3987e5; --h5:#256abf; --h6:#184f95; --h7:#0d366b;
+  --f-body:'IBM Plex Sans KR',system-ui,-apple-system,'Malgun Gothic',sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0D0D0D; --paper:#1A1A19; --ink:#F0EFEC; --ink-2:#C3C2B7; --ink-3:#98968F; --line:#2C2C2A; --soft:#242422; --axis:#383835;
+  --accent:#7EA2FF; --accent-bg:#1F2C4A; --on-accent:#0B0B0B;
+  --g1:#3987e5; --g2:#d95926; --g3:#199e70; --g4:#c98500;
+  --ok:#5FD3A6; --ok-bg:#143429; --part:#F2C46B; --part-bg:#33280F; --no:#FF8A8F; --no-bg:#3D1C1F;
+  --new:#A9C3FF; --new-bg:#1F2C4A;
+  --h0:#10243d; --h1:#0d366b; --h2:#104281; --h3:#184f95; --h4:#256abf; --h5:#3987e5; --h6:#6da7ec; --h7:#9ec5f4;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0D0D0D; --paper:#1A1A19; --ink:#F0EFEC; --ink-2:#C3C2B7; --ink-3:#98968F; --line:#2C2C2A; --soft:#242422; --axis:#383835;
+  --accent:#7EA2FF; --accent-bg:#1F2C4A; --on-accent:#0B0B0B;
+  --g1:#3987e5; --g2:#d95926; --g3:#199e70; --g4:#c98500;
+  --ok:#5FD3A6; --ok-bg:#143429; --part:#F2C46B; --part-bg:#33280F; --no:#FF8A8F; --no-bg:#3D1C1F;
+  --new:#A9C3FF; --new-bg:#1F2C4A;
+  --h0:#10243d; --h1:#0d366b; --h2:#104281; --h3:#184f95; --h4:#256abf; --h5:#3987e5; --h6:#6da7ec; --h7:#9ec5f4;
+  color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0; height:100%; background:var(--bg); color:var(--ink)}
+body{font-family:var(--f-body); word-break:keep-all; overflow:hidden}
+.stage{position:absolute; left:50%; top:50%}
+.board{width:1920px; height:1080px; transform-origin:0 0; padding:18px 28px 12px; display:grid; grid-template-rows:auto minmax(0,1fr) auto; gap:12px; font-size:14.5px; line-height:1.45}
+h1,h2,h3,p{margin:0}
+.mono{font-family:var(--f-mono); font-variant-numeric:tabular-nums}
+.num{font-variant-numeric:tabular-nums; font-family:var(--f-mono)}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+
+/* 머리 */
+.head{display:grid; grid-template-columns:auto minmax(0,1fr) auto; align-items:end; gap:24px; border-bottom:2px solid var(--ink); padding-bottom:8px}
+.head h1{font-size:28px; font-weight:700; letter-spacing:-.5px; line-height:1.1}
+.head h1 small{display:block; font:500 12px var(--f-mono); letter-spacing:1.5px; color:var(--accent); margin-bottom:5px}
+.meta{font:500 12px var(--f-mono); color:var(--ink-2); text-align:right; line-height:1.6}
+.tabs{display:flex; gap:4px; flex-wrap:wrap; align-self:end}
+.tabs button{font:600 13px var(--f-body); border:1px solid var(--line); background:var(--paper); color:var(--ink-2); padding:6px 11px; border-radius:7px; cursor:pointer}
+.tabs button i{font:500 11px var(--f-mono); font-style:normal; color:var(--ink-3); margin-right:5px}
+.tabs button[aria-selected="true"]{background:var(--ink); border-color:var(--ink); color:var(--paper)}
+.tabs button[aria-selected="true"] i{color:var(--paper)}
+
+/* 본문 */
+.view{min-height:0; display:none}
+.view.on{display:grid; gap:14px}
+.panel{background:var(--paper); border:1px solid var(--line); border-radius:10px; padding:12px 14px; display:flex; flex-direction:column; gap:8px; min-height:0; min-width:0; overflow:auto}
+.ph{display:flex; align-items:baseline; gap:10px; flex:none}
+.ph h2{font-size:16px; font-weight:700}
+.ph p{margin-left:auto; font-size:12px; color:var(--ink-3)}
+.lead{font-size:14px; color:var(--ink-2)}
+table{border-collapse:collapse; width:100%}
+th,td{padding:5px 7px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top}
+th{font-size:12.5px; font-weight:600; color:var(--ink-2); background:var(--soft); position:sticky; top:0; z-index:1}
+td.r,th.r{text-align:right}
+td.c,th.c{text-align:center}
+tbody tr:last-child td{border-bottom:0}
+.small{font-size:13px; color:var(--ink-2)}
+.tiny{font-size:12px; color:var(--ink-3)}
+.re{font-family:var(--f-mono); font-size:12px; color:var(--ink-2); word-break:break-all}
+.arrow{color:var(--ink-3); padding:0 3px}
+.chg{color:var(--new); font-weight:700}
+.same{color:var(--ink-3)}
+.pill{display:inline-block; font-size:11px; font-weight:600; padding:1px 7px; border-radius:999px; white-space:nowrap}
+.p-new{background:var(--new-bg); color:var(--new)}
+.p-same{background:var(--soft); color:var(--ink-2)}
+.p-ok{background:var(--ok-bg); color:var(--ok)}
+.p-part{background:var(--part-bg); color:var(--part)}
+.p-no{background:var(--no-bg); color:var(--no)}
+.gdot{display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px; vertical-align:-1px}
+.kpis{display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:10px}
+.kpi{background:var(--paper); border:1px solid var(--line); border-radius:10px; padding:10px 14px}
+.kpi .k{font-size:12px; color:var(--ink-2)}
+.kpi .v{font-size:26px; font-weight:700; font-family:var(--f-mono); letter-spacing:-.5px; line-height:1.2}
+.kpi .s{font-size:11.5px; color:var(--ink-3)}
+.list{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:6px}
+.list li{display:grid; grid-template-columns:28px 170px minmax(0,1fr); gap:10px; align-items:baseline; padding:9px 0; border-bottom:1px solid var(--line)}
+.list li:last-child{border-bottom:0}
+.list .no{font:600 13px var(--f-mono); color:var(--accent)}
+.list b{font-size:15px}
+.list span{font-size:14.5px; color:var(--ink-2)}
+.cards{display:grid; gap:10px}
+.card{border:1px solid var(--line); border-radius:9px; padding:10px 12px; background:var(--paper)}
+.card h3{font-size:15.5px; margin-bottom:5px}
+.card .lv{font:700 13px var(--f-mono); color:var(--accent); margin-right:6px}
+.kv{display:grid; grid-template-columns:80px minmax(0,1fr); gap:4px 10px; font-size:13.5px}
+.kv dt{color:var(--ink-3)}
+.kv dd{margin:0}
+.part{display:grid; grid-template-columns:62px minmax(0,1fr); gap:6px; padding:3px 0; border-bottom:1px dashed var(--line); font-size:13px}
+.part:last-child{border-bottom:0}
+.part b{font-weight:600}
+.heat td{text-align:center; font-family:var(--f-mono); font-size:14px; height:44px; cursor:default; border:2px solid var(--paper)}
+.heat td.lab{text-align:left; font-family:var(--f-body); font-size:14px; background:none; border:0; border-bottom:1px solid var(--line); white-space:nowrap}
+.heat th{text-align:center}
+.seg{display:inline-flex; border:1px solid var(--line); border-radius:7px; overflow:hidden; margin-left:auto}
+.seg button{font:600 12px var(--f-body); border:0; background:var(--paper); color:var(--ink-2); padding:4px 10px; cursor:pointer; border-left:1px solid var(--line)}
+.seg button:first-child{border-left:0}
+.seg button[aria-pressed="true"]{background:var(--ink); color:var(--paper)}
+.legend{display:flex; align-items:center; gap:6px; font-size:11.5px; color:var(--ink-2)}
+.legend i{display:inline-block; width:22px; height:10px}
+.tip{position:fixed; z-index:9; pointer-events:none; background:var(--ink); color:var(--paper); font-size:12px; line-height:1.5; padding:8px 10px; border-radius:7px; max-width:320px; display:none; box-shadow:0 4px 14px rgba(0,0,0,.2)}
+.foot{display:flex; gap:16px; font-size:11.5px; color:var(--ink-3); border-top:1px solid var(--line); padding-top:6px}
+.foot span:last-child{margin-left:auto}
+.two{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.split-7-5{grid-template-columns:minmax(0,7fr) minmax(0,5fr)}
+.split-5-7{grid-template-columns:minmax(0,5fr) minmax(0,7fr)}
+.rows{grid-template-rows:auto minmax(0,1fr)}
+.stack{display:grid; gap:14px; min-height:0}
+.na{color:var(--ink-3)}
+.floors{font-family:var(--f-mono); font-size:13px; white-space:nowrap}
+/* 근거 탭은 내용이 많아 촘촘하게 */
+.dense, .dense td{font-size:12.5px} .dense th{font-size:11.5px} .dense td{padding:4px 6px}
+.dense .small{font-size:12px} .dense .tiny{font-size:11px} .dense .part{font-size:12px} .dense .lead{font-size:13px}
+</style>
+
+<div class="stage" id="stage"><div class="board" id="board">
+  <header class="head">
+    <h1><small>DAEGU VACANCY SCORING · v1 → v2</small>스코어링 v1 · v2 비교</h1>
+    <nav class="tabs" role="tablist" aria-label="보기" id="tabs"></nav>
+    <div class="meta" id="meta"></div>
+  </header>
+  <main id="views" style="min-height:0; display:grid"></main>
+  <footer class="foot" id="foot"></footer>
+</div></div>
+<div class="tip" id="tip" role="tooltip"></div>
+
+<script>
+var D = /*@@DATA@@*/null;
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  function esc(t){ return String(t == null ? '' : t).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function f1(v){ return v == null ? '–' : (Math.round(v*10)/10).toFixed(1); }
+  function fi(v){ return v == null ? '–' : Math.round(v).toLocaleString(); }
+  function pct(v){ return v == null ? '–' : Math.round(v) + '%'; }
+  var GC = {'비용':'var(--g1)','공간':'var(--g2)','입지':'var(--g3)','업종적합':'var(--g4)','공통':'var(--ink-3)'};
+  var GL = {'비용':'비용','공간':'공간','입지':'입지','업종적합':'업종 적합','공통':'공통'};
+  var CATS = D.cats.map(function(c){ return c.cat; });
+  var byCat = {}; D.cats.forEach(function(c){ byCat[c.cat] = c; });
+  function floors(a){ return !a ? '<span class="na">층 인자 제외</span>' : a.slice(0, 3).join(' / ') + (a[3] == null ? ' · 지하 보류' : ''); }
+  function arrow(a, b, fmt){ fmt = fmt || String; var s = fmt(a) === fmt(b); return '<span class="' + (s ? 'same' : '') + '">' + fmt(a) + '</span><span class="arrow">→</span><span class="' + (s ? 'same' : 'chg') + '">' + fmt(b) + '</span>'; }
+  function src(k){ var s = D.src[k]; return s ? '<a href="' + esc(s[1]) + '" target="_blank" rel="noopener">' + esc(s[0]) + '</a>' : ''; }
+  function judge(j){ return '<span class="pill ' + ({'있음':'p-ok','부분':'p-part','없음':'p-no'}[j]) + '">' + ({'있음':'● 있음','부분':'◐ 부분','없음':'○ 없음'}[j]) + '</span>'; }
+  function mdCell(t){ return esc(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/`([^`]+)`/g, '<span class="mono">$1</span>').replace(/~~(.+?)~~/g, '<s>$1</s>'); }
+  function mdTable(t, cls){
+    return '<table class="' + (cls || '') + '"><thead><tr>' + t[0].map(function(h){ return '<th>' + mdCell(h) + '</th>'; }).join('') + '</tr></thead><tbody>' +
+      t.slice(1).map(function(r){ return '<tr>' + r.map(function(c){ return '<td>' + mdCell(c) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table>';
+  }
+
+  // ------------------------------------------------------------ 탭 1. 요약
+  function vSummary(){
+    var v2 = D.v2, ex = D.excluded;
+    var rho7 = D.cats.filter(function(c){ return c.cat !== '공연문화'; }).map(function(c){ return c.chg.rho; });
+    var t = D.tally;
+    var kpi = function(k, v, s){ return '<div class="kpi"><div class="k">' + k + '</div><div class="v">' + v + '</div><div class="s">' + s + '</div></div>'; };
+    var changes = [
+      ['업종 분류', '엔진 안 정규식 8개 → <span class="mono">classify_use.py</span>: 오타 정규화 ' + v2.normalize.length + '개, 합성어 ' + v2.compound.length + '개, 특징 칸 위치 설명 제거 ' + v2.location.length + '개, 업종 키워드 8개, 다용도·범용어·비정보·8업종 밖 표시'],
+      ['다용도 판정', '표현 확장(다용·다목적·업종불문·전업종·자유업종 등). 다용도 매물 ' + fi(D.v1multi) + ' → ' + fi(D.v2multi) + '건'],
+      ['경계 업종', '스터디카페 → 교육, 키즈카페·동물병원·애견미용·어린이집·약국 → 8업종 밖, 자동차·가구 전시장·골프샵 → 소매, 쇼핑몰 → 사무업무'],
+      ['특징 칸', 'v1은 특징 문장 전체를 검색. v2는 "○○ 앞·옆·인근", "○○상권", "○○ 하던 자리"를 지운 뒤 검색'],
+      ['업종별 건수', D.cats.map(function(c){ return c.cat + ' ' + c.v1.n + '→' + c.v2.n; }).join(' · ')],
+      ['층 점수표', '손으로 적은 값 → v2 분류 결과(추천용도 + 특징 합계)에서 엔진이 계산해 config에 고정'],
+      ['기본 면적', D.cats.filter(function(c){ return Math.round(c.v1.area) !== Math.round(c.v2.area); }).map(function(c){ return c.cat + ' ' + Math.round(c.v1.area) + '→' + Math.round(c.v2.area) + '㎡'; }).join(' · ')],
+      ['세부 업종', '없음 → 10개 (5개 대분류 × 2). 층 점수표·기본 면적만 따로, 나머지는 대분류 값'],
+      ['층 인자 제외', '없음 → 층 분포 카이제곱 p ≥ 0.05면 제외: ' + ex.join(', ')],
+      ['용도 일치도 판정', '점수표(100·60·50·30)는 그대로, 판정이 바뀐 매물 ' + D.cats.map(function(c){ return c.cat + ' ' + c.chg.use_changed; }).join(' · ')],
+      ['엔진·파일', 'scoring_engine.py v2, v1 사본(scoring_engine_v1.py), 점수_v2.csv·config·검사, 분류 열·세부 업종 열 추가'],
+      ['화면', '스코어링 보드는 아직 v1 점수를 읽음(미반영)']
+    ];
+    var same = [
+      ['그룹 4개 · 인자 11개 구성', D.same_cfg.groups && D.same_cfg.factors],
+      ['업종별 그룹 가중치 · 그룹 안 비중 · 지하철 비율', D.same_cfg.weights],
+      ['구간 기준값 8종 (가성비·보증금·임대료 부담·면적·연식·지하철·버스)', D.same_cfg.breakpoints],
+      ['용도 일치도 점수 100 · 60 · 50 · 30', D.same_cfg.use_score],
+      ['반영률 60 미만 추천 제외', D.same_cfg.min_coverage],
+      ['결측은 그룹 안에서 재분배 · 절대평가', true],
+      ['외부 인자(상권 활성도 · 배후 수요) · 건물 용도 등급 — v1 결과 파일 그대로', true],
+      ['무권리 +10 · 가성비 표본 10건 · 지하 40점(공연문화 보류)', true],
+      ['추천 대상 매물 수 (업종마다 ' + D.nscored['식음료'].toLocaleString() + '건)', CATS.every(function(c){ return D.nscored[c] === D.nscored_v1[c]; })]
+    ];
+    return '<section class="view on rows" data-v="summary"><div class="kpis">' +
+      kpi('업종 분류', 'v2', '추천용도 + 특징 칸, 규칙 파일로 분리') +
+      kpi('세부 업종', '0 → 10', '층 점수표·기본 면적만 따로') +
+      kpi('층 인자 제외', '0 → ' + ex.length, ex.join(' · ')) +
+      kpi('순위 상관 (7개 업종)', Math.min.apply(null, rho7).toFixed(3) + '+', 'v1 대비, 공연문화만 ' + byCat['공연문화'].chg.rho.toFixed(3)) +
+      kpi('계산식 근거', t['있음'] + ' · ' + t['부분'] + ' · ' + t['없음'], '있음 · 부분 · 없음 (요소 ' + (t['있음'] + t['부분'] + t['없음']) + '개)') +
+      kpi('화면', 'v1', '스코어링 보드는 아직 v1 점수') + '</div>' +
+      '<div class="stack split-7-5" style="grid-template-columns:minmax(0,7fr) minmax(0,5fr)">' +
+      '<div class="panel"><div class="ph"><h2>바뀐 것</h2><p>v1 → v2, 12항목</p></div><ol class="list">' +
+        changes.map(function(c, i){ return '<li><span class="no">' + String(i + 1).padStart(2, '0') + '</span><b>' + c[0] + '</b><span>' + c[1] + '</span></li>'; }).join('') + '</ol></div>' +
+      '<div class="panel"><div class="ph"><h2>그대로인 것</h2><p>두 config 파일을 직접 비교</p></div><ol class="list">' +
+        same.map(function(c, i){ return '<li style="grid-template-columns:24px minmax(0,1fr) 70px"><span class="no">' + String(i + 1).padStart(2, '0') + '</span><span style="color:var(--ink)">' + c[0] + '</span>' +
+          (c[1] ? '<span class="pill p-same">✓ 같음</span>' : '<span class="pill p-no">다름</span>') + '</li>'; }).join('') + '</ol>' +
+        '<p class="tiny">"같음"은 점수_v1_config.json과 점수_v2_config.json의 해당 값을 빌드할 때 비교한 결과입니다.</p></div></div></section>';
+  }
+
+  // ------------------------------------------------------------ 탭 2. 분류 키워드 (v1 vs v2)
+  function vKeywords(){
+    var kwRows = {}; D.kwTable.slice(1).forEach(function(r){ kwRows[r[0]] = r; });
+    var rows = CATS.map(function(c){
+      var r = kwRows[c] || ['', '', ''];
+      return '<tr><td><b>' + c + '</b></td><td class="re">' + esc(D.v1kw[c]) + '</td><td>' + mdCell(r[1]) + '</td><td>' + mdCell(r[2]) + '</td></tr>';
+    }).join('');
+    return '<section class="view rows" data-v="kw">' +
+      '<p class="lead">v1은 업종마다 정규식 하나를 <b>추천용도 + 특징 문장 전체</b>에서 찾았습니다. v2는 칸을 나눠 보고, 합성어·위치 설명을 먼저 처리한 뒤 아래 말을 찾습니다. v2 표는 설계 문서 3-1장 "업종별 분류 기준"에서 그대로 읽었습니다.</p>' +
+      '<div class="stack" style="grid-template-rows:minmax(0,1fr) auto">' +
+      '<div class="panel"><table><thead><tr><th style="width:84px">업종</th><th style="width:34%">v1 키워드 (scoring_engine_v1.py USE_KW)</th><th>v2 넣는 말</th><th style="width:22%">v2 넣지 않는 말 (가는 곳)</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
+      '<div class="stack two"><div class="panel"><div class="ph"><h2>다용도 판정</h2></div>' +
+        '<div class="kv"><dt>v1</dt><dd class="re">' + esc(D.v1multi_kw) + '</dd><dt>v2</dt><dd class="re">' + esc(D.v2.multi) + '</dd><dt>매물</dt><dd>' + arrow(D.v1multi, D.v2multi, fi) + '건</dd></div></div>' +
+      '<div class="panel"><div class="ph"><h2>v2에만 있는 표시</h2></div>' + mdTable(D.otherTable) + '</div></div></div></section>';
+  }
+
+  // ------------------------------------------------------------ 탭 3. v2 처리 규칙 원문
+  function vRules(){
+    var v2 = D.v2;
+    var steps = ['정규화: 오타·이형 표기 통일', '합성어 먼저: 부분 문자열이 다른 업종 말인 것을 먼저 판정하고 지움', '특징 칸만: 위치 설명을 지움', '업종 키워드 매칭(여러 업종 가능)', '다용도 · 범용어 · 8업종 밖 · 비정보 표시, 근거 칸 기록'];
+    var list = function(arr, f){ return '<table><tbody>' + arr.map(f).join('') + '</tbody></table>'; };
+    return '<section class="view rows" data-v="rules">' +
+      '<div class="panel" style="flex-direction:row; align-items:center; gap:18px; overflow:visible"><b>v2 처리 순서</b>' + steps.map(function(s, i){ return '<span><span class="mono" style="color:var(--accent)">' + (i + 1) + '</span> ' + s + '</span>'; }).join('<span class="arrow">→</span>') + '</div>' +
+      '<div class="stack" style="grid-template-columns:minmax(0,4fr) minmax(0,5fr) minmax(0,5fr)">' +
+      '<div class="panel"><div class="ph"><h2>① 정규화</h2><p>' + v2.normalize.length + '개</p></div>' +
+        list(v2.normalize, function(p){ return '<tr><td class="re">' + esc(p[0]) + '</td><td style="width:70px"><b>' + esc(p[1]) + '</b></td></tr>'; }) +
+        '<div class="ph" style="margin-top:6px"><h2>⑤ 그 밖의 표시</h2></div>' +
+        '<div class="kv"><dt>범용어</dt><dd class="re">' + esc(v2.generic) + '</dd><dt>비정보</dt><dd class="re">' + esc(v2.noise) + '</dd>' +
+        Object.keys(v2.other).map(function(k){ return '<dt>' + esc(k.replace('기타:', '')) + '</dt><dd class="re">' + esc(v2.other[k]) + '</dd>'; }).join('') +
+        '<dt>추천 문장</dt><dd class="re">' + esc(v2.rec_word) + '</dd></div></div>' +
+      '<div class="panel"><div class="ph"><h2>② 합성어</h2><p>' + v2.compound.length + '개 · 먼저 판정하고 지움</p></div>' +
+        list(v2.compound, function(p){ return '<tr><td class="re">' + esc(p[0]) + '</td><td style="width:110px"><b>' + esc(p[1].replace('기타:', '밖: ')) + '</b></td></tr>'; }) + '</div>' +
+      '<div class="panel"><div class="ph"><h2>③ 특징 칸 위치 설명</h2><p>' + v2.location.length + '개 · 특징 칸에만 적용</p></div>' +
+        list(v2.location, function(p){ return '<tr><td class="re">' + esc(p) + '</td></tr>'; }) +
+        '<div class="ph" style="margin-top:6px"><h2>세부 업종 가르는 말</h2></div>' +
+        list(Object.keys(v2.split), function(c){ var s = v2.split[c]; return '<tr><td style="width:64px"><b>' + c + '</b></td><td>' + esc(s[1]) + ' ← <span class="re">' + esc(s[2]) + '</span><br><span class="tiny">나머지는 ' + esc(s[0]) + '</span></td></tr>'; }) + '</div>' +
+      '</div></section>';
+  }
+
+  // ------------------------------------------------------------ 탭 4. 업종별 결과
+  function vCats(){
+    var m = D.meta;
+    var rows = D.cats.map(function(c){
+      var a = c.v1, b = c.v2;
+      return '<tr><td><b>' + c.cat + '</b></td><td class="r num">' + a.n + '</td><td class="r num"><b>' + b.n + '</b></td><td class="r num">' + b.rec + '</td><td class="r num">' + b.feat + '</td>' +
+        '<td class="r num">' + arrow(a.dist['1층'], b.dist['1층'], pct) + '</td><td class="r num">' + pct(b.dist['2층']) + '</td><td class="r num">' + pct(b.dist['3층이상']) + '</td>' +
+        '<td class="r num">' + arrow(a.area, b.area, function(v){ return Math.round(v) + '㎡'; }) + '</td>' +
+        '<td class="floors">' + floors(a.floor) + '</td><td class="floors">' + (b.floor_used ? floors(b.floor) : '<span class="chg">층 인자 제외</span><br><span class="tiny">참고 ' + b.floor_ref.slice(0, 3).join(' / ') + '</span>') + '</td>' +
+        '<td class="r num">' + f1(b.chi2) + '</td><td class="r num">' + (b.p < 0.001 ? '<0.001' : b.p.toFixed(3)) + '</td></tr>';
+    }).join('');
+    var typ = Object.keys(m.type).map(function(k){ return '<tr><td>' + esc(k) + '</td><td class="r num">' + m.type[k].toLocaleString() + '</td><td class="r num">' + pct(100*m.type[k]/m.n) + '</td></tr>'; }).join('');
+    var oth = Object.keys(m.other).map(function(k){ return '<tr><td>' + esc(k.replace('기타:', '')) + '</td><td class="r num">' + m.other[k] + '</td></tr>'; }).join('');
+    var nc = Object.keys(m.ncat).map(function(k){ return k + '개 ' + m.ncat[k]; }).join(' · ');
+    return '<section class="view rows" data-v="cats">' +
+      '<div class="panel" style="overflow:visible"><div class="ph"><h2>업종별 분류 결과와 층·면적 기준</h2><p>1층 비율·면적·층 점수의 v1 값은 v1 분류(키워드)로 다시 센 값과 v1 config</p></div>' +
+      '<table><thead><tr><th>업종</th><th class="r">v1 건수</th><th class="r">v2 건수</th><th class="r">추천용도</th><th class="r">특징만</th><th class="r">1층</th><th class="r">2층</th><th class="r">3층+</th><th class="r">기본 면적</th><th>v1 층 점수 (1 / 2 / 3층+)</th><th>v2 층 점수</th><th class="r">χ²</th><th class="r">p</th></tr></thead><tbody>' + rows + '</tbody></table>' +
+      '<p class="tiny">v1 건수 중 운동시설은 v1 키워드를 다시 돌린 값(146)입니다. 설계 문서 3장 표는 167건이며 차이의 원인은 확인하지 못했습니다. 층 점수 v1 값은 3장 표의 손값, v2는 엔진이 계산한 값입니다.</p></div>' +
+      '<div class="stack" style="grid-template-columns:repeat(3,minmax(0,1fr))">' +
+      '<div class="panel"><div class="ph"><h2>추천용도 칸 상태</h2><p>매물 ' + m.n.toLocaleString() + '건</p></div><table><tbody>' + typ + '</tbody></table><p class="tiny">추천용도 칸에 적힌 업종 수: ' + nc + '</p></div>' +
+      '<div class="panel"><div class="ph"><h2>업종 신호 (두 칸 합쳐)</h2></div><table><tbody>' +
+        '<tr><td>업종 신호 있음</td><td class="r num">' + m.signal['업종신호'].toLocaleString() + '</td></tr><tr><td>다용도만</td><td class="r num">' + m.signal['다용도만'] + '</td></tr>' +
+        '<tr><td>신호 없음 (용도 일치도 50점)</td><td class="r num">' + m.signal['신호없음'] + '</td></tr><tr><td>빈칸이지만 특징에 업종 있음</td><td class="r num">' + m.signal['빈칸중_특징업종'] + '</td></tr></tbody></table>' +
+        '<p class="tiny">특징 칸에서만 나온 업종 쌍: 추천 문장 ' + m.form['추천문장'] + ' · 업종 나열 ' + m.form['업종나열'] + ' · 단독 언급 ' + m.form['단독언급'] + ' — 모두 명시 100점 (2026-11-17 결정)</p></div>' +
+      '<div class="panel"><div class="ph"><h2>8업종 밖 (추천용도 칸)</h2><p>점수에서 빼지 않음 · 신호로만 안 셈</p></div><table><tbody>' + oth + '</tbody></table>' +
+        '<p class="tiny">사전에 걸리지 않은 조각이 남은 매물 ' + m.leftover + '건 (대부분 수식어)</p></div></div></section>';
+  }
+
+  // ------------------------------------------------------------ 탭 5. 세부 업종·층 규칙
+  function vSubs(){
+    var rows = D.subs.map(function(s){
+      return '<tr><td><b>' + s.big + '</b></td><td><b>' + s.sub + '</b></td><td class="small">' + mdCell(s.rule) + '</td><td class="r num">' + s.n + '</td><td class="r num">' + s.both + '</td>' +
+        '<td class="r num">' + pct(s.dist['1층']) + '</td><td class="r num">' + Math.round(s.area) + '㎡</td>' +
+        '<td class="floors">' + (s.floor_used ? floors(s.floor) : '<span class="chg">층 인자 제외</span><br><span class="tiny">참고 ' + s.floor_ref.slice(0, 3).join(' / ') + '</span>') + '</td>' +
+        '<td class="r num">' + (s.p < 0.001 ? '<0.001' : s.p.toFixed(3)) + '</td><td class="r num">' + f1(s.score.p50) + '</td><td class="r num">' + f1(s.score.max) + '</td></tr>';
+    }).join('');
+    var fr = D.floor_rule;
+    return '<section class="view rows" data-v="subs">' +
+      '<div class="panel" style="overflow:visible"><div class="ph"><h2>세부 업종 10개 (v2에서 새로 생김)</h2><p>분류 규칙은 설계 문서 표에서 읽음 · 점수는 v2 엔진, 예산·희망 면적 미입력</p></div>' +
+      '<table><thead><tr><th>대분류</th><th>세부 업종</th><th style="width:30%">분류 규칙</th><th class="r">매물</th><th class="r">양쪽</th><th class="r">1층</th><th class="r">기본 면적</th><th>층 점수 (1 / 2 / 3층+)</th><th class="r">p</th><th class="r">점수 중앙값</th><th class="r">최고점</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
+      '<div class="stack" style="grid-template-columns:repeat(4,minmax(0,1fr))">' +
+      '<div class="card"><h3>층 점수 식</h3><p class="mono">' + esc(fr['식']) + '</p><p class="small">하한 ' + fr['하한'] + ' — <b>' + esc(fr['하한_상태']) + '</b>. 지하 ' + fr['지하'] + '점, ' + fr['지하_보류'].join('·') + '는 보류(v1과 같음)</p></div>' +
+      '<div class="card"><h3>표본</h3><p>' + esc(fr['표본']) + '</p><p class="small">추천용도 칸만 쓰면 피부·마사지가 기준 50건 아래로 내려감. 결과 차이는 8개 업종 중 6개가 3점 이내</p></div>' +
+      '<div class="card"><h3>층 인자 제외</h3><p class="mono">' + esc(fr['층인자_제외']) + '</p><p class="small">지금 해당: ' + D.excluded.join(', ') + '. 결측과 같이 공간 그룹 안에서 비중 재분배</p></div>' +
+      '<div class="card"><h3>세부 업종이 갖는 것</h3><p>층 점수표와 기본 면적만</p><p class="small">가중치·교통 비율·배후 수요·상권 활성도·건물 용도·용도 일치도는 대분류 값. 같은 대분류 안 상위 10개 겹침: ' + Object.keys(D.overlap.sub).map(function(k){ return k + ' ' + D.overlap.sub[k]; }).join(' · ') + '</p></div>' +
+      '</div></section>';
+  }
+
+  // ------------------------------------------------------------ 탭 6. 결정 기록
+  function vDecisions(){
+    return '<section class="view split-7-5" data-v="dec">' +
+      '<div class="stack" style="grid-template-rows:auto minmax(0,1fr)"><div class="panel" style="overflow:visible"><div class="ph"><h2>결정한 것</h2><p>설계 문서 3-1장 표</p></div>' + mdTable(D.decided) + '</div>' +
+      '<div class="panel"><div class="ph"><h2>신호 강도와 용도 일치도</h2><p>특징 칸 신호를 명시 100으로 정한 근거</p></div>' + mdTable(D.signal) + '</div></div>' +
+      '<div class="stack" style="grid-template-rows:minmax(0,1fr) auto"><div class="panel"><div class="ph"><h2>남은 결정</h2></div>' + mdTable(D.remaining) + '</div>' +
+      '<div class="panel" style="overflow:visible"><div class="ph"><h2>나열한 업종 수와 신호</h2><p>4개 이상도 명시 100</p></div>' + mdTable(D.listCount) + '</div></div></section>';
+  }
+
+  // ------------------------------------------------------------ 탭 7. 점수 비교
+  function vScores(){
+    var rows = D.cats.map(function(c){
+      var a = c.v1.score, b = c.v2.score, ch = c.chg;
+      return '<tr><td><b>' + c.cat + '</b></td><td class="r num">' + arrow(a.p10, b.p10, f1) + '</td><td class="r num">' + arrow(a.p50, b.p50, f1) + '</td><td class="r num">' + arrow(a.p90, b.p90, f1) + '</td><td class="r num">' + arrow(a.max, b.max, f1) + '</td>' +
+        '<td class="r num">' + arrow(a['반영률_중앙값'], b['반영률_중앙값'], f1) + '</td><td class="r num">' + arrow(a['추천대상수'], b['추천대상수'], fi) + '</td>' +
+        '<td class="r num"><b>' + ch.rho.toFixed(3) + '</b></td><td class="r num">' + ch.mad.toFixed(2) + '</td><td class="r num">' + ch.ge5.toLocaleString() + '</td><td class="r num">' + ch.top10 + '/10</td><td class="r num">' + ch.top50 + '/50</td><td class="r num">' + ch.use_changed + '</td></tr>';
+    }).join('');
+    var useRows = D.cats.map(function(c){
+      var k = ['명시', '다용도', '신호없음', '타업종만'];
+      return '<tr><td><b>' + c.cat + '</b></td>' + k.map(function(x){ return '<td class="r num">' + arrow(c.v1.use[x] || 0, c.v2.use[x] || 0, fi) + '</td>'; }).join('') + '</tr>';
+    }).join('');
+    var top = function(o){ return Object.keys(o).sort(function(a, b){ return o[b] - o[a]; }).slice(0, 5).map(function(k){ return k + ' ' + o[k]; }).join(' · '); };
+    var gu = Object.keys(D.overlap.v2gu).map(function(g){ var a = D.overlap.v1gu[g], b = D.overlap.v2gu[g]; return '<tr><td>' + g + '</td><td class="r num">' + arrow(a['최대겹침'], b['최대겹침']) + '</td><td class="small">' + esc(b['최대겹침_업종쌍'].join(', ')) + '</td></tr>'; }).join('');
+    var subRows = D.subs.map(function(s){ var x = s.score; return '<tr><td>' + s.big + ' › ' + s.sub + '</td><td class="r num">' + f1(x.p10) + '</td><td class="r num">' + f1(x.p50) + '</td><td class="r num">' + f1(x.p90) + '</td><td class="r num">' + f1(x.max) + '</td><td class="r num">' + f1(x['반영률_중앙값']) + '</td></tr>'; }).join('');
+    return '<section class="view rows" data-v="scores">' +
+      '<div class="panel" style="overflow:visible"><div class="ph"><h2>업종별 점수 분포와 v1 대비 변화</h2><p>예산·희망 면적 미입력 · 변화는 두 버전 모두 추천 대상인 매물 기준</p></div>' +
+      '<table><thead><tr><th>업종</th><th class="r">하위 10%</th><th class="r">중앙값</th><th class="r">상위 10%</th><th class="r">최고점</th><th class="r">반영률</th><th class="r">추천 대상</th><th class="r">순위 상관</th><th class="r">평균 점수 차</th><th class="r">5점+ 바뀐 매물</th><th class="r">상위 10 유지</th><th class="r">상위 50 유지</th><th class="r">용도 일치도 바뀐 매물</th></tr></thead><tbody>' + rows + '</tbody></table>' +
+      '<p class="tiny">공연문화만 크게 바뀐 이유: 층 인자 제외(v1 층 점수 86 / 100 / 81이 빠짐)와 기본 면적 ' + Math.round(byCat['공연문화'].v1.area) + ' → ' + Math.round(byCat['공연문화'].v2.area) + '㎡.</p></div>' +
+      '<div class="stack" style="grid-template-columns:minmax(0,5fr) minmax(0,4fr) minmax(0,5fr)">' +
+      '<div class="panel"><div class="ph"><h2>용도 일치도 판정 (매물 수)</h2><p>v1 → v2</p></div><table><thead><tr><th>업종</th><th class="r">명시 100</th><th class="r">다용도 60</th><th class="r">신호 없음 50</th><th class="r">다른 업종만 30</th></tr></thead><tbody>' + useRows + '</tbody></table></div>' +
+      '<div class="panel"><div class="ph"><h2>업종 간 상위 10 겹침</h2></div><div class="kv"><dt>v1 대구</dt><dd class="small">' + top(D.overlap.v1) + '</dd><dt>v2 대구</dt><dd class="small">' + top(D.overlap.v2) + '</dd></div>' +
+        '<table><thead><tr><th>구·군</th><th class="r">최대 겹침</th><th>v2 업종 쌍</th></tr></thead><tbody>' + gu + '</tbody></table></div>' +
+      '<div class="panel"><div class="ph"><h2>세부 업종 점수 분포 (v2)</h2></div><table><thead><tr><th>세부 업종</th><th class="r">하위 10%</th><th class="r">중앙값</th><th class="r">상위 10%</th><th class="r">최고점</th><th class="r">반영률</th></tr></thead><tbody>' + subRows + '</tbody></table></div>' +
+      '</div></section>';
+  }
+
+  // ------------------------------------------------------------ 탭 8·9. 계산식 근거
+  function evRow(e){
+    return '<tr><td style="width:6px; padding:0; background:' + GC[e.group] + '"></td><td style="width:118px"><b>' + esc(e.factor) + '</b><br><span class="tiny">' + GL[e.group] + '</span></td>' +
+      '<td class="small" style="width:25%">' + esc(e.formula) + '</td>' +
+      '<td>' + e.parts.map(function(p){ return '<div class="part">' + judge(p[1]) + '<div><b>' + esc(p[0]) + '</b>' + (p[2] ? ' — ' + esc(p[2]) : '') + (p[3] ? '<br><span class="tiny">' + src(p[3]) + '</span>' : '') + '</div></div>'; }).join('') + '</td>' +
+      '<td class="small" style="width:22%">' + (e.upgrade ? esc(e.upgrade) + (e.upsrc ? '<br><span class="tiny">' + src(e.upsrc) + '</span>' : '') : '<span class="na">—</span>') + '</td>' +
+      '<td class="c" style="width:52px"><span class="pill p-same">' + e.level + '</span></td></tr>';
+  }
+  function vEvidence(groups, key, title, extra){
+    var ev = D.evidence.filter(function(e){ return groups.indexOf(e.group) >= 0; });
+    var t = {'있음':0,'부분':0,'없음':0}; ev.forEach(function(e){ e.parts.forEach(function(p){ t[p[1]]++; }); });
+    return '<section class="view dense" data-v="' + key + '" style="grid-template-rows:auto ' + (extra ? 'auto minmax(0,1fr)' : 'minmax(0,1fr)') + '">' +
+      '<p class="lead"><b>판정</b> ' + judge('있음') + ' 그 식이나 요소를 그대로 쓰는 문헌·법령 · ' + judge('부분') + ' 형태·기준점·방향 일부만 대응 · ' + judge('없음') + ' 대응하는 근거를 찾지 못함. ' +
+        '이 탭 요소 ' + (t['있음'] + t['부분'] + t['없음']) + '개 중 있음 ' + t['있음'] + ' · 부분 ' + t['부분'] + ' · 없음 ' + t['없음'] + '. <b>변경 수준</b> A = 인자 산출식만, B = 그룹 구성, C = 골격 (탭 11). 조사일 2026-11-18, 2차 자료는 출처에 표시.</p>' +
+      '<div class="panel"><div class="ph"><h2>' + title + '</h2></div><table><thead><tr><th></th><th>인자</th><th>현재 계산식</th><th>구성 요소별 근거</th><th>근거 있는 보완안</th><th class="c">수준</th></tr></thead><tbody>' + ev.map(evRow).join('') + '</tbody></table></div>' + (extra ? extra() : '') + '</section>';
+  }
+
+  // 근거 ③ 아래: 영향이 크고 근거가 약한 인자부터
+  var EVMAP = {'임대료부담':['임대료 부담'],'가성비':['가성비'],'보증금':['보증금'],'층':['층'],'면적적합도':['면적 적합도'],'건물연식':['건물 연식'],
+    '교통':['교통 · 지하철','교통 · 버스','지하철 : 버스 비율'],'상권활성도':['상권 활성도'],'배후수요':['배후 수요'],'용도일치도':['용도 일치도'],'건물용도':['건물 용도']};
+  function priority(){
+    var rows = D.factors.map(function(f){
+      var best = null, rmin = 1, ptsMin = 99, ptsMax = 0;
+      CATS.forEach(function(c){
+        var r = D.sens['업종'][c], x = r['인자제거'][f];
+        ptsMin = Math.min(ptsMin, r['배점'][f]); ptsMax = Math.max(ptsMax, r['배점'][f]);
+        if (!x) return;
+        if (!best || x['평균변화'] > best[0]) best = [x['평균변화'], c];
+        rmin = Math.min(rmin, x['순위상관']);
+      });
+      var t = {'있음':0,'부분':0,'없음':0};
+      D.evidence.filter(function(e){ return EVMAP[f].indexOf(e.factor) >= 0; }).forEach(function(e){ e.parts.forEach(function(p){ t[p[1]]++; }); });
+      return {f:f, best:best, rmin:rmin, pts:[ptsMin, ptsMax], t:t};
+    }).sort(function(a, b){ return b.best[0] - a.best[0]; });
+    var jt = function(t){ return ['있음','부분','없음'].filter(function(k){ return t[k]; }).map(function(k){ return judge(k) + ' ' + t[k]; }).join(' '); };
+    return '<div class="panel" style="overflow:visible"><div class="ph"><h2>보완 우선순위: 순위에 영향이 큰 인자부터</h2><p>영향 = 인자를 뺄 때 총점이 움직이는 평균(가장 큰 업종) · 근거 = 구성 요소 판정 수</p></div>' +
+      '<table><thead><tr><th>순서</th><th>인자</th><th>그룹</th><th class="r">배점 범위</th><th class="r">영향 (평균 변화)</th><th>가장 큰 업종</th><th class="r">최저 순위 상관</th><th>근거 판정</th></tr></thead><tbody>' +
+      rows.map(function(r, i){
+        return '<tr><td class="num">' + (i + 1) + '</td><td><b>' + D.flabel[r.f] + '</b></td><td><span class="gdot" style="background:' + GC[D.fgroup[r.f]] + '"></span>' + GL[D.fgroup[r.f]] + '</td>' +
+          '<td class="r num">' + r.pts[0] + '~' + r.pts[1] + '</td><td class="r num"><b>' + r.best[0].toFixed(2) + '</b></td><td>' + r.best[1] + '</td><td class="r num">' + r.rmin.toFixed(3) + '</td><td>' + jt(r.t) + '</td></tr>';
+      }).join('') +
+      '</tbody></table><p class="tiny">임대료 상한 300만 원(화면 기본값) 기준. 교통은 지하철·버스·비율 세 항목의 판정을 합쳤습니다. 그룹 안 비중·업종별 그룹 가중치는 모든 인자에 걸린 공통 가설(근거 없음)이라 따로 셈하지 않았습니다.</p></div>';
+  }
+
+  // ------------------------------------------------------------ 탭 11. 계산식 변경 영향
+  var METRIC = 'mad';
+  var MET = {
+    mad: {label:'평균 점수 변화', get:function(x){ return x['평균변화']; }, fmt:function(v){ return v.toFixed(1); }, max:10, note:'인자를 빼면 총점이 평균 몇 점 움직이나'},
+    rho: {label:'순위 상관', get:function(x){ return x['순위상관']; }, fmt:function(v){ return v.toFixed(2); }, max:0.4, inv:true, note:'1에 가까울수록 순위가 그대로'},
+    top10: {label:'상위 10 유지', get:function(x){ return x['상위10유지']; }, fmt:function(v){ return v + '/10'; }, max:10, inv10:true, note:'원래 상위 10개 중 남는 수'},
+    pts: {label:'배점', fmt:function(v){ return v.toFixed(1); }, max:21, note:'인자 점수 1점 = 총점 배점/100점 (결측 없을 때)'}
+  };
+  function heatColor(t){ var i = Math.max(0, Math.min(7, Math.round(t*7))); return ['var(--h0)','var(--h1)','var(--h2)','var(--h3)','var(--h4)','var(--h5)','var(--h6)','var(--h7)'][i]; }
+  function heatInk(t){ return Math.round(t*7) >= 4 ? 'color:#fff' : 'color:var(--ink)'; }
+  function heatTable(){
+    var M = MET[METRIC];
+    var head = '<tr><th style="text-align:left">인자</th>' + CATS.map(function(c){ return '<th>' + c + '</th>'; }).join('') + '</tr>';
+    var body = D.factors.map(function(f){
+      return '<tr><td class="lab"><span class="gdot" style="background:' + GC[D.fgroup[f]] + '"></span>' + D.flabel[f] + '</td>' + CATS.map(function(c){
+        var r = D.sens['업종'][c], x = r['인자제거'][f], pts = r['배점'][f];
+        if (METRIC !== 'pts' && !x) return '<td data-c="' + c + '" data-f="' + f + '" style="background:var(--soft); color:var(--ink-3)">제외</td>';
+        var v = METRIC === 'pts' ? pts : M.get(x);
+        var t = METRIC === 'rho' ? (1 - v)/M.max : METRIC === 'top10' ? (10 - v)/10 : v/M.max;
+        t = Math.max(0, Math.min(1, t));
+        return '<td data-c="' + c + '" data-f="' + f + '" style="background:' + heatColor(t) + ';' + heatInk(t) + '">' + M.fmt(v) + '</td>';
+      }).join('') + '</tr>';
+    }).join('');
+    return '<table class="heat"><thead>' + head + '</thead><tbody>' + body + '</tbody></table>';
+  }
+  function vImpact(){
+    var S = D.structure;
+    var grp = ['비용','공간','입지','업종적합'];
+    var gRows = grp.map(function(g){ return '<tr><td><span class="gdot" style="background:' + GC[g] + '"></span>' + GL[g] + '</td>' + CATS.map(function(c){ var x = D.sens['업종'][c]['그룹제거'][g]; return '<td class="r num" title="평균 ' + x['평균변화'] + '점 · 최대 ' + x['최대변화'] + '점 · 상위 10 유지 ' + x['상위10유지'] + '">' + x['순위상관'].toFixed(2) + '</td>'; }).join('') + '</tr>'; }).join('');
+    // 인자 제거 시험 범위
+    var all = []; CATS.forEach(function(c){ D.factors.forEach(function(f){ var x = D.sens['업종'][c]['인자제거'][f]; if (x) all.push([x, c, f]); }); });
+    var lo = all.reduce(function(a, b){ return b[0]['순위상관'] < a[0]['순위상관'] ? b : a; });
+    var hi = all.reduce(function(a, b){ return b[0]['순위상관'] > a[0]['순위상관'] ? b : a; });
+    var madMin = Math.min.apply(null, all.map(function(a){ return a[0]['평균변화']; })), madMax = Math.max.apply(null, all.map(function(a){ return a[0]['평균변화']; }));
+    return '<section class="view" data-v="impact" style="grid-template-columns:minmax(0,5fr) minmax(0,7fr)">' +
+      '<div class="stack" style="grid-template-rows:auto minmax(0,1fr)">' +
+      '<div class="panel" style="overflow:visible"><div class="ph"><h2>바뀌지 않는 골격 7개</h2><p>A·B 수준 변경에서는 그대로</p></div><ol class="list">' +
+        S.fixed.map(function(t, i){ return '<li style="grid-template-columns:24px minmax(0,1fr); padding:3px 0"><span class="no">' + (i + 1) + '</span><span style="color:var(--ink)">' + esc(t) + '</span></li>'; }).join('') + '</ol></div>' +
+      '<div class="cards" style="grid-template-rows:repeat(3,auto); align-content:start">' + S.levels.map(function(l){
+        return '<div class="card"><h3><span class="lv">' + l.id + '</span>' + esc(l.name) + '</h3><dl class="kv"><dt>예</dt><dd>' + esc(l.ex) + '</dd><dt>골격</dt><dd><b>' + esc(l.fixed) + '</b></dd><dt>바뀌는 것</dt><dd>' + esc(l.change) + '</dd><dt>크기</dt><dd>' + esc(l.size) + '</dd></dl></div>';
+      }).join('') + '</div></div>' +
+      '<div class="stack" style="grid-template-rows:minmax(0,1fr) auto">' +
+      '<div class="panel"><div class="ph"><h2>인자를 통째로 빼면 (산출식 변경의 실측 크기)</h2>' +
+        '<div class="seg" role="group" aria-label="지표">' + Object.keys(MET).map(function(k){ return '<button type="button" data-m="' + k + '" aria-pressed="' + (k === METRIC) + '">' + MET[k].label + '</button>'; }).join('') + '</div></div>' +
+        '<p class="small" id="heatNote"></p><div id="heat">' + heatTable() + '</div>' +
+        '<div class="legend"><span>작음</span>' + [0,1,2,3,4,5,6,7].map(function(i){ return '<i style="background:var(--h' + i + ')"></i>'; }).join('') + '<span>큼</span><span style="margin-left:auto" class="tiny">임대료 상한 300만 원(화면 기본값) · 희망 면적 미입력 · 칸에 마우스를 올리면 전체 지표</span></div>' +
+        '<p class="small">범위: 순위 상관 ' + lo[0]['순위상관'].toFixed(3) + ' (' + lo[1] + ' ' + D.flabel[lo[2]] + ') ~ ' + hi[0]['순위상관'].toFixed(3) + ' (' + hi[1] + ' ' + D.flabel[hi[2]] + '), 평균 점수 변화 ' + madMin.toFixed(2) + ' ~ ' + madMax.toFixed(2) + '점. 공연문화 면적 적합도가 큰 것은 층 인자가 빠져 공간 그룹 안 비중이 면적·연식에 몰렸기 때문입니다.</p></div>' +
+      '<div class="panel" style="overflow:visible"><div class="ph"><h2>그룹을 통째로 빼면 (순위 상관)</h2><p>그룹 구성 변경의 상한에 가까움</p></div>' +
+        '<table><thead><tr><th>그룹</th>' + CATS.map(function(c){ return '<th class="r">' + c + '</th>'; }).join('') + '</tr></thead><tbody>' + gRows + '</tbody></table></div>' +
+      '</div></section>';
+  }
+
+  // ------------------------------------------------------------ 탭 11. 파일·남은 일
+  function vFiles(){
+    var files = [
+      ['새 파일', 'data/scripts/scoring_engine.py', 'v2 엔진 (v1에서 교체)'],
+      ['새 파일', 'data/scripts/scoring_engine_v1.py', 'v1 엔진 사본. 실행하면 기존 점수_v1.csv와 같은 파일이 나옴(확인함)'],
+      ['새 파일', 'data/09.스코어링/점수_v2.csv · 점수_v2_config.json · 점수_v2_검사.json', 'v2 결과'],
+      ['수정', 'data/scripts/classify_use.py', '분류 규칙 v2, 층 검정, 문장 형태 기록'],
+      ['수정', 'data/09.스코어링/용도분류_v2.csv · 용도분류_v2_meta.json', '매물별 분류, 집계'],
+      ['새 파일', 'data/09.스코어링/특징칸_업종신호_v2.csv', '특징 칸에서만 나온 업종 558쌍 검토 목록'],
+      ['새 파일', 'data/scripts/factor_sensitivity.py · 09.스코어링/인자민감도_v2.json', '인자·그룹 제거 시험 (탭 10)'],
+      ['새 파일', 'data/scripts/build_compare_board.py · compare_board_template.html', '이 화면'],
+      ['수정', 'data/09.스코어링/스코어링 모델 구축 설계.md · README.md', '3-1·5·11·13~15장'],
+      ['그대로', 'data/09.스코어링/외부인자_v1.csv · 건물용도_v1.csv', 'v2 엔진도 이 파일을 읽음'],
+      ['그대로', '발표용 데모파일/v2.대구_공실추천(데모).html · data/scripts/demo_template_v2.html', '화면은 아직 v1 점수']
+    ];
+    var pc = {'새 파일':'p-new','수정':'p-part','그대로':'p-same'};
+    return '<section class="view two" data-v="files">' +
+      '<div class="panel"><div class="ph"><h2>파일</h2><p>커밋하지 않음</p></div><table><tbody>' + files.map(function(f){ return '<tr><td style="width:70px"><span class="pill ' + pc[f[0]] + '">' + f[0] + '</span></td><td class="mono" style="font-size:12px">' + esc(f[1]) + '</td><td class="small">' + esc(f[2]) + '</td></tr>'; }).join('') + '</tbody></table></div>' +
+      '<div class="stack" style="grid-template-rows:auto auto minmax(0,1fr)">' +
+      '<div class="panel" style="overflow:visible"><div class="ph"><h2>확인한 것</h2></div><ol class="list">' + [
+        'v1 사본이 기존 점수_v1.csv를 완전히 같게 재현',
+        'v2 엔진의 층 점수표·기본 면적·표본 수 18개가 분류 결과(설계 문서 표)와 같음',
+        '층 인자 제외 업종은 2,717건 모두 층 점수가 비어 있음',
+        '추천 대상 수가 8개 업종 모두 v1과 같음',
+        '이 화면의 숫자는 결과 파일과 설계 문서 표에서 빌드할 때 읽음'
+      ].map(function(t, i){ return '<li style="grid-template-columns:24px minmax(0,1fr); padding:3px 0"><span class="no">' + (i + 1) + '</span><span style="color:var(--ink)">' + t + '</span></li>'; }).join('') + '</ol></div>' +
+      '<div class="panel" style="overflow:visible"><div class="ph"><h2>확인하지 않은 것</h2></div><ol class="list">' + [
+        '화면 점수 = 엔진 점수 (화면이 아직 v1을 읽음)',
+        '운동시설 v1 건수 167 대 재현 146의 차이 원인',
+        '근거 출처 중 2차 자료(보도·해설·심판 요약)의 원문',
+        '특징 칸 규칙을 고친 뒤 추천 문장·업종 나열 513쌍 전체 재검토'
+      ].map(function(t, i){ return '<li style="grid-template-columns:24px minmax(0,1fr); padding:3px 0"><span class="no">' + (i + 1) + '</span><span style="color:var(--ink)">' + t + '</span></li>'; }).join('') + '</ol></div>' +
+      '<div class="panel"><div class="ph"><h2>남은 일</h2></div><ol class="list">' + [
+        '스코어링 보드 화면을 v2 점수로 바꾸고 세부 업종 선택 추가',
+        '경계 업종 배정 · "공연문화" 명칭 · 8업종 밖 안내 팀 확인',
+        '근거 "없음" 요소의 보완안 적용 여부 결정 (탭 8~10)',
+        'good/bad 평가가 쌓이면 하한 40·구간값·가중치 보정'
+      ].map(function(t, i){ return '<li style="grid-template-columns:24px minmax(0,1fr); padding:3px 0"><span class="no">' + (i + 1) + '</span><span style="color:var(--ink)">' + t + '</span></li>'; }).join('') + '</ol></div></div></section>';
+  }
+
+  // ------------------------------------------------------------ 조립
+  var TABS = [
+    ['summary', '요약', vSummary], ['kw', '분류 키워드', vKeywords], ['rules', '분류 처리 규칙', vRules], ['cats', '업종별 결과', vCats],
+    ['subs', '세부 업종·층 규칙', vSubs], ['dec', '결정 기록', vDecisions], ['scores', '점수 비교', vScores],
+    ['ev1', '근거 ① 비용·공간', function(){ return vEvidence(['비용','공간'], 'ev1', '비용 · 공간 그룹'); }],
+    ['ev2', '근거 ② 입지·업종 적합', function(){ return vEvidence(['입지','업종적합'], 'ev2', '입지 · 업종 적합 그룹'); }],
+    ['ev3', '근거 ③ 공통·우선순위', function(){ return vEvidence(['공통'], 'ev3', '공통 규칙 (집계 · 반영률 · 보간 · 업종별 가중치)', priority); }],
+    ['impact', '계산식 변경 영향', vImpact], ['files', '파일·남은 일', vFiles]
+  ];
+  $('tabs').innerHTML = TABS.map(function(t, i){ return '<button type="button" role="tab" id="tab-' + t[0] + '" data-t="' + t[0] + '" aria-selected="' + (i === 0) + '"><i>' + (i + 1) + '</i>' + t[1] + '</button>'; }).join('');
+  $('views').innerHTML = TABS.map(function(t){ return t[2](); }).join('');
+  Array.prototype.forEach.call(document.querySelectorAll('.view'), function(v, i){ v.classList.toggle('on', i === 0); v.setAttribute('role', 'tabpanel'); });
+  $('meta').innerHTML = '매물 ' + D.meta.n.toLocaleString() + '건 · 엔진 v1 → v2<br>빌드 ' + D.built + ' · 숫자는 결과 파일에서 읽음';
+  $('foot').innerHTML = '<span>출처: 점수_v1·v2 (csv·config·검사) · 용도분류_v2_meta · 인자민감도_v2 · 스코어링 모델 구축 설계.md</span><span>← → 로 탭 이동</span>';
+
+  function show(key){
+    TABS.forEach(function(t){ $('tab-' + t[0]).setAttribute('aria-selected', t[0] === key); });
+    Array.prototype.forEach.call(document.querySelectorAll('.view'), function(v){ v.classList.toggle('on', v.dataset.v === key); });
+    try { history.replaceState(null, '', '#' + key); } catch (e) {}
+  }
+  function cur(){ for (var i = 0; i < TABS.length; i++) if ($('tab-' + TABS[i][0]).getAttribute('aria-selected') === 'true') return i; return 0; }
+  $('tabs').addEventListener('click', function(e){ var b = e.target.closest('button'); if (b) show(b.dataset.t); });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'ArrowRight') show(TABS[(cur() + 1) % TABS.length][0]);
+    if (e.key === 'ArrowLeft') show(TABS[(cur() + TABS.length - 1) % TABS.length][0]);
+  });
+  var h = location.hash.replace('#', ''); if (TABS.some(function(t){ return t[0] === h; })) show(h);
+
+  // 히트맵 지표 전환 + 칸 설명
+  function noteHeat(){ $('heatNote').textContent = MET[METRIC].note; }
+  noteHeat();
+  document.addEventListener('click', function(e){
+    var b = e.target.closest('[data-m]'); if (!b) return;
+    METRIC = b.dataset.m; $('heat').innerHTML = heatTable(); noteHeat();
+    Array.prototype.forEach.call(document.querySelectorAll('[data-m]'), function(x){ x.setAttribute('aria-pressed', x.dataset.m === METRIC); });
+  });
+  var tip = $('tip');
+  document.addEventListener('mousemove', function(e){
+    var td = e.target.closest('.heat td[data-c]');
+    if (!td){ tip.style.display = 'none'; return; }
+    var c = td.dataset.c, f = td.dataset.f, r = D.sens['업종'][c], x = r['인자제거'][f];
+    tip.innerHTML = '<b>' + c + ' · ' + D.flabel[f] + '</b><br>배점 ' + r['배점'][f] + '점 · 결측 ' + r['인자_결측률'][f] + '%' +
+      (x ? '<br>빼면: 순위 상관 ' + x['순위상관'] + ' · 평균 ' + x['평균변화'] + '점 · 상위 10% 매물 ' + x['p90변화'] + '점 · 최대 ' + x['최대변화'] + '점<br>상위 10 유지 ' + x['상위10유지'] + '/10 · 상위 50 유지 ' + x['상위50유지'] + '/50' : '<br>층 인자 제외 업종이라 항상 비어 있음');
+    tip.style.display = 'block';
+    var w = tip.offsetWidth, hh = tip.offsetHeight;
+    tip.style.left = Math.min(e.clientX + 14, innerWidth - w - 8) + 'px';
+    tip.style.top = Math.min(e.clientY + 14, innerHeight - hh - 8) + 'px';
+  });
+
+  // 16:9 한 장을 화면에 맞추기
+  function fit(){
+    var s = Math.min(innerWidth/1920, innerHeight/1080);
+    var st = $('stage'); st.style.width = 1920*s + 'px'; st.style.height = 1080*s + 'px'; st.style.marginLeft = -960*s + 'px'; st.style.marginTop = -540*s + 'px';
+    $('board').style.transform = 'scale(' + s + ')';
+  }
+  addEventListener('resize', fit); fit();
+})();
+</script>
+</html>
