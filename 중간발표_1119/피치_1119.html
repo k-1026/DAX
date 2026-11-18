@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>대구 공실 매칭 피치</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+:root{
+  --teal:#2b8a7e; --teal-d:#1f6660; --teal-l:#e3f2ef; --teal-ll:#f2f9f7;
+  --ink:#1c2321; --ink2:#4a5652; --ink3:#7c8a86; --line:#dde5e2;
+  --bg:#ffffff; --page:#e9eeec;
+  --red:#c2513f; --red-l:#fbebe7; --amber:#b9821c; --amber-l:#fbf2df; --green:#2f8a4e; --green-l:#e5f3ea; --gray-l:#eef1f0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--page);font-family:Pretendard,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.slide{position:absolute;width:1600px;height:900px;background:var(--bg);box-shadow:0 10px 40px rgba(20,40,35,.18);padding:56px 72px 0;display:none;flex-direction:column;transform-origin:center center}
+.slide.on{display:flex}
+/* header */
+.bar{width:56px;height:6px;background:var(--teal);border-radius:3px;margin-bottom:18px}
+.hd{display:flex;justify-content:space-between;align-items:flex-start;gap:24px}
+.ch{font-size:20px;font-weight:700;color:var(--teal);letter-spacing:.02em;margin-bottom:6px}
+.q{font-size:40px;font-weight:800;line-height:1.25;letter-spacing:-.02em}
+.q em{font-style:normal;color:var(--teal)}
+.crit{flex:none;background:var(--teal-l);color:var(--teal-d);font-size:16px;font-weight:700;padding:9px 18px;border-radius:999px;white-space:nowrap}
+.msg{margin-top:20px;font-size:23px;line-height:1.5;color:var(--ink2);font-weight:500;max-width:1380px}
+.msg b{color:var(--ink);font-weight:700}
+.body{flex:1;display:grid;gap:28px;margin-top:28px;min-height:0}
+.foot{height:52px;border-top:1px solid var(--line);margin:0 -72px;padding:0 72px;display:flex;align-items:center;justify-content:space-between;font-size:14px;color:var(--ink3)}
+.foot .src{max-width:1300px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pg{background:var(--teal);color:#fff;font-weight:700;border-radius:6px;padding:3px 10px;font-size:14px}
+/* blocks */
+.card{background:var(--teal-ll);border:1px solid var(--line);border-radius:14px;padding:22px 24px;min-height:0}
+.card h3{font-size:17px;font-weight:700;color:var(--teal-d);margin-bottom:14px;letter-spacing:.01em}
+.k{font-size:15px;color:var(--ink3)}
+.big{font-size:44px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.mid{font-size:28px;font-weight:800;letter-spacing:-.01em}
+.tag{display:inline-block;font-size:13px;font-weight:700;padding:2px 8px;border-radius:6px;vertical-align:middle;margin-left:6px;line-height:1.5}
+.t-as{background:var(--amber-l);color:var(--amber)}
+.t-no{background:var(--gray-l);color:var(--ink3);border:1px dashed #b9c4c0}
+.t-ok{background:var(--green-l);color:var(--green)}
+.t-hold{background:var(--amber-l);color:var(--amber)}
+.t-red{background:var(--red-l);color:var(--red)}
+.quote{font-size:19px;line-height:1.5;padding:12px 0 12px 16px;border-left:4px solid var(--teal);margin-bottom:12px;color:var(--ink)}
+.quote span{display:block;font-size:13px;color:var(--ink3);margin-top:3px}
+table{width:100%;border-collapse:collapse;font-size:17px}
+th{background:var(--teal-l);color:var(--teal-d);font-weight:700;text-align:left;padding:10px 12px;font-size:15px}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.4}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+.yes{color:var(--green);font-weight:800}.no{color:var(--red);font-weight:800}.part{color:var(--amber);font-weight:800}
+.hl td{background:#eaf6f3;font-weight:700}
+.note{font-size:14px;color:var(--ink3);line-height:1.5;margin-top:10px}
+.banner{background:var(--teal-d);color:#fff;border-radius:14px;padding:20px 28px;font-size:22px;font-weight:600;line-height:1.45}
+.banner b{color:#bff0e5}
+/* cover */
+.cover{padding:0;justify-content:center;align-items:flex-start;padding-left:120px;background:linear-gradient(120deg,#ffffff 55%,var(--teal-ll) 55%)}
+.cover .bar{width:80px;height:8px}
+.cover h1{font-size:84px;font-weight:800;letter-spacing:-.03em;line-height:1.1}
+.cover h1 em{font-style:normal;color:var(--teal)}
+.cover p{font-size:30px;color:var(--ink2);margin-top:26px;line-height:1.5;font-weight:500}
+.cover .meta{margin-top:70px;font-size:20px;color:var(--ink3)}
+/* nav */
+#nav{position:fixed;right:18px;bottom:14px;font-size:13px;color:#5f6d69;background:rgba(255,255,255,.85);padding:6px 12px;border-radius:8px;user-select:none}
+@media print{
+  @page{size:1600px 900px;margin:0}
+  html,body{background:#fff}
+  #stage{position:static;display:block}
+  .slide{position:relative;display:flex!important;transform:none!important;box-shadow:none;page-break-after:always;break-after:page}
+  #nav{display:none}
+}
+</style>
+</head>
+<body>
+<div id="stage">
+
+<!-- 표지 -->
+<section class="slide cover">
+  <div class="bar"></div>
+  <h1>대구 <em>공실 매칭</em></h1>
+  <p>업종을 고르면, 그 업종에 맞는 빈 상가가<br>근거와 함께 순서대로 나옵니다.</p>
+  <div class="meta">2026. 11. 19 · 중간발표</div>
+</section>
+
+<!-- 1 문제 -->
+<section class="slide">
+  <div class="bar"></div>
+  <div class="hd">
+    <div><div class="ch">1 · 문제</div><div class="q">매물은 많은데, <em>내 업종에 맞는 자리</em>를 고를 기준이 없다</div></div>
+    <div class="crit">문제-해결 논리</div>
+  </div>
+  <div class="msg">대구에서 처음 가게를 여는 사람은 어느 자리가 내 업종에 맞는지 판단할 기준이 없어서, <b>허위매물까지 섞인 목록을 하나하나 직접 찾아다닌다.</b></div>
+  <div class="body" style="grid-template-columns:1fr 1.15fr 1fr">
+    <div class="card">
+      <h3>누가, 어떤 장면에서</h3>
+      <div style="font-size:18px;line-height:1.55;margin-bottom:16px"><b>서연(32세, 가상 인물)</b> · 카페 창업 처음 준비<br><span class="k">대구 · 약 40㎡ · 월세 200만 원 이하 · 후보 3곳</span></div>
+      <div class="quote">“이게 마음에 들면 이게 안되고의 반복이였다”<span>F-013 · 3단계 후보 비교</span></div>
+      <div class="quote">“알고 보니 건물 용도상 카페 영업이 불가능한 곳이었다”<span>FN-007 · 3단계</span></div>
+      <div class="quote" style="margin-bottom:0">“전화해보면 다 방금 계약했다고그럼”<span>P-126 · 4단계 문의</span></div>
+    </div>
+    <div class="card">
+      <h3>고객 여정 단계별 불만 언급 <span class="k" style="font-weight:500">(VOC 513건)</span></h3>
+      <div id="voc"></div>
+      <div style="margin-top:18px;display:flex;align-items:baseline;gap:12px">
+        <div class="big" style="color:var(--red)">52%</div>
+        <div style="font-size:17px;line-height:1.4">전체 불만 513건 중 268건이<br><b>허위매물 계열</b></div>
+      </div>
+      <div style="margin-top:14px;padding-top:12px;border-top:1px dashed var(--line);font-size:16px;line-height:1.5"><b>얼마나?</b> 대구 창업 후기에서 <b>약 2~3개월</b> 동안 <b>10~20곳</b>을 직접 보러 다님. 26건 중 8건은 계약 직전 포기·계약 후 하자·후회<span class="tag t-as">후기 표본 작음</span></div>
+    </div>
+    <div class="card">
+      <h3>밸류체인 병목: 가공 단계가 비어 있다</h3>
+      <div id="chain"></div>
+      <div style="font-size:16px;line-height:1.5;margin-top:14px;color:var(--ink2)">네이버·KB는 상가 매물은 있지만 <b style="color:var(--ink)">업종 해석이 없다.</b> AI 매물 추천 3사(네이버·KB·직방)는 모두 <b style="color:var(--ink)">주거용</b>이다.</div>
+    </div>
+  </div>
+  <div class="foot"><div class="src">근거 · 1장_문제/01_문제_한문장과_병목.md · 01-1_얼마나_불편한가_후기정량.md ·고객여정지도/고객여정지도_페인포인트.md · 밸류체인/ · 12_고객여정지도_대구_공실매칭.md</div><div class="pg">1</div></div>
+</section>
+
+<!-- 2 해결 -->
+<section class="slide">
+  <div class="bar"></div>
+  <div class="hd">
+    <div><div class="ch">2 · 해결</div><div class="q">발품과 중개사의 말로 하던 판단을, <em>업종별 점수와 근거</em>로</div></div>
+    <div class="crit">문제-해결 논리</div>
+  </div>
+  <div class="msg">"이 자리가 내 업종에 맞나"를 <b>공공데이터 5종 × 11개 인자</b>로 계산한 업종별 점수와 근거로 바꾸고, 매물 갱신과 평가 반영은 <b>에이전트가 매달 돌린다.</b></div>
+  <div class="body" style="grid-template-columns:1.25fr 1fr">
+    <div class="card" style="padding-bottom:12px">
+      <h3>As-Is → To-Be · 서연의 하루</h3>
+      <table>
+        <tr><th style="width:110px">단계</th><th>As-Is</th><th>To-Be</th><th style="width:56px">변화</th></tr>
+        <tr><td><b>조건 정하기</b></td><td>카페에 몇 층·몇 ㎡가 맞는지 모름</td><td>업종 <b>식음료</b>를 고르면 층·면적 기준을 자동 적용</td><td class="yes">🟢</td></tr>
+        <tr><td><b>공실 탐색</b></td><td>큰길 건물을 하나씩 훑고 직접 걸러냄</td><td>카페 적합도 점수 순으로 목록·지도</td><td class="yes">🟢</td></tr>
+        <tr><td><b>후보 비교</b></td><td>"이게 되면 저게 안 되는" 반복</td><td>4그룹 점수, 좋은 점·확인할 점, 건물 용도 등급</td><td class="yes">🟢</td></tr>
+        <tr><td><b>문의</b></td><td>"방금 계약됐다"</td><td>최근 확인 순으로 오래된 매물 거르기</td><td class="part">🟡</td></tr>
+        <tr><td><b>현장 확인</b></td><td>주말마다 10~20곳 발품</td><td>후보 3곳만 방문, good/bad 남기기</td><td class="part">🟡</td></tr>
+        <tr><td><b>계약</b></td><td colspan="2" style="color:var(--ink3)">계약은 서비스 범위 밖. 중개사와 직접</td><td style="color:var(--ink3)">⚪</td></tr>
+      </table>
+    </div>
+    <div style="display:grid;gap:20px;grid-template-rows:auto 1fr">
+      <div class="card">
+        <h3>AI가 하는 일 ↔ 사람이 확인하는 일</h3>
+        <table style="font-size:16px">
+          <tr><th>자동으로 하는 일</th><th>사람이 확인</th><th style="width:96px">상태</th></tr>
+          <tr><td><b>업종 적합 점수</b> 계산</td><td>현장·구청 확인</td><td><span class="tag t-ok" style="margin:0">동작 중</span></td></tr>
+          <tr><td><b>기준 학습</b> good/bad → 가중치 조정안</td><td>팀이 전후 비교 후 승인</td><td><span class="tag t-hold" style="margin:0">2단계</span></td></tr>
+          <tr><td><b>매물 신선도</b> 월 1회 갱신</td><td>관리자 실행 로그</td><td><span class="tag t-hold" style="margin:0">2단계</span></td></tr>
+          <tr><td><b>새 매물 알림</b> 메일</td><td>사용자 수신 동의</td><td><span class="tag t-hold" style="margin:0">2단계</span></td></tr>
+        </table>
+      </div>
+      <div class="banner" style="font-size:19px;display:flex;flex-direction:column;justify-content:center"><div><b>왜 점수는 규칙으로?</b> 점수마다 근거를 보여 줘야 하고, 같은 입력이면 같은 점수가 나와야 good/bad로 고칠 수 있다. 화면 점수 = 엔진 점수(8업종 × 2,717건, 차이 0.07점 이하). 데이터 비용 0원.</div></div>
+    </div>
+  </div>
+  <div class="foot"><div class="src">근거 · 2장_해결/02_AX_기회정의.md · scenario.md · spec.md · 스코어링 모델 구축 설계.md · README.md(에이전트 명세)</div><div class="pg">2</div></div>
+</section>
+
+<!-- 3 시장 -->
+<section class="slide">
+  <div class="bar"></div>
+  <div class="hd">
+    <div><div class="ch">3 · 시장</div><div class="q">"이 업종이면 어느 빈 상가인가"에 <em>실제 매물로 답하는 곳은 없다</em></div></div>
+    <div class="crit">시장·BM 근거</div>
+  </div>
+  <div class="msg">매물을 보여 주는 곳도, 상권을 분석해 주는 곳도 있지만 둘을 잇는 곳은 없다. 그래서 지금 창업자는 <b>발품과 중개사로 이 빈칸을 메운다.</b></div>
+  <div class="body" style="grid-template-columns:1.05fr .95fr 1fr">
+    <div class="card" style="padding-bottom:10px">
+      <h3>경쟁·대체재 비교</h3>
+      <table style="font-size:15.5px">
+        <tr><th>누구</th><th>상가 매물</th><th>업종으로 찾기</th><th>업종 적합 근거</th></tr>
+        <tr><td>네이버부동산</td><td class="yes">✓</td><td class="no">✕</td><td class="no">✕</td></tr>
+        <tr><td>KB부동산</td><td class="yes">✓</td><td class="no">✕</td><td class="no">✕</td></tr>
+        <tr><td>다방·직방·피터팬</td><td class="part">주거</td><td class="no">✕</td><td class="no">✕</td></tr>
+        <tr><td>상가 전문 앱</td><td class="yes">✓</td><td class="k">확인 필요</td><td class="k">확인 필요</td></tr>
+        <tr><td>알스퀘어 RA</td><td class="part">오피스</td><td>—</td><td class="part">예고</td></tr>
+        <tr><td>발품·동네 중개사</td><td class="yes">✓</td><td class="part">사람</td><td class="part">경험</td></tr>
+        <tr class="hl"><td>공실 매칭</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>포지셔닝 맵 <span class="tag t-as">위치는 팀 판단</span></h3>
+      <div id="pos"></div>
+    </div>
+    <div class="card">
+      <h3>시장 규모 · 해마다 새로 자리를 찾는 사람 수</h3>
+      <div id="funnel"></div>
+      <div class="note">TAM·SAM: 국세청 TASIS 2025 신규 사업자(소매·서비스·음식). 점포 필요 75%와 SOM의 도달률·이용률은 <span class="tag t-as" style="margin:0">가정</span><br>배경: 대구 중대형 상가 공실률 18.9% (전국 14.3%)</div>
+    </div>
+  </div>
+  <div class="foot"><div class="src">근거 · 3장_시장/03_시장.md · 차별성 제안.md · 밸류체인/ (네이버·KB·다방·알스퀘어 valuechain_v0)</div><div class="pg">3</div></div>
+</section>
+
+<!-- 4 BM -->
+<section class="slide">
+  <div class="bar"></div>
+  <div class="hd">
+    <div><div class="ch">4 · BM</div><div class="q">임차인 월 구독, <em>본전까지는 아직 모자란다</em></div></div>
+    <div class="crit">시장·BM 근거</div>
+  </div>
+  <div class="msg">임차인 월 구독만으로 대구에서 본전을 내려면 한 해 <b>약 1,020명이 써 보고 51명이 돈을 내야 한다.</b> 기본 시나리오(333명 이용)로는 모자라고, 그 차이를 메울 가정이 다음 검증 과제다.</div>
+  <div class="body" style="grid-template-columns:.9fr 1fr 1.2fr">
+    <div class="card">
+      <h3>BM 캔버스 요약</h3>
+      <div style="display:grid;gap:13px;font-size:16.5px;line-height:1.45">
+        <div><span class="k">고객 = 지불자</span><br><b>처음 창업·이전하는 임차인</b></div>
+        <div><span class="k">가치 제안</span><br>업종 점수로 정렬 추천 + 공실 확인 날짜</div>
+        <div><span class="k">수익원</span><br>월 정액 구독 1종: 새 매물 알림 + 상위 신규 매물 24시간 선공개</div>
+        <div><span class="k">원칙</span><br><b>점수·순위·근거는 모두 무료</b>, 구독과 무관</div>
+        <div><span class="k">비용</span><br>데이터 0원(공공데이터), 서버·메일·AI API</div>
+      </div>
+      <div class="note" style="margin-top:12px"><span class="tag t-red" style="margin:0">팀 결정 필요</span> 지해나 버전 캔버스는 지불자를 지자체·중개사·임차인으로 둠</div>
+    </div>
+    <div class="card">
+      <h3>단위 경제 · 유료 구독자 1명</h3>
+      <div style="display:flex;align-items:center;gap:10px;font-size:20px;font-weight:700;flex-wrap:wrap">
+        <div style="text-align:center"><div class="mid">9,900원</div><div class="k">월 요금 <span class="tag t-as" style="margin:0">가정</span></div></div>
+        <div style="color:var(--ink3)">×</div>
+        <div style="text-align:center"><div class="mid">2.5개월</div><div class="k">구독 기간</div></div>
+        <div style="color:var(--ink3)">×</div>
+        <div style="text-align:center"><div class="mid">97%</div><div class="k">결제 수수료 뒤</div></div>
+      </div>
+      <div style="margin-top:22px;padding-top:18px;border-top:1px dashed var(--line)">
+        <div class="k">1명당 순수입 (LTV)</div>
+        <div class="big" style="color:var(--teal-d)">약 24,000원</div>
+        <div style="font-size:16px;margin-top:10px;line-height:1.5">1명당 변동비 약 0원 <span class="tag t-as">가정</span><br>월 고정비 약 10.2만 원 (연 123만 원) <span class="tag t-as">가정</span></div>
+      </div>
+      <div class="note">구독 기간 근거: 대구 창업 후기 "약 두 달"(F-004), "3달"(F-018). 팀 인건비 제외</div>
+    </div>
+    <div class="card" style="padding-bottom:12px">
+      <h3>1년 시나리오 (대구)</h3>
+      <table style="font-size:16px">
+        <tr><th></th><th class="n">보수</th><th class="n">기본</th><th class="n">낙관</th></tr>
+        <tr><td>1년 이용자 (SOM)</td><td class="n">71명</td><td class="n">333명</td><td class="n">889명</td></tr>
+        <tr><td>유료 전환율 <span class="tag t-as">가정</span></td><td class="n">3%</td><td class="n">5%</td><td class="n">10%</td></tr>
+        <tr><td>유료 구독자</td><td class="n">2명</td><td class="n">17명</td><td class="n">89명</td></tr>
+        <tr><td>월 요금 <span class="tag t-as">가정</span></td><td class="n">5,000원</td><td class="n">9,900원</td><td class="n">20,000원</td></tr>
+        <tr><td>연 매출</td><td class="n">약 2만</td><td class="n">약 40만</td><td class="n">약 517만</td></tr>
+        <tr class="hl"><td>연 손익</td><td class="n" style="color:var(--red)">−121만</td><td class="n" style="color:var(--red)">−83만</td><td class="n" style="color:var(--green)">+395만</td></tr>
+        <tr><td>손익분기 이용자</td><td class="n">4,236명</td><td class="n"><b>1,022명</b></td><td class="n">211명</td></tr>
+      </table>
+      <div class="note">낙관만 흑자이고, 그마저 팀 인건비를 뺀 값이다.</div>
+    </div>
+  </div>
+  <div class="foot"><div class="src">근거 · 4장_BM/04_BM_단위경제.md · 04_BM_시뮬레이션.xlsx · BM 캔버스/bm_canvas.md · tier_features.md · BM캔버스.md(지해나)</div><div class="pg">4</div></div>
+</section>
+
+<!-- 5 MVP -->
+<section class="slide">
+  <div class="bar"></div>
+  <div class="hd">
+    <div><div class="ch">5 · MVP</div><div class="q">데모는 실제 매물로 돌아간다. <em>핵심 가설은 아직 판정 전</em></div></div>
+    <div class="crit">MVP 동작</div>
+  </div>
+  <div class="msg">업종별 추천 데모는 대구 매물 2,717건으로 실제로 돌아가고, 화면 점수가 엔진 점수와 같다는 것까지 확인했다. <b>"추천 순이 월세 낮은 순보다 낫다"는 핵심 가설은 평가 표본이 없어 아직 판정하지 못했다.</b></div>
+  <div class="body" style="grid-template-columns:1fr 1.35fr">
+    <div style="display:grid;gap:20px;grid-template-rows:auto 1fr">
+      <div class="card">
+        <h3>지금 돌아가는 것 · 시연 데모 (26.11.13)</h3>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px">
+          <div><div class="mid">2,717</div><div class="k">대구 실매물</div></div>
+          <div><div class="mid">8</div><div class="k">업종 프리셋</div></div>
+          <div><div class="mid">99.8%</div><div class="k">법정동 매칭</div></div>
+          <div><div class="mid">97.6%</div><div class="k">건물 용도 판정</div></div>
+        </div>
+        <div style="font-size:16.5px;line-height:1.7">업종 선택 → 점수 순 목록·지도 → 점수 성적표·좋은 점/확인할 점 → 카카오맵·로드뷰·토지이음 → 담기·비교·엑셀 → good/bad 평가</div>
+      </div>
+      <div class="card" style="display:flex;flex-direction:column;justify-content:center">
+        <h3>라이브 URL</h3>
+        <div style="font-size:24px;font-weight:800;color:var(--teal-d)">dax-mocha.vercel.app</div>
+        <div style="font-size:16px;line-height:1.5;margin-top:8px">Next.js + Supabase 배포 경로는 열려 있음 <span class="tag t-hold">추천 기능은 11/26 중간발표 2에서</span></div>
+      </div>
+    </div>
+    <div class="card" style="padding-bottom:12px">
+      <h3>가설과 판정 · 통과 1 · 진행 중 1 · 보류 2</h3>
+      <table style="font-size:16px">
+        <tr><th style="width:44px">#</th><th>가설</th><th>통과 기준</th><th style="width:96px">판정</th></tr>
+        <tr><td><b>H0</b></td><td>화면 점수 = 엔진 점수</td><td>8업종 × 2,717건 차이 반올림 수준</td><td><span class="tag t-ok" style="margin:0">통과</span></td></tr>
+        <tr><td><b>H1</b></td><td><b>추천 점수 순이 "월세 낮은 순"보다 good 비율이 높다</b> (핵심)</td><td>업종별 표본 30건 이상</td><td><span class="tag t-hold" style="margin:0">보류</span></td></tr>
+        <tr><td><b>H2</b></td><td>정답지 8곳을 역채점하면 점수가 높다 (백테스팅)</td><td class="k">기준 수치 확인 필요</td><td><span class="tag t-no" style="margin:0">진행 중</span></td></tr>
+        <tr><td><b>H3</b></td><td>확인일 배지가 '정보 오류' bad를 줄인다</td><td>배지 전후 bad 사유 비율</td><td><span class="tag t-hold" style="margin:0">보류</span></td></tr>
+      </table>
+      <div class="note">H1·H3 보류 이유: good/bad 평가 파일이 아직 없고, 시연 데모는 평가를 저장·내보내지 않는다. H0은 v1 데모 기준 확인이다.</div>
+    </div>
+  </div>
+  <div class="foot"><div class="src">근거 · 5장_MVP/05_MVP_가설판정.md · 26.11.13 데모.html · web_log.md · 11.13 DAX 발표 PPT.pptx · 2장_해결/스코어링 모델 구축 설계.md</div><div class="pg">5</div></div>
+</section>
+
+<!-- 6 팀 -->
+<section class="slide">
+  <div class="bar"></div>
+  <div class="hd">
+    <div><div class="ch">6 · 팀</div><div class="q">비개발자 4명이 <em>AI와 함께</em> 리서치부터 배포까지</div></div>
+    <div class="crit">발표·데모 완성도</div>
+  </div>
+  <div class="msg">역할을 둘씩 짝지어 나눴고, 리서치·데이터 수집·스코어링·데모·웹 배포까지 Claude와 함께 만들었다. <b>그 흔적이 커밋 202개 중 161개에 남아 있다.</b></div>
+  <div class="body" style="grid-template-columns:1fr 1.1fr .7fr">
+    <div class="card" style="padding-bottom:12px">
+      <h3>역할 (주 · 부)</h3>
+      <table style="font-size:16px">
+        <tr><th>역할</th><th style="width:96px">주 · 부</th><th>맡는 일</th></tr>
+        <tr><td><b>스코어링·데이터</b></td><td>혜림 · 은혜</td><td>매물 데이터, 업종 분류, 지표·가중치</td></tr>
+        <tr><td><b>에이전트·자동화</b></td><td>해나 · 채은</td><td>개발 기반, 서브에이전트, 월간 갱신·메일</td></tr>
+        <tr><td><b>웹 화면·기획</b></td><td>은혜 · 해나</td><td>시장조사, 화면 설계, 추천·상세 화면</td></tr>
+        <tr><td><b>운영·PM</b></td><td>채은 · 혜림</td><td>여정·페인포인트, 일정, 테스트</td></tr>
+      </table>
+      <div class="note">11/17~12/4 · 근무일 14일 · 1인 필수 37.5~39h (가용 대비 96~99%)</div>
+    </div>
+    <div class="card" style="padding-bottom:12px">
+      <h3>AI 도구 × 작업</h3>
+      <table style="font-size:15.5px">
+        <tr><th>작업</th><th>AI 도구</th></tr>
+        <tr><td>경쟁사 밸류체인 리서치</td><td>Claude Code + 웹 검색·읽기</td></tr>
+        <tr><td>매물 수집·CSV 검증 (2,717건)</td><td>Claude Code (수집 프롬프트)</td></tr>
+        <tr><td>VOC 리뷰 분류 (10개 플랫폼)</td><td>Claude Code</td></tr>
+        <tr><td>스코어링 설계·점수 엔진</td><td>Claude Code + claude.ai 아티팩트</td></tr>
+        <tr><td>데모 화면 · 서브에이전트 명세</td><td>Claude Code</td></tr>
+        <tr><td>웹앱 · Supabase · Vercel 배포</td><td>Claude Code</td></tr>
+      </table>
+      <div class="note">AI가 초안을 만들고, 결정은 사람이 했다 (시연 데모 선택, 화면 배치, 점수 근거 무료).</div>
+    </div>
+    <div style="display:grid;gap:20px;grid-template-rows:1fr auto">
+      <div class="card" style="display:flex;flex-direction:column;justify-content:center">
+        <h3>작업 흔적 (저장소)</h3>
+        <div class="big">202</div><div class="k" style="margin-bottom:14px">커밋 (10/27~11/18)</div>
+        <div class="big" style="color:var(--teal)">161</div><div class="k">AI 공동 작성</div>
+        <div style="font-size:15px;margin-top:14px;line-height:1.5">개발 로그 · Claude 대화 로그 · 작업일지</div>
+      </div>
+      <div class="note" style="margin:0"><span class="tag t-no" style="margin:0">확인 필요</span> 계정↔팀원 대응, 인수인계 메모(11/17·18) 없음</div>
+    </div>
+  </div>
+  <div class="foot"><div class="src">근거 · 6장_팀/06_팀_AI도구_작업.md · 공실매칭_WBS_간트차트.html · 공실피드백반영log.md · 작업일지_2026-11-10.md · 5장_MVP/web_log.md</div><div class="pg">6</div></div>
+</section>
+
+<!-- 7 요청사항 -->
+<section class="slide">
+  <div class="bar"></div>
+  <div class="hd">
+    <div><div class="ch">7 · 요청사항</div><div class="q">가장 크게 흔드는 가정은 <em>도달률</em>이다</div></div>
+    <div class="crit">문제-해결 논리</div>
+  </div>
+  <div class="body" style="grid-template-columns:1fr 1fr;margin-top:24px">
+    <div class="card">
+      <h3>민감도 · 보수 → 낙관 차이 배수 (연 매출 기준)</h3>
+      <div id="sens"></div>
+      <div class="note">도달률은 숫자를 가장 크게 흔들고, 근거도 없다. 그래서 다음 검증은 "도달 채널"이다.</div>
+    </div>
+    <div class="card">
+      <h3>다음 2주에 할 일</h3>
+      <div style="display:grid;gap:14px;font-size:17.5px;line-height:1.45">
+        <div><b>① 평가를 모을 수 있게</b><br><span style="color:var(--ink2)">시연 데모에 평가 저장·내보내기, bad 사유 통일</span></div>
+        <div><b>② 핵심 가설 H1 판정</b><br><span style="color:var(--ink2)">good/bad 업종별 30건 이상 + "월세 낮은 순" 기준선 비교</span></div>
+        <div><b>③ 도달 채널 검증</b><br><span style="color:var(--ink2)">대구 소상공인·청년 창업 지원사업 신청자에게 닿는 경로</span></div>
+        <div><b>④ 라이브 URL에 추천 기능</b><br><span style="color:var(--ink2)">11/26 중간발표 2</span></div>
+      </div>
+      <div class="note"><span class="tag t-no" style="margin:0">results.md 계획 칸 준비 중</span></div>
+    </div>
+  </div>
+  <div class="banner" style="margin:24px 0 22px;display:flex;justify-content:space-between;align-items:center;gap:30px">
+    <div><b>요청</b> — 대구 창업 지원 채널과 연결해, 실제 예비 창업자에게 도달률과 추천 효과(good/bad)를 검증할 수 있게 도와주세요. <span class="tag t-as" style="margin-left:4px">팀 확정 전 문장</span></div>
+    <div style="flex:none;text-align:right;font-size:17px;opacity:.9">MVP<br><b style="font-size:24px">dax-mocha.vercel.app</b></div>
+  </div>
+  <div class="foot"><div class="src">근거 · 4장_BM/04_BM_단위경제.md 5·6절 · 3장_시장/03_시장.md 5절 · 5장_MVP/05_MVP_가설판정.md 4절 · 2장_해결/spec.md open_questions</div><div class="pg">7</div></div>
+</section>
+
+</div>
+<div id="nav">← → 넘기기 · <span id="cnt"></span></div>
+
+<script>
+// ---------- 작은 SVG 차트들 ----------
+const C={teal:'#2b8a7e',tealD:'#1f6660',tealL:'#cfe8e3',red:'#c2513f',redL:'#efc9c0',ink:'#1c2321',ink3:'#7c8a86',line:'#dde5e2'};
+function el(id,html){const e=document.getElementById(id);if(e)e.innerHTML=html;}
+
+// 1장: 단계별 불만 (전체 / 허위매물 계열 비중)
+(function(){
+  const d=[['2 공실 탐색',267,.38],['3 후보 비교',41,.07],['4 문의·연결',125,.70],['5 현장 확인',78,.97]];
+  const W=430,rowH=56,max=267,lab=108,bw=W-lab-56;
+  let s=`<svg width="100%" viewBox="0 0 ${W} ${d.length*rowH+30}" font-family="Pretendard,sans-serif">`;
+  d.forEach((r,i)=>{const y=i*rowH+6,w=r[1]/max*bw,wf=w*r[2];
+    s+=`<text x="0" y="${y+24}" font-size="15" fill="${C.ink}" font-weight="600">${r[0]}</text>`;
+    s+=`<rect x="${lab}" y="${y+8}" width="${w}" height="24" rx="4" fill="${C.tealL}"/>`;
+    s+=`<rect x="${lab}" y="${y+8}" width="${wf}" height="24" rx="4" fill="${C.red}"/>`;
+    s+=`<text x="${lab+w+8}" y="${y+26}" font-size="15" font-weight="700" fill="${C.ink}">${r[1]}</text>`;});
+  const ly=d.length*rowH+16;
+  s+=`<rect x="${lab}" y="${ly-10}" width="12" height="12" rx="2" fill="${C.red}"/><text x="${lab+18}" y="${ly}" font-size="13" fill="${C.ink3}">허위매물 계열</text>`;
+  s+=`<rect x="${lab+120}" y="${ly-10}" width="12" height="12" rx="2" fill="${C.tealL}"/><text x="${lab+138}" y="${ly}" font-size="13" fill="${C.ink3}">그 밖의 불만</text></svg>`;
+  el('voc',s);
+})();
+
+// 1장: 밸류체인 5단계
+(function(){
+  const st=[['원천·소싱','중개사 매물 등록',1],['가공·제작','업종 기준 해석',0],['플랫폼·유통','앱·검색 노출',1],['주문·구매','문의·방문',1],['전달·서비스','계약',1]];
+  let s='<div style="display:grid;gap:8px">';
+  st.forEach((x,i)=>{const gap=!x[2];
+    s+=`<div style="display:flex;align-items:center;gap:12px;padding:9px 14px;border-radius:10px;${gap?'border:2px dashed '+C.red+';background:#fff':'background:#fff;border:1px solid '+C.line}">
+      <div style="width:26px;height:26px;border-radius:50%;background:${gap?C.red:C.teal};color:#fff;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center">${i+1}</div>
+      <div style="font-size:16px;font-weight:700;width:96px">${x[0]}</div>
+      <div style="font-size:15px;color:${gap?C.red:'#4a5652'};font-weight:${gap?700:500}">${gap?'비어 있음 · ':''}${x[1]}</div></div>`;});
+  el('chain',s+'</div>');
+})();
+
+// 3장: 포지셔닝 맵
+(function(){
+  const W=430,H=410,p=34,iw=W-p-10,ih=H-p-12;
+  const pts=[['네이버부동산',.15,.90],['KB부동산',.12,.82],['상가 전문 앱',.20,.70],['동네 중개사',.38,.62],['본사 상권분석팀',.80,.35],['공공 상권분석',.68,.10],['알스퀘어 RA(예고)',.62,.25],['공실 매칭',.82,.74,1]];
+  const X=v=>p+v*iw,Y=v=>12+(1-v)*ih;
+  let s=`<svg width="100%" viewBox="0 0 ${W} ${H}" font-family="Pretendard,sans-serif">`;
+  s+=`<rect x="${X(.5)}" y="12" width="${iw/2}" height="${ih/2}" fill="#e3f2ef"/>`;
+  s+=`<rect x="${p}" y="12" width="${iw}" height="${ih}" fill="none" stroke="${C.line}"/>`;
+  s+=`<line x1="${X(.5)}" y1="12" x2="${X(.5)}" y2="${12+ih}" stroke="${C.line}"/><line x1="${p}" y1="${Y(.5)}" x2="${p+iw}" y2="${Y(.5)}" stroke="${C.line}"/>`;
+  s+=`<text x="${X(.5)+8}" y="32" font-size="13" fill="${C.tealD}" font-weight="700">우리가 노리는 자리</text>`;
+  s+=`<text x="${p+8}" y="32" font-size="13" fill="${C.ink3}">매물은 많고 해석은 없음</text>`;
+  s+=`<text x="${p+iw/2}" y="${H-2}" font-size="13" fill="${C.ink3}" text-anchor="middle">업종 적합 해석  없음 → 있음</text>`;
+  s+=`<text transform="translate(14 ${12+ih/2}) rotate(-90)" font-size="13" fill="${C.ink3}" text-anchor="middle">실제 매물 연결  없음 → 있음</text>`;
+  pts.forEach(q=>{const me=q[3],x=X(q[1]),y=Y(q[2]);
+    s+=`<circle cx="${x}" cy="${y}" r="${me?10:6}" fill="${me?C.teal:'#9aa8a4'}" ${me?'stroke="#fff" stroke-width="3"':''}/>`;
+    const right=q[1]<.6;
+    s+=`<text x="${right?x+12:x-12}" y="${y+5}" font-size="${me?16:13.5}" font-weight="${me?800:500}" fill="${me?C.tealD:C.ink}" text-anchor="${right?'start':'end'}">${q[0]}</text>`;});
+  el('pos',s+'</svg>');
+})();
+
+// 3장: TAM-SAM-SOM
+(function(){
+  const r=[['TAM','전국 신규 사업자 (소매·서비스·음식)','794,516명',1],['SAM','그중 대구','29,630명',.78],['SAM','대구 · 점포가 필요한 사람','약 22,200명',.62],['SOM','1년 안에 써 볼 사람','71~889명',.40]];
+  let s='<div style="display:grid;gap:9px">';
+  r.forEach((x,i)=>{s+=`<div style="width:${x[3]*100}%;background:${i==3?C.teal:i==0?'#cfe8e3':'#e3f2ef'};color:${i==3?'#fff':C.ink};border-radius:10px;padding:11px 14px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><b style="font-size:14px;opacity:.8">${x[0]}</b><b style="font-size:${i==3?24:21}px;white-space:nowrap">${x[2]}</b></div>
+    <div style="font-size:13.5px;opacity:.85;margin-top:2px;white-space:nowrap">${x[1]}</div></div>`;});
+  s+=`<div style="font-size:14px;color:${C.ink3}">SOM 기본값 <b style="color:${C.ink}">333명</b> = 22,222명 × 도달률 5% × 이용률 30%</div>`;
+  el('funnel',s+'</div>');
+})();
+
+// 7장: 민감도
+(function(){
+  const d=[['도달률','2% → 10%',5.0,'근거 없음'],['월 요금','5천 → 2만 원',4.0,'근거 없음'],['유료 전환율','3% → 10%',3.3,'근거 없음'],['이용률','20% → 40%',2.0,'지인 테스트로 확보'],['구독 개월','2 → 3개월',1.5,'VOC 근거 있음']];
+  const W=680,rowH=62,lab=200,bw=W-lab-150;
+  let s=`<svg width="100%" viewBox="0 0 ${W} ${d.length*rowH}" font-family="Pretendard,sans-serif">`;
+  d.forEach((r,i)=>{const y=i*rowH,w=r[2]/5*bw,top=i==0;
+    s+=`<text x="0" y="${y+24}" font-size="18" font-weight="${top?800:600}" fill="${top?C.tealD:C.ink}">${r[0]}</text>`;
+    s+=`<text x="0" y="${y+45}" font-size="13.5" fill="${C.ink3}">${r[1]}</text>`;
+    s+=`<rect x="${lab}" y="${y+12}" width="${w}" height="30" rx="5" fill="${top?C.teal:C.tealL}"/>`;
+    s+=`<text x="${lab+w+10}" y="${y+33}" font-size="18" font-weight="800" fill="${C.ink}">${r[2].toFixed(1)}배</text>`;
+    s+=`<text x="${W}" y="${y+33}" font-size="13.5" fill="${r[3]=='근거 없음'?C.red:C.ink3}" text-anchor="end">${r[3]}</text>`;});
+  el('sens',s+'</svg>');
+})();
+
+// ---------- 넘기기 · 크기 맞춤 ----------
+const slides=[...document.querySelectorAll('.slide')];let cur=0;
+function fit(){const s=Math.min(innerWidth/1600,innerHeight/900)*.96;slides.forEach(x=>x.style.transform=`scale(${s})`);}
+function show(i){cur=Math.max(0,Math.min(slides.length-1,i));slides.forEach((x,j)=>x.classList.toggle('on',j==cur));
+  document.getElementById('cnt').textContent=(cur==0?'표지':cur+'장')+' / 7장';try{history.replaceState(null,'','#'+cur)}catch(e){}}
+addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();show(cur+1)}if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){e.preventDefault();show(cur-1)}if(e.key=='Home')show(0);if(e.key=='End')show(slides.length-1)});
+document.getElementById('stage').addEventListener('click',e=>{show(e.clientX>innerWidth/2?cur+1:cur-1)});
+addEventListener('resize',fit);fit();show(parseInt(location.hash.slice(1))||0);
+</script>
+</body>
+</html>
