@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>멀티 에이전트 채팅 조직도</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: 상단 모드 비교표 → 모드별 조직도 4개(세로) · 각 조직도는 CSS 트리(위→아래) */
+  :root {
+    --bg: #f5f6f9;
+    --surface: #ffffff;
+    --fg: #1a2130;
+    --muted: #5c6577;
+    --line: #c9cfdb;
+    --soft: #eef1f6;
+    --c-user: #475569;
+    --c-orch: #7c5cf0;
+    --c-agent: #0f8b8d;
+    --c-tool: #2f6feb;
+    --c-data: #c2410c;
+    --c-model: #b4537a;
+    --font-body: "IBM Plex Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #10141c; --surface: #181e2a; --fg: #e7ebf2; --muted: #9aa4b5; --line: #354055; --soft: #202838;
+      --c-user: #94a3b8; --c-orch: #a78bfa; --c-agent: #2dd4bf; --c-tool: #6b9bff; --c-data: #fb923c; --c-model: #f0a3c4;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #10141c; --surface: #181e2a; --fg: #e7ebf2; --muted: #9aa4b5; --line: #354055; --soft: #202838;
+    --c-user: #94a3b8; --c-orch: #a78bfa; --c-agent: #2dd4bf; --c-tool: #6b9bff; --c-data: #fb923c; --c-model: #f0a3c4;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.55; }
+  .wrap {
+    max-width: 1180px; margin: 0 auto;
+    padding-block: 36px 56px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    display: flex; flex-direction: column; gap: 28px;
+  }
+  header { display: flex; flex-direction: column; gap: 6px; }
+  .eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  h1 { margin: 0; font-size: 28px; text-wrap: balance; }
+  h2 { margin: 0; font-size: 20px; text-wrap: balance; }
+  .lede { margin: 0; color: var(--muted); max-width: 70ch; }
+
+  /* 범례 */
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13px; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+
+  /* 비교표 */
+  .table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+  table { border-collapse: collapse; width: 100%; min-width: 760px; font-size: 14px; }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { background: var(--soft); font-weight: 600; white-space: nowrap; }
+  tr:last-child td { border-bottom: none; }
+  td code, .mono { font-family: var(--font-mono); font-size: 12.5px; }
+
+  /* 모드 섹션 */
+  .mode { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 22px; display: flex; flex-direction: column; gap: 16px; }
+  .mode-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+  .pill { font-family: var(--font-mono); font-size: 12px; padding: 2px 10px; border-radius: 999px; background: var(--soft); color: var(--muted); }
+  .mode p { margin: 0; color: var(--muted); max-width: 75ch; }
+  .chart { overflow-x: auto; padding: 8px 0 4px; }
+
+  /* CSS 트리 조직도 */
+  .tree, .tree ul { list-style: none; margin: 0; padding: 0; }
+  .tree { display: flex; justify-content: center; min-width: max-content; padding: 0 8px; }
+  .tree ul { display: flex; justify-content: center; padding-top: 22px; position: relative; }
+  .tree li { position: relative; padding: 22px 8px 0; display: flex; flex-direction: column; align-items: center; }
+  .tree > li { padding-top: 0; }
+  /* 형제 사이 가로선 + 각 노드로 내려오는 세로선 */
+  .tree ul > li::before, .tree ul > li::after {
+    content: ""; position: absolute; top: 0; height: 22px; border-top: 2px solid var(--line);
+  }
+  .tree ul > li::before { right: 50%; width: 50%; border-right: 2px solid var(--line); }
+  .tree ul > li::after { left: 50%; width: 50%; }
+  .tree ul > li:first-child::before { border-top: none; }
+  .tree ul > li:last-child::after { border-top: none; }
+  .tree ul > li:only-child::before { border-top: none; }
+  .tree ul > li:only-child::after { display: none; }
+  /* 부모에서 내려오는 세로선 */
+  .tree ul::before { content: ""; position: absolute; top: 0; left: 50%; height: 22px; border-left: 2px solid var(--line); }
+
+  .node {
+    --c: var(--c-agent);
+    min-width: 170px; max-width: 230px;
+    background: var(--surface);
+    border: 2px solid var(--c);
+    border-radius: 12px;
+    padding: 10px 12px;
+    text-align: center;
+    display: flex; flex-direction: column; gap: 3px;
+  }
+  .node .kind { font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em; color: var(--c); font-weight: 500; }
+  .node .name { font-weight: 700; font-size: 15px; }
+  .node .desc { font-size: 12.5px; color: var(--muted); line-height: 1.45; }
+  .node .file { font-family: var(--font-mono); font-size: 11.5px; color: var(--muted); }
+  .node.user { --c: var(--c-user); background: var(--soft); border-radius: 999px; min-width: 140px; }
+  .node.orch { --c: var(--c-orch); min-width: 230px; max-width: 280px; box-shadow: 0 6px 18px -10px var(--c-orch); }
+  .node.tool { --c: var(--c-tool); border-style: dashed; }
+  .node.data { --c: var(--c-data); border-radius: 6px; }
+  .node.model { --c: var(--c-model); }
+
+  /* RAG 파이프라인 (에이전트 없음) */
+  .flow { display: flex; align-items: stretch; gap: 0; min-width: max-content; }
+  .flow .node { max-width: 190px; min-width: 150px; }
+  .arrow { align-self: center; width: 34px; height: 2px; background: var(--line); position: relative; flex: none; }
+  .arrow::after { content: ""; position: absolute; right: -1px; top: -5px; border: 6px solid transparent; border-left-color: var(--line); border-right: none; }
+  .note { font-size: 13px; color: var(--muted); border-left: 3px solid var(--line); padding: 4px 0 4px 12px; }
+  .rules { margin: 0; padding-left: 20px; color: var(--muted); font-size: 14px; display: grid; gap: 3px; }
+  .rules b { color: var(--fg); font-weight: 600; }
+  footer { color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Architecture · test1117</div>
+    <h1>멀티 에이전트 채팅 조직도</h1>
+    <p class="lede">웹 채팅(http://localhost:8000)에서 고를 수 있는 4가지 답변 방식의 구성입니다. 모든 LLM 호출은 Gemini(google-genai SDK)를 쓰고, 문서 검색 대상은 DOCS 폴더뿐입니다.</p>
+  </header>
+
+  <div class="legend" aria-label="범례">
+    <span><i style="background:var(--c-user)"></i>사용자</span>
+    <span><i style="background:var(--c-orch)"></i>오케스트레이터</span>
+    <span><i style="background:var(--c-agent)"></i>에이전트 (Gemini 호출)</span>
+    <span><i style="background:var(--c-tool)"></i>도구 (점선)</span>
+    <span><i style="background:var(--c-data)"></i>자료</span>
+    <span><i style="background:var(--c-model)"></i>모델 호출 단계</span>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>모드</th><th>구조</th><th>에이전트</th><th>도구</th><th>근거 자료</th><th>서버 경로</th><th>모니터링</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><b>RAG</b></td><td>검색 1회 → 답변 1회</td><td>없음</td><td>없음 (코드가 바로 검색)</td><td>DOCS md 9개 · 49조각</td><td><code>POST /rag</code></td><td>근거 조각 4개 표시</td></tr>
+        <tr><td><b>Agentic RAG</b></td><td>에이전트 1개가 도구를 반복 호출</td><td>1</td><td><code>search_docs</code> (최대 5회)</td><td>DOCS md</td><td><code>POST /agentic-rag/stream</code></td><td>에이전트 → 도구 화면</td></tr>
+        <tr><td><b>Multi Agentic RAG</b></td><td>오케스트레이터 → 서브에이전트 4개</td><td>1 + 4</td><td><code>search_docs</code> · <code>query_table</code> · <code>web_search</code></td><td>DOCS md · 규칙_수치표.csv · 웹 · 모델 지식</td><td><code>POST /multi-agentic-rag/stream</code></td><td>조직도 4명</td></tr>
+        <tr><td><b>멀티 에이전트</b></td><td>오케스트레이터 → 서브에이전트 3개</td><td>1 + 3</td><td>없음 (서브에이전트가 도구)</td><td>모델 지식</td><td><code>POST /chat/stream</code></td><td>조직도 3명</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 1. RAG -->
+  <section class="mode" aria-labelledby="m1">
+    <div class="mode-head"><h2 id="m1">RAG</h2><span class="pill">rag.py · 에이전트 없음</span></div>
+    <p>에이전트가 판단하지 않고, 정해진 순서대로 한 번 검색하고 한 번 답합니다.</p>
+    <div class="chart">
+      <div class="flow">
+        <div class="node user"><span class="kind">USER</span><span class="name">사용자 질문</span></div>
+        <div class="arrow"></div>
+        <div class="node model"><span class="kind">EMBED</span><span class="name">질문 임베딩</span><span class="desc">gemini-embedding-2 · 768차원</span></div>
+        <div class="arrow"></div>
+        <div class="node data"><span class="kind">SEARCH</span><span class="name">numpy 코사인 검색</span><span class="desc">rag_index.npz · 49조각 중 상위 4개</span></div>
+        <div class="arrow"></div>
+        <div class="node model"><span class="kind">GENERATE</span><span class="name">답변 생성 1회</span><span class="desc">조각만 근거 · 없으면 "문서에서 답을 찾을 수 없습니다"</span></div>
+        <div class="arrow"></div>
+        <div class="node user"><span class="kind">OUTPUT</span><span class="name">답 + 출처</span></div>
+      </div>
+    </div>
+    <div class="note">조각 500자 · 겹침 100자 · 줄 단위 분할 · 출처는 <span class="mono">DOCS/파일명</span>. 색인 제외: <span class="mono">서브에이전트 구성도.md</span></div>
+  </section>
+
+  <!-- 2. Agentic RAG -->
+  <section class="mode" aria-labelledby="m2">
+    <div class="mode-head"><h2 id="m2">Agentic RAG</h2><span class="pill">agentic_rag.py · agent_loop.run_agent</span></div>
+    <p>에이전트 하나가 검색할지, 어떤 검색어로 찾을지 스스로 정하고 필요하면 여러 번 검색합니다.</p>
+    <div class="chart">
+      <ul class="tree">
+        <li>
+          <div class="node user"><span class="kind">USER</span><span class="name">사용자 질문</span></div>
+          <ul>
+            <li>
+              <div class="node orch"><span class="kind">AGENT</span><span class="name">Agentic RAG 에이전트</span><span class="desc">상식 질문은 검색 안 함 · 핵심 키워드로 다시 씀 · 문장마다 출처</span><span class="file">agentic_rag.py</span></div>
+              <ul>
+                <li>
+                  <div class="node tool"><span class="kind">TOOL · 최대 5회</span><span class="name">search_docs</span><span class="desc">조각 본문 + 출처 파일명 문자열</span><span class="file">tool.py</span></div>
+                  <ul>
+                    <li><div class="node data"><span class="kind">DATA</span><span class="name">DOCS md 9개</span><span class="desc">rag.py 색인 재사용</span></div></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <ul class="rules">
+      <li><b>재검색</b>: 결과에 답이 없으면 다른 검색어로 다시 찾고, 같은 검색어는 반복하지 않습니다.</li>
+      <li><b>못 찾음</b>: 끝내 없으면 "문서에서 찾지못함"으로 답합니다.</li>
+    </ul>
+  </section>
+
+  <!-- 3. Multi Agentic RAG -->
+  <section class="mode" aria-labelledby="m3">
+    <div class="mode-head"><h2 id="m3">Multi Agentic RAG</h2><span class="pill">multi_agentic_rag.py · agent/*.yaml</span></div>
+    <p>오케스트레이터가 질문을 다시 써서 서브에이전트에게 나눠 맡기고, 보고를 종합해 답합니다. 서브에이전트는 공용 템플릿과 보고 양식(<span class="mono">agent/_template.yaml</span>)을 따릅니다.</p>
+    <div class="chart">
+      <ul class="tree">
+        <li>
+          <div class="node user"><span class="kind">USER</span><span class="name">사용자 질문</span></div>
+          <ul>
+            <li>
+              <div class="node orch"><span class="kind">ORCHESTRATOR</span><span class="name">오케스트레이터</span><span class="desc">질문 재작성 후 지시 · 답마다 출처 · 다른 출처로 메꾸지 않음</span><span class="file">run_agent</span></div>
+              <ul>
+                <li>
+                  <div class="node"><span class="kind">SUB AGENT</span><span class="name">doc_searcher</span><span class="desc">에이전트 세부 지침</span><span class="file">doc_searcher.yaml</span></div>
+                  <ul><li><div class="node tool"><span class="kind">TOOL</span><span class="name">search_docs</span><span class="desc">DOCS md</span></div></li></ul>
+                </li>
+                <li>
+                  <div class="node"><span class="kind">SUB AGENT</span><span class="name">data_analyst</span><span class="desc">수치·기준값 조회</span><span class="file">data_analyst.yaml</span></div>
+                  <ul><li><div class="node tool"><span class="kind">TOOL</span><span class="name">query_table</span><span class="desc">DOCS/규칙_수치표.csv · 30행</span></div></li></ul>
+                </li>
+                <li>
+                  <div class="node"><span class="kind">SUB AGENT</span><span class="name">web_searcher</span><span class="desc">외부 사실 · 출처 URL</span><span class="file">web_searcher.yaml</span></div>
+                  <ul><li><div class="node tool"><span class="kind">TOOL</span><span class="name">web_search</span><span class="desc">Gemini google_search · 실패 시 1초 내 반환</span></div></li></ul>
+                </li>
+                <li>
+                  <div class="node"><span class="kind">SUB AGENT</span><span class="name">researcher</span><span class="desc">모델 지식으로 정리 · URL 없음</span><span class="file">subagents.research_agent</span></div>
+                  <ul><li><div class="node model"><span class="kind">MODEL</span><span class="name">Gemini 1회</span><span class="desc">도구 없음</span></div></li></ul>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <ul class="rules">
+      <li><b>출처 나누기</b>: 에이전트 세부사항은 docs(doc_searcher), 수치는 표(data_analyst), 외부 사실은 웹(web_searcher)에서 찾습니다.</li>
+      <li><b>순서 묻기</b>: web_searcher와 researcher는 역할이 겹쳐서, 외부 정보가 필요하면 무엇을 먼저 쓸지 사용자에게 먼저 묻습니다. 묻기 전에는 두 에이전트가 실행되지 않도록 코드로 막았습니다.</li>
+      <li><b>한도</b>: 서브에이전트 1회 실행당 도구 호출은 최대 5회입니다.</li>
+    </ul>
+  </section>
+
+  <!-- 4. 멀티 에이전트 -->
+  <section class="mode" aria-labelledby="m4">
+    <div class="mode-head"><h2 id="m4">멀티 에이전트</h2><span class="pill">orchestrator.py · subagents.py</span></div>
+    <p>오케스트레이터가 리서치·작성·검토 에이전트를 도구처럼 호출합니다. 서브에이전트끼리는 직접 대화하지 않고, 앞 결과는 오케스트레이터가 다음 지시(task)에 담아 넘깁니다. 문서(DOCS)는 보지 않습니다.</p>
+    <div class="chart">
+      <ul class="tree">
+        <li>
+          <div class="node user"><span class="kind">USER</span><span class="name">사용자 질문</span></div>
+          <ul>
+            <li>
+              <div class="node orch"><span class="kind">ORCHESTRATOR</span><span class="name">오케스트레이터</span><span class="desc">필요한 서브에이전트를 스스로 골라 호출 · 결과 종합</span><span class="file">orchestrator.py</span></div>
+              <ul>
+                <li><div class="node"><span class="kind">SUB AGENT</span><span class="name">research_agent</span><span class="desc">주제의 핵심 정보·사실·논점 정리</span></div></li>
+                <li><div class="node"><span class="kind">SUB AGENT</span><span class="name">writer_agent</span><span class="desc">자료를 바탕으로 글(초안) 작성</span></div></li>
+                <li><div class="node"><span class="kind">SUB AGENT</span><span class="name">review_agent</span><span class="desc">문제점·개선점 지적, 수정안 제시</span></div></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <div class="note">예시 흐름: 리서치 → (리서치 결과를 담아) 작성 → (초안을 담아) 검토 → 오케스트레이터가 종합</div>
+  </section>
+
+  <footer>공통: 에이전트 루프는 Gemini 함수 호출(함수 결과는 role="user")입니다. Agentic RAG와 Multi Agentic RAG는 <span class="mono">agent_loop.run_agent</span>를, 멀티 에이전트는 <span class="mono">orchestrator.py</span>의 자체 루프를 씁니다. 서버는 FastAPI(<span class="mono">server.py</span>), 화면은 <span class="mono">static/index.html</span>.</footer>
+</div>
+</body>
+</html>
