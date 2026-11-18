@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>대구 중구 공실 매칭 데모</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@400;500;700;800&display=swap">
+<style>
+/* Plan: paper-white canvas, ink text, vermilion accent for the selected space.
+   Map: 행정동 polygons (choropleth by vacancy count), drag to pan, wheel / pinch / buttons to zoom.
+   Layout: filters on top, map and ranked list in two columns, score breakdown underneath. */
+:root{
+  --bg:#F6F5F1; --surface:#FFFFFF; --ink:#16181D; --ink-2:#5A5D66; --line:#DCDAD2;
+  --accent:#E0492B; --teal:#1F6F5C; --teal-bg:#E3F1EC; --pale:#EEEDE7; --warn:#8A5A00; --warn-bg:#FFF4D6;
+  --font:'Gothic A1',system-ui,-apple-system,'Malgun Gothic',sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg); color:var(--ink); font-family:var(--font); font-size:15px; line-height:1.6; padding:0 16px;}
+h1,h2{margin:0; font-weight:800; text-wrap:balance; letter-spacing:-.4px}
+p{margin:0}
+button,select,input{font-family:var(--font)}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
+.wrap{max-width:1160px; margin:0 auto; padding:20px 0 48px;}
+.top{display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; padding-bottom:16px; border-bottom:1px solid var(--line);}
+.brand{font-weight:800; font-size:18px}
+.brand span{font-size:11px; font-weight:700; letter-spacing:1.5px; color:var(--accent); margin-left:6px; vertical-align:middle}
+.note{font-size:12px; color:var(--ink-2)}
+.intro{padding:28px 0 18px;}
+.intro h1{font-size:30px; max-width:24ch; line-height:1.25}
+.intro p{margin-top:10px; color:var(--ink-2); max-width:62ch; font-size:16px}
+.stats{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin-bottom:16px}
+.stat{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:12px 14px}
+.stat .k{font-size:12px; color:var(--ink-2)}
+.stat .v{font-size:22px; font-weight:800; font-variant-numeric:tabular-nums; margin-top:2px}
+.stat .s{font-size:12px; color:var(--ink-2)}
+.controls{display:flex; flex-direction:column; gap:12px; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:16px; margin-bottom:16px}
+.seg{display:flex; flex-wrap:wrap; gap:6px}
+.seg button{border:1px solid var(--line); background:var(--bg); padding:8px 15px; border-radius:999px; font-size:14px; font-weight:700; color:var(--ink-2); cursor:pointer}
+.seg button[aria-selected="true"]{background:var(--ink); border-color:var(--ink); color:#FFFFFF}
+.row2{display:flex; gap:16px 24px; flex-wrap:wrap; align-items:end}
+.field{display:flex; flex-direction:column; gap:6px; font-size:13px; color:var(--ink-2); flex:1; min-width:220px}
+.field b{color:var(--ink); font-variant-numeric:tabular-nums}
+.field input{width:100%; accent-color:var(--accent)}
+.field select{padding:9px 10px; border:1px solid var(--line); border-radius:10px; background:var(--surface); font-size:14px; color:var(--ink)}
+.cat-desc{font-size:13px; color:var(--ink-2)}
+.limit{font-size:12px; color:var(--warn); background:var(--warn-bg); border-radius:8px; padding:8px 12px}
+.layout{display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,1fr); gap:16px; align-items:start}
+.card{background:var(--surface); border:1px solid var(--line); border-radius:14px; min-width:0}
+.map{position:relative; overflow:hidden; touch-action:none; user-select:none}
+.map-stage{position:relative; background:#E9EEF0; cursor:grab}
+.map-stage.dragging{cursor:grabbing}
+.map-stage svg{display:block; width:100%; height:auto}
+.zoom-ctrl{position:absolute; top:12px; right:12px; display:flex; flex-direction:column; gap:6px; z-index:2}
+.zoom-ctrl button{width:36px; height:36px; border-radius:10px; border:1px solid var(--line); background:var(--surface); color:var(--ink); font-size:18px; font-weight:700; cursor:pointer}
+.zoom-ctrl button.small{font-size:13px}
+.adm-label{font-family:var(--font); font-weight:800; fill:#1B1D22; text-anchor:middle; paint-order:stroke; stroke:#FFFFFF; stroke-width:3px; stroke-linejoin:round; pointer-events:none}
+.adm-label.muted{fill:#5A5D66}
+.adm{cursor:pointer; stroke:#FFFFFF; stroke-width:1.5px; vector-effect:non-scaling-stroke; transition:fill-opacity .15s}
+.adm:hover{fill-opacity:.8}
+.adm.sel{stroke:var(--ink); stroke-width:3px}
+.pin{cursor:pointer}
+.pin text{font-family:var(--font); font-weight:800; text-anchor:middle; pointer-events:none; fill:#FFFFFF}
+.legend{display:flex; gap:12px 18px; flex-wrap:wrap; align-items:center; padding:12px 16px; border-top:1px solid var(--line); font-size:12px; color:var(--ink-2)}
+.ramp{display:inline-flex; align-items:center; gap:6px}
+.ramp i{display:inline-block; width:22px; height:12px; border-radius:3px}
+.legend .dot{display:inline-block; width:11px; height:11px; border-radius:50%; margin-right:6px; vertical-align:-1px}
+.list{padding:18px}
+.list-head{display:flex; justify-content:space-between; align-items:baseline; gap:8px; flex-wrap:wrap; margin-bottom:10px}
+.list-head h2{font-size:19px}
+.list-head span{font-size:12px; color:var(--ink-2)}
+ol{list-style:none; margin:0; padding:0 4px 0 0; display:flex; flex-direction:column; gap:8px; max-height:560px; overflow-y:auto}
+.item{display:grid; grid-template-columns:30px minmax(0,1fr); gap:12px; width:100%; text-align:left; background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:11px 13px; color:var(--ink); cursor:pointer}
+.item[aria-pressed="true"]{border-color:var(--accent); box-shadow:inset 3px 0 0 var(--accent)}
+.rank{width:26px; height:26px; border-radius:50%; background:var(--ink); color:#FFF; font-size:12px; font-weight:800; display:grid; place-items:center; font-variant-numeric:tabular-nums}
+.item .r1{display:flex; justify-content:space-between; align-items:baseline; gap:8px}
+.item .name{font-weight:700}
+.item .score{font-weight:800; font-size:18px; font-variant-numeric:tabular-nums}
+.item .meta{font-size:12px; color:var(--ink-2)}
+.bar{height:6px; background:var(--pale); border-radius:999px; overflow:hidden; margin-top:7px}
+.bar span{display:block; height:100%; background:var(--ink-2); border-radius:999px}
+.item[aria-pressed="true"] .bar span{background:var(--accent)}
+.tag{display:inline-block; font-size:11px; font-weight:700; color:var(--teal); background:var(--teal-bg); border-radius:999px; padding:1px 8px; margin-left:6px; vertical-align:1px}
+.empty{font-size:14px; color:var(--ink-2); padding:12px 4px}
+.detail{margin-top:16px; padding:24px}
+.detail-grid{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.3fr); gap:24px; align-items:start}
+.detail h2{font-size:24px}
+.detail .sub{font-size:13px; color:var(--ink-2); margin-top:4px}
+.facts{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:16px}
+.fact{background:var(--bg); border-radius:10px; padding:10px 12px}
+.fact .k{font-size:11px; color:var(--ink-2)}
+.fact .v{font-size:16px; font-weight:800; font-variant-numeric:tabular-nums}
+.total{font-size:44px; font-weight:800; font-variant-numeric:tabular-nums; line-height:1; margin-top:20px}
+.total small{font-size:16px; color:var(--ink-2); font-weight:700; margin-left:4px}
+.reason{margin-top:12px; font-size:13px; color:var(--ink-2)}
+.reason b{color:var(--ink)}
+.factor{margin-bottom:14px}
+.factor .head{display:flex; justify-content:space-between; font-size:13px; font-weight:700; gap:8px}
+.factor .head span:last-child{font-variant-numeric:tabular-nums; color:var(--ink-2); font-weight:500}
+.factor .bar{margin-top:6px; height:10px}
+.cta{margin-top:18px; display:flex; align-items:center; gap:12px; flex-wrap:wrap; font-size:13px; color:var(--ink-2)}
+.cta button{border:1px solid var(--line); background:var(--pale); color:var(--ink-2); border-radius:999px; padding:9px 16px; font-weight:700; font-size:13px; cursor:default}
+footer{margin-top:28px; font-size:12px; color:var(--ink-2); line-height:1.7}
+@media (max-width:900px){
+  .layout,.detail-grid{grid-template-columns:1fr}
+  .stats{grid-template-columns:1fr 1fr}
+  .intro h1{font-size:26px}
+  .facts{grid-template-columns:1fr 1fr}
+  ol{max-height:420px}
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header class="top">
+    <div class="brand">대구 중구 공실 매칭<span>DEMO</span></div>
+    <p class="note">네이버부동산 임대 매물 공개 정보 기반 · 원본 상호·링크·좌표 포함 · 외부 공유 전 확인</p>
+  </header>
+
+  <section class="intro">
+    <h1>업종별로 임차인에게 맞는 공실을 순위로 보여줍니다</h1>
+    <p>업종, 예산, 행정동을 고르면 조건에 맞는 공실을 적합도 순으로 정렬합니다. 지도에서 행정동을 누르면 그 동의 공실만 보입니다.</p>
+  </section>
+
+  <section class="stats" id="stats"></section>
+
+  <section class="controls">
+    <div class="seg" id="cats" role="tablist" aria-label="업종 선택"></div>
+    <p class="cat-desc" id="catDesc"></p>
+    <div class="row2">
+      <label class="field">
+        <span>월 임대료 상한 <b id="budgetVal"></b></span>
+        <input id="budget" type="range" min="50" max="1200" step="10" value="400">
+      </label>
+      <label class="field">
+        <span>행정동</span>
+        <select id="adm"></select>
+      </label>
+    </div>
+    <p class="limit" id="limit"></p>
+  </section>
+
+  <section class="layout">
+    <div class="card map">
+      <div class="map-stage" id="stage">
+        <svg id="map" viewBox="0 0 800 560" role="img" aria-label="중구 행정동 지도. 끌어서 이동, 휠이나 버튼으로 확대·축소"></svg>
+        <div class="zoom-ctrl">
+          <button type="button" id="zin" aria-label="확대">+</button>
+          <button type="button" id="zout" aria-label="축소">−</button>
+          <button type="button" id="zreset" class="small" aria-label="처음 위치로">전체</button>
+        </div>
+      </div>
+      <div class="legend">
+        <span class="ramp">공실 수 <i style="background:#F3EDE2"></i><i style="background:#F2C9A8"></i><i style="background:#E88A66"></i><i style="background:#E0492B"></i></span>
+        <span><i class="dot" style="background:var(--accent)"></i>선택한 공실</span>
+        <span><i class="dot" style="background:var(--ink)"></i>조건에 맞는 공실</span>
+        <span>끌어서 이동 · 휠·버튼으로 확대</span>
+      </div>
+    </div>
+
+    <div class="card list">
+      <div class="list-head">
+        <h2 id="listTitle"></h2>
+        <span id="listCount"></span>
+      </div>
+      <ol id="ranking"></ol>
+    </div>
+  </section>
+
+  <section class="card detail" id="detail" aria-live="polite"></section>
+
+  <footer>
+    <p>출처: 네이버부동산 임대 매물 공개 정보(2026.11.5 수집), 동일 호실 묶음 기준 59건. 행정동 경계는 행정표준코드관리시스템 기반 공개 데이터(vuski/admdongkor, 2023.07 기준)를 단순화해 사용했습니다. 현재 용도가 적힌 매물은 상가 580곳 중 약 22%라서 경쟁 점수는 참고용입니다. 유동인구·주거인구·폐업률 데이터가 없어서 상가 밀도와 공실률로 대신했습니다. 점수는 참고 지표이며 임대·창업의 성과를 보장하지 않습니다.</p>
+  </footer>
+</main>
+
+<script>
+(function () {
+  // ---- Administrative boundaries (행정동, 중구). Generated from public GeoJSON. ----
+  const ADM = [
+  {nm:'삼덕동', code:'2201054', polys:[[[[128.5998,35.8683],[128.6025,35.8677],[128.6132,35.8655],[128.6096,35.8618],[128.6003,35.8637],[128.6000,35.8638],[128.6001,35.8639],[128.5997,35.8642],[128.5987,35.8646],[128.5978,35.8650],[128.5977,35.8650],[128.5975,35.8651],[128.5972,35.8654],[128.5953,35.8672],[128.5954,35.8683],[128.5994,35.8684],[128.5996,35.8683],[128.5998,35.8683]]]]},
+  {nm:'성내1동', code:'2201056', polys:[[[[128.6014,35.8748],[128.5998,35.8683],[128.5996,35.8683],[128.5994,35.8684],[128.5954,35.8683],[128.5953,35.8672],[128.5972,35.8654],[128.5975,35.8651],[128.5977,35.8650],[128.5978,35.8650],[128.5987,35.8646],[128.5997,35.8642],[128.6001,35.8639],[128.6000,35.8638],[128.6007,35.8605],[128.5965,35.8600],[128.5964,35.8601],[128.5962,35.8606],[128.5961,35.8608],[128.5960,35.8610],[128.5960,35.8610],[128.5957,35.8616],[128.5948,35.8643],[128.5935,35.8661],[128.5937,35.8699],[128.5941,35.8721],[128.5949,35.8753],[128.5991,35.8755],[128.6014,35.8748]]]]},
+  {nm:'성내2동', code:'2201059', polys:[[[[128.5949,35.8753],[128.5941,35.8721],[128.5937,35.8699],[128.5935,35.8661],[128.5924,35.8663],[128.5909,35.8661],[128.5895,35.8664],[128.5884,35.8666],[128.5879,35.8666],[128.5878,35.8667],[128.5878,35.8666],[128.5870,35.8664],[128.5824,35.8651],[128.5826,35.8706],[128.5852,35.8705],[128.5872,35.8701],[128.5873,35.8702],[128.5873,35.8703],[128.5879,35.8757],[128.5884,35.8775],[128.5949,35.8763],[128.5949,35.8753]]]]},
+  {nm:'성내3동', code:'2201061', polys:[[[[128.5802,35.8791],[128.5884,35.8775],[128.5879,35.8757],[128.5873,35.8703],[128.5873,35.8702],[128.5872,35.8701],[128.5852,35.8705],[128.5826,35.8706],[128.5824,35.8708],[128.5821,35.8734],[128.5802,35.8737],[128.5801,35.8736],[128.5800,35.8735],[128.5797,35.8732],[128.5796,35.8730],[128.5795,35.8728],[128.5795,35.8728],[128.5794,35.8727],[128.5793,35.8726],[128.5789,35.8724],[128.5779,35.8720],[128.5770,35.8720],[128.5768,35.8720],[128.5757,35.8730],[128.5756,35.8731],[128.5756,35.8734],[128.5756,35.8735],[128.5756,35.8740],[128.5767,35.8761],[128.5769,35.8762],[128.5769,35.8762],[128.5781,35.8756],[128.5785,35.8754],[128.5793,35.8753],[128.5784,35.8762],[128.5779,35.8795],[128.5802,35.8791]]]]},
+  {nm:'대신동', code:'2201062', polys:[[[[128.5826,35.8706],[128.5824,35.8651],[128.5817,35.8648],[128.5742,35.8627],[128.5741,35.8637],[128.5738,35.8654],[128.5750,35.8663],[128.5751,35.8664],[128.5756,35.8668],[128.5762,35.8671],[128.5777,35.8682],[128.5778,35.8682],[128.5785,35.8688],[128.5788,35.8691],[128.5796,35.8700],[128.5797,35.8701],[128.5797,35.8703],[128.5794,35.8705],[128.5795,35.8728],[128.5795,35.8728],[128.5796,35.8730],[128.5797,35.8732],[128.5800,35.8735],[128.5801,35.8736],[128.5802,35.8737],[128.5821,35.8734],[128.5824,35.8708],[128.5826,35.8706]]]]},
+  {nm:'남산1동', code:'2201064', polys:[[[[128.5935,35.8661],[128.5948,35.8643],[128.5957,35.8616],[128.5960,35.8610],[128.5960,35.8610],[128.5961,35.8608],[128.5962,35.8606],[128.5964,35.8601],[128.5965,35.8600],[128.5968,35.8595],[128.5969,35.8591],[128.5955,35.8585],[128.5952,35.8585],[128.5947,35.8584],[128.5947,35.8566],[128.5878,35.8567],[128.5904,35.8620],[128.5905,35.8620],[128.5908,35.8619],[128.5924,35.8614],[128.5927,35.8613],[128.5927,35.8614],[128.5933,35.8630],[128.5937,35.8650],[128.5935,35.8653],[128.5933,35.8654],[128.5927,35.8654],[128.5924,35.8655],[128.5910,35.8657],[128.5908,35.8658],[128.5909,35.8661],[128.5924,35.8663],[128.5935,35.8661]]]]},
+  {nm:'남산2동', code:'2201065', polys:[[[[128.5909,35.8661],[128.5908,35.8658],[128.5910,35.8657],[128.5924,35.8655],[128.5927,35.8654],[128.5933,35.8654],[128.5935,35.8653],[128.5937,35.8650],[128.5933,35.8630],[128.5927,35.8614],[128.5927,35.8613],[128.5924,35.8614],[128.5908,35.8619],[128.5905,35.8620],[128.5904,35.8620],[128.5870,35.8634],[128.5825,35.8622],[128.5817,35.8648],[128.5824,35.8651],[128.5870,35.8664],[128.5878,35.8666],[128.5878,35.8667],[128.5879,35.8666],[128.5884,35.8666],[128.5895,35.8664],[128.5909,35.8661]]]]},
+  {nm:'남산3동', code:'2201066', polys:[[[[128.5904,35.8620],[128.5878,35.8567],[128.5842,35.8564],[128.5829,35.8563],[128.5825,35.8622],[128.5870,35.8634],[128.5904,35.8620]]]]},
+  {nm:'남산4동', code:'2201067', polys:[[[[128.5825,35.8622],[128.5829,35.8563],[128.5746,35.8601],[128.5742,35.8627],[128.5817,35.8648],[128.5825,35.8622]]]]},
+  {nm:'대봉1동', code:'2201068', polys:[[[[128.6096,35.8618],[128.6091,35.8614],[128.6090,35.8613],[128.6084,35.8599],[128.6084,35.8597],[128.6082,35.8583],[128.6082,35.8576],[128.6085,35.8549],[128.6024,35.8553],[128.6010,35.8598],[128.6007,35.8605],[128.6000,35.8638],[128.6003,35.8637],[128.6096,35.8618]]]]},
+  {nm:'대봉2동', code:'2201069', polys:[[[[128.6024,35.8553],[128.6000,35.8554],[128.5987,35.8555],[128.5985,35.8555],[128.5984,35.8556],[128.5982,35.8557],[128.5979,35.8558],[128.5979,35.8558],[128.5976,35.8560],[128.5975,35.8560],[128.5971,35.8562],[128.5969,35.8563],[128.5969,35.8563],[128.5966,35.8564],[128.5960,35.8565],[128.5959,35.8565],[128.5947,35.8566],[128.5947,35.8566],[128.5947,35.8584],[128.5952,35.8585],[128.5955,35.8585],[128.5969,35.8591],[128.5968,35.8595],[128.5965,35.8600],[128.6007,35.8605],[128.6010,35.8598],[128.6024,35.8553]]]]},
+  {nm:'동인동', code:'2201070', polys:[[[[128.6147,35.8682],[128.6146,35.8680],[128.6132,35.8655],[128.6025,35.8677],[128.5998,35.8683],[128.6014,35.8748],[128.6015,35.8747],[128.6035,35.8741],[128.6045,35.8739],[128.6058,35.8738],[128.6062,35.8738],[128.6076,35.8741],[128.6097,35.8746],[128.6103,35.8749],[128.6120,35.8738],[128.6147,35.8682]]]]}
+];
+
+  // ---- Vacancy rows: [법정동, 층, 전용면적㎡, 보증금(만원), 월세(만원)] ----
+  var VAC = [
+  ['삼덕동1가','2',58.49,2000,180],['동성로3가','1',162.26,10000,650],['삼덕동1가','2',114.05,3000,210],['공평동','1',44.09,3000,190],['삼덕동1가','1',33,1000,100],['동성로3가','5',147.43,6000,450],['남일동','1',149.37,6000,580],['삼덕동1가','3',581.95,15000,800],['공평동','4',411.55,10000,650],['완전동','1',244.4,6000,600],['포정동','3',121.36,1000,110],['삼덕동1가','1',89,10000,800],['삼덕동1가','2',181.6,5000,270],['남일동','7',437.1,7000,410],['삼덕동1가','3',121.82,2000,180],['동성로3가','2',344.3,10000,800],['동성로3가','4',181.1,6000,400],['남일동','1',134.4,6000,580],['동성로3가','4',147.43,6000,450],['남일동','7',335.1,7000,536],['남일동','4',335.1,7000,536],['공평동','3',124.96,2000,100],['삼덕동1가','5',298.58,12000,330],['공평동','1',279.54,8000,500],['동성로1가','4',357.26,2500,220],['완전동','2',82.5,1500,150],['동성로3가','2',28.76,4000,140],['삼덕동1가','2',98,3000,170],['동문동','1',111.74,3000,270],['남일동','3',124.25,5000,250],['삼덕동1가','1',69.54,5000,250],['포정동','8',323.8,10000,500],['남일동','2',195.82,3000,250],['삼덕동1가','1',75,3000,200],['삼덕동1가','2',127.6,1000,110],['삼덕동1가','2',125.04,1500,130],['포정동','2',193.11,2000,100],['삼덕동1가','4',196.62,10000,450],['남일동','7',335.73,7000,536],['포정동','6',404.8,10000,500],['남일동','6',278.9,10000,400],['포정동','1',396.4,10000,1200],['남일동','1',69.12,5000,200],['남일동','11',207.4,5000,250],['삼덕동1가','B1',258.54,3000,170],['삼덕동1가','3',277.49,7000,300],['삼덕동1가','B1',216.15,2000,150],['삼덕동1가','1',66,6000,460],['삼덕동1가','1',33.3,3000,150],['완전동','2',33.3,700,70],['남일동','2',69.64,3000,100],['삼덕동1가','2',160,3000,230],['삼덕동1가','2',183.55,3000,230],['삼덕동1가','1',69.54,5000,300],['남일동','8',223.1,10000,400],['남일동','6',691.57,7000,440],['남일동','4',335,7000,536],['남일동','5',335.1,7000,536],['동성로3가','2',147.43,8000,700]
+  ];
+
+  // ---- Dong-level context (법정동) from the 상가 listings (상가 580곳) ----
+  var DIST = {
+    '교동':{cx:128.59863,cy:35.87323,total:26,vac:0,식음료:3,소매:0,사무:0,의료뷰티:0,교육:0},
+    '공평동':{cx:128.5986,cy:35.86913,total:66,vac:4,식음료:3,소매:2,사무:0,의료뷰티:1,교육:0},
+    '삼덕동1가':{cx:128.59833,cy:35.86647,total:136,vac:22,식음료:11,소매:3,사무:2,의료뷰티:2,교육:0},
+    '포정동':{cx:128.59418,cy:35.87183,total:25,vac:5,식음료:2,소매:2,사무:1,의료뷰티:0,교육:0},
+    '덕산동':{cx:128.59353,cy:35.86617,total:21,vac:0,식음료:0,소매:0,사무:2,의료뷰티:2,교육:0},
+    '문화동':{cx:128.59778,cy:35.87159,total:32,vac:0,식음료:2,소매:1,사무:0,의료뷰티:0,교육:0},
+    '완전동':{cx:128.59893,cy:35.8726,total:22,vac:3,식음료:1,소매:0,사무:0,의료뷰티:0,교육:0},
+    '사일동':{cx:128.59487,cy:35.86931,total:9,vac:0,식음료:2,소매:0,사무:0,의료뷰티:0,교육:0},
+    '동성로3가':{cx:128.59379,cy:35.86732,total:54,vac:7,식음료:6,소매:0,사무:0,의료뷰티:0,교육:1},
+    '동성로2가':{cx:128.59562,cy:35.87054,total:28,vac:0,식음료:1,소매:0,사무:0,의료뷰티:0,교육:0},
+    '남일동':{cx:128.59377,cy:35.86951,total:56,vac:16,식음료:1,소매:1,사무:0,의료뷰티:0,교육:1},
+    '동문동':{cx:128.59835,cy:35.87181,total:77,vac:1,식음료:8,소매:3,사무:0,의료뷰티:0,교육:0},
+    '동일동':{cx:128.59303,cy:35.86975,total:10,vac:0,식음료:3,소매:0,사무:0,의료뷰티:0,교육:0},
+    '동성로1가':{cx:128.5957,cy:35.87299,total:8,vac:1,식음료:0,소매:0,사무:0,의료뷰티:0,교육:0},
+    '화전동':{cx:128.59481,cy:35.87328,total:5,vac:0,식음료:1,소매:0,사무:1,의료뷰티:0,교육:0},
+    '장관동':{cx:128.59064,cy:35.86856,total:2,vac:0,식음료:0,소매:0,사무:0,의료뷰티:0,교육:0},
+    '전동':{cx:128.59308,cy:35.87021,total:2,vac:0,식음료:0,소매:0,사무:0,의료뷰티:0,교육:0},
+    '용덕동':{cx:128.59658,cy:35.8737,total:1,vac:0,식음료:0,소매:0,사무:0,의료뷰티:0,교육:0}
+  };
+  var CAP = {식음료:8, 소매:6, 교육:3, 의료뷰티:6};
+
+  // ---- Point-in-polygon:법정동 centre -> 행정동 ----
+  function inRing(ring, x, y){
+    var inside = false;
+    for (var i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+      var xi = ring[i][0], yi = ring[i][1], xj = ring[j][0], yj = ring[j][1];
+      if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) inside = !inside;
+    }
+    return inside;
+  }
+  function admOf(lon, lat){
+    for (var a = 0; a < ADM.length; a++) {
+      for (var p = 0; p < ADM[a].polys.length; p++) {
+        if (inRing(ADM[a].polys[p][0], lon, lat)) return ADM[a].nm;
+      }
+    }
+    // fallback: nearest 행정동 centroid
+    var best = null, bd = Infinity;
+    ADM.forEach(function(a){
+      var c = ADM_C[a.nm], d = Math.hypot(c[0]-lon, c[1]-lat);
+      if (d < bd) { bd = d; best = a.nm; }
+    });
+    return best;
+  }
+  var ADM_C = {};
+  ADM.forEach(function(a){
+    var xs = [], ys = [];
+    a.polys.forEach(function(poly){ poly[0].forEach(function(pt){ xs.push(pt[0]); ys.push(pt[1]); }); });
+    ADM_C[a.nm] = [(Math.min.apply(null,xs)+Math.max.apply(null,xs))/2, (Math.min.apply(null,ys)+Math.max.apply(null,ys))/2];
+  });
+  var DIST_ADM = {};
+  Object.keys(DIST).forEach(function(d){ DIST_ADM[d] = admOf(DIST[d].cx, DIST[d].cy); });
+
+  // 행정동 aggregates
+  var ADM_STAT = {};
+  ADM.forEach(function(a){ ADM_STAT[a.nm] = {total:0, vac:0}; });
+  Object.keys(DIST).forEach(function(d){
+    var k = DIST_ADM[d];
+    if (k) { ADM_STAT[k].total += DIST[d].total; ADM_STAT[k].vac += DIST[d].vac; }
+  });
+
+  // ---- Scoring helpers (each returns 0..1) ----
+  function areaFit(a, ideal){ return 1 - Math.min(Math.abs(a - ideal) / ideal, 1); }
+  function rentFit(m){ return 1 - Math.min(m / 500, 1); }
+  function floorNum(fl){
+    if (fl === 'B1') return -1;
+    var n = parseInt(fl, 10);
+    return isNaN(n) ? null : n;
+  }
+  function floorFit(kind, fl){
+    var n = floorNum(fl);
+    if (n === null) return 0.5;
+    if (kind === 'ground') return n === 1 ? 1 : n === 2 ? 0.5 : n === -1 ? 0.3 : 0.2;
+    if (kind === 'stay')   return n === -1 ? 0.3 : n === 1 ? 0.6 : (n <= 4 ? 1 : 0.8);
+    if (kind === 'show')   return n <= 1 ? 1 : n === 2 ? 0.7 : 0.4;
+    return 0.5;
+  }
+  function flow(d){ return Math.min(DIST[d].total / 100, 1); }
+  function health(d){ return 1 - Math.min((DIST[d].vac / DIST[d].total) / 0.3, 1); }
+  function comp(d, k){ return 1 - Math.min(DIST[d][k] / CAP[k], 1); }
+
+  var CATS = {
+    식음료: {
+      desc: '카페·음식점 기준입니다. 유동인구와 같은 업종의 경쟁을 가장 크게 봅니다.',
+      limit: '',
+      factors: [
+        {label:'면적 적합 (약 50㎡)', w:20, f:function(s){ return areaFit(s.a, 50); }},
+        {label:'층 적합 (1층 우선)',  w:20, f:function(s){ return floorFit('ground', s.fl); }},
+        {label:'유동 (상가 밀도)',    w:25, f:function(s){ return flow(s.d); }},
+        {label:'임대료 부담',         w:15, f:function(s){ return rentFit(s.m); }},
+        {label:'경쟁·상권 건강',      w:20, f:function(s){ return 0.6*comp(s.d,'식음료') + 0.4*health(s.d); }}
+      ]
+    },
+    공연문화: {
+      desc: '소극장·연습실·공연 카페 기준입니다. 면적과 층, 임대료 중심으로 봅니다.',
+      limit: '공연 시설 분포와 인구 데이터가 없어서 "시장 공백" 항목은 점수에서 뺐습니다. 대신 면적·층·임대료·상권 건강으로 계산합니다.',
+      factors: [
+        {label:'면적 적합 (약 120㎡)', w:40, f:function(s){ return areaFit(s.a, 120); }},
+        {label:'층 적합 (지하·1층 가능)', w:20, f:function(s){ return floorFit('show', s.fl); }},
+        {label:'임대료 부담',         w:25, f:function(s){ return rentFit(s.m); }},
+        {label:'상권 건강 (공실률)',  w:15, f:function(s){ return health(s.d); }}
+      ]
+    },
+    소매: {
+      desc: '잡화·편의 등 소매 기준입니다. 1층 가시성과 유동을 중요하게 봅니다.',
+      limit: '',
+      factors: [
+        {label:'면적 적합 (약 40㎡)', w:15, f:function(s){ return areaFit(s.a, 40); }},
+        {label:'층 적합 (1층 우선)',  w:30, f:function(s){ return floorFit('ground', s.fl); }},
+        {label:'유동 (상가 밀도)',    w:30, f:function(s){ return flow(s.d); }},
+        {label:'임대료 부담',         w:10, f:function(s){ return rentFit(s.m); }},
+        {label:'경쟁',                w:15, f:function(s){ return comp(s.d,'소매'); }}
+      ]
+    },
+    교육: {
+      desc: '학원·독서실 기준입니다. 넓은 면적과 2층 이상, 임대료 부담을 봅니다.',
+      limit: '학령 인구 데이터가 없어서 주거 인구는 반영하지 않았습니다.',
+      factors: [
+        {label:'면적 적합 (약 100㎡)', w:25, f:function(s){ return areaFit(s.a, 100); }},
+        {label:'층 적합 (2층 이상)',   w:20, f:function(s){ return floorFit('stay', s.fl); }},
+        {label:'임대료 부담',          w:25, f:function(s){ return rentFit(s.m); }},
+        {label:'상권 건강 (공실률)',   w:15, f:function(s){ return health(s.d); }},
+        {label:'경쟁',                 w:15, f:function(s){ return comp(s.d,'교육'); }}
+      ]
+    },
+    의료뷰티: {
+      desc: '병원·미용·뷰티 기준입니다. 같은 업종이 적은 동을 더 높게 봅니다.',
+      limit: '',
+      factors: [
+        {label:'면적 적합 (약 70㎡)', w:20, f:function(s){ return areaFit(s.a, 70); }},
+        {label:'층 적합 (2층 이상)',  w:20, f:function(s){ return floorFit('stay', s.fl); }},
+        {label:'임대료 부담',         w:20, f:function(s){ return rentFit(s.m); }},
+        {label:'경쟁',                w:25, f:function(s){ return comp(s.d,'의료뷰티'); }},
+        {label:'상권 건강 (공실률)',  w:15, f:function(s){ return health(s.d); }}
+      ]
+    },
+    사무업무: {
+      desc: '사무실·스타트업 기준입니다. 넓은 면적과 낮은 임대료를 가장 중요하게 봅니다.',
+      limit: '',
+      factors: [
+        {label:'면적 적합 (약 150㎡)', w:30, f:function(s){ return areaFit(s.a, 150); }},
+        {label:'층 적합 (2층 이상)',   w:15, f:function(s){ return floorFit('stay', s.fl); }},
+        {label:'임대료 부담',          w:40, f:function(s){ return rentFit(s.m); }},
+        {label:'상권 건강 (공실률)',   w:15, f:function(s){ return health(s.d); }}
+      ]
+    }
+  };
+  var CAT_ORDER = ['식음료','공연문화','소매','교육','의료뷰티','사무업무'];
+  var CAT_LABEL = {식음료:'식음료', 공연문화:'공연·문화', 소매:'소매', 교육:'교육', 의료뷰티:'의료·뷰티', 사무업무:'사무·업무'};
+
+  // ---- Listing name, Naver link and exact coordinates, same order as VAC: [상호, 링크, 경도, 위도] ----
+  var META = [
+  ['일반상가','https://fin.land.naver.com/articles/2655123691',128.596415,35.866812],
+  ['일반상가','https://fin.land.naver.com/articles/2658572172',128.593806,35.867456],
+  ['일반상가','https://fin.land.naver.com/articles/2658487995',128.595576,35.867741],
+  ['일반상가','https://fin.land.naver.com/articles/2654781573',128.599447,35.869937],
+  ['일반상가','https://fin.land.naver.com/articles/2658207485',128.599082,35.864351],
+  ['일반상가','https://fin.land.naver.com/articles/2657616173',128.593309,35.866842],
+  ['일반상가','https://fin.land.naver.com/articles/2653345632',128.594028,35.869549],
+  ['일반상가','https://fin.land.naver.com/articles/2654614253',128.596499,35.868016],
+  ['일반상가','https://fin.land.naver.com/articles/2654078752',128.598865,35.869945],
+  ['일반상가','https://fin.land.naver.com/articles/2653346410',128.598832,35.872633],
+  ['일반상가','https://fin.land.naver.com/articles/2656929943',128.595312,35.87211],
+  ['일반상가','https://fin.land.naver.com/articles/2654018593',128.596382,35.867552],
+  ['일반상가','https://fin.land.naver.com/articles/2658259694',128.599226,35.86427],
+  ['일반상가','https://fin.land.naver.com/articles/2659207514',128.594028,35.868316],
+  ['일반상가','https://fin.land.naver.com/articles/2655490340',128.597646,35.866528],
+  ['센트럴엠','https://fin.land.naver.com/articles/2656841561',128.593936,35.86777],
+  ['센트럴엠','https://fin.land.naver.com/articles/2656842771',128.593936,35.86777],
+  ['일반상가','https://fin.land.naver.com/articles/2656843742',128.594028,35.869549],
+  ['일반상가','https://fin.land.naver.com/articles/2657441371',128.593309,35.866842],
+  ['현대빌딩','https://fin.land.naver.com/articles/2656623427',128.594,35.868539],
+  ['현대빌딩','https://fin.land.naver.com/articles/2656623424',128.594,35.868539],
+  ['일반상가','https://fin.land.naver.com/articles/2657023230',128.599668,35.868994],
+  ['일반상가','https://fin.land.naver.com/articles/2655029447',128.597439,35.86531],
+  ['일반상가','https://fin.land.naver.com/articles/2654756485',128.597115,35.868234],
+  ['일반상가','https://fin.land.naver.com/articles/2658977716',128.595559,35.87249],
+  ['일반상가','https://fin.land.naver.com/articles/2656930378',128.598471,35.872723],
+  ['일반상가','https://fin.land.naver.com/articles/2655419870',128.593781,35.866838],
+  ['일반상가','https://fin.land.naver.com/articles/2656346177',128.596499,35.868016],
+  ['일반상가','https://fin.land.naver.com/articles/2656169692',128.599949,35.871343],
+  ['복합상가','https://fin.land.naver.com/articles/2656260977',128.593467,35.870677],
+  ['일반상가','https://fin.land.naver.com/articles/2653470157',128.598657,35.86764],
+  ['중앙네거리','https://fin.land.naver.com/articles/2655132622',128.593764,35.871204],
+  ['일반상가','https://fin.land.naver.com/articles/2654016903',128.59296,35.869293],
+  ['일반상가','https://fin.land.naver.com/articles/2655419225',128.598312,35.865562],
+  ['일반상가','https://fin.land.naver.com/articles/2655396612',128.59953,35.865026],
+  ['일반상가','https://fin.land.naver.com/articles/2657022163',128.59823,35.865097],
+  ['일반상가','https://fin.land.naver.com/articles/2656929146',128.593451,35.87163],
+  ['NS타워','https://fin.land.naver.com/articles/2654590002',128.599683,35.865698],
+  ['엘리온타워','https://fin.land.naver.com/articles/2654588830',128.594,35.868539],
+  ['중앙네거리 코너','https://fin.land.naver.com/articles/2653614910',128.593764,35.871204],
+  ['일반상가','https://fin.land.naver.com/articles/2653614922',128.593738,35.87072],
+  ['중앙네거리 코너','https://fin.land.naver.com/articles/2653613446',128.593764,35.871204],
+  ['일반상가','https://fin.land.naver.com/articles/2654017707',128.593988,35.869444],
+  ['일반상가','https://fin.land.naver.com/articles/2659205984',128.594028,35.868316],
+  ['일반상가','https://fin.land.naver.com/articles/2653542108',128.597556,35.867827],
+  ['일반상가','https://fin.land.naver.com/articles/2653548122',128.597556,35.867827],
+  ['일반상가','https://fin.land.naver.com/articles/2658487748',128.596239,35.867036],
+  ['일반상가','https://fin.land.naver.com/articles/2656945144',128.597705,35.866779],
+  ['일반상가','https://fin.land.naver.com/articles/2655683089',128.599683,35.865698],
+  ['일반상가','https://fin.land.naver.com/articles/2656929473',128.598471,35.872723],
+  ['일반상가','https://fin.land.naver.com/articles/2654018418',128.593988,35.869444],
+  ['일반상가','https://fin.land.naver.com/articles/2653876155',128.598432,35.867666],
+  ['일반상가','https://fin.land.naver.com/articles/2654950705',128.598432,35.867666],
+  ['일반상가','https://fin.land.naver.com/articles/2653829296',128.598657,35.867639],
+  ['일반상가','https://fin.land.naver.com/articles/2655132635',128.593738,35.87072],
+  ['일반상가','https://fin.land.naver.com/articles/2657246968',128.594028,35.868316],
+  ['일반상가','https://fin.land.naver.com/articles/2659578104',128.594,35.868539],
+  ['현대빌딩','https://fin.land.naver.com/articles/2656623418',128.594,35.868539],
+  ['일반상가','https://fin.land.naver.com/articles/2657441388',128.593309,35.866842]
+];
+
+  var SPACES = VAC.map(function(r, i){
+    var lon = META[i][2], lat = META[i][3];
+    return {id:i+1, d:r[0], adm:admOf(lon, lat) || DIST_ADM[r[0]], fl:r[1], a:r[2], dep:r[3], m:r[4], lon:lon, lat:lat, name:META[i][0], url:META[i][1]};
+  });
+
+  var state = {cat:'식음료', budget:400, adm:'all', selected:null};
+
+  function score(s, cat){
+    var parts = CATS[cat].factors.map(function(fa){
+      var f = Math.max(0, Math.min(1, fa.f(s)));
+      return {label:fa.label, w:fa.w, pts:fa.w * f};
+    });
+    return {parts:parts, total:parts.reduce(function(a,p){ return a + p.pts; }, 0)};
+  }
+  function eligible(){
+    return SPACES.filter(function(s){
+      return s.m <= state.budget && (state.adm === 'all' || s.adm === state.adm);
+    });
+  }
+  function ranked(){
+    return eligible().map(function(s){ var sc = score(s, state.cat); return {s:s, parts:sc.parts, total:sc.total}; })
+      .sort(function(a,b){ return b.total - a.total; });
+  }
+
+  var $ = function(id){ return document.getElementById(id); };
+  var NS = 'http://www.w3.org/2000/svg';
+
+  // ---- Projection: lon/lat -> base SVG frame (800 x 560), fitted to 중구 ----
+  var W = 800, H = 560, PAD = 24;
+  var KX = Math.cos(35.87 * Math.PI / 180);
+  var XMIN=Infinity,XMAX=-Infinity,YMIN=Infinity,YMAX=-Infinity;
+  ADM.forEach(function(a){ a.polys.forEach(function(poly){ poly[0].forEach(function(pt){
+    var x = pt[0]*KX, y = -pt[1];
+    if (x<XMIN) XMIN=x; if (x>XMAX) XMAX=x; if (y<YMIN) YMIN=y; if (y>YMAX) YMAX=y;
+  }); }); });
+  var SC = Math.min((W-2*PAD)/(XMAX-XMIN), (H-2*PAD)/(YMAX-YMIN));
+  var OX = (W - (XMAX-XMIN)*SC)/2, OY = (H - (YMAX-YMIN)*SC)/2;
+  function proj(lon, lat){ return [OX + (lon*KX - XMIN)*SC, OY + (-lat - YMIN)*SC]; }
+  function ringD(ring){
+    return ring.map(function(pt, i){ var p = proj(pt[0], pt[1]); return (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' ') + ' Z';
+  }
+
+  // ---- Choropleth colours by 공실 수 ----
+  var RAMP = ['#F3EDE2','#F2C9A8','#E88A66','#E0492B'];
+  var MAXV = Math.max.apply(null, ADM.map(function(a){ return ADM_STAT[a.nm].vac; })) || 1;
+  function admFill(nm){
+    var v = ADM_STAT[nm].vac;
+    if (v === 0) return RAMP[0];
+    var t = v / MAXV;
+    return t > 0.75 ? RAMP[3] : t > 0.45 ? RAMP[2] : t > 0.15 ? RAMP[1] : RAMP[0];
+  }
+
+  // ---- View state (pan / zoom) ----
+  var view = {k:1, tx:0, ty:0};
+  var world = null;
+  function clampView(){
+    view.k = Math.max(1, Math.min(8, view.k));
+    view.tx = Math.min(0, Math.max(W - W*view.k, view.tx));
+    view.ty = Math.min(0, Math.max(H - H*view.k, view.ty));
+  }
+  function applyView(){
+    clampView();
+    if (!world) return;
+    world.setAttribute('transform', 'translate(' + view.tx + ' ' + view.ty + ') scale(' + view.k + ')');
+    Array.prototype.forEach.call(world.querySelectorAll('.adm-label'), function(t){ t.setAttribute('font-size', (13 / view.k).toFixed(2)); t.setAttribute('stroke-width', (3 / view.k).toFixed(2)); });
+    Array.prototype.forEach.call(world.querySelectorAll('.pin circle'), function(c){ c.setAttribute('r', (c.getAttribute('data-r') / view.k).toFixed(2)); });
+    Array.prototype.forEach.call(world.querySelectorAll('.pin text'), function(t){ t.setAttribute('font-size', (11 / view.k).toFixed(2)); });
+  }
+  function zoomAt(factor, cx, cy){
+    var nk = Math.max(1, Math.min(8, view.k * factor));
+    var f = nk / view.k;
+    view.tx = cx - (cx - view.tx) * f;
+    view.ty = cy - (cy - view.ty) * f;
+    view.k = nk;
+    applyView();
+  }
+  function svgPoint(evt){
+    var svg = $('map'), r = svg.getBoundingClientRect();
+    return [(evt.clientX - r.left) * W / r.width, (evt.clientY - r.top) * H / r.height];
+  }
+
+  // ---- Draw map ----
+  function drawMap(list){
+    var svg = $('map');
+    var rankOf = {};
+    list.forEach(function(r, i){ rankOf[r.s.id] = i + 1; });
+    var out = '<rect x="-2000" y="-2000" width="6000" height="6000" fill="#E9EEF0"/>';
+    world = document.createElementNS(NS, 'g');
+    var html = '';
+    ADM.forEach(function(a){
+      var d = a.polys.map(function(poly){ return poly.map(ringD).join(' '); }).join(' ');
+      var sel = state.adm === a.nm ? ' sel' : '';
+      html += '<path class="adm' + sel + '" data-adm="' + a.nm + '" d="' + d + '" fill="' + admFill(a.nm) + '" fill-rule="evenodd" tabindex="0" role="button" aria-label="' + a.nm + ' 공실 ' + ADM_STAT[a.nm].vac + '곳"/>';
+    });
+    ADM.forEach(function(a){
+      var c = proj(ADM_C[a.nm][0], ADM_C[a.nm][1]);
+      var muted = ADM_STAT[a.nm].vac === 0 && ADM_STAT[a.nm].total === 0 ? ' muted' : '';
+      html += '<text class="adm-label' + muted + '" x="' + c[0].toFixed(1) + '" y="' + c[1].toFixed(1) + '">' + a.nm +
+              (ADM_STAT[a.nm].vac ? ' · ' + ADM_STAT[a.nm].vac : '') + '</text>';
+    });
+    html += '<g id="pins">';
+    list.forEach(function(r){
+      var s = r.s, on = state.selected === s.id, p = proj(s.lon, s.lat);
+      var rad = on ? 9 : 6;
+      html += '<g class="pin" data-id="' + s.id + '" role="button" tabindex="0" aria-label="' + rankOf[s.id] + '위 ' + s.d + ' ' + s.fl + '층 ' + s.a + '㎡">' +
+        '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="' + rad + '" data-r="' + rad + '" fill="' + (on ? '#E0492B' : '#16181D') + '" stroke="#FFFFFF" stroke-width="1.5" vector-effect="non-scaling-stroke"/>' +
+        (on ? '<text x="' + p[0].toFixed(1) + '" y="' + (p[1] + 3.5).toFixed(1) + '">' + rankOf[s.id] + '</text>' : '') +
+        '</g>';
+    });
+    html += '</g>';
+    world.innerHTML = html;
+    svg.innerHTML = out;
+    svg.appendChild(world);
+    applyView();
+
+    Array.prototype.forEach.call(world.querySelectorAll('path.adm'), function(p){
+      p.addEventListener('click', function(){
+        if (dragMoved) return;
+        var nm = p.getAttribute('data-adm');
+        state.adm = state.adm === nm ? 'all' : nm;
+        state.selected = null;
+        render();
+      });
+      p.addEventListener('keydown', function(e){ if (e.key === 'Enter') p.dispatchEvent(new Event('click')); });
+    });
+    Array.prototype.forEach.call(world.querySelectorAll('.pin'), function(p){
+      p.addEventListener('click', function(){ if (!dragMoved) select(Number(p.getAttribute('data-id'))); });
+      p.addEventListener('keydown', function(e){ if (e.key === 'Enter') select(Number(p.getAttribute('data-id'))); });
+    });
+  }
+
+  // ---- Pan / zoom input ----
+  var pointers = {}, dragMoved = false, lastDist = null;
+  var stage = $('stage');
+  stage.addEventListener('pointerdown', function(e){
+    pointers[e.pointerId] = svgPoint(e);
+    dragMoved = false;
+    stage.classList.add('dragging');
+    try { stage.setPointerCapture(e.pointerId); } catch (err) {}
+  });
+  stage.addEventListener('pointermove', function(e){
+    if (!pointers[e.pointerId]) return;
+    var prev = pointers[e.pointerId], cur = svgPoint(e);
+    var ids = Object.keys(pointers);
+    if (ids.length === 1) {
+      var dx = cur[0] - prev[0], dy = cur[1] - prev[1];
+      if (Math.abs(dx) + Math.abs(dy) > 2) dragMoved = true;
+      view.tx += dx; view.ty += dy;
+      applyView();
+    } else if (ids.length === 2) {
+      pointers[e.pointerId] = cur;
+      var a = pointers[ids[0]], b = pointers[ids[1]];
+      var dist = Math.hypot(a[0]-b[0], a[1]-b[1]);
+      var mx = (a[0]+b[0])/2, my = (a[1]+b[1])/2;
+      if (lastDist) { dragMoved = true; zoomAt(dist / lastDist, mx, my); }
+      lastDist = dist;
+      return;
+    }
+    pointers[e.pointerId] = cur;
+  });
+  function endPointer(e){
+    delete pointers[e.pointerId];
+    lastDist = null;
+    if (Object.keys(pointers).length === 0) stage.classList.remove('dragging');
+    setTimeout(function(){ dragMoved = false; }, 0);
+  }
+  stage.addEventListener('pointerup', endPointer);
+  stage.addEventListener('pointercancel', endPointer);
+  stage.addEventListener('wheel', function(e){
+    e.preventDefault();
+    var p = svgPoint(e);
+    zoomAt(e.deltaY < 0 ? 1.2 : 1/1.2, p[0], p[1]);
+  }, {passive:false});
+  $('zin').onclick = function(){ zoomAt(1.5, W/2, H/2); };
+  $('zout').onclick = function(){ zoomAt(1/1.5, W/2, H/2); };
+  $('zreset').onclick = function(){ view = {k:1, tx:0, ty:0}; applyView(); };
+
+  // ---- Lists and detail ----
+  function renderList(list){
+    var ol = $('ranking');
+    ol.innerHTML = '';
+    if (!list.length) {
+      ol.innerHTML = '<li class="empty">이 조건에 맞는 공실이 없습니다. 예산 상한이나 행정동을 넓혀 보세요.</li>';
+      return;
+    }
+    list.forEach(function(r, i){
+      var li = document.createElement('li');
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'item';
+      btn.setAttribute('aria-pressed', String(state.selected === r.s.id));
+      var pct = Math.round(r.total);
+      btn.innerHTML =
+        '<span class="rank">' + (i + 1) + '</span>' +
+        '<span>' +
+          '<span class="r1"><span class="name">' + r.s.adm + ' · ' + r.s.d + ' ' + r.s.fl + '층</span><span class="score">' + pct + '점</span></span>' +
+          '<div class="meta">' + r.s.a.toFixed(1) + '㎡ · 보증금 ' + r.s.dep.toLocaleString('ko-KR') + '만 / 월 ' + r.s.m.toLocaleString('ko-KR') + '만원</div>' +
+          '<div class="bar"><span style="width:' + pct + '%"></span></div>' +
+        '</span>';
+      btn.addEventListener('click', function(){ select(r.s.id); });
+      li.appendChild(btn);
+      ol.appendChild(li);
+    });
+  }
+
+  function renderDetail(list){
+    var box = $('detail');
+    var r = list.filter(function(x){ return x.s.id === state.selected; })[0];
+    if (!r) { box.innerHTML = '<p class="empty">선택할 수 있는 공실이 없습니다.</p>'; return; }
+    var s = r.s, parts = r.parts;
+    var gain = parts.slice().sort(function(a,b){ return (b.pts/b.w) - (a.pts/a.w); })[0];
+    var loss = parts.slice().sort(function(a,b){ return (a.pts/a.w) - (b.pts/b.w); })[0];
+    var bars = parts.map(function(p){
+      var pct = Math.round(p.pts / p.w * 100);
+      return '<div class="factor"><div class="head"><span>' + p.label + '</span><span>' + p.pts.toFixed(1) + ' / ' + p.w + '점</span></div>' +
+             '<div class="bar"><span style="width:' + pct + '%"></span></div></div>';
+    }).join('');
+    var a = ADM_STAT[s.adm];
+    box.innerHTML =
+      '<div class="detail-grid">' +
+        '<div>' +
+          '<h2>' + s.adm + ' · ' + s.d + ' ' + s.fl + '층</h2>' +
+          '<p class="sub">' + CAT_LABEL[state.cat] + ' 적합도 · ' + s.adm + ' 공실 ' + a.vac + '곳 / 상가 ' + a.total + '곳</p>' +
+          '<div class="facts">' +
+            '<div class="fact"><div class="k">전용 면적</div><div class="v">' + s.a.toFixed(1) + '㎡</div></div>' +
+            '<div class="fact"><div class="k">보증금</div><div class="v">' + s.dep.toLocaleString('ko-KR') + '만</div></div>' +
+            '<div class="fact"><div class="k">월세</div><div class="v">' + s.m.toLocaleString('ko-KR') + '만</div></div>' +
+            '<div class="fact"><div class="k">층</div><div class="v">' + s.fl + '</div></div>' +
+          '</div>' +
+          '<div class="total">' + Math.round(r.total) + '<small>점 / 100</small></div>' +
+          '<p class="reason">점수를 가장 많이 올린 요인: <b>' + gain.label + '</b><br>가장 많이 깎인 요인: <b>' + loss.label + '</b></p>' +
+          '<p class="reason">원본 매물: <b>' + s.name + '</b> · <a href="' + s.url + '" target="_blank" rel="noopener">네이버부동산에서 보기</a></p>' +
+          '<div class="cta"><button type="button" disabled>맞춤 추천 메일 받기 (준비 중)</button><span>비슷한 조건의 새 매물을 메일로 받는 기능은 다음 단계에서 붙입니다.</span></div>' +
+        '</div>' +
+        '<div>' + bars + '</div>' +
+      '</div>';
+  }
+
+  function renderStats(){
+    var total = 0, vac = 0;
+    Object.keys(DIST).forEach(function(d){ total += DIST[d].total; vac += DIST[d].vac; });
+    var topAdm = ADM.map(function(a){ return a.nm; }).sort(function(x,y){ return ADM_STAT[y].vac - ADM_STAT[x].vac; })[0];
+    $('stats').innerHTML =
+      '<div class="stat"><div class="k">중구 상가 (수집)</div><div class="v">' + total + '곳</div><div class="s">임대 매물 기준</div></div>' +
+      '<div class="stat"><div class="k">공실</div><div class="v">' + vac + '곳</div><div class="s">공실률 ' + Math.round(vac / total * 100) + '%</div></div>' +
+      '<div class="stat"><div class="k">공실이 가장 많은 행정동</div><div class="v">' + topAdm + '</div><div class="s">' + ADM_STAT[topAdm].vac + '곳</div></div>' +
+      '<div class="stat"><div class="k">조건에 맞는 공실</div><div class="v">' + eligible().length + '곳</div><div class="s">예산·행정동 필터 적용</div></div>';
+  }
+
+  function select(id){ state.selected = id; render(); }
+
+  function render(){
+    var list = ranked();
+    if (!list.some(function(r){ return r.s.id === state.selected; })) {
+      state.selected = list.length ? list[0].s.id : null;
+    }
+    var cat = CATS[state.cat];
+    Array.prototype.forEach.call(document.querySelectorAll('[data-cat]'), function(b){
+      b.setAttribute('aria-selected', String(b.getAttribute('data-cat') === state.cat));
+    });
+    $('catDesc').textContent = cat.desc;
+    $('limit').textContent = cat.limit;
+    $('limit').style.display = cat.limit ? 'block' : 'none';
+    $('budgetVal').textContent = state.budget.toLocaleString('ko-KR') + '만원 이하';
+    $('adm').value = state.adm;
+    $('listTitle').textContent = CAT_LABEL[state.cat] + ' 추천 순위';
+    $('listCount').textContent = list.length + '곳 정렬' + (state.adm === 'all' ? '' : ' · ' + state.adm);
+    renderStats();
+    drawMap(list);
+    renderList(list);
+    renderDetail(list);
+  }
+
+  // ---- Controls ----
+  var catBox = $('cats');
+  CAT_ORDER.forEach(function(k){
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.setAttribute('role', 'tab');
+    b.setAttribute('data-cat', k);
+    b.textContent = CAT_LABEL[k];
+    b.addEventListener('click', function(){ state.cat = k; state.selected = null; render(); });
+    catBox.appendChild(b);
+  });
+  var admSel = $('adm');
+  var opt0 = document.createElement('option'); opt0.value = 'all'; opt0.textContent = '중구 전체';
+  admSel.appendChild(opt0);
+  ADM.map(function(a){ return a.nm; }).sort(function(x,y){ return ADM_STAT[y].vac - ADM_STAT[x].vac; }).forEach(function(nm){
+    var o = document.createElement('option'); o.value = nm; o.textContent = nm + ' (공실 ' + ADM_STAT[nm].vac + ')';
+    admSel.appendChild(o);
+  });
+  admSel.addEventListener('change', function(e){ state.adm = e.target.value; state.selected = null; render(); });
+  $('budget').addEventListener('input', function(e){ state.budget = Number(e.target.value); render(); });
+
+  render();
+})();
+</script>
+</body>
+</html>
