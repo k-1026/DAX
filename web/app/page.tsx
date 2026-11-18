@@ -1,5 +1,6 @@
 // 첫 화면: 서비스 이름, Supabase 연결 상태, 로그인 상태를 보여준다.
 import Link from "next/link";
+import { connection } from "next/server";
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "./login/actions";
@@ -45,6 +46,9 @@ async function SupabaseStatus() {
 
 async function UserStatus() {
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL) return null;
+  // 로그인 정보는 사람마다 다르므로 미리 만들어 두지 말고 요청 때마다 확인한다.
+  // (없으면 로그인 상태에서 Date.now() 미리 렌더링 오류가 난다)
+  await connection();
 
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
