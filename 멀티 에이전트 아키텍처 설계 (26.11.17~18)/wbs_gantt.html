@@ -1,0 +1,467 @@
+<title>멀티 에이전트 채팅 WBS</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: 헤더 요약 → 범례 → 좌측 WBS 고정 열 + 우측 30작업일 타임라인 그리드 (가로 스크롤은 차트 안에서만) */
+  :root {
+    --bg: #f6f7f9;
+    --surface: #ffffff;
+    --fg: #1b2230;
+    --muted: #5d6676;
+    --line: #e3e6ec;
+    --line-strong: #c9ced8;
+    --week-tint: #f0f2f6;
+    --phase-bg: #eef1f6;
+    --milestone: #1b2230;
+    --r-pm: #7a5af5;
+    --r-ai: #0f8b8d;
+    --r-be: #2f6feb;
+    --r-fe: #e0719a;
+    --r-qa: #d9822b;
+    --r-all: #6b7385;
+    --font-body: "IBM Plex Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, "Consolas", monospace;
+    --left-w: 340px;
+    --day-w: 30px;
+    --row-h: 34px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #12151c; --surface: #1a1e27; --fg: #e6e9ef; --muted: #9aa3b2;
+      --line: #2a303c; --line-strong: #3a4250; --week-tint: #1f2430; --phase-bg: #222836;
+      --milestone: #e6e9ef;
+      --r-pm: #9c84ff; --r-ai: #2fb5b7; --r-be: #5b8ff5; --r-fe: #ef8fb2; --r-qa: #eda15a; --r-all: #8a93a6;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #12151c; --surface: #1a1e27; --fg: #e6e9ef; --muted: #9aa3b2;
+    --line: #2a303c; --line-strong: #3a4250; --week-tint: #1f2430; --phase-bg: #222836;
+    --milestone: #e6e9ef;
+    --r-pm: #9c84ff; --r-ai: #2fb5b7; --r-be: #5b8ff5; --r-fe: #ef8fb2; --r-qa: #eda15a; --r-all: #8a93a6;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .wrap {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding-block: 32px 48px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  header { display: flex; flex-direction: column; gap: 8px; }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  h1 { margin: 0; font-size: 28px; font-weight: 700; text-wrap: balance; }
+  .lede { margin: 0; color: var(--muted); max-width: 68ch; }
+
+  .facts { display: flex; flex-wrap: wrap; gap: 8px 24px; font-size: 13px; color: var(--muted); }
+  .facts b { color: var(--fg); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .sw { width: 14px; height: 10px; border-radius: 3px; display: inline-block; }
+  .diamond {
+    width: 10px; height: 10px; background: var(--milestone);
+    transform: rotate(45deg); display: inline-block; margin: 0 2px;
+  }
+
+  .chart {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow-x: auto;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: var(--left-w) repeat(30, var(--day-w));
+    min-width: calc(var(--left-w) + 30 * var(--day-w));
+    position: relative;
+  }
+  .cell {
+    height: var(--row-h);
+    border-bottom: 1px solid var(--line);
+    border-left: 1px solid transparent;
+  }
+  .cell.wk-start { border-left-color: var(--line-strong); }
+  .cell.wk-odd { background: var(--week-tint); }
+
+  .left {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background: var(--surface);
+    border-right: 1px solid var(--line-strong);
+    border-bottom: 1px solid var(--line);
+    height: var(--row-h);
+    display: grid;
+    grid-template-columns: 44px 1fr 64px;
+    align-items: center;
+    gap: 8px;
+    padding: 0 12px;
+    min-width: 0;
+  }
+  .left .code { font-family: var(--font-mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .left .name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .left .owner { font-size: 12px; color: var(--muted); text-align: right; white-space: nowrap; }
+
+  .row-phase .left { background: var(--phase-bg); font-weight: 600; }
+  .row-phase .left .code { color: var(--fg); }
+
+  .head .left, .head .cell { height: auto; }
+  .head .left {
+    font-size: 12px; color: var(--muted); font-weight: 600;
+    grid-template-columns: 44px 1fr 64px;
+    align-items: end;
+    padding-block: 8px;
+    grid-row: span 2;
+  }
+  .wk-label {
+    grid-column: span 5;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 8px 6px 2px;
+    border-left: 1px solid var(--line-strong);
+    color: var(--fg);
+  }
+  .wk-label.wk-odd { background: var(--week-tint); }
+  .day-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+    text-align: center;
+    padding: 2px 0 6px;
+    border-bottom: 1px solid var(--line-strong);
+    font-variant-numeric: tabular-nums;
+  }
+  .day-label.wk-start { border-left: 1px solid var(--line-strong); }
+  .day-label.wk-odd { background: var(--week-tint); }
+
+  .bar {
+    position: absolute;
+    height: 18px;
+    border-radius: 4px;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    padding: 0 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .bar.phase {
+    height: 8px;
+    border-radius: 2px;
+    background: var(--fg);
+    opacity: 0.75;
+    padding: 0;
+  }
+  .ms {
+    position: absolute;
+    width: 14px; height: 14px;
+    background: var(--milestone);
+    transform: rotate(45deg);
+    z-index: 1;
+  }
+  .ms-label {
+    position: absolute;
+    z-index: 1;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    color: var(--fg);
+  }
+
+  .notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .note h2 { margin: 0 0 6px; font-size: 15px; }
+  .note ul { margin: 0; padding-left: 18px; color: var(--muted); }
+  .note li { margin: 2px 0; }
+  .note li b { color: var(--fg); font-weight: 600; }
+
+  @media (max-width: 560px) {
+    :root { --left-w: 230px; --day-w: 26px; }
+    .left { grid-template-columns: 34px 1fr; }
+    .left .owner { display: none; }
+    h1 { font-size: 22px; }
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">WBS · Gantt</div>
+    <h1>오케스트레이터–서브에이전트 멀티 에이전트 채팅</h1>
+    <p class="lede">Python과 google-genai SDK로 만드는 오케스트레이터·서브에이전트(리서치/작성/검토) 구조, FastAPI 서버, 웹 채팅 UI를 5인 팀이 6주 동안 진행하는 일정입니다.</p>
+    <div class="facts">
+      <span>기간 <b>6주 · 30작업일</b> (주 5일 기준)</span>
+      <span>팀 <b>5명</b></span>
+      <span>작업 패키지 <b id="wpCount">–</b>개</span>
+      <span>마일스톤 <b id="msCount">–</b>개</span>
+    </div>
+  </header>
+
+  <div class="legend" id="legend"></div>
+
+  <div class="chart">
+    <div class="grid" id="grid"></div>
+  </div>
+
+  <section class="notes">
+    <div class="note">
+      <h2>역할</h2>
+      <ul id="roleList"></ul>
+    </div>
+    <div class="note">
+      <h2>마일스톤</h2>
+      <ul id="msList"></ul>
+    </div>
+    <div class="note">
+      <h2>병렬 진행 포인트</h2>
+      <ul>
+        <li><b>3주차</b>: AI 엔지니어가 서브에이전트를 만드는 동안 프론트엔드가 채팅 UI를 설계합니다.</li>
+        <li><b>3~4주차</b>: 오케스트레이터 루프와 FastAPI <code>/chat</code> API를 동시에 개발하고, 요청·응답 형식(<code>{"message"}</code> → <code>{"reply"}</code>)을 먼저 합의합니다.</li>
+        <li><b>5주차</b>: 통합 테스트 중 발견된 문제는 버그 수정과 프롬프트 튜닝으로 나눠 처리합니다.</li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+<script>
+  const ROLES = {
+    pm:  { label: "PM", desc: "요구사항, 일정, 문서화", color: "var(--r-pm)" },
+    ai:  { label: "AI 엔지니어", desc: "Gemini 연동, 서브에이전트, 오케스트레이터, 프롬프트", color: "var(--r-ai)" },
+    be:  { label: "백엔드", desc: "환경 구성, config.py, FastAPI 서버", color: "var(--r-be)" },
+    fe:  { label: "프론트엔드", desc: "채팅 UI(index.html), 서버 연동", color: "var(--r-fe)" },
+    qa:  { label: "QA", desc: "단독·연동·E2E 테스트", color: "var(--r-qa)" },
+    all: { label: "전원", desc: "공동 작업", color: "var(--r-all)" },
+  };
+
+  // [코드, 이름, 담당, 시작일, 종료일] — 작업일 1~30 기준
+  const WBS = [
+    { code: "1", name: "기획·설계", phase: true, items: [
+      ["1.1", "요구사항 정의", "pm", 1, 2],
+      ["1.2", "아키텍처 설계 (서브에이전트 = 도구)", "ai", 2, 4],
+      ["1.3", "google-genai 함수 호출 문서 검토", "ai", 3, 5],
+    ]},
+    { code: "2", name: "환경 구성", phase: true, items: [
+      ["2.1", "저장소·requirements.txt", "be", 5, 5],
+      ["2.2", ".env · config.py · 연결 테스트", "be", 6, 7],
+    ]},
+    { code: "3", name: "서브에이전트 개발", phase: true, items: [
+      ["3.1", "SubAgent 공통 클래스", "ai", 8, 8],
+      ["3.2", "research_agent", "ai", 9, 9],
+      ["3.3", "writer_agent", "ai", 10, 10],
+      ["3.4", "review_agent", "ai", 11, 11],
+      ["3.5", "서브에이전트 단독 실행 테스트", "qa", 11, 12],
+    ]},
+    { code: "4", name: "오케스트레이터 개발", phase: true, items: [
+      ["4.1", "도구 선언 (FunctionDeclaration)", "ai", 13, 13],
+      ["4.2", "함수 호출 루프·디스패치", "ai", 14, 16],
+      ["4.3", "오류 처리·최대 반복 제한", "ai", 16, 17],
+      ["4.4", "오케스트레이터 연동 테스트", "qa", 17, 18],
+    ]},
+    { code: "5", name: "FastAPI 서버", phase: true, items: [
+      ["5.1", "/chat API 형식 합의", "be", 13, 13],
+      ["5.2", "server.py 구현", "be", 14, 16],
+      ["5.3", "서버 단위 테스트", "qa", 16, 17],
+    ]},
+    { code: "6", name: "웹 채팅 UI", phase: true, items: [
+      ["6.1", "채팅 화면 설계", "fe", 11, 13],
+      ["6.2", "index.html 구현", "fe", 14, 17],
+      ["6.3", "서버 연동 (fetch /chat)", "fe", 18, 19],
+    ]},
+    { code: "7", name: "통합 테스트·개선", phase: true, items: [
+      ["7.1", "E2E 시나리오 테스트", "qa", 20, 22],
+      ["7.2", "버그 수정", "all", 22, 24],
+      ["7.3", "프롬프트 튜닝", "ai", 21, 24],
+    ]},
+    { code: "8", name: "문서화·마무리", phase: true, items: [
+      ["8.1", "README · 실행 가이드", "pm", 25, 27],
+      ["8.2", "시연 준비·리허설", "all", 27, 29],
+      ["8.3", "최종 시연·회고", "all", 30, 30],
+    ]},
+  ];
+
+  const MILESTONES = [
+    { name: "M1 설계 확정", day: 5, after: "1" },
+    { name: "M2 에이전트 연동 완료", day: 18, after: "4" },
+    { name: "M3 통합 완료", day: 24, after: "7" },
+    { name: "M4 최종 시연", day: 30, after: "8" },
+  ];
+
+  const DAYS = 30;
+  const grid = document.getElementById("grid");
+
+  function el(tag, cls, text) {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  const isWkStart = (d) => (d - 1) % 5 === 0;
+  const isWkOdd = (d) => Math.floor((d - 1) / 5) % 2 === 1;
+
+  // 헤더: 주차 / 작업일
+  const headLeft = el("div", "left");
+  headLeft.style.gridRow = "1 / span 2";
+  headLeft.append(el("span", "code", "WBS"), el("span", "name", "작업"), el("span", "owner", "담당"));
+  headLeft.parentClass = "head";
+  const headWrap = el("div", "head");
+  headWrap.style.display = "contents";
+  headWrap.appendChild(headLeft);
+  for (let w = 0; w < 6; w++) {
+    const wl = el("div", "wk-label" + (w % 2 ? " wk-odd" : ""), "W" + (w + 1));
+    wl.style.gridRow = "1";
+    headWrap.appendChild(wl);
+  }
+  for (let d = 1; d <= DAYS; d++) {
+    const dl = el("div", "day-label" + (isWkStart(d) ? " wk-start" : "") + (isWkOdd(d) ? " wk-odd" : ""), String(d));
+    dl.style.gridRow = "2";
+    headWrap.appendChild(dl);
+  }
+  grid.appendChild(headWrap);
+
+  // 본문 행 구성
+  const rows = [];
+  WBS.forEach((p) => {
+    const s = Math.min(...p.items.map((i) => i[3]));
+    const e = Math.max(...p.items.map((i) => i[4]));
+    rows.push({ type: "phase", code: p.code, name: p.name, owner: "", start: s, end: e });
+    p.items.forEach(([code, name, role, start, end]) => rows.push({ type: "task", code, name, role, start, end }));
+    const ms = MILESTONES.find((m) => m.after === p.code);
+    if (ms) rows.push({ type: "ms", code: "◆", name: ms.name, day: ms.day });
+  });
+
+  const HEAD_ROWS = 2;
+  const CELLS = new Map();
+  rows.forEach((r, idx) => {
+    const gridRow = idx + HEAD_ROWS + 1;
+    const rowWrap = el("div", r.type === "phase" ? "row-phase" : "");
+    rowWrap.style.display = "contents";
+
+    const left = el("div", "left");
+    left.style.gridRow = String(gridRow);
+    left.style.gridColumn = "1";
+    const owner = r.type === "task" ? ROLES[r.role].label : (r.type === "ms" ? "마일스톤" : `${r.end - r.start + 1}일`);
+    left.append(el("span", "code", r.code), el("span", "name", r.name), el("span", "owner", owner));
+    left.title = r.name;
+    rowWrap.appendChild(left);
+
+    for (let d = 1; d <= DAYS; d++) {
+      const c = el("div", "cell" + (isWkStart(d) ? " wk-start" : "") + (isWkOdd(d) ? " wk-odd" : ""));
+      c.style.gridRow = String(gridRow);
+      c.style.gridColumn = String(d + 1);
+      CELLS.set(`${gridRow}:${d}`, c);
+      rowWrap.appendChild(c);
+    }
+    grid.appendChild(rowWrap);
+    r.gridRow = gridRow;
+  });
+
+  // 막대·마일스톤은 실제 셀 위치를 기준으로 배치
+  function place() {
+    grid.querySelectorAll(".bar, .ms, .ms-label").forEach((n) => n.remove());
+    const gridBox = grid.getBoundingClientRect();
+    const cellAt = (row, day) => CELLS.get(`${row}:${day}`);
+    rows.forEach((r) => {
+      if (r.type === "ms") {
+        const c = cellAt(r.gridRow, r.day);
+        if (!c) return;
+        const b = c.getBoundingClientRect();
+        const m = el("div", "ms");
+        m.style.left = (b.left - gridBox.left + b.width / 2 - 7) + "px";
+        m.style.top = (b.top - gridBox.top + b.height / 2 - 7) + "px";
+        m.title = `${r.name} · ${r.day}일차`;
+        grid.appendChild(m);
+        const lab = el("div", "ms-label", `${r.name} (D${r.day})`);
+        lab.style.top = (b.top - gridBox.top + b.height / 2 - 9) + "px";
+        if (r.day > 22) {
+          lab.style.right = (gridBox.right - b.left + 6) + "px";
+        } else {
+          lab.style.left = (b.right - gridBox.left + 4) + "px";
+        }
+        grid.appendChild(lab);
+        return;
+      }
+      const c1 = cellAt(r.gridRow, r.start);
+      const c2 = cellAt(r.gridRow, r.end);
+      if (!c1 || !c2) return;
+      const b1 = c1.getBoundingClientRect();
+      const b2 = c2.getBoundingClientRect();
+      const bar = el("div", "bar" + (r.type === "phase" ? " phase" : ""));
+      const h = r.type === "phase" ? 8 : 18;
+      bar.style.left = (b1.left - gridBox.left + 3) + "px";
+      bar.style.width = (b2.right - b1.left - 6) + "px";
+      bar.style.top = (b1.top - gridBox.top + (b1.height - h) / 2) + "px";
+      if (r.type === "task") {
+        bar.style.background = ROLES[r.role].color;
+        const days = r.end - r.start + 1;
+        if (days >= 2) bar.textContent = `${days}d`;
+        bar.title = `${r.code} ${r.name} · ${ROLES[r.role].label} · ${r.start}~${r.end}일차`;
+      } else {
+        bar.title = `${r.code} ${r.name} · ${r.start}~${r.end}일차`;
+      }
+      grid.appendChild(bar);
+    });
+  }
+
+  // 범례·요약·목록
+  const legend = document.getElementById("legend");
+  Object.values(ROLES).forEach((r) => {
+    const s = el("span");
+    const sw = el("i", "sw");
+    sw.style.background = r.color;
+    s.append(sw, document.createTextNode(r.label));
+    legend.appendChild(s);
+  });
+  const msLeg = el("span");
+  msLeg.append(el("i", "diamond"), document.createTextNode("마일스톤"));
+  legend.appendChild(msLeg);
+  const phLeg = el("span");
+  const phSw = el("i", "sw");
+  phSw.style.background = "var(--fg)";
+  phSw.style.height = "5px";
+  phSw.style.opacity = "0.75";
+  phLeg.append(phSw, document.createTextNode("단계 전체 기간"));
+  legend.appendChild(phLeg);
+
+  document.getElementById("wpCount").textContent = WBS.reduce((n, p) => n + p.items.length, 0);
+  document.getElementById("msCount").textContent = MILESTONES.length;
+
+  const roleList = document.getElementById("roleList");
+  Object.entries(ROLES).filter(([k]) => k !== "all").forEach(([, r]) => {
+    const li = el("li");
+    li.append(el("b", null, r.label), document.createTextNode(": " + r.desc));
+    roleList.appendChild(li);
+  });
+  const msList = document.getElementById("msList");
+  MILESTONES.forEach((m) => {
+    const li = el("li");
+    li.append(el("b", null, m.name), document.createTextNode(` · ${m.day}일차 (W${Math.ceil(m.day / 5)})`));
+    msList.appendChild(li);
+  });
+
+  place();
+  window.addEventListener("resize", place);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(place);
+</script>

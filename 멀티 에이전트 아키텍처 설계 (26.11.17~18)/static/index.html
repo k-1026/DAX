@@ -1,0 +1,1093 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>멀티 에이전트 채팅</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --accent: #2f6feb;
+      --stage-bg: #0d1220;
+      --stage-panel: #141b2d;
+      --stage-line: #26304a;
+      --stage-fg: #e4e9f5;
+      --stage-muted: #8a95ad;
+      --c-orch: #a78bfa;
+      --c-research: #2dd4bf;
+      --c-writer: #60a5fa;
+      --c-review: #f59e0b;
+      --c-doc: #2dd4bf;
+      --c-table: #f472b6;
+      --c-web: #60a5fa;
+      --c-researcher: #fbbf24;
+      --c-done: #34d399;
+      --c-error: #f87171;
+    }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      font-family: system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
+      background: #f7f7f8;
+      color: #1f2328;
+    }
+    header {
+      padding: 10px 16px;
+      background: #fff;
+      border-bottom: 1px solid #e5e5e5;
+      font-weight: 600;
+      flex: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    /* ---------- 모드 전환 ---------- */
+    .modes {
+      display: inline-flex;
+      padding: 3px;
+      border-radius: 999px;
+      background: #eef1f5;
+      border: 1px solid #e1e5ea;
+    }
+    .modes .mode-btn {
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #57606a;
+      background: transparent;
+      border-radius: 999px;
+    }
+    .modes .mode-btn[aria-pressed="true"] { background: #fff; color: #1f2328; box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+    .modes .mode-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+    .msg.bot[data-mode]::before {
+      content: attr(data-mode);
+      display: block;
+      margin-bottom: 4px;
+      font-size: 11px;
+      font-style: normal;
+      font-weight: 700;
+      color: #6e7781;
+    }
+
+    /* 첫 화면 모드 선택 */
+    .picker {
+      align-self: center;
+      width: min(100%, 640px);
+      margin-top: 8vh;
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .picker h2 { margin: 0; font-size: 18px; }
+    .picker p { margin: 0; color: #57606a; font-size: 14px; }
+    .picker-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .picker-options .pick {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      text-align: left;
+      padding: 14px;
+      background: #f6f8fa;
+      color: #1f2328;
+      border: 1px solid #d0d7de;
+      border-radius: 12px;
+      font-weight: 400;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .picker-options .pick b { font-size: 15px; }
+    .picker-options .pick:hover { border-color: var(--accent); background: #eef4ff; }
+    .picker-options .pick:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    @media (max-width: 640px) { .picker-options { grid-template-columns: minmax(0, 1fr); } }
+
+    /* RAG 근거 조각 */
+    .sources {
+      align-self: flex-start;
+      max-width: 85%;
+      margin-top: -8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 12px;
+    }
+    .sources-title { color: #6e7781; font-weight: 600; }
+    .sources details {
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      border-radius: 8px;
+      padding: 4px 10px;
+    }
+    .sources summary { cursor: pointer; color: #1f2328; }
+    .sources summary .score { color: #6e7781; font-family: ui-monospace, Consolas, monospace; margin-left: 6px; }
+    .sources pre {
+      margin: 6px 0 4px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font: 12px/1.55 ui-monospace, Consolas, monospace;
+      color: #333;
+      max-height: 220px;
+      overflow: auto;
+    }
+
+    /* ---------- 좌우 분할 레이아웃 ---------- */
+    .app { flex: 1; display: flex; min-height: 0; }
+    .chat-pane {
+      flex: 1 1 100%;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      transition: flex-basis 0.6s ease;
+    }
+    .viz-pane {
+      flex: 0 0 0%;
+      min-width: 0;
+      overflow: hidden;
+      background: var(--stage-bg);
+      color: var(--stage-fg);
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      transition: flex-basis 0.6s ease, opacity 0.6s ease;
+    }
+    body.split .chat-pane { flex-basis: 45%; border-right: 1px solid #e5e5e5; }
+    body.split .viz-pane { flex-basis: 55%; opacity: 1; }
+
+    /* ---------- 채팅 ---------- */
+    #messages { flex: 1; overflow-y: auto; padding: 24px 16px; }
+    .inner { max-width: 780px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+    .msg {
+      max-width: 85%;
+      padding: 12px 16px;
+      border-radius: 16px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .user { align-self: flex-end; background: var(--accent); color: #fff; border-bottom-right-radius: 4px; }
+    .bot { align-self: flex-start; background: #fff; border: 1px solid #e5e5e5; border-bottom-left-radius: 4px; }
+    .loading { color: #6e7781; font-style: italic; }
+    .error { color: #cf222e; }
+    form { padding: 16px; background: #fff; border-top: 1px solid #e5e5e5; flex: none; }
+    .bar { max-width: 780px; margin: 0 auto; display: flex; gap: 8px; }
+    textarea {
+      flex: 1; resize: none; height: 52px; padding: 14px;
+      font: inherit; border: 1px solid #d0d7de; border-radius: 12px; outline: none;
+    }
+    textarea:focus { border-color: var(--accent); }
+    button {
+      padding: 0 20px; font: inherit; font-weight: 600; color: #fff;
+      background: var(--accent); border: none; border-radius: 12px; cursor: pointer;
+    }
+    button:disabled { background: #9db8f0; cursor: default; }
+
+    /* ---------- 조직도 ---------- */
+    .viz-title {
+      padding: 14px 20px 0;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--stage-muted);
+    }
+    .org { padding: 16px 20px 20px; flex: none; }
+    .podium-wrap { display: flex; flex-direction: column; align-items: center; }
+    .podium {
+      width: 260px;
+      height: 16px;
+      margin-top: -2px;
+      background: linear-gradient(180deg, #2a3452, #1a2238);
+      clip-path: polygon(6% 0, 94% 0, 100% 100%, 0 100%);
+    }
+    .podium-base { width: 290px; height: 6px; background: #1a2238; border-radius: 0 0 4px 4px; }
+
+    .links { display: block; width: 100%; height: 44px; }
+    .links path { fill: none; stroke: var(--stage-line); stroke-width: 2; vector-effect: non-scaling-stroke; transition: stroke 0.3s; }
+    .links path.active { stroke-dasharray: 6 6; animation: flow 0.8s linear infinite; }
+    .links path.active[data-agent="research_agent"] { stroke: var(--c-research); }
+    .links path.active[data-agent="writer_agent"] { stroke: var(--c-writer); }
+    .links path.active[data-agent="review_agent"] { stroke: var(--c-review); }
+    .links path.active[data-agent="doc_searcher"] { stroke: var(--c-doc); }
+    .links path.active[data-agent="data_analyst"] { stroke: var(--c-table); }
+    .links path.active[data-agent="web_searcher"] { stroke: var(--c-web); }
+    .links path.active[data-agent="researcher"] { stroke: var(--c-researcher); }
+
+    /* 모드별 모니터링 화면: body[data-viz] = agent(멀티 에이전트) / multi(Multi Agentic RAG) / agentic(Agentic RAG) */
+    body:not([data-viz="agent"]) .viz-agent-only { display: none !important; }
+    body:not([data-viz="multi"]) .viz-multi-only { display: none !important; }
+    body:not([data-viz="agentic"]) .viz-agentic-only { display: none !important; }
+    body[data-viz="agentic"] .viz-team-only { display: none !important; }
+    .links path.active[data-agent="search_docs"] { stroke: var(--c-doc); }
+    .agent[data-agent="search_docs"] { --c: var(--c-doc); }
+    .agentic-flow { display: flex; flex-direction: column; align-items: center; }
+    .agentic-flow .agent { width: 260px; }
+    .agentic-flow .links { width: 260px; height: 48px; }
+    .search-count { font-family: ui-monospace, Consolas, monospace; font-size: 11px; color: var(--stage-muted); }
+    .agent .tool-now { font-size: 11px; color: var(--stage-muted); min-height: 1.4em; }
+    @keyframes flow { to { stroke-dashoffset: -12; } }
+
+    .team { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .team.team-multi { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+
+    .agent {
+      --c: var(--c-orch);
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      border-radius: 14px;
+      border: 1px solid var(--stage-line);
+      background: var(--stage-panel);
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .agent.orch { width: 240px; }
+    .agent[data-agent="research_agent"] { --c: var(--c-research); }
+    .agent[data-agent="writer_agent"] { --c: var(--c-writer); }
+    .agent[data-agent="review_agent"] { --c: var(--c-review); }
+    .agent[data-agent="doc_searcher"] { --c: var(--c-doc); }
+    .agent[data-agent="data_analyst"] { --c: var(--c-table); }
+    .agent[data-agent="web_searcher"] { --c: var(--c-web); }
+    .agent[data-agent="researcher"] { --c: var(--c-researcher); }
+
+    /* 오로라 이펙트: 회전하는 원뿔 그라데이션 + 떠다니는 빛 덩어리 */
+    .aurora {
+      position: absolute;
+      inset: -60%;
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 0.5s;
+      background:
+        conic-gradient(from 0deg, transparent 0deg, var(--c) 60deg, #22d3ee 120deg, transparent 170deg,
+                       #a78bfa 230deg, var(--c) 290deg, transparent 360deg);
+      filter: blur(22px);
+      animation: spin 5s linear infinite;
+    }
+    .aurora::after {
+      content: "";
+      position: absolute;
+      inset: 25%;
+      background:
+        radial-gradient(circle at 30% 40%, rgba(52, 211, 153, 0.9), transparent 45%),
+        radial-gradient(circle at 70% 60%, rgba(96, 165, 250, 0.9), transparent 45%);
+      animation: drift 3.2s ease-in-out infinite alternate;
+    }
+    .agent-body {
+      position: relative;
+      margin: 2px;
+      border-radius: 12px;
+      background: rgba(20, 27, 45, 0.92);
+      padding: 14px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      text-align: center;
+      transition: background 0.4s;
+    }
+    .agent.working { border-color: transparent; box-shadow: 0 0 28px -4px var(--c); animation: breathe 2.4s ease-in-out infinite; }
+    .agent.working .aurora { opacity: 1; }
+    .agent.working .agent-body { background: rgba(13, 18, 32, 0.62); }
+    .agent.done { border-color: color-mix(in srgb, var(--c-done) 55%, transparent); }
+    .agent.error { border-color: var(--c-error); }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes drift { from { transform: translate(-12%, -8%) scale(1); } to { transform: translate(12%, 10%) scale(1.25); } }
+    @keyframes breathe { 50% { box-shadow: 0 0 40px 2px var(--c); } }
+
+    .icon {
+      width: 40px; height: 40px; border-radius: 50%;
+      display: grid; place-items: center;
+      background: color-mix(in srgb, var(--c) 18%, transparent);
+      color: var(--c);
+    }
+    .icon svg { width: 22px; height: 22px; }
+    .agent-name { font-weight: 700; font-size: 15px; }
+    .agent-code { font-family: ui-monospace, Consolas, monospace; font-size: 11px; color: var(--stage-muted); }
+    .status {
+      font-size: 12px;
+      padding: 2px 10px;
+      border-radius: 999px;
+      background: #1f2840;
+      color: var(--stage-muted);
+    }
+    .agent.working .status { background: var(--c); color: #0d1220; font-weight: 700; }
+    .agent.done .status { background: color-mix(in srgb, var(--c-done) 20%, transparent); color: var(--c-done); }
+    .agent.error .status { background: color-mix(in srgb, var(--c-error) 20%, transparent); color: var(--c-error); }
+
+    /* ---------- 작업 로그 ---------- */
+    .log-head {
+      display: flex; justify-content: space-between; align-items: baseline;
+      padding: 10px 20px; border-top: 1px solid var(--stage-line);
+      font-size: 13px; font-weight: 600; flex: none;
+    }
+    .log-head span { color: var(--stage-muted); font-weight: 400; font-size: 12px; }
+    #log { flex: 1; overflow-y: auto; padding: 0 20px 20px; display: flex; flex-direction: column; gap: 6px; min-height: 0; }
+    .log-item {
+      display: grid;
+      grid-template-columns: 64px 1fr;
+      gap: 10px;
+      font-size: 13px;
+      line-height: 1.5;
+      padding: 6px 10px;
+      border-radius: 8px;
+      background: var(--stage-panel);
+      border-left: 3px solid var(--c, var(--stage-line));
+    }
+    .log-item time { font-family: ui-monospace, Consolas, monospace; font-size: 11px; color: var(--stage-muted); padding-top: 2px; }
+    .log-item details summary { cursor: pointer; list-style: none; }
+    .log-item details summary::-webkit-details-marker { display: none; }
+    .log-item details summary::after { content: " ▸"; color: var(--stage-muted); }
+    .log-item details[open] summary::after { content: " ▾"; }
+    .log-item pre {
+      margin: 6px 0 2px;
+      padding: 8px 10px;
+      max-height: 240px;
+      overflow: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font: 12px/1.55 ui-monospace, Consolas, monospace;
+      color: #c9d2e6;
+      background: #0b1020;
+      border-radius: 6px;
+    }
+    .tag { font-weight: 700; color: var(--c, var(--stage-fg)); }
+    .log-divider {
+      margin-top: 10px;
+      padding: 6px 10px;
+      font-size: 12px;
+      color: var(--stage-fg);
+      border: 1px dashed var(--stage-line);
+      border-radius: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* 좁은 화면: 위아래로 쌓기 */
+    @media (max-width: 900px) {
+      .app { flex-direction: column; }
+      body.split .chat-pane { flex-basis: 50%; border-right: none; border-bottom: 1px solid #e5e5e5; }
+      body.split .viz-pane { flex-basis: 50%; overflow-y: auto; }
+      .agent.orch { width: 200px; }
+      .agent-body { padding: 10px 6px; }
+      .agent-code { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .aurora, .aurora::after, .agent.working, .links path.active { animation: none; }
+      .chat-pane, .viz-pane { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <span>멀티 에이전트 채팅</span>
+    <div class="modes" role="group" aria-label="답변 방식">
+      <button type="button" class="mode-btn" data-mode="rag" aria-pressed="false">RAG</button>
+      <button type="button" class="mode-btn" data-mode="agentic" aria-pressed="false">Agentic RAG</button>
+      <button type="button" class="mode-btn" data-mode="multi" aria-pressed="false">Multi Agentic RAG</button>
+      <button type="button" class="mode-btn" data-mode="agent" aria-pressed="false">멀티 에이전트</button>
+    </div>
+  </header>
+
+  <div class="app">
+    <section class="chat-pane">
+      <div id="messages"><div class="inner" id="list"></div></div>
+      <form id="form">
+        <div class="bar">
+          <textarea id="input" placeholder="메시지를 입력하세요 (Enter 전송, Shift+Enter 줄바꿈)"></textarea>
+          <button id="send" type="submit">전송</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="viz-pane" aria-label="에이전트 작동 현황">
+      <div class="viz-title">에이전트 작동 현황</div>
+      <div class="org">
+        <!-- Agentic RAG: 에이전트 1개 → search_docs 도구 -->
+        <div class="agentic-flow viz-agentic-only">
+          <div class="agent" data-agent="rag_agent">
+            <div class="aurora"></div>
+            <div class="agent-body">
+              <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="14" height="11" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01M9 16h6"/></svg></div>
+              <div class="agent-name">Agentic RAG 에이전트</div>
+              <div class="agent-code">run_agent · 검색 여부·검색어를 스스로 판단</div>
+              <div class="status">대기</div>
+            </div>
+          </div>
+          <svg class="links" viewBox="0 0 300 48" preserveAspectRatio="none" aria-hidden="true">
+            <path data-agent="search_docs" d="M150 0 V48" />
+          </svg>
+          <div class="agent" data-agent="search_docs">
+            <div class="aurora"></div>
+            <div class="agent-body">
+              <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></div>
+              <div class="agent-name">search_docs 도구</div>
+              <div class="agent-code">DOCS 문서 검색 (numpy 유사도)</div>
+              <div class="status">대기</div>
+              <div class="tool-now"></div>
+              <div class="search-count">검색 0 / 5</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="podium-wrap viz-team-only">
+          <div class="agent orch" data-agent="orchestrator">
+            <div class="aurora"></div>
+            <div class="agent-body">
+              <div class="icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 14.4 7.2 16.9l.9-5.4L4.2 7.7l5.4-.8z"/><path d="M8 21h8"/></svg>
+              </div>
+              <div class="agent-name">오케스트레이터</div>
+              <div class="agent-code">orchestrator</div>
+              <div class="status">대기</div>
+            </div>
+          </div>
+          <div class="podium"></div>
+          <div class="podium-base"></div>
+        </div>
+
+        <svg class="links viz-agent-only" viewBox="0 0 300 44" preserveAspectRatio="none" aria-hidden="true">
+          <path data-agent="research_agent" d="M150 0 V22 H50 V44" />
+          <path data-agent="writer_agent" d="M150 0 V44" />
+          <path data-agent="review_agent" d="M150 0 V22 H250 V44" />
+        </svg>
+
+        <div class="team viz-agent-only">
+          <div class="agent" data-agent="research_agent">
+            <div class="aurora"></div>
+            <div class="agent-body">
+              <div class="icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+              </div>
+              <div class="agent-name">리서치</div>
+              <div class="agent-code">research_agent</div>
+              <div class="status">대기</div>
+            </div>
+          </div>
+          <div class="agent" data-agent="writer_agent">
+            <div class="aurora"></div>
+            <div class="agent-body">
+              <div class="icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>
+              </div>
+              <div class="agent-name">작성</div>
+              <div class="agent-code">writer_agent</div>
+              <div class="status">대기</div>
+            </div>
+          </div>
+          <div class="agent" data-agent="review_agent">
+            <div class="aurora"></div>
+            <div class="agent-body">
+              <div class="icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+              </div>
+              <div class="agent-name">검토</div>
+              <div class="agent-code">review_agent</div>
+              <div class="status">대기</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Multi Agentic RAG 조직도 -->
+        <svg class="links viz-multi-only" viewBox="0 0 400 44" preserveAspectRatio="none" aria-hidden="true">
+          <path data-agent="doc_searcher" d="M200 0 V22 H50 V44" />
+          <path data-agent="data_analyst" d="M200 0 V22 H150 V44" />
+          <path data-agent="web_searcher" d="M200 0 V22 H250 V44" />
+          <path data-agent="researcher" d="M200 0 V22 H350 V44" />
+        </svg>
+        <div class="team team-multi viz-multi-only">
+          <div class="agent" data-agent="doc_searcher">
+            <div class="aurora"></div>
+            <div class="agent-body">
+              <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><circle cx="11" cy="14" r="2.5"/><path d="M13 16l2 2"/></svg></div>
+              <div class="agent-name">문서 검색</div>
+              <div class="agent-code">doc_searcher</div>
+              <div class="status">대기</div>
+              <div class="tool-now"></div>
+            </div>
+          </div>
+          <div class="agent" data-agent="data_analyst">
+            <div class="aurora"></div>
+            <div class="agent-body">
+              <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/></svg></div>
+              <div class="agent-name">표 조회</div>
+              <div class="agent-code">data_analyst</div>
+              <div class="status">대기</div>
+              <div class="tool-now"></div>
+            </div>
+          </div>
+          <div class="agent" data-agent="web_searcher">
+            <div class="aurora"></div>
+            <div class="agent-body">
+              <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/></svg></div>
+              <div class="agent-name">웹 검색</div>
+              <div class="agent-code">web_searcher</div>
+              <div class="status">대기</div>
+              <div class="tool-now"></div>
+            </div>
+          </div>
+          <div class="agent" data-agent="researcher">
+            <div class="aurora"></div>
+            <div class="agent-body">
+              <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 00-4 12.7V17h8v-2.3A7 7 0 0012 2z"/></svg></div>
+              <div class="agent-name">리서처</div>
+              <div class="agent-code">researcher</div>
+              <div class="status">대기</div>
+              <div class="tool-now"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="log-head">작업 로그 <span id="logCount">0건</span></div>
+      <div id="log"></div>
+    </section>
+  </div>
+
+  <script>
+    const list = document.getElementById("list");
+    const box = document.getElementById("messages");
+    const form = document.getElementById("form");
+    const input = document.getElementById("input");
+    const send = document.getElementById("send");
+    const logBox = document.getElementById("log");
+    const logCount = document.getElementById("logCount");
+    let logN = 0;
+
+    const NAMES = {
+      orchestrator: "오케스트레이터",
+      research_agent: "리서치",
+      writer_agent: "작성",
+      review_agent: "검토",
+      doc_searcher: "문서 검색",
+      data_analyst: "표 조회",
+      web_searcher: "웹 검색",
+      researcher: "리서처",
+      rag_agent: "Agentic RAG 에이전트",
+      search_docs: "search_docs",
+    };
+    const COLORS = {
+      orchestrator: "var(--c-orch)",
+      research_agent: "var(--c-research)",
+      writer_agent: "var(--c-writer)",
+      review_agent: "var(--c-review)",
+      doc_searcher: "var(--c-doc)",
+      data_analyst: "var(--c-table)",
+      web_searcher: "var(--c-web)",
+      researcher: "var(--c-researcher)",
+      rag_agent: "var(--c-orch)",
+      search_docs: "var(--c-doc)",
+    };
+
+    function addMessage(text, cls) {
+      const div = document.createElement("div");
+      div.className = "msg " + cls;
+      div.textContent = text;
+      list.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+      return div;
+    }
+
+    // ---------- 조직도 상태 ----------
+    function card(agent) { return document.querySelector(`.agent[data-agent="${agent}"]`); }
+
+    function setState(agent, state, label) {
+      const el = card(agent);
+      if (!el) return;
+      el.classList.remove("working", "done", "error");
+      if (state !== "idle") el.classList.add(state);
+      el.querySelector(".status").textContent = label;
+      const link = document.querySelector(`.links path[data-agent="${agent}"]`);
+      if (link) link.classList.toggle("active", state === "working");
+    }
+
+    function resetAll() {
+      Object.keys(NAMES).forEach((a) => setState(a, "idle", "대기"));
+    }
+
+    // ---------- 작업 로그 ----------
+    function timeNow() {
+      const d = new Date();
+      return [d.getHours(), d.getMinutes(), d.getSeconds()].map((n) => String(n).padStart(2, "0")).join(":");
+    }
+
+    function addLog(agent, html, detailLabel, detailText) {
+      const item = document.createElement("div");
+      item.className = "log-item";
+      item.style.setProperty("--c", COLORS[agent] || "var(--stage-line)");
+      const t = document.createElement("time");
+      t.textContent = timeNow();
+      const body = document.createElement("div");
+      if (detailText) {
+        const d = document.createElement("details");
+        const s = document.createElement("summary");
+        s.innerHTML = html;
+        const label = document.createElement("div");
+        label.style.cssText = "margin-top:6px;font-size:12px;color:var(--stage-muted)";
+        label.textContent = detailLabel;
+        const pre = document.createElement("pre");
+        pre.textContent = detailText;
+        d.append(s, label, pre);
+        body.appendChild(d);
+      } else {
+        body.innerHTML = html;
+      }
+      item.append(t, body);
+      logBox.appendChild(item);
+      logN += 1;
+      logCount.textContent = logN + "건";
+      logBox.scrollTop = logBox.scrollHeight;
+    }
+
+    function addDivider(question) {
+      const d = document.createElement("div");
+      d.className = "log-divider";
+      d.textContent = "질문: " + question;
+      d.title = question;
+      logBox.appendChild(d);
+      logBox.scrollTop = logBox.scrollHeight;
+    }
+
+    function tag(agent) {
+      return `<span class="tag" style="--c:${COLORS[agent]}">${NAMES[agent] || agent}</span>`;
+    }
+
+    // ---------- 이벤트 처리 ----------
+    let activeAgent = null;
+
+    function handleEvent(ev) {
+      switch (ev.type) {
+        case "orchestrator_start":
+          setState("orchestrator", "working", `작업 중 · 턴 ${ev.turn}`);
+          addLog("orchestrator", `${tag("orchestrator")} 턴 ${ev.turn}: 요청을 분석하고 다음 작업을 판단합니다`);
+          break;
+        case "agent_start":
+          activeAgent = ev.agent;
+          setState("orchestrator", "idle", "결과 대기");
+          setState(ev.agent, "working", "작업 중");
+          addLog(ev.agent, `${tag("orchestrator")} → ${tag(ev.agent)} 작업 지시`, "task", ev.task);
+          break;
+        case "agent_end":
+          activeAgent = null;
+          if (ev.error) {
+            setState(ev.agent, "error", "오류");
+            addLog(ev.agent, `${tag(ev.agent)} 작업 실패`, "오류 내용", ev.error);
+          } else {
+            setState(ev.agent, "done", "완료");
+            addLog(ev.agent, `${tag(ev.agent)} 작업 완료 (${ev.chars}자) → 오케스트레이터에 결과 전달`, "결과", ev.result);
+          }
+          break;
+        case "final":
+          setState("orchestrator", "done", "답변 완료");
+          addLog("orchestrator", `${tag("orchestrator")} 결과를 종합해 최종 답변을 완성했습니다`, "최종 답변", ev.reply);
+          break;
+        case "error":
+          setState("orchestrator", "error", "오류");
+          if (activeAgent) setState(activeAgent, "error", "오류");
+          addLog("orchestrator", `${tag("orchestrator")} 오류가 발생했습니다`, "오류 내용", ev.message);
+          break;
+      }
+    }
+
+    // POST로 SSE를 받기 위해 fetch + ReadableStream으로 직접 파싱
+    async function streamChat(message, onEvent, url = "/chat/stream", extra = {}) {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message, ...extra }),
+      });
+      if (!res.ok || !res.body) throw new Error("서버 오류 (" + res.status + ")");
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true }).replace(/\r\n/g, "\n");
+        let idx;
+        while ((idx = buffer.indexOf("\n\n")) !== -1) {
+          const block = buffer.slice(0, idx);
+          buffer = buffer.slice(idx + 2);
+          const dataLines = block.split("\n").filter((l) => l.startsWith("data:")).map((l) => l.slice(5).trimStart());
+          if (dataLines.length) onEvent(JSON.parse(dataLines.join("\n")));
+        }
+      }
+    }
+
+    // ---------- 모드 전환 (RAG / Agentic RAG / 멀티 에이전트) ----------
+    let mode = null;  // 처음에는 사용자가 고를 때까지 비어 있다
+    const MODE_LABEL = { rag: "RAG", agentic: "Agentic RAG", multi: "Multi Agentic RAG", agent: "멀티 에이전트" };
+    const PLACEHOLDER = {
+      rag: "DOCS 문서에 대해 질문하세요 (Enter 전송, Shift+Enter 줄바꿈)",
+      agentic: "DOCS 문서에 대해 질문하세요 · 에이전트가 검색어를 정해 찾습니다 (Enter 전송)",
+      multi: "질문하세요 · 오케스트레이터가 문서·표·웹 에이전트에게 나눠 맡깁니다 (Enter 전송)",
+      agent: "메시지를 입력하세요 (Enter 전송, Shift+Enter 줄바꿈)",
+    };
+    function setMode(next) {
+      mode = next;
+      document.querySelectorAll(".mode-btn").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.mode === mode)));
+      input.placeholder = PLACEHOLDER[mode];
+      input.disabled = false;
+      send.disabled = false;
+      const picker = document.getElementById("picker");
+      if (picker) picker.remove();
+      // RAG·Agentic RAG 모드는 멀티 에이전트 조직도를 쓰지 않으므로 오른쪽 패널을 닫는다
+      // 조직도 모니터링은 멀티 에이전트·Multi Agentic RAG 모드에서만 쓴다
+      const monitored = mode === "agent" || mode === "multi" || mode === "agentic";
+      document.body.dataset.viz = monitored ? mode : "";
+      if (!monitored) document.body.classList.remove("split");
+      else if (logN > 0) document.body.classList.add("split");
+      input.focus();
+    }
+    document.querySelectorAll(".mode-btn").forEach((b) => b.addEventListener("click", () => setMode(b.dataset.mode)));
+
+    // 첫 화면: 모드를 먼저 고르게 한다
+    function showPicker() {
+      const card = document.createElement("div");
+      card.className = "picker";
+      card.id = "picker";
+      card.innerHTML = `
+        <h2>답변 방식을 먼저 골라 주세요</h2>
+        <p>고른 뒤에도 위쪽 버튼으로 언제든 바꿀 수 있어요.</p>
+        <div class="picker-options">
+          <button type="button" class="pick" data-mode="rag"><b>RAG</b>질문으로 DOCS 문서를 한 번 검색하고, 찾은 조각으로 답해요.</button>
+          <button type="button" class="pick" data-mode="agentic"><b>Agentic RAG</b>에이전트가 검색어를 직접 정하고, 필요하면 여러 번 검색한 뒤 답해요.</button>
+          <button type="button" class="pick" data-mode="multi"><b>Multi Agentic RAG</b>오케스트레이터가 질문을 다시 써서 문서·표·웹·리서처 에이전트에게 나눠 맡기고 종합해요.</button>
+          <button type="button" class="pick" data-mode="agent"><b>멀티 에이전트</b>오케스트레이터가 리서치·작성·검토 에이전트에게 일을 나눠 맡겨요.</button>
+        </div>`;
+      card.querySelectorAll(".pick").forEach((b) => b.addEventListener("click", () => setMode(b.dataset.mode)));
+      list.appendChild(card);
+      input.disabled = true;
+      send.disabled = true;
+      input.placeholder = "위에서 답변 방식을 먼저 골라 주세요";
+    }
+    showPicker();
+
+    function addSteps(steps) {
+      const wrap = document.createElement("div");
+      wrap.className = "sources";
+      const title = document.createElement("div");
+      title.className = "sources-title";
+      title.textContent = steps.length ? `에이전트 검색 과정 ${steps.length}회` : "검색하지 않고 답함";
+      wrap.appendChild(title);
+      steps.forEach((s, i) => {
+        const d = document.createElement("details");
+        const sum = document.createElement("summary");
+        const files = [...new Set((s.result.match(/출처: (\S+)/g) || []).map((m) => m.slice(4)))];
+        sum.textContent = `검색 ${i + 1} · "${s.args.query || ""}"`;
+        const sc = document.createElement("span");
+        sc.className = "score";
+        sc.textContent = files.length ? files.join(", ") : "";
+        sum.appendChild(sc);
+        const pre = document.createElement("pre");
+        pre.textContent = s.result;
+        d.append(sum, pre);
+        wrap.appendChild(d);
+      });
+      list.appendChild(wrap);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    // ---------- Multi Agentic RAG ----------
+    const multiHistory = [];  // 이 모드의 이전 대화 (오케스트레이터가 사용자에게 되물은 답을 이어받기 위해)
+    const AGENT_NAME = { doc_searcher: "문서 검색", web_searcher: "웹 검색", data_analyst: "표 조회", researcher: "리서처" };
+
+    function addAgentSteps(steps) {
+      const wrap = document.createElement("div");
+      wrap.className = "sources";
+      const title = document.createElement("div");
+      title.className = "sources-title";
+      title.textContent = steps.length ? `서브에이전트 작업 ${steps.length}건` : "서브에이전트를 부르지 않고 답함";
+      wrap.appendChild(title);
+      steps.forEach((s, i) => {
+        const d = document.createElement("details");
+        const sum = document.createElement("summary");
+        sum.textContent = `${i + 1}. ${AGENT_NAME[s.agent] || s.agent} (${s.agent})`;
+        const sc = document.createElement("span");
+        sc.className = "score";
+        sc.textContent = s.tool_steps.length ? `도구 ${s.tool_steps.length}회` : "";
+        sum.appendChild(sc);
+        const pre = document.createElement("pre");
+        const tools = s.tool_steps.map((t, k) => `  ${k + 1}) ${t.tool}("${t.args.query || ""}")`).join("\n");
+        pre.textContent = `▶ 오케스트레이터 지시\n${s.task}\n\n▶ 사용한 도구\n${tools || "  (없음)"}\n\n▶ 보고\n${s.report}`;
+        d.append(sum, pre);
+        wrap.appendChild(d);
+      });
+      list.appendChild(wrap);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    // Multi Agentic RAG 모니터링: 진행 이벤트 → 조직도·오로라·로그
+    function toolNow(agent, text) {
+      const el = card(agent);
+      if (el) el.querySelector(".tool-now").textContent = text;
+    }
+
+    function handleMultiEvent(ev) {
+      switch (ev.type) {
+        case "orchestrator_start":
+          setState("orchestrator", "working", "작업 중 · 판단");
+          addLog("orchestrator", `${tag("orchestrator")} 질문·보고를 보고 다음 지시를 정합니다`);
+          break;
+        case "agent_start":
+          setState("orchestrator", "idle", "결과 대기");
+          setState(ev.agent, "working", "작업 중");
+          toolNow(ev.agent, "");
+          addLog(ev.agent, `${tag("orchestrator")} → ${tag(ev.agent)} 지시 (질문을 다시 씀)`, "다시 쓴 지시", ev.task);
+          break;
+        case "tool_call":
+          toolNow(ev.agent, `${ev.tool}("${ev.query}")`);
+          break;
+        case "tool_result":
+          addLog(ev.agent, `${tag(ev.agent)} ${ev.tool}("${ev.query}") 실행`, "도구 결과", ev.result);
+          break;
+        case "agent_end":
+          if (ev.report.startsWith("(실행되지 않음)")) {
+            setState(ev.agent, "idle", "보류");
+            addLog(ev.agent, `${tag(ev.agent)} 보류: 사용자에게 순서를 먼저 물어야 합니다`, "내용", ev.report);
+          } else {
+            setState(ev.agent, "done", "완료");
+            addLog(ev.agent, `${tag(ev.agent)} 보고 완료 → 오케스트레이터`, "보고", ev.report);
+          }
+          toolNow(ev.agent, "");
+          break;
+        case "final":
+          setState("orchestrator", "done", "답변 완료");
+          addLog("orchestrator", `${tag("orchestrator")} 보고를 종합해 최종 답변을 만들었습니다`, "최종 답변", ev.reply);
+          break;
+        case "error":
+          setState("orchestrator", "error", "오류");
+          addLog("orchestrator", `${tag("orchestrator")} 오류가 발생했습니다`, "오류 내용", ev.message);
+          break;
+      }
+    }
+
+    async function askMulti(message) {
+      document.body.dataset.viz = "multi";
+      document.body.classList.add("split");
+      addMessage(message, "user");
+      input.value = "";
+      send.disabled = true;
+      const pending = addMessage("오케스트레이터가 서브에이전트에게 일을 나눠 맡기고 있습니다...", "bot loading");
+      pending.dataset.mode = "Multi Agentic RAG";
+      resetAll();
+      document.querySelectorAll(".tool-now").forEach((t) => (t.textContent = ""));
+      addDivider("[Multi Agentic RAG] " + message);
+
+      let reply = null, steps = [], errorMsg = null;
+      try {
+        await streamChat(message, (ev) => {
+          handleMultiEvent(ev);
+          if (ev.type === "final") reply = ev.reply;
+          if (ev.type === "steps") steps = ev.steps;
+          if (ev.type === "error") errorMsg = ev.message;
+        }, "/multi-agentic-rag/stream", { history: multiHistory });
+        if (reply === null) throw new Error(errorMsg || "답변을 받지 못했습니다.");
+        pending.textContent = reply;
+        pending.className = "msg bot";
+        addAgentSteps(steps);
+        multiHistory.push({ role: "user", text: message }, { role: "assistant", text: reply });
+      } catch (err) {
+        pending.textContent = "오류: " + err.message;
+        pending.className = "msg bot error";
+      } finally {
+        send.disabled = false;
+        input.focus();
+        box.scrollTop = box.scrollHeight;
+      }
+    }
+
+    // ---------- Agentic RAG 모니터링: 에이전트 → search_docs ----------
+    let searchCount = 0;
+    function setSearchCount(n) {
+      searchCount = n;
+      document.querySelector('.agent[data-agent="search_docs"] .search-count').textContent = `검색 ${n} / 5`;
+    }
+
+    function handleAgenticEvent(ev) {
+      switch (ev.type) {
+        case "agent_think":
+          setState("rag_agent", "working", "작업 중 · 판단");
+          addLog("rag_agent", `${tag("rag_agent")} 검색할지, 어떤 검색어로 찾을지 판단합니다`);
+          break;
+        case "search_start":
+          setState("rag_agent", "idle", "결과 대기");
+          setState("search_docs", "working", "검색 중");
+          toolNow("search_docs", `"${ev.query}"`);
+          setSearchCount(searchCount + 1);
+          addLog("search_docs", `${tag("rag_agent")} → ${tag("search_docs")} 검색어 "${ev.query}"`);
+          break;
+        case "search_end": {
+          setState("search_docs", "done", "완료");
+          const files = [...new Set((ev.result.match(/출처: (\S+)/g) || []).map((m) => m.slice(4)))];
+          addLog("search_docs", `${tag("search_docs")} 결과 ${files.length ? "· " + files.join(", ") : ""}`, "검색 결과", ev.result);
+          break;
+        }
+        case "final":
+          setState("rag_agent", "done", "답변 완료");
+          toolNow("search_docs", "");
+          if (searchCount === 0) setState("search_docs", "idle", "사용 안 함");
+          addLog("rag_agent", `${tag("rag_agent")} 최종 답변을 만들었습니다 (검색 ${searchCount}회)`, "최종 답변", ev.reply);
+          break;
+        case "error":
+          setState("rag_agent", "error", "오류");
+          addLog("rag_agent", `${tag("rag_agent")} 오류가 발생했습니다`, "오류 내용", ev.message);
+          break;
+      }
+    }
+
+    async function askAgentic(message) {
+      document.body.dataset.viz = "agentic";
+      document.body.classList.add("split");
+      addMessage(message, "user");
+      input.value = "";
+      send.disabled = true;
+      const pending = addMessage("에이전트가 문서를 찾고 있습니다...", "bot loading");
+      pending.dataset.mode = "Agentic RAG";
+      resetAll();
+      toolNow("search_docs", "");
+      setSearchCount(0);
+      addDivider("[Agentic RAG] " + message);
+
+      let reply = null, steps = [], errorMsg = null;
+      try {
+        await streamChat(message, (ev) => {
+          handleAgenticEvent(ev);
+          if (ev.type === "final") reply = ev.reply;
+          if (ev.type === "steps") steps = ev.steps;
+          if (ev.type === "error") errorMsg = ev.message;
+        }, "/agentic-rag/stream");
+        if (reply === null) throw new Error(errorMsg || "답변을 받지 못했습니다.");
+        pending.textContent = reply;
+        pending.className = "msg bot";
+        addSteps(steps);
+      } catch (err) {
+        pending.textContent = "오류: " + err.message;
+        pending.className = "msg bot error";
+      } finally {
+        send.disabled = false;
+        input.focus();
+        box.scrollTop = box.scrollHeight;
+      }
+    }
+
+    function addSources(hits) {
+      const wrap = document.createElement("div");
+      wrap.className = "sources";
+      const title = document.createElement("div");
+      title.className = "sources-title";
+      title.textContent = `근거로 검색된 조각 ${hits.length}개`;
+      wrap.appendChild(title);
+      hits.forEach((h, i) => {
+        const d = document.createElement("details");
+        const s = document.createElement("summary");
+        s.textContent = `${i + 1}. ${h.source} #${h.index}`;
+        const sc = document.createElement("span");
+        sc.className = "score";
+        sc.textContent = `유사도 ${h.score.toFixed(3)}`;
+        s.appendChild(sc);
+        const pre = document.createElement("pre");
+        pre.textContent = h.text;
+        d.append(s, pre);
+        wrap.appendChild(d);
+      });
+      list.appendChild(wrap);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    async function askRag(message) {
+      addMessage(message, "user");
+      input.value = "";
+      send.disabled = true;
+      const pending = addMessage("DOCS 문서에서 찾는 중입니다...", "bot loading");
+      pending.dataset.mode = "RAG";
+      try {
+        const res = await fetch("/rag", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message }),
+        });
+        if (!res.ok) throw new Error("서버 오류 (" + res.status + ")");
+        const data = await res.json();
+        pending.textContent = data.reply;
+        pending.className = "msg bot";
+        addSources(data.hits);
+      } catch (err) {
+        pending.textContent = "오류: " + err.message;
+        pending.className = "msg bot error";
+      } finally {
+        send.disabled = false;
+        input.focus();
+        box.scrollTop = box.scrollHeight;
+      }
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const message = input.value.trim();
+      if (!message) return;
+
+      if (!mode) return;
+      if (mode === "rag") {
+        await askRag(message);
+        return;
+      }
+      if (mode === "agentic") {
+        await askAgentic(message);
+        return;
+      }
+      if (mode === "multi") {
+        await askMulti(message);
+        return;
+      }
+
+      document.body.dataset.viz = "agent";
+      document.body.classList.add("split");
+      addMessage(message, "user");
+      input.value = "";
+      send.disabled = true;
+      const pending = addMessage("에이전트들이 작업 중입니다...", "bot loading");
+      pending.dataset.mode = "멀티 에이전트";
+
+      resetAll();
+      addDivider(message);
+
+      let reply = null;
+      let errorMsg = null;
+      try {
+        await streamChat(message, (ev) => {
+          handleEvent(ev);
+          if (ev.type === "final") reply = ev.reply;
+          if (ev.type === "error") errorMsg = ev.message;
+        });
+        if (reply === null) throw new Error(errorMsg || "답변을 받지 못했습니다.");
+        pending.textContent = reply;
+        pending.className = "msg bot";
+      } catch (err) {
+        pending.textContent = "오류: " + err.message;
+        pending.className = "msg bot error";
+      } finally {
+        send.disabled = false;
+        input.focus();
+        box.scrollTop = box.scrollHeight;
+      }
+    });
+
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey && !e.isComposing) {
+        e.preventDefault();
+        form.requestSubmit();
+      }
+    });
+  </script>
+</body>
+</html>
