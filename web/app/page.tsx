@@ -1,5 +1,8 @@
-// 첫 화면: 서비스 이름과 Supabase 연결 상태를 보여준다.
+// 첫 화면: 서비스 이름, Supabase 연결 상태, 로그인 상태를 보여준다.
+import Link from "next/link";
 import { Suspense } from "react";
+import { createClient } from "@/lib/supabase/server";
+import { signOut } from "./login/actions";
 
 type Status = { ok: boolean; message: string };
 
@@ -40,6 +43,40 @@ async function SupabaseStatus() {
   );
 }
 
+async function UserStatus() {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) return null;
+
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  const claims = data?.claims;
+
+  if (!claims) {
+    return (
+      <Link
+        href="/login"
+        className="rounded-lg bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white dark:bg-zinc-100 dark:text-zinc-900"
+      >
+        로그인 / 회원가입
+      </Link>
+    );
+  }
+
+  const meta = (claims.user_metadata ?? {}) as Record<string, unknown>;
+  const name =
+    (meta.name as string) ?? (meta.full_name as string) ?? claims.email ?? "회원";
+
+  return (
+    <div className="flex items-center gap-3 text-sm">
+      <span>{name} 님, 환영합니다.</span>
+      <form action={signOut}>
+        <button type="submit" className="text-zinc-600 underline dark:text-zinc-400">
+          로그아웃
+        </button>
+      </form>
+    </div>
+  );
+}
+
 export default function Home() {
   return (
     <main className="flex flex-1 flex-col items-center justify-center gap-6 p-8 text-center">
@@ -49,6 +86,9 @@ export default function Home() {
       </p>
       <Suspense fallback={<p className="text-sm text-zinc-500">연결 확인 중…</p>}>
         <SupabaseStatus />
+      </Suspense>
+      <Suspense fallback={null}>
+        <UserStatus />
       </Suspense>
     </main>
   );

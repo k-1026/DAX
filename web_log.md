@@ -114,3 +114,50 @@
 ### 남은 일
 
 - 6단계: Vercel 첫 배포. 그 전에 `dev-setup`을 `main`에 합쳐야 한다. (Vercel은 기본적으로 main을 배포하는데 main에는 아직 `web/`이 없다)
+
+---
+
+## 2026-11-18
+
+### 로그인 기능 (이메일 + 카카오)
+
+Supabase의 Authentication > Sign In / Providers 기능으로 이메일, 카카오 로그인을 만들었다.
+
+추가·수정한 파일
+
+| 파일 | 역할 |
+|---|---|
+| `web/proxy.ts` | 모든 요청 전에 로그인 쿠키를 갱신 (Next.js 16에서 middleware 대신 proxy) |
+| `web/lib/supabase/proxy.ts` | 쿠키 갱신 도구 |
+| `web/app/login/page.tsx` | 로그인 화면 |
+| `web/app/login/login-form.tsx` | 카카오 버튼, 이메일 로그인/가입 양식 |
+| `web/app/login/actions.ts` | 서버 동작: 이메일 로그인·가입, 카카오 로그인, 로그아웃 |
+| `web/app/auth/callback/route.ts` | 카카오 로그인·이메일 인증 후 돌아오는 주소. code를 세션으로 바꿈 |
+| `web/app/page.tsx` | 첫 화면에 "로그인 / 회원가입" 버튼 또는 "OO 님, 환영합니다 · 로그아웃" 표시 |
+
+#### Supabase 대시보드 설정 (직접 해야 함)
+
+1. **URL 설정**: Authentication > URL Configuration
+   - Site URL: `http://localhost:3000` (배포 후 Vercel 주소로 변경)
+   - Redirect URLs에 추가: `http://localhost:3000/auth/callback` (배포 후 `https://<vercel주소>/auth/callback`도 추가)
+2. **이메일**: Authentication > Sign In / Providers > Email
+   - 기본으로 켜져 있다. "Confirm email"이 켜져 있으면 가입 후 메일 인증 링크를 눌러야 로그인된다.
+   - 기본 메일 발송은 시간당 몇 통으로 제한된다. 실제 운영 전에는 SMTP(메일 발송 서비스)를 연결해야 한다.
+3. **카카오**: Authentication > Sign In / Providers > Kakao 를 켜고, 아래 카카오 쪽 값 입력
+   - 화면에 보이는 **Callback URL** (`https://<프로젝트>.supabase.co/auth/v1/callback`)을 복사해 둔다.
+
+#### 카카오 개발자 콘솔 설정 (developers.kakao.com)
+
+1. 내 애플리케이션 > 애플리케이션 추가
+2. 앱 키 > **REST API 키** → Supabase Kakao의 `Client ID`(REST API Key)에 입력
+3. 카카오 로그인 > 보안 > **Client Secret** 생성, 활성화 → Supabase의 `Client Secret`에 입력
+4. 카카오 로그인 > 활성화 ON, **Redirect URI**에 위에서 복사한 Supabase Callback URL 등록
+5. 앱 설정 > 플랫폼 > Web 사이트 도메인에 `http://localhost:3000` (배포 후 Vercel 주소도) 등록
+6. 카카오 로그인 > 동의항목: 닉네임(profile_nickname), 프로필 사진(profile_image) 설정
+   - 이메일(account_email)은 **비즈 앱** 전환(사업자 정보 등록)을 해야 받을 수 있다.
+   - 비즈 앱이 아니면 Supabase Kakao 설정에서 **"Allow users without an email"** 을 켜야 로그인이 된다.
+
+#### 확인
+
+- 빌드(`npm run build`)와 lint 통과.
+- 로그인 화면 표시, 카카오 버튼 → `/auth/v1/authorize?provider=kakao` 로 이동하는 것까지 확인. 실제 카카오 계정 로그인은 위 설정을 마친 뒤 직접 확인해야 한다.
