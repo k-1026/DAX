@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>엘리베이터 유무 기준</title>
+<style>
+  :root {
+    --bg: #f7f7f5; --card: #ffffff; --ink: #1d1d1b; --sub: #6b6b66; --line: #e4e3df; --soft: #f1f0ec;
+    --accent: #0c8599; --accent-soft: #d3f0f4; --no: #e8590c; --pend: #868e96; --warn: #b45309;
+    --c-오피스: #1c7ed6; --c-전시: #7048e8; --c-기타: #adb5bd;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141413; --card: #1e1e1c; --ink: #ecebe6; --sub: #a3a29c; --line: #34332f; --soft: #262624;
+      --accent: #3bc9db; --accent-soft: #163a40; --no: #ff922b; --pend: #868e96; --warn: #f0b35c;
+      --c-오피스: #4dabf7; --c-전시: #9775fa; --c-기타: #5c5f66;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif; line-height: 1.6; font-size: 15px; }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 32px 16px 64px; }
+  header h1 { font-size: 28px; margin: 0 0 6px; letter-spacing: -0.02em; }
+  header p { margin: 6px 0 0; color: var(--sub); }
+  .pill { display: inline-block; background: var(--accent-soft); color: var(--accent); font-weight: 700; border-radius: 999px; padding: 2px 12px; font-size: 13px; margin: 0 6px 4px 0; }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 24px; margin-top: 20px; }
+  h2 { font-size: 19px; margin: 0 0 4px; } h2 .num { color: var(--accent); margin-right: 6px; }
+  .desc { color: var(--sub); margin: 0 0 16px; font-size: 14px; }
+  .chart { width: 100%; height: auto; display: block; }
+  .chart text { fill: var(--ink); font-size: 12px; } .chart .sub { fill: var(--sub); }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { padding: 7px 6px; border-bottom: 1px solid var(--line); text-align: left; }
+  th { color: var(--sub); font-weight: 600; font-size: 13px; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .step { background: var(--bg); border-radius: 12px; padding: 12px; position: relative; }
+  .step .n { font-weight: 800; color: var(--accent); } .step b { display: block; margin: 2px 0; } .step span { font-size: 13px; color: var(--sub); }
+  .step.p .n { color: var(--pend); }
+  .toast { display: inline-flex; gap: 8px; align-items: center; background: var(--soft); border-radius: 10px; padding: 8px 12px; font-size: 13px; }
+  .toast i { font-style: normal; font-weight: 800; width: 20px; height: 20px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: #fff; background: var(--pend); font-size: 12px; }
+  .formula { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-weight: 600; }
+  .box { border: 1.5px solid var(--line); border-radius: 10px; padding: 10px 14px; background: var(--bg); text-align: center; } .box.hl { border-color: var(--accent); }
+  .catbtns { display: flex; flex-wrap: wrap; gap: 6px; }
+  .catbtns button { border: 1.5px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 999px; padding: 5px 14px; font-size: 14px; cursor: pointer; font-family: inherit; }
+  .catbtns button.on { color: #fff; border-color: transparent; }
+  label { display: block; font-size: 13px; color: var(--sub); margin: 14px 0 4px; }
+  select { width: 100%; padding: 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); font-size: 14px; font-family: inherit; }
+  .result { background: var(--bg); border-radius: 12px; padding: 16px; } .result .big { font-size: 42px; font-weight: 800; line-height: 1.1; }
+  ul.notes { margin: 0; padding-left: 18px; font-size: 14px; color: var(--sub); } ul.notes b { color: var(--ink); }
+  footer { color: var(--sub); font-size: 13px; margin-top: 24px; }
+  @media (max-width: 760px) { .two { grid-template-columns: 1fr; } .steps { grid-template-columns: 1fr 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>스코어링 11) 엘리베이터 유무</h1>
+  <p><span class="pill">오피스 15% · 전시 5%</span><span class="pill">건축물대장 2026년 9월 기준</span></p>
+  <p>매물이 있는 건물에 <b>엘리베이터가 있는지</b>와 <b>매물의 층</b>을 보고 점수를 줍니다. 위층 매물일수록 엘리베이터가 없으면 손님과 직원이 오가기 어렵기 때문입니다.</p>
+</header>
+
+<section>
+  <h2><span class="num">1</span>카테고리별 가중치</h2>
+  <svg id="wChart" class="chart" viewBox="0 0 900 250" role="img" aria-label="카테고리별 가중치"></svg>
+  <table style="margin-top:6px">
+    <tr><th>카테고리</th><th>이유</th></tr>
+    <tr><td><b>오피스</b> 15%</td><td>위층 사무실이 많고, 직원·방문객이 매일 오르내립니다</td></tr>
+    <tr><td><b>전시</b> 5%</td><td>위층 갤러리는 관람객이 엘리베이터로 올라옵니다</td></tr>
+    <tr><td><b>술집·식당·카페·소매</b> 0%</td><td>대부분 1~2층이라 영향이 작습니다</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2><span class="num">2</span>층별 점수</h2>
+  <p class="desc">엘리베이터가 있으면 몇 층이든 100점입니다. 없으면 층이 높을수록 점수가 크게 떨어집니다. 1층은 엘리베이터가 필요 없어서 확인하지 않고 100점입니다.</p>
+  <div class="two">
+    <svg id="bld" class="chart" viewBox="0 0 400 360" role="img" aria-label="층별 엘리베이터 없음 점수"></svg>
+    <table>
+      <tr><th>매물 층</th><th>있음</th><th>없음</th></tr>
+      <tr><td><b>1층, 전체층</b></td><td>100</td><td><b>100</b> (확인 안 함)</td></tr>
+      <tr><td><b>지하</b></td><td>100</td><td><b>70</b></td></tr>
+      <tr><td><b>2층</b></td><td>100</td><td><b>70</b></td></tr>
+      <tr><td><b>3층</b></td><td>100</td><td><b>40</b></td></tr>
+      <tr><td><b>4~5층</b></td><td>100</td><td><b>20</b></td></tr>
+      <tr><td><b>6층 이상</b></td><td>100</td><td><b>0</b></td></tr>
+    </table>
+  </div>
+  <ul class="notes" style="margin-top:12px">
+    <li><b>엘리베이터 판단:</b> 건축물대장 표제부의 총승강기수(승용 + 비상용)가 1대 이상이면 "있음"입니다. 대수는 보지 않습니다.</li>
+    <li><b>한 필지에 건물이 여러 개면</b> 그중 하나라도 엘리베이터가 있으면 "있음"으로 봅니다 (매물이 어느 동인지 알 수 없기 때문입니다).</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="num">3</span>건물을 찾는 순서</h2>
+  <p class="desc">매물 좌표로 건축물대장의 건물을 아래 순서로 찾습니다. 앞 단계에서 찾으면 다음 단계는 하지 않습니다.</p>
+  <div class="steps">
+    <div class="step"><div class="n">①</div><b>필지 번호로 찾기</b><span>매물 좌표가 들어 있는 필지의 번호(PNU)로 표제부를 찾습니다</span></div>
+    <div class="step"><div class="n">②</div><b>부속지번으로 찾기</b><span>큰 건물이 여러 필지에 걸쳐 있고 대표 번지가 다른 경우, "이 필지에 걸친 건물"을 찾습니다</span></div>
+    <div class="step"><div class="n">③</div><b>옆 필지로 찾기</b><span>20m 안 필지 중 건물이 등록된 가장 가까운 필지를 씁니다. 좌표가 건물 옆 도로나 경계에 찍힌 경우입니다 (추정값)</span></div>
+    <div class="step p"><div class="n">④</div><b>판단 보류</b><span>①~③으로도 못 찾으면 50점</span></div>
+  </div>
+  <svg id="find" class="chart" viewBox="0 0 900 200" role="img" aria-label="건물 찾는 순서 그림" style="margin-top:16px"></svg>
+</section>
+
+<section>
+  <h2><span class="num">4</span>판단 보류 (50점)</h2>
+  <table>
+    <tr><th>경우</th><th>점수</th></tr>
+    <tr><td>층이 불명확한 매물 ("기타")</td><td>50점</td></tr>
+    <tr><td>2층 이상·지하 매물인데 ①~③으로 건물을 찾지 못함</td><td>50점</td></tr>
+  </table>
+  <p class="desc" style="margin:12px 0 6px">화면 표시</p>
+  <div class="toast"><i>i</i>건물 정보가 없어서 엘리베이터 점수를 중간(50점)으로 표시했어요</div>
+</section>
+
+<section>
+  <h2><span class="num">5</span>최종 반영 점수</h2>
+  <div class="formula"><div class="box">엘리베이터 점수<br><small style="color:var(--sub);font-weight:400">0 ~ 100</small></div><span>×</span><div class="box">카테고리 가중치<br><small style="color:var(--sub);font-weight:400">오피스 15% · 전시 5%</small></div><span>=</span><div class="box hl">최종 반영 점수</div></div>
+  <div class="two" style="margin-top:16px">
+    <div>
+      <div class="catbtns" id="cats"></div>
+      <label for="fl">매물의 층</label><select id="fl"></select>
+      <label for="el">엘리베이터</label><select id="el"><option value="y">있음</option><option value="n">없음</option><option value="p">건물을 찾지 못함 (판단 보류)</option></select>
+    </div>
+    <div class="result">
+      <div style="font-size:13px;color:var(--sub)">최종 반영 점수</div>
+      <div class="big" id="big">-</div>
+      <div style="font-size:14px;color:var(--sub);margin-top:6px" id="txt"></div>
+      <div id="tst" style="margin-top:8px"></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">6</span>참고 사항</h2>
+  <ul class="notes">
+    <li><b>층별 "없음" 점수(70 / 40 / 20 / 0)는 판단으로 정한 값입니다.</b> 2층은 계단으로도 많이 다니고, 층이 높을수록 계단으로 올라오는 손님이 크게 줄어든다는 생각으로 정했습니다.</li>
+    <li><b>엘리베이터 대수는 보지 않습니다.</b> 1대인 작은 건물과 여러 대인 큰 업무 빌딩이 같은 점수입니다.</li>
+    <li><b>건축물대장은 2026년 9월 기준</b>이라, 그 뒤에 설치된 엘리베이터는 반영되지 않습니다. 새 건축물대장을 받으면 다시 연결합니다.</li>
+  </ul>
+</section>
+
+<footer>데이터: 국토교통부 건축물대장 표제부·부속지번 (대구, 2026년 9월), 국토교통부 토지특성정보 (2026년 5월), 대구 구역별 공실 매물 CSV</footer>
+</div>
+<script>
+(function () {
+  var NS = "http://www.w3.org/2000/svg";
+  function el(t, a, p, x) { var e = document.createElementNS(NS, t); for (var k in a) e.setAttribute(k, a[k]); if (x != null) e.textContent = x; if (p) p.appendChild(e); return e; }
+  var W = { 오피스: 15, 전시: 5, 술집: 0, 식당: 0, 카페: 0, 소매: 0 };
+  // weights
+  (function () {
+    var s = document.getElementById("wChart"), L = 80, Wd = 700, max = 20, cats = ["오피스", "전시", "술집", "식당", "카페", "소매"];
+    cats.forEach(function (c, i) { var y = 6 + i * 40, w = Wd * W[c] / max, col = W[c] ? "var(--c-" + c + ")" : "var(--c-기타)";
+      el("text", { x: L - 12, y: y + 24, "text-anchor": "end", "font-weight": 700, "font-size": 14 }, s, c);
+      el("rect", { x: L, y: y + 6, width: Wd, height: 26, rx: 6, fill: "var(--bg)" }, s);
+      if (w) el("rect", { x: L, y: y + 6, width: w, height: 26, rx: 6, fill: col }, s);
+      el("text", { x: L + w + 10, y: y + 25, "font-weight": 800, "font-size": 16 }, s, W[c] + "%"); });
+  })();
+  // building
+  (function () {
+    var s = document.getElementById("bld"), fl = [["6층 이상", 0], ["5층", 20], ["4층", 20], ["3층", 40], ["2층", 70], ["1층", 100], ["지하", 70]], x = 40, w = 130, h = 40;
+    fl.forEach(function (f, i) { var y = 10 + i * h + (f[0] === "지하" ? 14 : 0);
+      el("rect", { x: x, y: y, width: w, height: h - 4, rx: 3, fill: "var(--soft)", stroke: "var(--line)" }, s);
+      el("text", { x: x + w / 2, y: y + 23, "text-anchor": "middle", "font-weight": 700 }, s, f[0]);
+      var bw = 160 * f[1] / 100; el("rect", { x: x + w + 14, y: y + 8, width: 160, height: 20, rx: 4, fill: "var(--bg)" }, s);
+      if (bw) el("rect", { x: x + w + 14, y: y + 8, width: bw, height: 20, rx: 4, fill: f[0] === "1층" ? "var(--accent)" : "var(--no)" }, s);
+      el("text", { x: x + w + 14 + bw + 6, y: y + 23, "font-weight": 800 }, s, f[1]); });
+    var gy = 10 + 6 * h + 5; el("rect", { x: 10, y: gy, width: 380, height: 5, fill: "var(--sub)" }, s);
+    el("text", { x: 40, y: 352, "class": "sub", "font-size": 11 }, s, "엘리베이터가 없을 때 점수 (있으면 모두 100점)");
+    el("rect", { x: x - 22, y: 10, width: 16, height: 6 * h - 4, rx: 3, fill: "var(--accent)", "fill-opacity": 0.25 }, s);
+    el("text", { x: x - 14, y: 6 * h / 2 + 10, "text-anchor": "middle", "font-size": 10, transform: "rotate(-90 " + (x - 14) + " " + (6 * h / 2 + 10) + ")" }, s, "엘리베이터");
+  })();
+  // find steps picture
+  (function () {
+    var s = document.getElementById("find");
+    function parcel(x, y, w, h, fill, lbl) { el("rect", { x: x, y: y, width: w, height: h, fill: fill, stroke: "var(--line)" }, s); if (lbl) el("text", { x: x + w / 2, y: y + h / 2 + 4, "text-anchor": "middle", "font-size": 11 }, s, lbl); }
+    // ①
+    el("text", { x: 20, y: 18, "font-weight": 800 }, s, "① 필지 번호");
+    parcel(20, 30, 180, 110, "var(--accent-soft)", "건물이 등록된 필지"); el("circle", { cx: 110, cy: 70, r: 6, fill: "var(--no)" }, s);
+    // ②
+    el("text", { x: 250, y: 18, "font-weight": 800 }, s, "② 부속지번");
+    parcel(250, 30, 90, 110, "var(--accent-soft)", "대표 번지"); parcel(340, 30, 90, 110, "var(--soft)", "부속 필지");
+    el("rect", { x: 275, y: 50, width: 130, height: 70, fill: "none", stroke: "var(--accent)", "stroke-width": 2, "stroke-dasharray": "5 3" }, s);
+    el("circle", { cx: 385, cy: 70, r: 6, fill: "var(--no)" }, s);
+    // ③
+    el("text", { x: 480, y: 18, "font-weight": 800 }, s, "③ 옆 필지 (20m 안)");
+    parcel(480, 30, 160, 110, "var(--accent-soft)", ""); el("text", { x: 560, y: 90, "text-anchor": "middle", "font-size": 11 }, s, "건물 필지");
+    el("rect", { x: 640, y: 30, width: 40, height: 110, fill: "var(--sub)", "fill-opacity": 0.35 }, s); el("text", { x: 660, y: 155, "text-anchor": "middle", "font-size": 10, "class": "sub" }, s, "도로");
+    el("circle", { cx: 655, cy: 70, r: 6, fill: "var(--no)" }, s); el("circle", { cx: 655, cy: 70, r: 40, fill: "none", stroke: "var(--no)", "stroke-dasharray": "4 3" }, s);
+    // ④
+    el("text", { x: 740, y: 18, "font-weight": 800 }, s, "④ 판단 보류");
+    parcel(740, 30, 140, 110, "var(--soft)", "주변에 건물 없음"); el("circle", { cx: 810, cy: 95, r: 6, fill: "var(--pend)" }, s);
+    el("circle", { cx: 30, cy: 180, r: 6, fill: "var(--no)" }, s); el("text", { x: 42, y: 184, "class": "sub", "font-size": 12 }, s, "= 매물 좌표.  파란 필지 = 건축물대장에 건물이 등록된 필지");
+  })();
+  // calculator
+  (function () {
+    var cur = "오피스", box = document.getElementById("cats"), fl = document.getElementById("fl"), ev = document.getElementById("el");
+    var FL = [["1층", 100], ["전체층", 100], ["지하", 70], ["2층", 70], ["3층", 40], ["4~5층", 20], ["6층 이상", 0], ["기타(층 불명확)", null]];
+    FL.forEach(function (f, i) { var o = document.createElement("option"); o.value = i; o.textContent = f[0]; fl.appendChild(o); }); fl.value = 4;
+    ["오피스", "전시"].forEach(function (c) { var b = document.createElement("button"); b.type = "button"; b.textContent = c; b.onclick = function () { cur = c; paint(); upd(); }; box.appendChild(b); });
+    function paint() { Array.prototype.forEach.call(box.children, function (b) { var on = b.textContent === cur; b.className = on ? "on" : ""; b.style.background = on ? "var(--c-" + b.textContent + ")" : ""; }); }
+    function upd() {
+      var f = FL[+fl.value], e = ev.value, s, why, pend = false;
+      if (f[1] === null) { s = 50; why = "층이 불명확해서 판단 보류"; pend = true; }
+      else if (f[0] === "1층" || f[0] === "전체층") { s = 100; why = f[0] + "은 엘리베이터가 필요 없어서 100점"; }
+      else if (e === "p") { s = 50; why = "건물을 찾지 못해서 판단 보류"; pend = true; }
+      else if (e === "y") { s = 100; why = f[0] + " · 엘리베이터 있음 → 100점"; }
+      else { s = f[1]; why = f[0] + " · 엘리베이터 없음 → " + s + "점"; }
+      var fin = s * W[cur] / 100, big = document.getElementById("big");
+      big.textContent = (Math.round(fin * 100) / 100) + "점"; big.style.color = pend ? "var(--pend)" : "var(--c-" + cur + ")";
+      document.getElementById("txt").innerHTML = why + "<br>" + s + " × " + cur + " 가중치 " + W[cur] + "% = <b>" + (Math.round(fin * 100) / 100) + "점</b> (최대 " + W[cur] + "점)";
+      document.getElementById("tst").innerHTML = pend && f[1] !== null ? '<div class="toast"><i>i</i>건물 정보가 없어서 엘리베이터 점수를 중간(50점)으로 표시했어요</div>' : "";
+    }
+    fl.addEventListener("change", upd); ev.addEventListener("change", upd); paint(); upd();
+  })();
+})();
+</script>
+</body>
+</html>

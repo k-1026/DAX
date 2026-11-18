@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>노출&가시성 기준</title>
+<style>
+  :root {
+    --bg: #f7f7f5; --card: #ffffff; --ink: #1d1d1b; --sub: #6b6b66; --line: #e4e3df; --soft: #f1f0ec;
+    --accent: #f08c00; --accent-soft: #fff0d6; --warn: #b45309; --pend: #868e96; --road: #495057; --land: #e9e5dc;
+    --c-식당: #e8590c; --c-카페: #9c6644; --c-술집: #c2255c; --c-소매: #2f9e44; --c-오피스: #1c7ed6; --c-전시: #7048e8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141413; --card: #1e1e1c; --ink: #ecebe6; --sub: #a3a29c; --line: #34332f; --soft: #262624;
+      --accent: #ffc078; --accent-soft: #3a2a12; --warn: #f0b35c; --pend: #868e96; --road: #868e96; --land: #2c2a25;
+      --c-식당: #ff922b; --c-카페: #d4a373; --c-술집: #f06595; --c-소매: #69db7c; --c-오피스: #4dabf7; --c-전시: #9775fa;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif; line-height: 1.6; font-size: 15px; }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 32px 16px 64px; }
+  header h1 { font-size: 28px; margin: 0 0 6px; letter-spacing: -0.02em; }
+  header p { margin: 6px 0 0; color: var(--sub); }
+  .pill { display: inline-block; background: var(--accent-soft); color: var(--accent); font-weight: 700;
+    border-radius: 999px; padding: 2px 12px; font-size: 13px; margin: 0 6px 4px 0; }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 24px; margin-top: 20px; }
+  h2 { font-size: 19px; margin: 0 0 4px; letter-spacing: -0.01em; }
+  h2 .num { color: var(--accent); margin-right: 6px; }
+  h3 { font-size: 15px; margin: 22px 0 8px; }
+  .desc { color: var(--sub); margin: 0 0 16px; font-size: 14px; }
+  .chart { width: 100%; height: auto; display: block; }
+  .chart text { fill: var(--ink); font-size: 12px; }
+  .chart .sub { fill: var(--sub); }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { padding: 7px 6px; border-bottom: 1px solid var(--line); text-align: left; }
+  th { color: var(--sub); font-weight: 600; font-size: 13px; }
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
+  .formula { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; }
+  .box { border: 1.5px solid var(--line); border-radius: 10px; padding: 10px 14px; background: var(--bg); text-align: center; }
+  .box small { display: block; font-weight: 400; color: var(--sub); font-size: 12px; }
+  .box.hl { border-color: var(--accent); }
+  .op { color: var(--sub); font-size: 20px; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+  .heat td, .heat th { text-align: center; padding: 6px 4px; font-size: 13px; }
+  .heat td.c { font-weight: 700; border-radius: 4px; }
+  .heat th.l, .heat td.l { text-align: left; }
+  .toast { display: inline-flex; gap: 8px; align-items: center; background: var(--soft); border-radius: 10px; padding: 8px 12px; font-size: 13px; }
+  .toast i { font-style: normal; font-weight: 800; width: 20px; height: 20px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: #fff; background: var(--pend); font-size: 12px; flex: none; }
+  .catbtns { display: flex; flex-wrap: wrap; gap: 6px; }
+  .catbtns button { border: 1.5px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 999px; padding: 5px 14px; font-size: 14px; cursor: pointer; font-family: inherit; }
+  .catbtns button.on { color: #fff; border-color: transparent; }
+  label { display: block; font-size: 13px; color: var(--sub); margin: 14px 0 4px; }
+  select { width: 100%; padding: 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); font-size: 14px; font-family: inherit; }
+  .result { background: var(--bg); border-radius: 12px; padding: 16px; }
+  .result .big { font-size: 42px; font-weight: 800; line-height: 1.1; }
+  .row { display: grid; grid-template-columns: 96px 1fr 46px; gap: 8px; align-items: center; font-size: 13px; margin: 8px 0; }
+  .track { height: 12px; background: var(--line); border-radius: 6px; overflow: hidden; }
+  .fill { height: 100%; border-radius: 6px; transition: width .2s; }
+  ul.notes { margin: 0; padding-left: 18px; font-size: 14px; color: var(--sub); }
+  ul.notes b { color: var(--ink); }
+  .callout { border-left: 4px solid var(--warn); background: var(--bg); padding: 12px 14px; border-radius: 6px; margin-top: 12px; font-size: 14px; }
+  .callout b.t { color: var(--warn); }
+  footer { color: var(--sub); font-size: 13px; margin-top: 24px; }
+  @media (max-width: 760px) { .two { grid-template-columns: 1fr; } .heat td, .heat th { font-size: 11px; padding: 4px 2px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>스코어링 8) 노출&가시성</h1>
+  <p><span class="pill">가중치 5~20%</span><span class="pill">토지특성정보 도로접면</span><span class="pill">층 보정</span></p>
+  <p>매물이 있는 필지가 <b>어떤 도로에, 몇 면이 붙어 있는지(도로접면)</b>와 <b>매물의 층</b>을 보고, 길에서 눈에 잘 띄는 자리인지 점수를 줍니다.</p>
+</header>
+
+<section>
+  <h2><span class="num">1</span>카테고리별 가중치</h2>
+  <p class="desc">100점 만점 중 노출&가시성이 차지하는 비중입니다. 눈에 보여야 손님이 들어오는 업종일수록 큽니다.</p>
+  <svg id="wChart" class="chart" viewBox="0 0 900 250" role="img" aria-label="카테고리별 가중치"></svg>
+  <table id="wTable" style="margin-top:6px"></table>
+</section>
+
+<section>
+  <h2><span class="num">2</span>계산 방법</h2>
+  <div class="formula">
+    <div class="box">도로접면 점수<small>0 ~ 100</small></div><span class="op">×</span>
+    <div class="box">층 보정<small>0.3 ~ 1.0</small></div><span class="op">=</span>
+    <div class="box">노출 점수<small>0 ~ 100</small></div><span class="op">× 가중치 =</span>
+    <div class="box hl">최종 반영 점수</div>
+  </div>
+  <p class="desc" style="margin-top:12px">매물 좌표가 들어 있는 필지를 토지특성정보(공간정보)에서 찾아, 그 필지의 도로접면을 씁니다.</p>
+</section>
+
+<section>
+  <h2><span class="num">3</span>도로접면 점수</h2>
+  <p class="desc"><b>도로 폭</b>을 먼저 보고, 같은 폭이면 <b>코너(각지)</b>에 10점을 더 줍니다.</p>
+  <h3>도로 폭과 코너가 뭔가요?</h3>
+  <svg id="roadPic" class="chart" viewBox="0 0 900 250" role="img" aria-label="도로 폭과 코너 그림"></svg>
+  <h3>점수표</h3>
+  <svg id="roadChart" class="chart" viewBox="0 0 900 460" role="img" aria-label="도로접면별 점수"></svg>
+</section>
+
+<section>
+  <h2><span class="num">4</span>층 보정</h2>
+  <p class="desc">같은 큰길 코너 건물이라도 위층일수록 지나가는 사람 눈에 덜 띕니다.</p>
+  <div class="two">
+    <svg id="floorPic" class="chart" viewBox="0 0 380 330" role="img" aria-label="층별 보정 그림"></svg>
+    <table>
+      <tr><th>층</th><th>보정</th><th>이유</th></tr>
+      <tr><td><b>1층, 전체층</b></td><td><b>× 1.0</b></td><td>길에서 바로 보입니다</td></tr>
+      <tr><td><b>2층, 기타</b><br><span style="font-size:12px;color:var(--sub)">기타 = 층이 불명확</span></td><td><b>× 0.7</b></td><td>간판은 보이지만 가게 안은 보이지 않습니다</td></tr>
+      <tr><td><b>3~5층</b></td><td><b>× 0.5</b></td><td>간판만 보입니다</td></tr>
+      <tr><td><b>지하</b></td><td><b>× 0.5</b></td><td>입구만 보입니다</td></tr>
+      <tr><td><b>6층 이상</b></td><td><b>× 0.3</b></td><td>거의 보이지 않습니다</td></tr>
+    </table>
+  </div>
+  <h3>도로접면 × 층 = 노출 점수</h3>
+  <div style="overflow-x:auto"><table class="heat" id="heat"></table></div>
+</section>
+
+<section>
+  <h2><span class="num">5</span>직접 계산해 보기</h2>
+  <div class="two">
+    <div>
+      <div class="catbtns" id="cats"></div>
+      <label for="road">매물이 있는 필지의 도로접면</label><select id="road"></select>
+      <label for="floor">매물의 층</label><select id="floor"></select>
+    </div>
+    <div class="result">
+      <div style="font-size:13px;color:var(--sub)">최종 반영 점수</div>
+      <div class="big" id="resBig">-</div>
+      <div class="row"><span>도로접면 점수</span><div class="track"><div class="fill" id="f1" style="background:var(--road)"></div></div><b id="r1"></b></div>
+      <div class="row"><span>노출 점수</span><div class="track"><div class="fill" id="f2" style="background:var(--accent)"></div></div><b id="r2"></b></div>
+      <div style="font-size:13px;color:var(--sub);margin-top:6px" id="resTxt"></div>
+      <div id="resToast" style="margin-top:8px"></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">6</span>따로 처리하는 매물</h2>
+  <table>
+    <tr><th>경우</th><th>처리</th><th>공실 매물</th></tr>
+    <tr><td>매물이 있는 필지에 도로접면 값이 비어 있음<br><span style="font-size:12px;color:var(--sub)">주로 새로 지은 대단지 상가</span></td><td><b>20m 안의 가장 가까운 옆 필지</b>의 도로접면을 빌려 씁니다</td><td>446곳</td></tr>
+    <tr><td>20m 안에도 도로접면 값이 있는 필지가 없음</td><td><b>판단 보류 50점</b></td><td>20곳</td></tr>
+  </table>
+  <p class="desc" style="margin:12px 0 6px">판단 보류 화면 표시</p>
+  <div class="toast"><i>i</i>도로 정보가 없어서 노출 점수를 중간(50점)으로 표시했어요</div>
+  <p class="desc" style="margin-top:12px">옆 필지로 채운 값은 추정입니다. 대단지 상가는 단지 안쪽 상가일 수도 있어서, 옆 필지가 큰길에 붙어 있어도 실제 매물은 안쪽일 수 있습니다.</p>
+</section>
+
+<section>
+  <h2><span class="num">7</span>참고 사항</h2>
+  <ul class="notes">
+    <li><b>도로접면은 필지(땅) 기준입니다.</b> 큰 건물이 큰길에 붙어 있어도 매물이 건물 뒤쪽이면 실제로는 잘 보이지 않는데, 이 데이터로는 알 수 없습니다.</li>
+    <li><b>매물 설명과 잘 맞습니다:</b> 매물 설명에 "코너"가 적힌 282곳 중 79%가 실제로 각지(코너) 필지였습니다.</li>
+    <li><b>새 토지특성정보를 받으면</b> (매년 갱신) 다시 연결합니다.</li>
+  </ul>
+  <div class="callout"><b class="t">보행자 거리는 낮게 나옵니다</b> 도로접면은 차도 폭 기준이라, 동성로처럼 사람만 다니는 보행자 거리는 "좁은 골목(세로)"으로 잡힙니다 (예: 중구 삼덕동1가 공실 매물 17곳 중 6곳이 세로한면). 이 기준은 "길에서 눈에 잘 띄는 자리인가"만 보고, 사람이 얼마나 지나다니는지는 보지 않습니다. 보완이 필요하면 토지특성정보의 용도지역(중심상업지역 등)을 이용해 상업지역 안의 세로·소로 필지 점수를 올려 주는 방법이 있습니다 (아직 적용하지 않음).</div>
+</section>
+
+<footer>데이터: 국토교통부 토지특성정보 (2026년 5월 기준, 필지별 공간정보), 대구 구역별 공실 매물 CSV</footer>
+</div>
+
+<script>
+(function () {
+  var CATS = ["소매", "식당", "카페", "술집", "오피스", "전시"];
+  var W = { 소매: 20, 식당: 15, 카페: 15, 술집: 10, 오피스: 5, 전시: 5 };
+  var WHY = { 소매: "눈에 보여야 들어오는 업종이라 가장 중요합니다", 식당: "지나가다 들어오는 손님이 많습니다", 카페: "눈에 띄는 자리가 손님을 끌어옵니다",
+    술집: "2층·지하 술집도 간판이 잘 보여야 손님이 찾아옵니다", 오피스: "손님이 찾아오는 업종이 아니라 영향이 작습니다", 전시: "관람객이 일부러 찾아오는 경우가 많아 영향이 작습니다" };
+  // [도로접면, 점수, 설명, 폭그룹]
+  var ROAD = [["광대소각", 100, "25m 이상 큰길 + 작은 길(소로) 코너", "광대로"], ["광대세각", 95, "25m 이상 큰길 + 골목(세로) 코너", "광대로"], ["광대로한면", 90, "25m 이상 큰길에 한 면", "광대로"],
+    ["중로각지", 80, "12~25m 도로 코너", "중로"], ["중로한면", 70, "12~25m 도로에 한 면", "중로"], ["소로각지", 60, "8~12m 도로 코너", "소로"], ["소로한면", 50, "8~12m 도로에 한 면", "소로"],
+    ["세로각지(가)", 35, "8m 미만 골목 코너, 차가 들어감", "세로"], ["세로한면(가)", 25, "8m 미만 골목에 한 면, 차가 들어감", "세로"], ["세로각지(불)", 15, "8m 미만 골목 코너, 차가 못 들어감", "세로"],
+    ["세로한면(불)", 10, "8m 미만 골목에 한 면, 차가 못 들어감", "세로"], ["맹지", 0, "도로에 붙어 있지 않음", "맹지"]];
+  var FLOOR = [["1층", 1.0], ["전체층", 1.0], ["2층", 0.7], ["기타(층 불명확)", 0.7], ["3~5층", 0.5], ["지하", 0.5], ["6층 이상", 0.3]];
+  var NS = "http://www.w3.org/2000/svg";
+  function el(tag, a, p, t) { var e = document.createElementNS(NS, tag); for (var k in a) e.setAttribute(k, a[k]); if (t != null) e.textContent = t; if (p) p.appendChild(e); return e; }
+  function col(c) { return "var(--c-" + c + ")"; }
+  function nf(x) { return (Math.round(x * 100) / 100).toString(); }
+  function heatBg(v) { return "color-mix(in srgb, var(--accent) " + Math.round(8 + v * 0.85) + "%, var(--card))"; }
+
+  // 1. weights
+  (function () {
+    var svg = document.getElementById("wChart"), L = 80, R = 70, T = 6, rowH = 40, Wd = 900 - L - R, max = 24;
+    CATS.forEach(function (c, i) {
+      var y = T + i * rowH, w = Wd * W[c] / max;
+      el("text", { x: L - 12, y: y + 24, "text-anchor": "end", "font-weight": 700, "font-size": 14 }, svg, c);
+      el("rect", { x: L, y: y + 6, width: Wd, height: 26, rx: 6, fill: "var(--bg)" }, svg);
+      el("rect", { x: L, y: y + 6, width: w, height: 26, rx: 6, fill: col(c) }, svg);
+      el("text", { x: L + w + 10, y: y + 25, "font-weight": 800, "font-size": 16 }, svg, W[c] + "%");
+    });
+    document.getElementById("wTable").innerHTML = "<tr><th>카테고리</th><th>이유</th></tr>" + CATS.map(function (c) {
+      return "<tr><td><span class='dot' style='background:" + col(c) + "'></span><b>" + c + "</b> " + W[c] + "%</td><td>" + WHY[c] + "</td></tr>";
+    }).join("");
+  })();
+
+  // 3-1. road width & corner picture
+  (function () {
+    var svg = document.getElementById("roadPic");
+    var roads = [["광대로", "25m 이상", 34], ["중로", "12~25m", 24], ["소로", "8~12m", 16], ["세로", "8m 미만", 9]];
+    roads.forEach(function (r, i) {
+      var x = 20 + i * 120, y = 30;
+      el("rect", { x: x, y: y, width: 100, height: 120, fill: "var(--land)", rx: 4 }, svg);
+      el("rect", { x: x, y: y + 120, width: 100, height: r[2], fill: "var(--road)" }, svg);
+      el("line", { x1: x + 4, x2: x + 96, y1: y + 120 + r[2] / 2, y2: y + 120 + r[2] / 2, stroke: "#fff", "stroke-dasharray": "8 6", "stroke-width": 1.5 }, svg);
+      el("rect", { x: x + 30, y: y + 70, width: 40, height: 46, fill: "var(--accent)", rx: 3 }, svg);
+      el("text", { x: x + 50, y: y + 18, "text-anchor": "middle", "font-weight": 800, "font-size": 14 }, svg, r[0]);
+      el("text", { x: x + 50, y: y + 200, "text-anchor": "middle", "class": "sub", "font-size": 12 }, svg, "폭 " + r[1]);
+    });
+    // corner vs one side
+    var ox = 520;
+    el("text", { x: ox + 80, y: 18, "text-anchor": "middle", "font-weight": 800, "font-size": 14 }, svg, "한면");
+    el("rect", { x: ox, y: 30, width: 160, height: 120, fill: "var(--land)", rx: 4 }, svg);
+    el("rect", { x: ox, y: 150, width: 160, height: 24, fill: "var(--road)" }, svg);
+    el("rect", { x: ox + 60, y: 100, width: 40, height: 46, fill: "var(--accent)", rx: 3 }, svg);
+    el("text", { x: ox + 80, y: 200, "text-anchor": "middle", "class": "sub", "font-size": 12 }, svg, "도로 하나에만 보임");
+    var cx = 710;
+    el("text", { x: cx + 80, y: 18, "text-anchor": "middle", "font-weight": 800, "font-size": 14 }, svg, "각지 (코너)");
+    el("rect", { x: cx, y: 30, width: 140, height: 120, fill: "var(--land)", rx: 4 }, svg);
+    el("rect", { x: cx, y: 150, width: 170, height: 24, fill: "var(--road)" }, svg);
+    el("rect", { x: cx + 140, y: 30, width: 30, height: 120, fill: "var(--road)" }, svg);
+    el("rect", { x: cx + 96, y: 100, width: 40, height: 46, fill: "var(--accent)", rx: 3 }, svg);
+    el("text", { x: cx + 80, y: 200, "text-anchor": "middle", "class": "sub", "font-size": 12 }, svg, "두 도로에서 보임 → +10점");
+    el("text", { x: 20, y: 240, "class": "sub", "font-size": 12 }, svg, "주황 상자 = 매물. 도로가 넓을수록, 두 도로에 붙어 있을수록(코너) 지나가는 사람 눈에 잘 띕니다.");
+  })();
+
+  // 3-2. score bars
+  (function () {
+    var svg = document.getElementById("roadChart"), L = 110, Wd = 400, rowH = 37, T = 6;
+    var gcol = { 광대로: "var(--accent)", 중로: "color-mix(in srgb, var(--accent) 75%, var(--card))", 소로: "color-mix(in srgb, var(--accent) 50%, var(--card))", 세로: "color-mix(in srgb, var(--accent) 28%, var(--card))", 맹지: "var(--pend)" };
+    ROAD.forEach(function (r, i) {
+      var y = T + i * rowH, w = Wd * r[1] / 100;
+      el("text", { x: L - 10, y: y + 21, "text-anchor": "end", "font-weight": 700, "font-size": 13 }, svg, r[0]);
+      el("rect", { x: L, y: y + 6, width: Wd, height: 22, rx: 5, fill: "var(--bg)" }, svg);
+      if (w > 0) el("rect", { x: L, y: y + 6, width: w, height: 22, rx: 5, fill: gcol[r[3]] }, svg);
+      el("text", { x: L + Math.max(w, 0) + 8, y: y + 22, "font-weight": 800, "font-size": 14 }, svg, r[1]);
+      el("text", { x: L + Wd + 50, y: y + 21, "class": "sub", "font-size": 12 }, svg, r[2]);
+    });
+  })();
+
+  // 4. floor picture
+  (function () {
+    var svg = document.getElementById("floorPic"), fl = [["6층 이상", 0.3], ["5층", 0.5], ["4층", 0.5], ["3층", 0.5], ["2층", 0.7], ["1층", 1.0], ["지하", 0.5]];
+    var x = 70, w = 150, h = 38, top = 14;
+    fl.forEach(function (f, i) {
+      var y = top + i * h, under = f[0] === "지하";
+      if (under) y += 14;
+      el("rect", { x: x, y: y, width: w, height: h - 3, rx: 3, fill: "color-mix(in srgb, var(--accent) " + Math.round(f[1] * 90) + "%, var(--card))", stroke: "var(--line)" }, svg);
+      el("text", { x: x + w / 2, y: y + 23, "text-anchor": "middle", "font-weight": 700, style: "fill:" + (f[1] >= 0.7 ? "#fff" : "var(--ink)") }, svg, f[0]);
+      el("text", { x: x + w + 14, y: y + 23, "font-weight": 800, "font-size": 15 }, svg, "× " + f[1].toFixed(1));
+    });
+    var gy = top + 6 * h + 5;
+    el("rect", { x: 10, y: gy, width: 360, height: 5, fill: "var(--road)" }, svg);
+    el("text", { x: 14, y: gy - 6, "class": "sub", "font-size": 11 }, svg, "길");
+    el("text", { x: 10, y: 322, "class": "sub", "font-size": 11 }, svg, "색이 진할수록 길에서 잘 보이는 층");
+  })();
+
+  // heat table
+  (function () {
+    var cols = [["1층·전체층", 1.0], ["2층·기타", 0.7], ["3~5층·지하", 0.5], ["6층 이상", 0.3]];
+    var h = "<tr><th class='l'>도로접면 \\ 층</th>" + cols.map(function (c) { return "<th>" + c[0] + "<br>× " + c[1].toFixed(1) + "</th>"; }).join("") + "</tr>";
+    ROAD.forEach(function (r) {
+      h += "<tr><td class='l'><b>" + r[0] + "</b> <span style='color:var(--sub)'>(" + r[1] + ")</span></td>" + cols.map(function (c) {
+        var v = r[1] * c[1]; return "<td class='c' style='background:" + heatBg(v) + "'>" + nf(v) + "</td>";
+      }).join("") + "</tr>";
+    });
+    document.getElementById("heat").innerHTML = h;
+  })();
+
+  // 5. calculator
+  (function () {
+    var cur = "소매", box = document.getElementById("cats"), rs = document.getElementById("road"), fs = document.getElementById("floor");
+    ROAD.forEach(function (r, i) { var o = document.createElement("option"); o.value = i; o.textContent = r[0] + " (" + r[1] + "점) · " + r[2]; rs.appendChild(o); });
+    var op = document.createElement("option"); op.value = "pend"; op.textContent = "도로접면 정보 없음 (20m 안에도 없음)"; rs.appendChild(op);
+    FLOOR.forEach(function (f, i) { var o = document.createElement("option"); o.value = i; o.textContent = f[0] + " (× " + f[1].toFixed(1) + ")"; fs.appendChild(o); });
+    rs.value = 0; fs.value = 2;
+    CATS.forEach(function (c) { var b = document.createElement("button"); b.type = "button"; b.textContent = c; b.onclick = function () { cur = c; paint(); upd(); }; box.appendChild(b); });
+    function paint() { Array.prototype.forEach.call(box.children, function (b) { var on = b.textContent === cur; b.className = on ? "on" : ""; b.style.background = on ? col(b.textContent) : ""; }); }
+    function upd() {
+      var big = document.getElementById("resBig"), toast = document.getElementById("resToast");
+      if (rs.value === "pend") {
+        var f0 = 50 * W[cur] / 100;
+        big.textContent = nf(f0) + "점"; big.style.color = "var(--pend)";
+        document.getElementById("f1").style.width = "0%"; document.getElementById("r1").textContent = "-";
+        document.getElementById("f2").style.width = "50%"; document.getElementById("r2").textContent = "50";
+        document.getElementById("resTxt").innerHTML = "판단 보류 50점 × " + cur + " 가중치 " + W[cur] + "% = <b>" + nf(f0) + "점</b>";
+        toast.innerHTML = '<div class="toast"><i>i</i>도로 정보가 없어서 노출 점수를 중간(50점)으로 표시했어요</div>';
+        return;
+      }
+      var r = ROAD[+rs.value], f = FLOOR[+fs.value], s = r[1] * f[1], fin = s * W[cur] / 100;
+      big.textContent = nf(fin) + "점"; big.style.color = col(cur);
+      document.getElementById("f1").style.width = r[1] + "%"; document.getElementById("r1").textContent = r[1];
+      document.getElementById("f2").style.width = s + "%"; document.getElementById("r2").textContent = nf(s);
+      document.getElementById("resTxt").innerHTML = r[0] + " " + r[1] + "점 × " + f[0] + " " + f[1].toFixed(1) + " = 노출 점수 <b>" + nf(s) + "</b><br>" + nf(s) + " × " + cur + " 가중치 " + W[cur] + "% = <b>" + nf(fin) + "점</b> (최대 " + W[cur] + "점)";
+      toast.innerHTML = "";
+    }
+    rs.addEventListener("change", upd); fs.addEventListener("change", upd); paint(); upd();
+  })();
+})();
+</script>
+</body>
+</html>
