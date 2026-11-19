@@ -67,7 +67,6 @@ export async function signUpWithEmail(
 }
 
 // SNS 로그인 버튼 종류
-// (네이버는 회원 정보 형식이 Supabase와 맞지 않아 제외했다)
 const SOCIAL_PROVIDERS = {
   kakao: { provider: "kakao", label: "카카오" },
   google: { provider: "google", label: "구글" },
