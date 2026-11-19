@@ -1,5 +1,5 @@
 "use client";
-// 로그인 화면의 입력 양식 (이메일 로그인/가입 + 카카오·네이버·구글 버튼)
+// 로그인 화면의 입력 양식 (이메일 로그인/가입 + 카카오·구글 버튼)
 import { useActionState, useState } from "react";
 import {
   signInWithEmail,
@@ -38,17 +38,6 @@ export function LoginForm({ initialError }: { initialError?: string }) {
             />
           </svg>
           카카오로 시작하기
-        </button>
-        <button
-          type="submit"
-          name="provider"
-          value="naver"
-          className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#03C75A] px-4 py-3 font-medium text-white hover:brightness-95"
-        >
-          <svg aria-hidden width="16" height="16" viewBox="0 0 24 24">
-            <path fill="currentColor" d="M16.27 12.84 7.46 0H0v24h7.73V11.16L16.54 24H24V0h-7.73z" />
-          </svg>
-          네이버로 시작하기
         </button>
         <button
           type="submit"
