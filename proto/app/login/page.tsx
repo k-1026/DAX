@@ -13,7 +13,7 @@ export default function LoginPage(props: PageProps<"/login">) {
       <div className="flex flex-col gap-2">
         <h1 className="text-2xl font-bold">대구 공실 매칭 로그인</h1>
         <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          카카오 또는 이메일로 시작하세요.
+          SNS 계정 또는 이메일로 시작하세요.
         </p>
       </div>
       <Suspense fallback={<LoginForm />}>

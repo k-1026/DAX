@@ -1,8 +1,8 @@
 // 약관과 동의 문서의 현재 버전
 // 문구가 바뀌면 값을 올린다. 필수 문서의 버전이 바뀌면 회원은 다시 동의해야 한다.
 export const LEGAL_VERSIONS = {
-  terms: "2026-11-19-draft",
-  privacy: "2026-11-19-draft",
+  terms: "2026-11-19-draft2",
+  privacy: "2026-11-19-draft2",
   behavior_tracking: "2026-11-19-draft",
   email: "2026-11-19-draft",
 } as const;

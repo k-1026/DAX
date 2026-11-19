@@ -1,4 +1,4 @@
-// 카카오 로그인, 이메일 인증 링크를 누른 뒤 돌아오는 주소
+// SNS(카카오·네이버·구글) 로그인, 이메일 인증 링크를 누른 뒤 돌아오는 주소
 // Supabase가 붙여 준 code 를 로그인 세션(쿠키)으로 바꾼다.
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
