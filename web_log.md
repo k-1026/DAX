@@ -219,3 +219,12 @@ Supabase의 Authentication > Sign In / Providers 기능으로 이메일, 카카�
 
 - 빌드와 lint 통과.
 - 세 버튼이 각각 Supabase 로그인 주소(`provider=kakao`, `provider=custom:naver`, `provider=google`)로 이동하는 것까지 확인. 실제 로그인은 위 설정 후 직접 확인해야 한다.
+
+#### 결정. 네이버 로그인 제외
+
+- Supabase Custom Provider(OAuth2 수동 설정, OIDC 자동 설정)로 시도했지만 둘 다 실패했다.
+  - OAuth2: `Error getting user email from external provider`
+  - OIDC: `error missing provider id`
+- 원인: 네이버 회원정보가 `response` 안에 한 겹 더 들어 있고, OIDC의 id_token에도 이메일·별명이 없다. Supabase 설정 화면에는 속성 매핑 칸이 없다.
+- 서버 코드로 직접 처리하는 방법은 있지만, 지금은 네이버 로그인을 빼기로 했다. 로그인 화면은 카카오·구글·이메일.
+- 정리할 것: Supabase의 `custom:naver` 공급자 삭제(무료 플랜은 3개 제한), 네이버 개발자센터 앱은 필요하면 삭제.

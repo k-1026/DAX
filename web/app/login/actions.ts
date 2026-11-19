@@ -1,5 +1,5 @@
 "use server";
-// 로그인 관련 서버 동작: 이메일 로그인/가입, SNS(카카오·네이버·구글) 로그인, 로그아웃
+// 로그인 관련 서버 동작: 이메일 로그인/가입, SNS(카카오·구글) 로그인, 로그아웃
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -66,11 +66,10 @@ export async function signUpWithEmail(
   return { message: "인증 메일을 보냈습니다. 메일함에서 링크를 눌러 주세요." };
 }
 
-// SNS 로그인 버튼 종류. 네이버는 Supabase 기본 목록에 없어
-// "Custom OAuth Provider"로 만들고 식별자를 custom:naver 로 정한다.
+// SNS 로그인 버튼 종류
+// (네이버는 회원 정보 형식이 Supabase와 맞지 않아 제외했다. web_log.md 2026-11-19 참고)
 const SOCIAL_PROVIDERS = {
   kakao: { provider: "kakao", label: "카카오" },
-  naver: { provider: "custom:naver", label: "네이버" },
   google: { provider: "google", label: "구글" },
 } as const;
 
