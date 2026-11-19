@@ -12,7 +12,7 @@ export type PipelineResult = {
   error?: string;
 };
 
-// 수집 품질 검사에서 비어 있으면 안 되는 항목. 첫 수집 후 확정한다.
+// 수집 품질 검사에서 비어 있으면 안 되는 항목 (11월 5일 자료로 확정, 2026-11-19)
 export const REQUIRED_FIELDS = [
   "id",
   "gu",
@@ -22,6 +22,7 @@ export const REQUIRED_FIELDS = [
   "deposit",
   "rent",
   "url",
+  "confirmed_at",
 ];
 
 export const MAX_ATTEMPTS = 3;

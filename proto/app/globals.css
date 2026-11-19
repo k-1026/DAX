@@ -24,3 +24,11 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* 글자 크기 조절 (U23) */
+html[data-font-size="large"] {
+  font-size: 112.5%;
+}
+html[data-font-size="xlarge"] {
+  font-size: 125%;
+}

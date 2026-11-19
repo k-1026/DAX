@@ -52,19 +52,24 @@ export async function POST(request: NextRequest) {
   const text = await readBody(request);
   if (text === null) return reply(413, { error: "파일이 너무 큽니다." });
 
-  let body: { source?: unknown; items?: unknown };
+  let body: { source?: unknown; items?: unknown; collected_at?: unknown };
   try {
     body = JSON.parse(text);
   } catch {
     return reply(400, { error: "JSON 형식이 올바르지 않습니다." });
   }
 
-  const { source, items } = body ?? {};
+  const { source, items, collected_at: collectedAt } = body ?? {};
   if (typeof source !== "string" || !/^[a-z0-9_-]{1,40}$/.test(source)) {
     return reply(400, { error: "source 값이 올바르지 않습니다." });
   }
   if (!Array.isArray(items) || items.length === 0 || items.length > MAX_ITEMS) {
     return reply(400, { error: `items는 1건 이상 ${MAX_ITEMS}건 이하여야 합니다.` });
+  }
+
+  // 실제 수집 시각 (없으면 업로드 시각). 30일 이내만 받는다(DB에서 확인).
+  if (collectedAt !== undefined && (typeof collectedAt !== "string" || Number.isNaN(Date.parse(collectedAt)))) {
+    return reply(400, { error: "collected_at 값이 올바르지 않습니다." });
   }
 
   const supabase = createServiceClient();
@@ -79,6 +84,7 @@ export async function POST(request: NextRequest) {
   const { data: runId, error } = await supabase.rpc("pipeline_start_run", {
     p_source: source,
     p_items: items,
+    p_collected_at: collectedAt ?? null,
   });
   if (error) {
     return error.code === "23505"

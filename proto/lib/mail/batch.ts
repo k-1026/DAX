@@ -114,13 +114,13 @@ export function buildBatchMail(recipient: BatchRecipient, deps: MailDeps): MailM
   const counts = [
     recipient.new_total > 0 ? `새 매물 ${recipient.new_total}곳` : "",
     recipient.changed.length > 0 ? `관심 매물 변동 ${recipient.changed.length}건` : "",
-    recipient.sold.length > 0 ? `거래 완료 ${recipient.sold.length}건` : "",
+    recipient.sold.length > 0 ? `게시 종료 ${recipient.sold.length}건` : "",
   ].filter(Boolean);
 
   const parts = [
     section("새로 뜬 원하는 매물 (구독 회원 24시간 먼저 공개)", recipient.new, describe),
     section("관심 매물 변동", recipient.changed, (card) => `${describe(card)} (${describeChange(card) || "조건 변경"})`),
-    section("거래가 끝난 관심 매물", recipient.sold, describe),
+    section("게시가 끝난 관심 매물 (거래 완료 또는 게시 내림)", recipient.sold, describe),
   ];
 
   const more = recipient.new_total - recipient.new.length;
