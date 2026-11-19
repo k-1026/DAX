@@ -161,3 +161,61 @@ Supabase의 Authentication > Sign In / Providers 기능으로 이메일, 카카�
 
 - 빌드(`npm run build`)와 lint 통과.
 - 로그인 화면 표시, 카카오 버튼 → `/auth/v1/authorize?provider=kakao` 로 이동하는 것까지 확인. 실제 카카오 계정 로그인은 위 설정을 마친 뒤 직접 확인해야 한다.
+
+---
+
+## 2026-11-19
+
+### 로그인 기능 추가 (네이버 + 구글)
+
+로그인 화면에 "네이버로 시작하기", "구글로 시작하기" 버튼을 추가했다. (카카오 버튼 아래)
+
+| 파일 | 바뀐 점 |
+|---|---|
+| `web/app/login/actions.ts` | `signInWithKakao` → `signInWithSocial` 하나로 합침. 버튼 값(kakao/naver/google)으로 어떤 SNS인지 구분 |
+| `web/app/login/login-form.tsx` | 네이버(초록), 구글(흰색) 버튼 추가 |
+
+#### 구글 설정
+
+1. **Google Cloud Console** (console.cloud.google.com)
+   - 프로젝트를 만든다.
+   - APIs & Services > OAuth consent screen(동의 화면): 앱 이름, 지원 이메일을 입력한다. 테스트 중에는 Test users에 로그인할 구글 계정을 추가한다.
+   - APIs & Services > Credentials > Create Credentials > **OAuth client ID** > 유형 "Web application"
+     - Authorized JavaScript origins: `http://localhost:3000` (배포 후 Vercel 주소도)
+     - Authorized redirect URIs: Supabase Google 설정 화면에 보이는 Callback URL (`https://<프로젝트>.supabase.co/auth/v1/callback`)
+   - 만들어진 **Client ID**와 **Client Secret**을 복사한다.
+2. **Supabase** > Authentication > Sign In / Providers > **Google** 켜기, Client ID와 Client Secret 입력, 저장
+
+#### 네이버 설정
+
+네이버는 Supabase 기본 목록에 없다. Supabase의 **Custom OAuth Provider**(직접 추가하는 로그인 방식)로 만든다. 무료 플랜은 최대 3개까지 만들 수 있다.
+
+1. **네이버 개발자센터** (developers.naver.com) > Application > 애플리케이션 등록
+   - 사용 API: **네이버 로그인**
+   - 제공 정보: 이름, 이메일, 별명, 프로필 사진 (필수/추가 선택)
+   - 환경 추가: PC 웹
+     - 서비스 URL: `http://localhost:3000`
+     - Callback URL: 아래 2번 Supabase 화면에 보이는 Callback URL
+   - 등록 후 **Client ID**와 **Client Secret**을 복사한다.
+2. **Supabase** > Authentication > Sign In / Providers > **New Provider** > "Manual configuration (OAuth2)"
+
+| 항목 | 넣을 값 |
+|---|---|
+| Identifier | `custom:naver` (코드와 같아야 함) |
+| Name | 네이버 |
+| Client ID / Client Secret | 네이버에서 받은 값 |
+| Authorization URL | `https://nid.naver.com/oauth2.0/authorize` |
+| Token URL | `https://nid.naver.com/oauth2.0/token` |
+| Userinfo URL | `https://openapi.naver.com/v1/nid/me` |
+| Scopes | 비워 둠 (네이버는 개발자센터의 "제공 정보"로 정함) |
+
+#### 네이버 주의점 (실제 로그인으로 확인 필요)
+
+- 네이버의 회원정보 응답은 `{"resultcode":"00","response":{"id":…,"email":…}}`처럼 값이 `response` 안에 한 겹 더 들어 있다.
+- Supabase Custom Provider가 이 구조에서 회원 ID와 이메일을 읽어 오는지는 공식 문서에 나와 있지 않다. 설정 화면에 속성 매핑(attribute mapping) 칸이 있으면 `response.id`, `response.email`처럼 지정한다.
+- 로그인 후 "사용자 정보를 가져올 수 없다"는 오류가 나면 이 문제다. 그때는 네이버 로그인을 서버 코드로 직접 처리하는 방식으로 바꿔야 한다.
+
+#### 확인
+
+- 빌드와 lint 통과.
+- 세 버튼이 각각 Supabase 로그인 주소(`provider=kakao`, `provider=custom:naver`, `provider=google`)로 이동하는 것까지 확인. 실제 로그인은 위 설정 후 직접 확인해야 한다.

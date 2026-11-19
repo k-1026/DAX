@@ -1,4 +1,4 @@
-// 로그인 화면: 카카오 또는 이메일로 로그인/가입
+// 로그인 화면: SNS(카카오·네이버·구글) 또는 이메일로 로그인/가입
 import Link from "next/link";
 import { Suspense } from "react";
 import { LoginForm } from "./login-form";
