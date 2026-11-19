@@ -27,7 +27,7 @@ export function LoginForm({ initialError }: { initialError?: string }) {
       <form action={signInWithKakao}>
         <button
           type="submit"
-          className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#FEE500] px-4 py-3 font-medium text-black/85 hover:brightness-95"
+          className="flex w-full items-center justify-center gap-2 rounded-full bg-[#FEE500] px-4 py-3 font-medium text-black/85 hover:brightness-95"
         >
           <svg aria-hidden width="18" height="18" viewBox="0 0 24 24">
             <path
@@ -39,10 +39,10 @@ export function LoginForm({ initialError }: { initialError?: string }) {
         </button>
       </form>
 
-      <div className="flex items-center gap-3 text-xs text-zinc-500">
-        <span className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
+      <div className="flex items-center gap-3 text-xs text-faint">
+        <span className="h-px flex-1 bg-line" />
         또는 이메일로
-        <span className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
+        <span className="h-px flex-1 bg-line" />
       </div>
 
       <form
@@ -56,7 +56,7 @@ export function LoginForm({ initialError }: { initialError?: string }) {
             type="email"
             required
             autoComplete="email"
-            className="rounded-lg border border-zinc-300 bg-transparent px-3 py-2 dark:border-zinc-700"
+            className="rounded-xl border border-line bg-transparent px-3 py-2.5 outline-none focus:border-accent"
           />
         </label>
         <label className="flex flex-col gap-1 text-left text-sm">
@@ -67,7 +67,7 @@ export function LoginForm({ initialError }: { initialError?: string }) {
             required
             minLength={6}
             autoComplete={mode === "signin" ? "current-password" : "new-password"}
-            className="rounded-lg border border-zinc-300 bg-transparent px-3 py-2 dark:border-zinc-700"
+            className="rounded-xl border border-line bg-transparent px-3 py-2.5 outline-none focus:border-accent"
           />
         </label>
 
@@ -81,7 +81,7 @@ export function LoginForm({ initialError }: { initialError?: string }) {
         <button
           type="submit"
           disabled={pending}
-          className="rounded-lg bg-zinc-900 px-4 py-3 font-medium text-white disabled:opacity-60 dark:bg-zinc-100 dark:text-zinc-900"
+          className="rounded-full bg-brand px-4 py-3 font-medium text-brand-ink disabled:opacity-60"
         >
           {pending ? "처리 중…" : mode === "signin" ? "이메일로 로그인" : "이메일로 가입"}
         </button>
@@ -90,7 +90,7 @@ export function LoginForm({ initialError }: { initialError?: string }) {
       <button
         type="button"
         onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
-        className="text-sm text-zinc-600 underline dark:text-zinc-400"
+        className="text-sm text-accent"
       >
         {mode === "signin" ? "계정이 없나요? 이메일로 가입" : "이미 계정이 있나요? 로그인"}
       </button>

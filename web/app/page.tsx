@@ -1,95 +1,32 @@
-// 첫 화면: 서비스 이름, Supabase 연결 상태, 로그인 상태를 보여준다.
-import Link from "next/link";
+// 첫 화면: 조건 · 추천 · 스튜디오 3단 작업 화면
+// 로그인 상태(쿠키)를 읽는 부분은 Suspense 안에서 실행해야 한다 (Next.js 16 cacheComponents).
 import { Suspense } from "react";
-import { createClient } from "@/lib/supabase/server";
-import { signOut } from "./login/actions";
+import { getViewer } from "@/lib/viewer";
+import { Workspace } from "./_components/workspace";
 
-type Status = { ok: boolean; message: string };
-
-async function checkSupabase(): Promise<Status> {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-
-  if (!url || !key) {
-    return { ok: false, message: ".env.local 에 Supabase 값이 아직 없습니다." };
-  }
-
-  try {
-    const res = await fetch(`${url}/auth/v1/health`, {
-      headers: { apikey: key },
-      cache: "no-store",
-    });
-    return res.ok
-      ? { ok: true, message: "Supabase 연결 정상" }
-      : { ok: false, message: `Supabase 응답 오류 (코드 ${res.status})` };
-  } catch {
-    return { ok: false, message: "Supabase 주소에 접속할 수 없습니다." };
-  }
+async function WorkspaceForViewer({ searchParams }: PageProps<"/">) {
+  const { as } = await searchParams;
+  const viewer = await getViewer(typeof as === "string" ? as : undefined);
+  return <Workspace viewer={viewer} />;
 }
 
-async function SupabaseStatus() {
-  const status = await checkSupabase();
-
+function Skeleton() {
   return (
-    <p
-      className={`rounded-full px-4 py-2 text-sm font-medium ${
-        status.ok
-          ? "bg-green-100 text-green-800"
-          : "bg-amber-100 text-amber-800"
-      }`}
-    >
-      {status.ok ? "●" : "○"} {status.message}
-    </p>
-  );
-}
-
-async function UserStatus() {
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) return null;
-
-  const supabase = await createClient();
-  const { data } = await supabase.auth.getClaims();
-  const claims = data?.claims;
-
-  if (!claims) {
-    return (
-      <Link
-        href="/login"
-        className="rounded-lg bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white dark:bg-zinc-100 dark:text-zinc-900"
-      >
-        로그인 / 회원가입
-      </Link>
-    );
-  }
-
-  const meta = (claims.user_metadata ?? {}) as Record<string, unknown>;
-  const name =
-    (meta.name as string) ?? (meta.full_name as string) ?? claims.email ?? "회원";
-
-  return (
-    <div className="flex items-center gap-3 text-sm">
-      <span>{name} 님, 환영합니다.</span>
-      <form action={signOut}>
-        <button type="submit" className="text-zinc-600 underline dark:text-zinc-400">
-          로그아웃
-        </button>
-      </form>
+    <div className="flex h-dvh flex-col">
+      <div className="h-16" />
+      <div className="grid flex-1 gap-4 px-4 pb-4 lg:grid-cols-[300px_1fr_340px]">
+        {[0, 1, 2].map((i) => (
+          <div key={i} className={`animate-pulse rounded-2xl border border-line bg-panel ${i !== 1 ? "hidden lg:block" : ""}`} />
+        ))}
+      </div>
     </div>
   );
 }
 
-export default function Home() {
+export default function Home(props: PageProps<"/">) {
   return (
-    <main className="flex flex-1 flex-col items-center justify-center gap-6 p-8 text-center">
-      <h1 className="text-3xl font-bold">대구 공실 매칭</h1>
-      <p className="text-zinc-600 dark:text-zinc-400">
-        업종에 맞는 대구 공실을 추천하는 AI 서비스 (개발 중)
-      </p>
-      <Suspense fallback={<p className="text-sm text-zinc-500">연결 확인 중…</p>}>
-        <SupabaseStatus />
-      </Suspense>
-      <Suspense fallback={null}>
-        <UserStatus />
-      </Suspense>
-    </main>
+    <Suspense fallback={<Skeleton />}>
+      <WorkspaceForViewer {...props} />
+    </Suspense>
   );
 }
