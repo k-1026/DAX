@@ -55,6 +55,21 @@ S = {  # 출처 (이름, 주소)
     "law2": ["상가건물 임대차보호법 시행령 제2조 제3항 — 환산보증금 = 보증금 + 월세 × 100 (법 적용범위 판단용)", "https://www.law.go.kr/법령/상가건물임대차보호법시행령/제2조"],
     "ahp": ["중견 커피 프랜차이즈 입지요인 AHP 연구(2023) 등 상가 입지 AHP 사례", "https://koreascience.kr/article/CFKO202319254425366.pdf"],
     "chi": ["적합도 카이제곱 검정으로 선택비 유의성 확인 (adehabitatHS widesI)", "https://search.r-project.org/CRAN/refmans/adehabitatHS/html/wi.html"],
+    # 2026-11-18~20 그룹 안 비중 보완 (권혜림: 공간 · 입지 · 그룹 안 비중)
+    "oecdhb": ["OECD·JRC (2008) Handbook on Constructing Composite Indicators — 가중치 방법 6.1.8 AHP, 6.1.5 예산 배분 (목차로 확인)", "https://knowledge4policy.ec.europa.eu/sites/default/files/jrc47008_handbook_final.pdf"],
+    "kdi": ["KDI 예비타당성조사 수행을 위한 일반지침 수정·보완 연구(제5판) — 다기준 분석과 AHP 기법 (목차로 확인)", "https://www.kdi.re.kr/research/reportView?pub_no=11672"],
+    "saaty": ["Saaty, How to Make a Decision: The Analytic Hierarchy Process — 일관성 비율 10% 이하면 판단을 받아들임", "https://www.isahp-org.creativedecisions.net/uploads/1-how-to-make-a-decision-the-analytic-hierarchy-process-t-l-saaty.pdf"],
+    "forman": ["Forman·Peniwati (1998) Aggregating individual judgments and priorities with the AHP, EJOR 108 — 개인 판단 통합은 기하평균", "https://www.isahp.org/uploads/383-aggregating.pdf"],
+    "becker": ["Becker·Saisana·Paruolo·Vandecasteele (2017) Weights and importance in composite indicators, Ecological Indicators 80 — 비중과 실제 영향이 다름", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5473177/"],
+    "optw": ["COINr get_opt_weights — 목표 중요도에 맞도록 비중을 최적화 (Becker 외 2017의 선형판)", "https://search.r-project.org/CRAN/refmans/COINr/html/get_opt_weights.html"],
+    "critic": ["Diakoulaki·Mavrotas·Papayannakis (1995) CRITIC 방법, Computers & Operations Research 22(7) — 표준편차와 인자 간 상관으로 객관 가중치", "https://reformship.github.io/pages/1capacity/1model/11evaluation/Determining%20objective%20weights%20in%20multiple%20criteria%20problems%20The%20CRITIC%20method.pdf"],
+    "mcdmrev": ["다기준 의사결정 방법 리뷰 (arXiv 2410.05713) — 엔트로피·CRITIC 가중치는 퍼짐이 큰 기준에 큰 비중, 정규화 방식에 좌우됨", "https://arxiv.org/pdf/2410.05713"],
+    "roc": ["Barron·Barrett (1996) Decision quality using ranked attribute weights, Management Science 42(11) — 중요도 순서만으로 비중(ROC)", "https://ideas.repec.org/a/inm/ormnsc/v42y1996i11p1515-1523.html"],
+    "frlr": ["빈도비·AHP·이변량 통계·로지스틱 회귀 비교 (GIS 산사태 취약성) — 발생 자료로 인자 가중치를 추정해 AHP와 검증 성능 비교", "https://web.itu.edu.tr/tahsin/PAPERBOX/A19.pdf"],
+    "elazig": ["엘라즈 농촌 입지 적합성: 빈도비·AHP·로지스틱 회귀 비교 — 로지스틱 회귀와 빈도비가 AHP보다 적합한 결과", "https://dergipark.org.tr/en/download/article-file/1942939"],
+    "wofe": ["Bonham-Carter·Agterberg·Wright (1989) 증거가중치 — W+, W−, 대비 C (UNICAMP 설명)", "https://www.ige.unicamp.br/wofe/documentation/wofeintr.htm"],
+    "survival": ["젠트리피케이션 지역 음식점업 생존율의 공간적 요인 (서울) — 지하철역 접근성 효과가 지역·업종별로 다름", "https://www.kci.go.kr/kciportal/ci/sereArticleSearch/ciSereArtiView.kci?sereArticleSearchBean.artiId=ART002629633"],
+    "flagship": ["플래그십 스토어 입지선정 요인 연구 (부동산연구 2021) — 전문가 설문 AHP, 상위 5개 · 하위 20개 요인", "https://journal.kci.go.kr/krer/archive/articleView?artiId=ART002698360"],
 }
 
 # 판정: 있음 = 그 식(또는 요소)을 그대로 쓰는 문헌·법령 / 부분 = 형태·기준점·방향 일부만 대응 / 없음 = 대응하는 근거를 찾지 못함
@@ -148,6 +163,88 @@ EVIDENCE = [
      "upgrade": "AHP 전문가 설문 또는 good/bad로 학습(학습값을 쓰면 '고정 프리셋' 원칙이 바뀌는 C 수준)", "upsrc": "ahp", "level": "C"},
 ]
 
+
+# 추가 변경된 사항 (권혜림 담당: 그룹 안 비중). 형식은 은혜 님 열과 같음: [구분, 요소, 판정, 설명, 출처 키(또는 목록)]
+D18 = " 11.18"
+
+
+def _weight_entries(pairs_note, lr_judge, lr_note):
+    return [
+        ["추가" + D18, "AHP 쌍대비교로 비중을 정함 (방법)", "있음", "종합지수 가중치를 정하는 참여형 방법(OECD·JRC 핸드북 6.1.8), 예타 다기준분석의 기본 기법. 업종 → 그룹 → 인자 계층에 맞음. 직접 설문이 필요해 보류", ["oecdhb", "kdi"]],
+        ["추가" + D18, "응답 일관성 기준 CR ≤ 0.1", "있음", pairs_note, ["saaty"]],
+        ["추가" + D18, "전문가 여러 명의 판단을 기하평균으로 합침", "있음", "쌍대비교 값을 응답자별로 기하평균(AIJ)해야 역수 성질이 유지됨", ["forman"]],
+        ["추가" + D18, "다른 연구의 AHP 가중치를 그대로 씀", "부분", "상가 입지 AHP 연구는 계층·인자·업종이 우리와 달라 순서 참고만 가능, 값으로는 못 씀", ["ahp", "flagship"]],
+        ["추가" + D18, "설문 없이 ① 중개사 추천 라벨로 선택비·로지스틱 회귀", lr_judge, lr_note, ["frlr", "elazig"]],
+        ["추가" + D18, "설문 없이 ② 동일 비중 + 실제 영향 보정", "부분", "중요도 정보가 없을 때의 기본값. 비중이 같아도 실제 영향은 상관·분산 때문에 달라지므로 목표 영향에 맞게 최적화. 업종별 차이는 말해 주지 않음", ["becker", "optw"]],
+        ["추가" + D18, "설문 없이 ③ 엔트로피·CRITIC", "부분", "자료의 퍼짐·상관만으로 계산하는 객관 가중치. '많이 퍼진 인자 = 중요'라는 가정이고 정규화 방식에 좌우됨", ["critic", "mcdmrev"]],
+        ["추가" + D18, "설문 없이 ④ 논문의 중요도 순서 + 순위 중심 가중치(ROC)", "부분", "논문이 순서만 줄 때 순서를 비중으로 바꾸는 공식. 논문마다 순서가 엇갈리면 쓸 수 없음(예: 지하철역 접근성과 생존의 방향)", ["roc", "survival"]],
+    ]
+
+
+MY_ADDED = {
+    ("비용", "그룹 안 비중"): _weight_entries("쌍 1개(임대료 부담+보증금 · 가성비)라 CR이 항상 0. 일관성 검사가 의미 없어 응답 분산을 함께 봐야 함",
+                                         "없음", "업종 추천 여부를 인자 점수로 설명해 비중을 구하는 방식. 아래 실측처럼 방향이 반대라 비용에는 쓰지 않음"),
+    ("공간", "그룹 안 비중"): _weight_entries("쌍 3개(층·면적·연식)라 CR 계산 가능",
+                                         "부분", "2,717건 중개사 추천용도(업종 추천 여부 1/0)로 층·면적·연식의 선택비를 구해 비중으로. 층 점수·기본 면적이 같은 라벨로 만들어져 5겹 교차검증 필요"),
+    ("입지", "그룹 안 비중"): _weight_entries("쌍 3개(교통·활성도·배후 수요)라 CR 계산 가능. 지하철 : 버스 비율은 교통 안의 비율이라 따로 다룸",
+                                         "부분", "같은 방식. 입지 인자는 라벨과 별개인 외부 데이터라 순환 문제 없음. 다만 라벨은 공간 적합 판단이라 입지 목적과 다름"),
+    ("업종적합", "그룹 안 비중"): _weight_entries("쌍 1개(용도 일치도·건물 용도)라 CR이 항상 0",
+                                           "없음", "용도 일치도가 추천 라벨 자체라 이 방식을 쓸 수 없음"),
+}
+for _e in EVIDENCE:
+    _m = MY_ADDED.get((_e["group"], _e["factor"]))
+    if _m:
+        _e["added"] = (_e.get("added") or []) + _m
+
+
+def add_estimation(evidence):
+    """weight_estimation.py 결과(업종별_그룹안비중_추정.json)를 '추가 변경된 사항'에 붙인다. 숫자는 파일에서 읽음."""
+    path = os.path.join(ROOT, "data", "09.스코어링", "업종별_그룹안비중_추정.json")
+    if not os.path.exists(path):
+        return
+    J = json.load(open(path, encoding="utf-8"))
+    U = J["업종"]
+    f0 = lambda x: "%.0f" % x
+    row = {(e["group"], e["factor"]): e for e in evidence}
+    D = " 11.18"
+
+    parts, aucs, widths = [], [], []
+    for c in CATS:
+        o = U[c]["그룹"]["공간"]
+        w = o["방법"]["FR"]["비중"]
+        parts.append(c + ("(층 제외, 면적·연식)" if "층" not in o["인자"] else "") + " " + "·".join(f0(x) for x in w))
+        aucs.append("%s %.3f→%.3f" % (c, o["AUC_현재"], o["방법"]["FR"]["AUC"]))
+        widths.append(o["방법"]["FR"]["구간폭평균"])
+    rk = [U[c]["총점비교"]["FR_공간만"] for c in CATS]
+    row[("공간", "그룹 안 비중")]["added"] += [
+        ["추가" + D, "선택비로 업종별 층·면적·연식 비중 계산 (5겹 교차검증)", "있음",
+         "업종 추천 매물 비율 ÷ 전체 비율(층 점수와 같은 식). " + " / ".join(parts) + ". 판별력 AUC 현재→선택비: " + ", ".join(aucs) +
+         ". 90%% 구간 폭 %s~%s. 공간만 바꾸면 총점 순위 상관 %.3f~%.3f, 상위 10 중 %d~%d개 유지 (weight_estimation.py)" % (
+             f0(min(x for x in widths if x is not None)), f0(max(widths)), min(r["순위상관"] for r in rk), max(r["순위상관"] for r in rk),
+             min(r["상위10유지"] for r in rk), max(r["상위10유지"] for r in rk)), ["manly", "frlr"]],
+        ["추가" + D, "증거가중치·로지스틱 회귀와 비교", "있음",
+         "세 방법의 판별력 차이 0.01 안팎. 선택비가 가장 안정적이고 층 점수와 같은 식이라 채택안. 로지스틱은 겹치는 인자를 0으로 만듦(예: 소매 면적 0)", ["wofe", "frlr"]],
+        ["바뀜" + D, "비중값", "부분", "없음 → 선택비로 계산한 값이 생김(엔진 미반영). 중개사 추천 판단에 맞춘 값이고 실제 영업 성과로 검증한 것은 아님", None],
+    ]
+    stable, unstable, none = [], [], []
+    for c in CATS:
+        o = U[c]["그룹"]["입지"]["방법"]["FR"]
+        if o["비중"] is None:
+            none.append(c)
+        elif o["구간폭평균"] is not None and o["구간폭평균"] <= 20:
+            stable.append(c + " " + "·".join(f0(x) for x in o["비중"]))
+        else:
+            unstable.append("%s(폭 %s)" % (c, f0(o["구간폭평균"])))
+    row[("입지", "그룹 안 비중")]["added"].append(
+        ["바뀜" + D, "① 라벨 선택비 실측 결과", "부분",
+         "안정적으로 추정되는 업종은 " + ", ".join(stable) + "(교통·활성도·배후, 구간 폭 20 이하). " + ", ".join(none) +
+         "는 세 인자 모두 업종 매물이 오히려 낮아 추정 불가. 불안정: " + ", ".join(unstable) + ". 점포 생존·실제 점포 위치 같은 결과 자료가 필요", ["frlr"]])
+    rev = ["%s %.3f" % (c, U[c]["그룹"]["비용"]["AUC_현재"]) for c in CATS if U[c]["그룹"]["비용"]["AUC_현재"] < 0.5]
+    row[("비용", "그룹 안 비중")]["added"].append(
+        ["바뀜" + D, "① 라벨 선택비 실측 결과", "없음",
+         "업종에 맞는 공간일수록 비싸서 방향이 반대(현재 비중 AUC 0.5 미만: " + ", ".join(rev) + "). 라벨로 비용 비중을 정하면 비싼 매물에 점수를 더 주게 되어 쓰지 않음", ["frlr"]])
+
+
 STRUCTURE = {
     "fixed": [
         "인자 점수는 0~100",
@@ -234,6 +331,7 @@ def spearman(x, y):
 
 def main():
     sys.stdout.reconfigure(encoding="utf-8")
+    add_estimation(EVIDENCE)
     c1, c2 = jload("점수_v1_config.json"), jload("점수_v2_config.json")
     k1, k2 = jload("점수_v1_검사.json"), jload("점수_v2_검사.json")
     meta, sens = jload("용도분류_v2_meta.json"), jload("인자민감도_v2.json")
