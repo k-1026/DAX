@@ -1,0 +1,260 @@
+{
+  "schemaVersion": "1.0",
+  "taskDate": "2026-11-19",
+  "stage": 2,
+  "status": "reviewed_proposal_awaiting_user_confirmation_before_stage3",
+  "methodId": "critic-fixed-score-v1-draft",
+  "scope": {
+    "categories": [
+      "식음료",
+      "소매",
+      "뷰티",
+      "공연문화",
+      "사무업무",
+      "교육",
+      "의료",
+      "운동시설"
+    ],
+    "target": "within_group_factor_shares_only",
+    "groups": [
+      "비용",
+      "공간",
+      "입지",
+      "업종적합"
+    ],
+    "factors": {
+      "비용": [
+        "임대료부담",
+        "가성비",
+        "보증금"
+      ],
+      "공간": [
+        "층",
+        "면적적합도",
+        "건물연식"
+      ],
+      "입지": [
+        "교통",
+        "상권활성도",
+        "배후수요"
+      ],
+      "업종적합": [
+        "용도일치도",
+        "건물용도"
+      ]
+    },
+    "groupWeights": "retain_baseline_config_preset_g",
+    "scoreFunctions": "retain_frozen_v2",
+    "excluded": [
+      "between_group_weight_estimation",
+      "subindustry_weight_estimation",
+      "subway_bus_mixture_changes",
+      "production_deployment",
+      "feedback_or_recommendation_label_training"
+    ],
+    "newWeightsCalculated": false,
+    "stage3Started": false
+  },
+  "data": {
+    "baselineVersion": "v2",
+    "baselineBudget": null,
+    "baselineWant": null,
+    "baselineManifestSha256": "73ee01b986e50c7af0ae2d19fc3fbdb35c64dc8ccefe5aac3ad4e6dd7664f559",
+    "sourceFreshness": [
+      {
+        "file": "C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/점수_v2.csv",
+        "unchangedSinceStage1": true
+      },
+      {
+        "file": "C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/점수_v2_config.json",
+        "unchangedSinceStage1": true
+      },
+      {
+        "file": "C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/점수_v2_검사.json",
+        "unchangedSinceStage1": true
+      },
+      {
+        "file": "C:/Users/Green/Desktop/k뉴딜/data/scripts/scoring_engine.py",
+        "unchangedSinceStage1": true
+      },
+      {
+        "file": "C:/Users/Green/Desktop/k뉴딜/data/scripts/classify_use.py",
+        "unchangedSinceStage1": true
+      },
+      {
+        "file": "C:/Users/Green/Desktop/k뉴딜/data/07.대구_매물유형별_csv/대구_구역별_매물 (최종).csv",
+        "unchangedSinceStage1": true
+      },
+      {
+        "file": "C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/외부인자_v1.csv",
+        "unchangedSinceStage1": true
+      },
+      {
+        "file": "C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/건물용도_v1.csv",
+        "unchangedSinceStage1": true
+      },
+      {
+        "file": "C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/업종별_그룹안비중_추정.json",
+        "unchangedSinceStage1": true
+      },
+      {
+        "file": "C:/Users/Green/Desktop/k뉴딜/data/scripts/weight_estimation.py",
+        "unchangedSinceStage1": true
+      }
+    ],
+    "cohort": {
+      "rule": "nonblank finite latitude/longitude within geographic coordinate ranges, using frozen base CSV",
+      "n": 2669,
+      "relationshipToExistingEligible": "same IDs for current snapshot; selected via coordinate availability rather than score/label",
+      "scope": "Daegu reference pool fixed for this version; no top-N/recommended-industry-only subset; no local-filter refit"
+    },
+    "factorColumns": {
+      "shared": {
+        "가성비": "가성비",
+        "보증금": "보증금점수",
+        "건물연식": "건물연식"
+      },
+      "industryPattern": "<factor>_<category>",
+      "rentBurden": "not exported; derive separately from frozen raw rent+management using baseline rule"
+    },
+    "inputValidity": "scores finite in [0,100], no raw money-distance score mixing; listing IDs unique and joins exact",
+    "referenceDateForAge": "retain baseline engine TODAY=2026-11-10; do not silently recalculate age using current date",
+    "precision": "current exported scores rounded to 0.1 are baseline; recomputed rent burden rounded to same precision for main pilot; raw inputs retained"
+  },
+  "budget": {
+    "currencyUnit": "10,000 KRW per month",
+    "main": {
+      "value": 300,
+      "reason": "existing demo/sensitivity/label-experiment comparison condition; not a statistically established typical budget",
+      "affordability": "monthly_rent + management_fee <= budget",
+      "rentBurdenFormula": "baseline interpolation: ratio <=0.5 =>100; 0.5<ratio<=1 =>160-120*ratio; above budget =>not a cost fitting observation",
+      "cohort": "coordinate reference pool intersect affordability, then complete cases for all active cost factors",
+      "scoringFunction": "existing v2; do not apply proposed converted-rent/percentile scheme"
+    },
+    "supplementary": [
+      {
+        "budget": null,
+        "costFactors": [
+          "가성비",
+          "보증금"
+        ],
+        "interpretation": "two-factor missing-budget case; not a complete replacement for 3-factor cost shares"
+      },
+      {
+        "budgetRule": "25th/50th/75th percentiles of rent+management in fixed coordinate reference pool",
+        "quantile": "linear interpolation at (n-1)*p; finite nonnegative valid amounts only; deduplicate; require budget>0",
+        "purpose": "data-derived affordability scenarios; report separately; do not average into one universal vector"
+      }
+    ],
+    "managementMissing": "reproduce baseline zero imputation, explicitly flag 1657/2717 missing in full source; a management-known subset rerun is sensitivity analysis only, not population truth",
+    "negativeOrMissingRent": "report invalid raw rent separately; do not silently create zero rent; unexpected raw conditions require input review",
+    "otherGroups": "fit on fixed coordinate cohort; do not refit merely because budget filter changes",
+    "want": "null; retain industry default area; alternative area conditions left to later sensitivity review"
+  },
+  "missingness": {
+    "structuralAbsent": "remove before group listwise deletion; reason recorded; not an observed zero score",
+    "disabledFloor": [
+      "공연문화"
+    ],
+    "ordinary": "for each category-group fit on one complete-case cohort shared by all active columns; no pairwise deletion in CRITIC matrix; no zero/mean fill",
+    "record": [
+      "referenceN",
+      "activeFactors",
+      "structuralExclusions",
+      "missingNPerFactor",
+      "completeCaseN",
+      "excludedByMissingnessN",
+      "constantFactors"
+    ],
+    "observedCompleteCounts": {
+      "standardSpace": 2623,
+      "performanceCultureSpace": 2649,
+      "location": 2669,
+      "industryFit": 2531,
+      "costBudget300": "not computed in stage2"
+    },
+    "productionScoring": "retain baseline per-listing available-factor renormalization and separate data-coverage reporting; fitting deletion is not recommendation deletion"
+  },
+  "method": {
+    "primaryNormalization": {
+      "name": "fixed_score_scale",
+      "formula": "x_ij=s_ij/100",
+      "reason": "preserve team-defined existing 0-100 score scales while estimating within-group shares",
+      "differenceFromOriginal": "original paper uses sample min-max. This adaptation must be named explicitly; no claim of fully identical original preprocessing"
+    },
+    "supplementaryNormalization": {
+      "name": "sample_minmax_weight_estimation_only",
+      "formula": "x_ij=(s_ij-min_j)/(max_j-min_j)",
+      "scope": "same complete-case sample; weight-estimation normalization comparison; downstream baseline score functions remain unchanged",
+      "caution": "different normalization may produce materially different weights"
+    },
+    "dispersion": {
+      "name": "sample_standard_deviation",
+      "ddof": 1
+    },
+    "correlation": {
+      "name": "Pearson",
+      "sameRows": true,
+      "formula": "C_j=sd_j * sum_k(1-r_jk); w_j=100*C_j/sum_l(C_l)",
+      "negative": "retain sign; do not silently use abs(r), clip negative correlations or drop a high-correlation criterion",
+      "numericalTolerance": 1e-12
+    },
+    "rounding": "retain full precision in future machine outputs; display percentages to 1 decimal with displayed-sum correction documented; no clipping to policy minimum/maximum",
+    "degenerate": {
+      "constant": "remove exactly constant columns from information-weight fit and record constant_on_reference_sample; do not interpret as globally irrelevant; candidate information weight zero only in this version, not automatically deployed",
+      "allConstantOrZeroInformation": "no CRITIC estimate; report cannot_estimate and comparison fallback existing normalized within-group shares; label fallback explicitly",
+      "insufficientN": "complete-case n<2 =>cannot_estimate; n>=2 only arithmetic feasibility, not statistical reliability",
+      "oneActiveFactor": "100% arithmetic allocation; mark single_factor, not a learned importance result",
+      "twoActiveFactors": "if r<1 and both SD>0, common (1-r) cancels, so weights are proportional to SD; mark two_factor_sd_ratio. If perfect positive correlation leaves total information zero, cannot_estimate",
+      "nearDegenerate": "if SD or total information within numerical tolerance, mark diagnostic; do not invent epsilon weights",
+      "nonfiniteOrOutOfRange": "halt affected category-group fitting, report input invalidity"
+    },
+    "smallSampleReliability": "report n and later bootstrap dispersion; no arbitrary n=30 guarantee"
+  },
+  "comparisons": {
+    "baselines": [
+      "original within-group shares",
+      "equal shares within each active group",
+      "CRITIC fixed-score candidate",
+      "sample-minmax-normalization candidate"
+    ],
+    "preserved": [
+      "same frozen score functions",
+      "same group-level weights",
+      "same scenario filters/cohort for ranking comparisons"
+    ],
+    "laterMetrics": [
+      "weight sum and validity",
+      "group score and total score changes",
+      "Spearman rank correlation",
+      "top10/top50 retained; use min(K,n) and disclose cutoff ties",
+      "coverage/recommendation eligibility changes",
+      "bootstrap weight dispersion and normalization/budget sensitivity"
+    ],
+    "eligibility": "recompute factor coverage with each candidate within-group weight and original group weights; threshold=60 retained; report data-eligibility changes separately from rank changes on common eligible candidates",
+    "interpretation": "statistical combination rationale and stability only, not validated tenant preference or survival/rentability prediction"
+  },
+  "existingExperiment": {
+    "path": "업종별_그룹안비중_추정.json",
+    "methods": [
+      "FR",
+      "WofE",
+      "LR"
+    ],
+    "labels": "broker recommendation text, not observed good/bad",
+    "budget": 300,
+    "labelN": 1722,
+    "handling": "preserve; separate appendix/comparator, no automatic adoption or pooling into CRITIC"
+  },
+  "sources": [
+    {
+      "id": "critic1995",
+      "title": "Diakoulaki, Mavrotas & Papayannakis (1995), Determining objective weights in multiple criteria problems: The CRITIC method",
+      "doi": "https://doi.org/10.1016/0305-0548(94)00059-H",
+      "fullText": "https://reformship.github.io/pages/1capacity/1model/11evaluation/Determining%20objective%20weights%20in%20multiple%20criteria%20problems%20The%20CRITIC%20method.pdf",
+      "pages": "765, equations 2-6",
+      "supports": "sample minmax preprocessing, SD, correlation, information weight normalization; two-factor cancellation is our algebraic deduction"
+    }
+  ],
+  "stageGate": "This is stage2 method review only. Wait for user before implementing or calculating stage3 weights."
+}

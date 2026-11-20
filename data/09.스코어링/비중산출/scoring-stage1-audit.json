@@ -1,0 +1,4769 @@
+{
+  "scope": "stage1_input_audit_only_no_weight_estimation",
+  "version": "v2",
+  "budget": null,
+  "want": null,
+  "n": 2717,
+  "columns": 192,
+  "rowWidthErrors": [],
+  "duplicateIds": 0,
+  "emptyIds": 0,
+  "categories": {
+    "식음료": {
+      "eligible": 2669,
+      "excluded": 48,
+      "groupWeights": [
+        25,
+        20,
+        35,
+        20
+      ],
+      "withinGroup": {
+        "비용": [
+          50,
+          30,
+          20
+        ],
+        "공간": [
+          50,
+          35,
+          15
+        ],
+        "입지": [
+          30,
+          40,
+          30
+        ],
+        "업종적합": [
+          40,
+          60
+        ]
+      },
+      "factors": {
+        "임대료부담": {
+          "group": "비용",
+          "column": null,
+          "structuralAbsence": "not_exported_budget_null",
+          "all": {
+            "n": 2717,
+            "valid": 0,
+            "missing": 2717,
+            "invalid": 0,
+            "unique": 0,
+            "min": null,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "max": null,
+            "mean": null,
+            "sd": null,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 0
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 0,
+            "missing": 2669,
+            "invalid": 0,
+            "unique": 0,
+            "min": null,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "max": null,
+            "mean": null,
+            "sd": null,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 0
+          }
+        },
+        "가성비": {
+          "group": "비용",
+          "column": "가성비",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2717,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 788,
+            "min": 0,
+            "p10": 0,
+            "median": 60,
+            "p90": 98.1,
+            "max": 100,
+            "mean": 56.3077,
+            "sd": 32.2071,
+            "outOfRange": 0,
+            "zero": 322,
+            "hundred": 247
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 783,
+            "min": 0,
+            "p10": 0,
+            "median": 60,
+            "p90": 98,
+            "max": 100,
+            "mean": 56.1656,
+            "sd": 32.217,
+            "outOfRange": 0,
+            "zero": 320,
+            "hundred": 239
+          }
+        },
+        "보증금": {
+          "group": "비용",
+          "column": "보증금점수",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2717,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 48,
+            "min": 10,
+            "p10": 26.7,
+            "median": 60,
+            "p90": 100,
+            "max": 100,
+            "mean": 65.0371,
+            "sd": 25.7895,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 332
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 48,
+            "min": 10,
+            "p10": 20,
+            "median": 60,
+            "p90": 100,
+            "max": 100,
+            "mean": 64.944,
+            "sd": 25.868,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 326
+          }
+        },
+        "층": {
+          "group": "공간",
+          "column": "층_식음료",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2691,
+            "missing": 26,
+            "invalid": 0,
+            "unique": 4,
+            "min": 40,
+            "p10": 51,
+            "median": 100,
+            "p90": 100,
+            "max": 100,
+            "mean": 79.6867,
+            "sd": 22.7488,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 1469
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2643,
+            "missing": 26,
+            "invalid": 0,
+            "unique": 4,
+            "min": 40,
+            "p10": 51,
+            "median": 100,
+            "p90": 100,
+            "max": 100,
+            "mean": 79.5214,
+            "sd": 22.7638,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 1433
+          }
+        },
+        "면적적합도": {
+          "group": "공간",
+          "column": "면적적합도_식음료",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2717,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 637,
+            "min": 0,
+            "p10": 10,
+            "median": 38.5,
+            "p90": 100,
+            "max": 100,
+            "mean": 45.7305,
+            "sd": 34.6038,
+            "outOfRange": 0,
+            "zero": 118,
+            "hundred": 442
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 631,
+            "min": 0,
+            "p10": 10,
+            "median": 38.2,
+            "p90": 100,
+            "max": 100,
+            "mean": 45.5346,
+            "sd": 34.6146,
+            "outOfRange": 0,
+            "zero": 118,
+            "hundred": 431
+          }
+        },
+        "건물연식": {
+          "group": "공간",
+          "column": "건물연식",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2697,
+            "missing": 20,
+            "invalid": 0,
+            "unique": 575,
+            "min": 30,
+            "p10": 30,
+            "median": 59.7,
+            "p90": 100,
+            "max": 100,
+            "mean": 62.9858,
+            "sd": 25.6901,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 394
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2649,
+            "missing": 20,
+            "invalid": 0,
+            "unique": 572,
+            "min": 30,
+            "p10": 30,
+            "median": 59.7,
+            "p90": 100,
+            "max": 100,
+            "mean": 62.9466,
+            "sd": 25.7202,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 387
+          }
+        },
+        "교통": {
+          "group": "입지",
+          "column": "교통_식음료",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2669,
+            "missing": 48,
+            "invalid": 0,
+            "unique": 635,
+            "min": 18,
+            "p10": 44.48,
+            "median": 76,
+            "p90": 98,
+            "max": 100,
+            "mean": 72.6078,
+            "sd": 19.9283,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 182
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 635,
+            "min": 18,
+            "p10": 44.48,
+            "median": 76,
+            "p90": 98,
+            "max": 100,
+            "mean": 72.6078,
+            "sd": 19.9283,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 182
+          }
+        },
+        "상권활성도": {
+          "group": "입지",
+          "column": "상권활성도_식음료",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2669,
+            "missing": 48,
+            "invalid": 0,
+            "unique": 562,
+            "min": 0,
+            "p10": 10,
+            "median": 50.2,
+            "p90": 90.02,
+            "max": 100,
+            "mean": 50.0016,
+            "sd": 28.8737,
+            "outOfRange": 0,
+            "zero": 1,
+            "hundred": 2
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 562,
+            "min": 0,
+            "p10": 10,
+            "median": 50.2,
+            "p90": 90.02,
+            "max": 100,
+            "mean": 50.0016,
+            "sd": 28.8737,
+            "outOfRange": 0,
+            "zero": 1,
+            "hundred": 2
+          }
+        },
+        "배후수요": {
+          "group": "입지",
+          "column": "배후수요_식음료",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2669,
+            "missing": 48,
+            "invalid": 0,
+            "unique": 759,
+            "min": 0,
+            "p10": 18.6,
+            "median": 51.9,
+            "p90": 77.02,
+            "max": 97.9,
+            "mean": 49.9997,
+            "sd": 21.4608,
+            "outOfRange": 0,
+            "zero": 1,
+            "hundred": 0
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 759,
+            "min": 0,
+            "p10": 18.6,
+            "median": 51.9,
+            "p90": 77.02,
+            "max": 97.9,
+            "mean": 49.9997,
+            "sd": 21.4608,
+            "outOfRange": 0,
+            "zero": 1,
+            "hundred": 0
+          }
+        },
+        "용도일치도": {
+          "group": "업종적합",
+          "column": "용도일치도_식음료",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2717,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 4,
+            "min": 30,
+            "p10": 30,
+            "median": 60,
+            "p90": 100,
+            "max": 100,
+            "mean": 62.2525,
+            "sd": 24.2077,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 677
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 4,
+            "min": 30,
+            "p10": 30,
+            "median": 60,
+            "p90": 100,
+            "max": 100,
+            "mean": 62.2031,
+            "sd": 24.1764,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 662
+          }
+        },
+        "건물용도": {
+          "group": "업종적합",
+          "column": "건물용도_식음료",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2531,
+            "missing": 186,
+            "invalid": 0,
+            "unique": 4,
+            "min": 30,
+            "p10": 40,
+            "median": 80,
+            "p90": 100,
+            "max": 100,
+            "mean": 81.7701,
+            "sd": 20.4849,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 1004
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2531,
+            "missing": 138,
+            "invalid": 0,
+            "unique": 4,
+            "min": 30,
+            "p10": 40,
+            "median": 80,
+            "p90": 100,
+            "max": 100,
+            "mean": 81.7701,
+            "sd": 20.4849,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 1004
+          }
+        }
+      },
+      "groups": {
+        "비용": {
+          "configuredFactors": [
+            "임대료부담",
+            "가성비",
+            "보증금"
+          ],
+          "observedFactors": [
+            "가성비",
+            "보증금"
+          ],
+          "allComplete": 2717,
+          "eligibleComplete": 2669,
+          "eligiblePairwiseCorrelations": [
+            {
+              "a": "가성비",
+              "b": "보증금",
+              "n": 2669,
+              "r": 0.4129
+            }
+          ]
+        },
+        "공간": {
+          "configuredFactors": [
+            "층",
+            "면적적합도",
+            "건물연식"
+          ],
+          "observedFactors": [
+            "층",
+            "면적적합도",
+            "건물연식"
+          ],
+          "allComplete": 2671,
+          "eligibleComplete": 2623,
+          "eligiblePairwiseCorrelations": [
+            {
+              "a": "층",
+              "b": "면적적합도",
+              "n": 2643,
+              "r": 0.2211
+            },
+            {
+              "a": "층",
+              "b": "건물연식",
+              "n": 2623,
+              "r": -0.0758
+            },
+            {
+              "a": "면적적합도",
+              "b": "건물연식",
+              "n": 2649,
+              "r": -0.0097
+            }
+          ]
+        },
+        "입지": {
+          "configuredFactors": [
+            "교통",
+            "상권활성도",
+            "배후수요"
+          ],
+          "observedFactors": [
+            "교통",
+            "상권활성도",
+            "배후수요"
+          ],
+          "allComplete": 2669,
+          "eligibleComplete": 2669,
+          "eligiblePairwiseCorrelations": [
+            {
+              "a": "교통",
+              "b": "상권활성도",
+              "n": 2669,
+              "r": 0.3737
+            },
+            {
+              "a": "교통",
+              "b": "배후수요",
+              "n": 2669,
+              "r": 0.3986
+            },
+            {
+              "a": "상권활성도",
+              "b": "배후수요",
+              "n": 2669,
+              "r": 0.5864
+            }
+          ]
+        },
+        "업종적합": {
+          "configuredFactors": [
+            "용도일치도",
+            "건물용도"
+          ],
+          "observedFactors": [
+            "용도일치도",
+            "건물용도"
+          ],
+          "allComplete": 2531,
+          "eligibleComplete": 2531,
+          "eligiblePairwiseCorrelations": [
+            {
+              "a": "용도일치도",
+              "b": "건물용도",
+              "n": 2531,
+              "r": 0.0908
+            }
+          ]
+        }
+      }
+    },
+    "소매": {
+      "eligible": 2669,
+      "excluded": 48,
+      "groupWeights": [
+        25,
+        20,
+        35,
+        20
+      ],
+      "withinGroup": {
+        "비용": [
+          50,
+          30,
+          20
+        ],
+        "공간": [
+          50,
+          35,
+          15
+        ],
+        "입지": [
+          30,
+          40,
+          30
+        ],
+        "업종적합": [
+          40,
+          60
+        ]
+      },
+      "factors": {
+        "임대료부담": {
+          "group": "비용",
+          "column": null,
+          "structuralAbsence": "not_exported_budget_null",
+          "all": {
+            "n": 2717,
+            "valid": 0,
+            "missing": 2717,
+            "invalid": 0,
+            "unique": 0,
+            "min": null,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "max": null,
+            "mean": null,
+            "sd": null,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 0
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 0,
+            "missing": 2669,
+            "invalid": 0,
+            "unique": 0,
+            "min": null,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "max": null,
+            "mean": null,
+            "sd": null,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 0
+          }
+        },
+        "가성비": {
+          "group": "비용",
+          "column": "가성비",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2717,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 788,
+            "min": 0,
+            "p10": 0,
+            "median": 60,
+            "p90": 98.1,
+            "max": 100,
+            "mean": 56.3077,
+            "sd": 32.2071,
+            "outOfRange": 0,
+            "zero": 322,
+            "hundred": 247
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 783,
+            "min": 0,
+            "p10": 0,
+            "median": 60,
+            "p90": 98,
+            "max": 100,
+            "mean": 56.1656,
+            "sd": 32.217,
+            "outOfRange": 0,
+            "zero": 320,
+            "hundred": 239
+          }
+        },
+        "보증금": {
+          "group": "비용",
+          "column": "보증금점수",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2717,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 48,
+            "min": 10,
+            "p10": 26.7,
+            "median": 60,
+            "p90": 100,
+            "max": 100,
+            "mean": 65.0371,
+            "sd": 25.7895,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 332
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 48,
+            "min": 10,
+            "p10": 20,
+            "median": 60,
+            "p90": 100,
+            "max": 100,
+            "mean": 64.944,
+            "sd": 25.868,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 326
+          }
+        },
+        "층": {
+          "group": "공간",
+          "column": "층_소매",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2691,
+            "missing": 26,
+            "invalid": 0,
+            "unique": 4,
+            "min": 40,
+            "p10": 49,
+            "median": 100,
+            "p90": 100,
+            "max": 100,
+            "mean": 77.7224,
+            "sd": 24.5717,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 1469
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2643,
+            "missing": 26,
+            "invalid": 0,
+            "unique": 4,
+            "min": 40,
+            "p10": 49,
+            "median": 100,
+            "p90": 100,
+            "max": 100,
+            "mean": 77.5426,
+            "sd": 24.5855,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 1433
+          }
+        },
+        "면적적합도": {
+          "group": "공간",
+          "column": "면적적합도_소매",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2717,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 632,
+            "min": 0,
+            "p10": 10,
+            "median": 38,
+            "p90": 100,
+            "max": 100,
+            "mean": 45.9295,
+            "sd": 34.4983,
+            "outOfRange": 0,
+            "zero": 106,
+            "hundred": 456
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 629,
+            "min": 0,
+            "p10": 10,
+            "median": 37.6,
+            "p90": 100,
+            "max": 100,
+            "mean": 45.726,
+            "sd": 34.5117,
+            "outOfRange": 0,
+            "zero": 106,
+            "hundred": 445
+          }
+        },
+        "건물연식": {
+          "group": "공간",
+          "column": "건물연식",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2697,
+            "missing": 20,
+            "invalid": 0,
+            "unique": 575,
+            "min": 30,
+            "p10": 30,
+            "median": 59.7,
+            "p90": 100,
+            "max": 100,
+            "mean": 62.9858,
+            "sd": 25.6901,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 394
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2649,
+            "missing": 20,
+            "invalid": 0,
+            "unique": 572,
+            "min": 30,
+            "p10": 30,
+            "median": 59.7,
+            "p90": 100,
+            "max": 100,
+            "mean": 62.9466,
+            "sd": 25.7202,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 387
+          }
+        },
+        "교통": {
+          "group": "입지",
+          "column": "교통_소매",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2669,
+            "missing": 48,
+            "invalid": 0,
+            "unique": 635,
+            "min": 18,
+            "p10": 44.48,
+            "median": 76,
+            "p90": 98,
+            "max": 100,
+            "mean": 72.6078,
+            "sd": 19.9283,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 182
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 635,
+            "min": 18,
+            "p10": 44.48,
+            "median": 76,
+            "p90": 98,
+            "max": 100,
+            "mean": 72.6078,
+            "sd": 19.9283,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 182
+          }
+        },
+        "상권활성도": {
+          "group": "입지",
+          "column": "상권활성도_소매",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2669,
+            "missing": 48,
+            "invalid": 0,
+            "unique": 562,
+            "min": 0,
+            "p10": 10,
+            "median": 50.2,
+            "p90": 90.02,
+            "max": 100,
+            "mean": 50.0016,
+            "sd": 28.8737,
+            "outOfRange": 0,
+            "zero": 1,
+            "hundred": 2
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 562,
+            "min": 0,
+            "p10": 10,
+            "median": 50.2,
+            "p90": 90.02,
+            "max": 100,
+            "mean": 50.0016,
+            "sd": 28.8737,
+            "outOfRange": 0,
+            "zero": 1,
+            "hundred": 2
+          }
+        },
+        "배후수요": {
+          "group": "입지",
+          "column": "배후수요_소매",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2669,
+            "missing": 48,
+            "invalid": 0,
+            "unique": 974,
+            "min": 0,
+            "p10": 10,
+            "median": 50,
+            "p90": 90,
+            "max": 100,
+            "mean": 50,
+            "sd": 28.8735,
+            "outOfRange": 0,
+            "zero": 1,
+            "hundred": 1
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 974,
+            "min": 0,
+            "p10": 10,
+            "median": 50,
+            "p90": 90,
+            "max": 100,
+            "mean": 50,
+            "sd": 28.8735,
+            "outOfRange": 0,
+            "zero": 1,
+            "hundred": 1
+          }
+        },
+        "용도일치도": {
+          "group": "업종적합",
+          "column": "용도일치도_소매",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2717,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 4,
+            "min": 30,
+            "p10": 30,
+            "median": 60,
+            "p90": 100,
+            "max": 100,
+            "mean": 57.0519,
+            "sd": 21.6656,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 416
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 4,
+            "min": 30,
+            "p10": 30,
+            "median": 60,
+            "p90": 100,
+            "max": 100,
+            "mean": 57.0101,
+            "sd": 21.6482,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 407
+          }
+        },
+        "건물용도": {
+          "group": "업종적합",
+          "column": "건물용도_소매",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2531,
+            "missing": 186,
+            "invalid": 0,
+            "unique": 4,
+            "min": 30,
+            "p10": 40,
+            "median": 80,
+            "p90": 100,
+            "max": 100,
+            "mean": 83.2793,
+            "sd": 20.3641,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 1137
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2531,
+            "missing": 138,
+            "invalid": 0,
+            "unique": 4,
+            "min": 30,
+            "p10": 40,
+            "median": 80,
+            "p90": 100,
+            "max": 100,
+            "mean": 83.2793,
+            "sd": 20.3641,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 1137
+          }
+        }
+      },
+      "groups": {
+        "비용": {
+          "configuredFactors": [
+            "임대료부담",
+            "가성비",
+            "보증금"
+          ],
+          "observedFactors": [
+            "가성비",
+            "보증금"
+          ],
+          "allComplete": 2717,
+          "eligibleComplete": 2669,
+          "eligiblePairwiseCorrelations": [
+            {
+              "a": "가성비",
+              "b": "보증금",
+              "n": 2669,
+              "r": 0.4129
+            }
+          ]
+        },
+        "공간": {
+          "configuredFactors": [
+            "층",
+            "면적적합도",
+            "건물연식"
+          ],
+          "observedFactors": [
+            "층",
+            "면적적합도",
+            "건물연식"
+          ],
+          "allComplete": 2671,
+          "eligibleComplete": 2623,
+          "eligiblePairwiseCorrelations": [
+            {
+              "a": "층",
+              "b": "면적적합도",
+              "n": 2643,
+              "r": 0.2516
+            },
+            {
+              "a": "층",
+              "b": "건물연식",
+              "n": 2623,
+              "r": -0.0702
+            },
+            {
+              "a": "면적적합도",
+              "b": "건물연식",
+              "n": 2649,
+              "r": -0.0104
+            }
+          ]
+        },
+        "입지": {
+          "configuredFactors": [
+            "교통",
+            "상권활성도",
+            "배후수요"
+          ],
+          "observedFactors": [
+            "교통",
+            "상권활성도",
+            "배후수요"
+          ],
+          "allComplete": 2669,
+          "eligibleComplete": 2669,
+          "eligiblePairwiseCorrelations": [
+            {
+              "a": "교통",
+              "b": "상권활성도",
+              "n": 2669,
+              "r": 0.3737
+            },
+            {
+              "a": "교통",
+              "b": "배후수요",
+              "n": 2669,
+              "r": 0.1563
+            },
+            {
+              "a": "상권활성도",
+              "b": "배후수요",
+              "n": 2669,
+              "r": 0.036
+            }
+          ]
+        },
+        "업종적합": {
+          "configuredFactors": [
+            "용도일치도",
+            "건물용도"
+          ],
+          "observedFactors": [
+            "용도일치도",
+            "건물용도"
+          ],
+          "allComplete": 2531,
+          "eligibleComplete": 2531,
+          "eligiblePairwiseCorrelations": [
+            {
+              "a": "용도일치도",
+              "b": "건물용도",
+              "n": 2531,
+              "r": 0.0906
+            }
+          ]
+        }
+      }
+    },
+    "뷰티": {
+      "eligible": 2669,
+      "excluded": 48,
+      "groupWeights": [
+        25,
+        20,
+        35,
+        20
+      ],
+      "withinGroup": {
+        "비용": [
+          50,
+          30,
+          20
+        ],
+        "공간": [
+          50,
+          35,
+          15
+        ],
+        "입지": [
+          30,
+          40,
+          30
+        ],
+        "업종적합": [
+          40,
+          60
+        ]
+      },
+      "factors": {
+        "임대료부담": {
+          "group": "비용",
+          "column": null,
+          "structuralAbsence": "not_exported_budget_null",
+          "all": {
+            "n": 2717,
+            "valid": 0,
+            "missing": 2717,
+            "invalid": 0,
+            "unique": 0,
+            "min": null,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "max": null,
+            "mean": null,
+            "sd": null,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 0
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 0,
+            "missing": 2669,
+            "invalid": 0,
+            "unique": 0,
+            "min": null,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "max": null,
+            "mean": null,
+            "sd": null,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 0
+          }
+        },
+        "가성비": {
+          "group": "비용",
+          "column": "가성비",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2717,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 788,
+            "min": 0,
+            "p10": 0,
+            "median": 60,
+            "p90": 98.1,
+            "max": 100,
+            "mean": 56.3077,
+            "sd": 32.2071,
+            "outOfRange": 0,
+            "zero": 322,
+            "hundred": 247
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 783,
+            "min": 0,
+            "p10": 0,
+            "median": 60,
+            "p90": 98,
+            "max": 100,
+            "mean": 56.1656,
+            "sd": 32.217,
+            "outOfRange": 0,
+            "zero": 320,
+            "hundred": 239
+          }
+        },
+        "보증금": {
+          "group": "비용",
+          "column": "보증금점수",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2717,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 48,
+            "min": 10,
+            "p10": 26.7,
+            "median": 60,
+            "p90": 100,
+            "max": 100,
+            "mean": 65.0371,
+            "sd": 25.7895,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 332
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 48,
+            "min": 10,
+            "p10": 20,
+            "median": 60,
+            "p90": 100,
+            "max": 100,
+            "mean": 64.944,
+            "sd": 25.868,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 326
+          }
+        },
+        "층": {
+          "group": "공간",
+          "column": "층_뷰티",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2691,
+            "missing": 26,
+            "invalid": 0,
+            "unique": 4,
+            "min": 40,
+            "p10": 70,
+            "median": 100,
+            "p90": 100,
+            "max": 100,
+            "mean": 90.0535,
+            "sd": 14.7586,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 1469
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2643,
+            "missing": 26,
+            "invalid": 0,
+            "unique": 4,
+            "min": 40,
+            "p10": 70,
+            "median": 100,
+            "p90": 100,
+            "max": 100,
+            "mean": 89.9773,
+            "sd": 14.7608,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 1433
+          }
+        },
+        "면적적합도": {
+          "group": "공간",
+          "column": "면적적합도_뷰티",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2717,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 609,
+            "min": 0,
+            "p10": 10,
+            "median": 38.3,
+            "p90": 100,
+            "max": 100,
+            "mean": 46.6375,
+            "sd": 34.6644,
+            "outOfRange": 0,
+            "zero": 53,
+            "hundred": 482
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 606,
+            "min": 0,
+            "p10": 10,
+            "median": 38.2,
+            "p90": 100,
+            "max": 100,
+            "mean": 46.4021,
+            "sd": 34.6614,
+            "outOfRange": 0,
+            "zero": 53,
+            "hundred": 472
+          }
+        },
+        "건물연식": {
+          "group": "공간",
+          "column": "건물연식",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2697,
+            "missing": 20,
+            "invalid": 0,
+            "unique": 575,
+            "min": 30,
+            "p10": 30,
+            "median": 59.7,
+            "p90": 100,
+            "max": 100,
+            "mean": 62.9858,
+            "sd": 25.6901,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 394
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2649,
+            "missing": 20,
+            "invalid": 0,
+            "unique": 572,
+            "min": 30,
+            "p10": 30,
+            "median": 59.7,
+            "p90": 100,
+            "max": 100,
+            "mean": 62.9466,
+            "sd": 25.7202,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 387
+          }
+        },
+        "교통": {
+          "group": "입지",
+          "column": "교통_뷰티",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2669,
+            "missing": 48,
+            "invalid": 0,
+            "unique": 635,
+            "min": 18,
+            "p10": 44.48,
+            "median": 76,
+            "p90": 98,
+            "max": 100,
+            "mean": 72.6078,
+            "sd": 19.9283,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 182
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 635,
+            "min": 18,
+            "p10": 44.48,
+            "median": 76,
+            "p90": 98,
+            "max": 100,
+            "mean": 72.6078,
+            "sd": 19.9283,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 182
+          }
+        },
+        "상권활성도": {
+          "group": "입지",
+          "column": "상권활성도_뷰티",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2669,
+            "missing": 48,
+            "invalid": 0,
+            "unique": 562,
+            "min": 0,
+            "p10": 10,
+            "median": 50.2,
+            "p90": 90.02,
+            "max": 100,
+            "mean": 50.0016,
+            "sd": 28.8737,
+            "outOfRange": 0,
+            "zero": 1,
+            "hundred": 2
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 562,
+            "min": 0,
+            "p10": 10,
+            "median": 50.2,
+            "p90": 90.02,
+            "max": 100,
+            "mean": 50.0016,
+            "sd": 28.8737,
+            "outOfRange": 0,
+            "zero": 1,
+            "hundred": 2
+          }
+        },
+        "배후수요": {
+          "group": "입지",
+          "column": "배후수요_뷰티",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2669,
+            "missing": 48,
+            "invalid": 0,
+            "unique": 970,
+            "min": 0,
+            "p10": 10,
+            "median": 50,
+            "p90": 90,
+            "max": 100,
+            "mean": 50.0001,
+            "sd": 28.8725,
+            "outOfRange": 0,
+            "zero": 1,
+            "hundred": 1
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 970,
+            "min": 0,
+            "p10": 10,
+            "median": 50,
+            "p90": 90,
+            "max": 100,
+            "mean": 50.0001,
+            "sd": 28.8725,
+            "outOfRange": 0,
+            "zero": 1,
+            "hundred": 1
+          }
+        },
+        "용도일치도": {
+          "group": "업종적합",
+          "column": "용도일치도_뷰티",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2717,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 4,
+            "min": 30,
+            "p10": 30,
+            "median": 60,
+            "p90": 100,
+            "max": 100,
+            "mean": 56.5219,
+            "sd": 21.6685,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 404
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 4,
+            "min": 30,
+            "p10": 30,
+            "median": 60,
+            "p90": 100,
+            "max": 100,
+            "mean": 56.5643,
+            "sd": 21.6971,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 399
+          }
+        },
+        "건물용도": {
+          "group": "업종적합",
+          "column": "건물용도_뷰티",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2531,
+            "missing": 186,
+            "invalid": 0,
+            "unique": 4,
+            "min": 30,
+            "p10": 40,
+            "median": 80,
+            "p90": 100,
+            "max": 100,
+            "mean": 82.497,
+            "sd": 20.8535,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 1104
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2531,
+            "missing": 138,
+            "invalid": 0,
+            "unique": 4,
+            "min": 30,
+            "p10": 40,
+            "median": 80,
+            "p90": 100,
+            "max": 100,
+            "mean": 82.497,
+            "sd": 20.8535,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 1104
+          }
+        }
+      },
+      "groups": {
+        "비용": {
+          "configuredFactors": [
+            "임대료부담",
+            "가성비",
+            "보증금"
+          ],
+          "observedFactors": [
+            "가성비",
+            "보증금"
+          ],
+          "allComplete": 2717,
+          "eligibleComplete": 2669,
+          "eligiblePairwiseCorrelations": [
+            {
+              "a": "가성비",
+              "b": "보증금",
+              "n": 2669,
+              "r": 0.4129
+            }
+          ]
+        },
+        "공간": {
+          "configuredFactors": [
+            "층",
+            "면적적합도",
+            "건물연식"
+          ],
+          "observedFactors": [
+            "층",
+            "면적적합도",
+            "건물연식"
+          ],
+          "allComplete": 2671,
+          "eligibleComplete": 2623,
+          "eligiblePairwiseCorrelations": [
+            {
+              "a": "층",
+              "b": "면적적합도",
+              "n": 2643,
+              "r": 0.3206
+            },
+            {
+              "a": "층",
+              "b": "건물연식",
+              "n": 2623,
+              "r": -0.0875
+            },
+            {
+              "a": "면적적합도",
+              "b": "건물연식",
+              "n": 2649,
+              "r": -0.0174
+            }
+          ]
+        },
+        "입지": {
+          "configuredFactors": [
+            "교통",
+            "상권활성도",
+            "배후수요"
+          ],
+          "observedFactors": [
+            "교통",
+            "상권활성도",
+            "배후수요"
+          ],
+          "allComplete": 2669,
+          "eligibleComplete": 2669,
+          "eligiblePairwiseCorrelations": [
+            {
+              "a": "교통",
+              "b": "상권활성도",
+              "n": 2669,
+              "r": 0.3737
+            },
+            {
+              "a": "교통",
+              "b": "배후수요",
+              "n": 2669,
+              "r": 0.1434
+            },
+            {
+              "a": "상권활성도",
+              "b": "배후수요",
+              "n": 2669,
+              "r": 0.1276
+            }
+          ]
+        },
+        "업종적합": {
+          "configuredFactors": [
+            "용도일치도",
+            "건물용도"
+          ],
+          "observedFactors": [
+            "용도일치도",
+            "건물용도"
+          ],
+          "allComplete": 2531,
+          "eligibleComplete": 2531,
+          "eligiblePairwiseCorrelations": [
+            {
+              "a": "용도일치도",
+              "b": "건물용도",
+              "n": 2531,
+              "r": 0.078
+            }
+          ]
+        }
+      }
+    },
+    "공연문화": {
+      "eligible": 2669,
+      "excluded": 48,
+      "groupWeights": [
+        35,
+        30,
+        20,
+        15
+      ],
+      "withinGroup": {
+        "비용": [
+          40,
+          30,
+          30
+        ],
+        "공간": [
+          30,
+          50,
+          20
+        ],
+        "입지": [
+          40,
+          40,
+          20
+        ],
+        "업종적합": [
+          40,
+          60
+        ]
+      },
+      "factors": {
+        "임대료부담": {
+          "group": "비용",
+          "column": null,
+          "structuralAbsence": "not_exported_budget_null",
+          "all": {
+            "n": 2717,
+            "valid": 0,
+            "missing": 2717,
+            "invalid": 0,
+            "unique": 0,
+            "min": null,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "max": null,
+            "mean": null,
+            "sd": null,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 0
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 0,
+            "missing": 2669,
+            "invalid": 0,
+            "unique": 0,
+            "min": null,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "max": null,
+            "mean": null,
+            "sd": null,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 0
+          }
+        },
+        "가성비": {
+          "group": "비용",
+          "column": "가성비",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2717,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 788,
+            "min": 0,
+            "p10": 0,
+            "median": 60,
+            "p90": 98.1,
+            "max": 100,
+            "mean": 56.3077,
+            "sd": 32.2071,
+            "outOfRange": 0,
+            "zero": 322,
+            "hundred": 247
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 783,
+            "min": 0,
+            "p10": 0,
+            "median": 60,
+            "p90": 98,
+            "max": 100,
+            "mean": 56.1656,
+            "sd": 32.217,
+            "outOfRange": 0,
+            "zero": 320,
+            "hundred": 239
+          }
+        },
+        "보증금": {
+          "group": "비용",
+          "column": "보증금점수",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2717,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 48,
+            "min": 10,
+            "p10": 26.7,
+            "median": 60,
+            "p90": 100,
+            "max": 100,
+            "mean": 65.0371,
+            "sd": 25.7895,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 332
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 48,
+            "min": 10,
+            "p10": 20,
+            "median": 60,
+            "p90": 100,
+            "max": 100,
+            "mean": 64.944,
+            "sd": 25.868,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 326
+          }
+        },
+        "층": {
+          "group": "공간",
+          "column": "층_공연문화",
+          "structuralAbsence": "disabled_by_config",
+          "all": {
+            "n": 2717,
+            "valid": 0,
+            "missing": 2717,
+            "invalid": 0,
+            "unique": 0,
+            "min": null,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "max": null,
+            "mean": null,
+            "sd": null,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 0
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 0,
+            "missing": 2669,
+            "invalid": 0,
+            "unique": 0,
+            "min": null,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "max": null,
+            "mean": null,
+            "sd": null,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 0
+          }
+        },
+        "면적적합도": {
+          "group": "공간",
+          "column": "면적적합도_공연문화",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2717,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 639,
+            "min": 0,
+            "p10": 10,
+            "median": 38.4,
+            "p90": 100,
+            "max": 100,
+            "mean": 45.7391,
+            "sd": 34.5985,
+            "outOfRange": 0,
+            "zero": 118,
+            "hundred": 443
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 636,
+            "min": 0,
+            "p10": 10,
+            "median": 38.1,
+            "p90": 100,
+            "max": 100,
+            "mean": 45.5429,
+            "sd": 34.6094,
+            "outOfRange": 0,
+            "zero": 118,
+            "hundred": 432
+          }
+        },
+        "건물연식": {
+          "group": "공간",
+          "column": "건물연식",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2697,
+            "missing": 20,
+            "invalid": 0,
+            "unique": 575,
+            "min": 30,
+            "p10": 30,
+            "median": 59.7,
+            "p90": 100,
+            "max": 100,
+            "mean": 62.9858,
+            "sd": 25.6901,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 394
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2649,
+            "missing": 20,
+            "invalid": 0,
+            "unique": 572,
+            "min": 30,
+            "p10": 30,
+            "median": 59.7,
+            "p90": 100,
+            "max": 100,
+            "mean": 62.9466,
+            "sd": 25.7202,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 387
+          }
+        },
+        "교통": {
+          "group": "입지",
+          "column": "교통_공연문화",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2669,
+            "missing": 48,
+            "invalid": 0,
+            "unique": 635,
+            "min": 18,
+            "p10": 44.48,
+            "median": 76,
+            "p90": 98,
+            "max": 100,
+            "mean": 72.6078,
+            "sd": 19.9283,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 182
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 635,
+            "min": 18,
+            "p10": 44.48,
+            "median": 76,
+            "p90": 98,
+            "max": 100,
+            "mean": 72.6078,
+            "sd": 19.9283,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 182
+          }
+        },
+        "상권활성도": {
+          "group": "입지",
+          "column": "상권활성도_공연문화",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2669,
+            "missing": 48,
+            "invalid": 0,
+            "unique": 562,
+            "min": 0,
+            "p10": 10,
+            "median": 50.2,
+            "p90": 90.02,
+            "max": 100,
+            "mean": 50.0016,
+            "sd": 28.8737,
+            "outOfRange": 0,
+            "zero": 1,
+            "hundred": 2
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 562,
+            "min": 0,
+            "p10": 10,
+            "median": 50.2,
+            "p90": 90.02,
+            "max": 100,
+            "mean": 50.0016,
+            "sd": 28.8737,
+            "outOfRange": 0,
+            "zero": 1,
+            "hundred": 2
+          }
+        },
+        "배후수요": {
+          "group": "입지",
+          "column": "배후수요_공연문화",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2669,
+            "missing": 48,
+            "invalid": 0,
+            "unique": 964,
+            "min": 0,
+            "p10": 10,
+            "median": 50,
+            "p90": 90,
+            "max": 100,
+            "mean": 49.999,
+            "sd": 28.8733,
+            "outOfRange": 0,
+            "zero": 1,
+            "hundred": 1
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 964,
+            "min": 0,
+            "p10": 10,
+            "median": 50,
+            "p90": 90,
+            "max": 100,
+            "mean": 49.999,
+            "sd": 28.8733,
+            "outOfRange": 0,
+            "zero": 1,
+            "hundred": 1
+          }
+        },
+        "용도일치도": {
+          "group": "업종적합",
+          "column": "용도일치도_공연문화",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2717,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 4,
+            "min": 30,
+            "p10": 30,
+            "median": 60,
+            "p90": 60,
+            "max": 100,
+            "mean": 52.212,
+            "sd": 17.7261,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 175
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 4,
+            "min": 30,
+            "p10": 30,
+            "median": 60,
+            "p90": 60,
+            "max": 100,
+            "mean": 52.2443,
+            "sd": 17.7444,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 173
+          }
+        },
+        "건물용도": {
+          "group": "업종적합",
+          "column": "건물용도_공연문화",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2531,
+            "missing": 186,
+            "invalid": 0,
+            "unique": 4,
+            "min": 30,
+            "p10": 40,
+            "median": 80,
+            "p90": 100,
+            "max": 100,
+            "mean": 81.6515,
+            "sd": 20.5526,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 999
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2531,
+            "missing": 138,
+            "invalid": 0,
+            "unique": 4,
+            "min": 30,
+            "p10": 40,
+            "median": 80,
+            "p90": 100,
+            "max": 100,
+            "mean": 81.6515,
+            "sd": 20.5526,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 999
+          }
+        }
+      },
+      "groups": {
+        "비용": {
+          "configuredFactors": [
+            "임대료부담",
+            "가성비",
+            "보증금"
+          ],
+          "observedFactors": [
+            "가성비",
+            "보증금"
+          ],
+          "allComplete": 2717,
+          "eligibleComplete": 2669,
+          "eligiblePairwiseCorrelations": [
+            {
+              "a": "가성비",
+              "b": "보증금",
+              "n": 2669,
+              "r": 0.4129
+            }
+          ]
+        },
+        "공간": {
+          "configuredFactors": [
+            "층",
+            "면적적합도",
+            "건물연식"
+          ],
+          "observedFactors": [
+            "면적적합도",
+            "건물연식"
+          ],
+          "allComplete": 2697,
+          "eligibleComplete": 2649,
+          "eligiblePairwiseCorrelations": [
+            {
+              "a": "면적적합도",
+              "b": "건물연식",
+              "n": 2649,
+              "r": -0.0096
+            }
+          ]
+        },
+        "입지": {
+          "configuredFactors": [
+            "교통",
+            "상권활성도",
+            "배후수요"
+          ],
+          "observedFactors": [
+            "교통",
+            "상권활성도",
+            "배후수요"
+          ],
+          "allComplete": 2669,
+          "eligibleComplete": 2669,
+          "eligiblePairwiseCorrelations": [
+            {
+              "a": "교통",
+              "b": "상권활성도",
+              "n": 2669,
+              "r": 0.3737
+            },
+            {
+              "a": "교통",
+              "b": "배후수요",
+              "n": 2669,
+              "r": 0.1867
+            },
+            {
+              "a": "상권활성도",
+              "b": "배후수요",
+              "n": 2669,
+              "r": 0.1808
+            }
+          ]
+        },
+        "업종적합": {
+          "configuredFactors": [
+            "용도일치도",
+            "건물용도"
+          ],
+          "observedFactors": [
+            "용도일치도",
+            "건물용도"
+          ],
+          "allComplete": 2531,
+          "eligibleComplete": 2531,
+          "eligiblePairwiseCorrelations": [
+            {
+              "a": "용도일치도",
+              "b": "건물용도",
+              "n": 2531,
+              "r": 0.0557
+            }
+          ]
+        }
+      }
+    },
+    "사무업무": {
+      "eligible": 2669,
+      "excluded": 48,
+      "groupWeights": [
+        35,
+        25,
+        30,
+        10
+      ],
+      "withinGroup": {
+        "비용": [
+          50,
+          30,
+          20
+        ],
+        "공간": [
+          35,
+          45,
+          20
+        ],
+        "입지": [
+          50,
+          20,
+          30
+        ],
+        "업종적합": [
+          40,
+          60
+        ]
+      },
+      "factors": {
+        "임대료부담": {
+          "group": "비용",
+          "column": null,
+          "structuralAbsence": "not_exported_budget_null",
+          "all": {
+            "n": 2717,
+            "valid": 0,
+            "missing": 2717,
+            "invalid": 0,
+            "unique": 0,
+            "min": null,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "max": null,
+            "mean": null,
+            "sd": null,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 0
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 0,
+            "missing": 2669,
+            "invalid": 0,
+            "unique": 0,
+            "min": null,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "max": null,
+            "mean": null,
+            "sd": null,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 0
+          }
+        },
+        "가성비": {
+          "group": "비용",
+          "column": "가성비",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2717,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 788,
+            "min": 0,
+            "p10": 0,
+            "median": 60,
+            "p90": 98.1,
+            "max": 100,
+            "mean": 56.3077,
+            "sd": 32.2071,
+            "outOfRange": 0,
+            "zero": 322,
+            "hundred": 247
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 783,
+            "min": 0,
+            "p10": 0,
+            "median": 60,
+            "p90": 98,
+            "max": 100,
+            "mean": 56.1656,
+            "sd": 32.217,
+            "outOfRange": 0,
+            "zero": 320,
+            "hundred": 239
+          }
+        },
+        "보증금": {
+          "group": "비용",
+          "column": "보증금점수",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2717,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 48,
+            "min": 10,
+            "p10": 26.7,
+            "median": 60,
+            "p90": 100,
+            "max": 100,
+            "mean": 65.0371,
+            "sd": 25.7895,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 332
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 48,
+            "min": 10,
+            "p10": 20,
+            "median": 60,
+            "p90": 100,
+            "max": 100,
+            "mean": 64.944,
+            "sd": 25.868,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 326
+          }
+        },
+        "층": {
+          "group": "공간",
+          "column": "층_사무업무",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2691,
+            "missing": 26,
+            "invalid": 0,
+            "unique": 4,
+            "min": 40,
+            "p10": 59,
+            "median": 59,
+            "p90": 100,
+            "max": 100,
+            "mean": 73.9127,
+            "sd": 18.799,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 659
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2643,
+            "missing": 26,
+            "invalid": 0,
+            "unique": 4,
+            "min": 40,
+            "p10": 59,
+            "median": 59,
+            "p90": 100,
+            "max": 100,
+            "mean": 74.07,
+            "sd": 18.826,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 655
+          }
+        },
+        "면적적합도": {
+          "group": "공간",
+          "column": "면적적합도_사무업무",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2717,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 629,
+            "min": 0,
+            "p10": 0,
+            "median": 29.1,
+            "p90": 100,
+            "max": 100,
+            "mean": 39.9605,
+            "sd": 38.3115,
+            "outOfRange": 0,
+            "zero": 741,
+            "hundred": 439
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 625,
+            "min": 0,
+            "p10": 0,
+            "median": 29.1,
+            "p90": 100,
+            "max": 100,
+            "mean": 39.9692,
+            "sd": 38.2827,
+            "outOfRange": 0,
+            "zero": 726,
+            "hundred": 431
+          }
+        },
+        "건물연식": {
+          "group": "공간",
+          "column": "건물연식",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2697,
+            "missing": 20,
+            "invalid": 0,
+            "unique": 575,
+            "min": 30,
+            "p10": 30,
+            "median": 59.7,
+            "p90": 100,
+            "max": 100,
+            "mean": 62.9858,
+            "sd": 25.6901,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 394
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2649,
+            "missing": 20,
+            "invalid": 0,
+            "unique": 572,
+            "min": 30,
+            "p10": 30,
+            "median": 59.7,
+            "p90": 100,
+            "max": 100,
+            "mean": 62.9466,
+            "sd": 25.7202,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 387
+          }
+        },
+        "교통": {
+          "group": "입지",
+          "column": "교통_사무업무",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2669,
+            "missing": 48,
+            "invalid": 0,
+            "unique": 659,
+            "min": 16,
+            "p10": 37,
+            "median": 76.3,
+            "p90": 97.9,
+            "max": 100,
+            "mean": 71.9294,
+            "sd": 21.8569,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 182
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 659,
+            "min": 16,
+            "p10": 37,
+            "median": 76.3,
+            "p90": 97.9,
+            "max": 100,
+            "mean": 71.9294,
+            "sd": 21.8569,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 182
+          }
+        },
+        "상권활성도": {
+          "group": "입지",
+          "column": "상권활성도_사무업무",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2669,
+            "missing": 48,
+            "invalid": 0,
+            "unique": 778,
+            "min": 0,
+            "p10": 10,
+            "median": 50.1,
+            "p90": 90,
+            "max": 99.9,
+            "mean": 49.9993,
+            "sd": 28.8722,
+            "outOfRange": 0,
+            "zero": 1,
+            "hundred": 0
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 778,
+            "min": 0,
+            "p10": 10,
+            "median": 50.1,
+            "p90": 90,
+            "max": 99.9,
+            "mean": 49.9993,
+            "sd": 28.8722,
+            "outOfRange": 0,
+            "zero": 1,
+            "hundred": 0
+          }
+        },
+        "배후수요": {
+          "group": "입지",
+          "column": "배후수요_사무업무",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2669,
+            "missing": 48,
+            "invalid": 0,
+            "unique": 976,
+            "min": 0,
+            "p10": 10,
+            "median": 50,
+            "p90": 90.02,
+            "max": 99.9,
+            "mean": 49.9996,
+            "sd": 28.8729,
+            "outOfRange": 0,
+            "zero": 1,
+            "hundred": 0
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 976,
+            "min": 0,
+            "p10": 10,
+            "median": 50,
+            "p90": 90.02,
+            "max": 99.9,
+            "mean": 49.9996,
+            "sd": 28.8729,
+            "outOfRange": 0,
+            "zero": 1,
+            "hundred": 0
+          }
+        },
+        "용도일치도": {
+          "group": "업종적합",
+          "column": "용도일치도_사무업무",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2717,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 4,
+            "min": 30,
+            "p10": 30,
+            "median": 60,
+            "p90": 100,
+            "max": 100,
+            "mean": 66.4556,
+            "sd": 25.5165,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 898
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 4,
+            "min": 30,
+            "p10": 30,
+            "median": 60,
+            "p90": 100,
+            "max": 100,
+            "mean": 66.523,
+            "sd": 25.5181,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 885
+          }
+        },
+        "건물용도": {
+          "group": "업종적합",
+          "column": "건물용도_사무업무",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2531,
+            "missing": 186,
+            "invalid": 0,
+            "unique": 4,
+            "min": 30,
+            "p10": 40,
+            "median": 80,
+            "p90": 100,
+            "max": 100,
+            "mean": 83.9905,
+            "sd": 19.4722,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 1133
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2531,
+            "missing": 138,
+            "invalid": 0,
+            "unique": 4,
+            "min": 30,
+            "p10": 40,
+            "median": 80,
+            "p90": 100,
+            "max": 100,
+            "mean": 83.9905,
+            "sd": 19.4722,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 1133
+          }
+        }
+      },
+      "groups": {
+        "비용": {
+          "configuredFactors": [
+            "임대료부담",
+            "가성비",
+            "보증금"
+          ],
+          "observedFactors": [
+            "가성비",
+            "보증금"
+          ],
+          "allComplete": 2717,
+          "eligibleComplete": 2669,
+          "eligiblePairwiseCorrelations": [
+            {
+              "a": "가성비",
+              "b": "보증금",
+              "n": 2669,
+              "r": 0.4129
+            }
+          ]
+        },
+        "공간": {
+          "configuredFactors": [
+            "층",
+            "면적적합도",
+            "건물연식"
+          ],
+          "observedFactors": [
+            "층",
+            "면적적합도",
+            "건물연식"
+          ],
+          "allComplete": 2671,
+          "eligibleComplete": 2623,
+          "eligiblePairwiseCorrelations": [
+            {
+              "a": "층",
+              "b": "면적적합도",
+              "n": 2643,
+              "r": 0.3533
+            },
+            {
+              "a": "층",
+              "b": "건물연식",
+              "n": 2623,
+              "r": 0.0645
+            },
+            {
+              "a": "면적적합도",
+              "b": "건물연식",
+              "n": 2649,
+              "r": 0.0326
+            }
+          ]
+        },
+        "입지": {
+          "configuredFactors": [
+            "교통",
+            "상권활성도",
+            "배후수요"
+          ],
+          "observedFactors": [
+            "교통",
+            "상권활성도",
+            "배후수요"
+          ],
+          "allComplete": 2669,
+          "eligibleComplete": 2669,
+          "eligiblePairwiseCorrelations": [
+            {
+              "a": "교통",
+              "b": "상권활성도",
+              "n": 2669,
+              "r": 0.4525
+            },
+            {
+              "a": "교통",
+              "b": "배후수요",
+              "n": 2669,
+              "r": 0.4523
+            },
+            {
+              "a": "상권활성도",
+              "b": "배후수요",
+              "n": 2669,
+              "r": 0.839
+            }
+          ]
+        },
+        "업종적합": {
+          "configuredFactors": [
+            "용도일치도",
+            "건물용도"
+          ],
+          "observedFactors": [
+            "용도일치도",
+            "건물용도"
+          ],
+          "allComplete": 2531,
+          "eligibleComplete": 2531,
+          "eligiblePairwiseCorrelations": [
+            {
+              "a": "용도일치도",
+              "b": "건물용도",
+              "n": 2531,
+              "r": -0.0417
+            }
+          ]
+        }
+      }
+    },
+    "교육": {
+      "eligible": 2669,
+      "excluded": 48,
+      "groupWeights": [
+        30,
+        20,
+        25,
+        25
+      ],
+      "withinGroup": {
+        "비용": [
+          50,
+          30,
+          20
+        ],
+        "공간": [
+          35,
+          45,
+          20
+        ],
+        "입지": [
+          25,
+          25,
+          50
+        ],
+        "업종적합": [
+          40,
+          60
+        ]
+      },
+      "factors": {
+        "임대료부담": {
+          "group": "비용",
+          "column": null,
+          "structuralAbsence": "not_exported_budget_null",
+          "all": {
+            "n": 2717,
+            "valid": 0,
+            "missing": 2717,
+            "invalid": 0,
+            "unique": 0,
+            "min": null,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "max": null,
+            "mean": null,
+            "sd": null,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 0
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 0,
+            "missing": 2669,
+            "invalid": 0,
+            "unique": 0,
+            "min": null,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "max": null,
+            "mean": null,
+            "sd": null,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 0
+          }
+        },
+        "가성비": {
+          "group": "비용",
+          "column": "가성비",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2717,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 788,
+            "min": 0,
+            "p10": 0,
+            "median": 60,
+            "p90": 98.1,
+            "max": 100,
+            "mean": 56.3077,
+            "sd": 32.2071,
+            "outOfRange": 0,
+            "zero": 322,
+            "hundred": 247
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 783,
+            "min": 0,
+            "p10": 0,
+            "median": 60,
+            "p90": 98,
+            "max": 100,
+            "mean": 56.1656,
+            "sd": 32.217,
+            "outOfRange": 0,
+            "zero": 320,
+            "hundred": 239
+          }
+        },
+        "보증금": {
+          "group": "비용",
+          "column": "보증금점수",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2717,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 48,
+            "min": 10,
+            "p10": 26.7,
+            "median": 60,
+            "p90": 100,
+            "max": 100,
+            "mean": 65.0371,
+            "sd": 25.7895,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 332
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 48,
+            "min": 10,
+            "p10": 20,
+            "median": 60,
+            "p90": 100,
+            "max": 100,
+            "mean": 64.944,
+            "sd": 25.868,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 326
+          }
+        },
+        "층": {
+          "group": "공간",
+          "column": "층_교육",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2691,
+            "missing": 26,
+            "invalid": 0,
+            "unique": 4,
+            "min": 40,
+            "p10": 45,
+            "median": 45,
+            "p90": 100,
+            "max": 100,
+            "mean": 65.5329,
+            "sd": 24.5028,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 659
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2643,
+            "missing": 26,
+            "invalid": 0,
+            "unique": 4,
+            "min": 40,
+            "p10": 45,
+            "median": 45,
+            "p90": 100,
+            "max": 100,
+            "mean": 65.7378,
+            "sd": 24.5447,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 655
+          }
+        },
+        "면적적합도": {
+          "group": "공간",
+          "column": "면적적합도_교육",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2717,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 611,
+            "min": 0,
+            "p10": 0,
+            "median": 18.9,
+            "p90": 100,
+            "max": 100,
+            "mean": 35.3377,
+            "sd": 38.4762,
+            "outOfRange": 0,
+            "zero": 1078,
+            "hundred": 371
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 609,
+            "min": 0,
+            "p10": 0,
+            "median": 19.5,
+            "p90": 100,
+            "max": 100,
+            "mean": 35.4531,
+            "sd": 38.491,
+            "outOfRange": 0,
+            "zero": 1056,
+            "hundred": 365
+          }
+        },
+        "건물연식": {
+          "group": "공간",
+          "column": "건물연식",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2697,
+            "missing": 20,
+            "invalid": 0,
+            "unique": 575,
+            "min": 30,
+            "p10": 30,
+            "median": 59.7,
+            "p90": 100,
+            "max": 100,
+            "mean": 62.9858,
+            "sd": 25.6901,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 394
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2649,
+            "missing": 20,
+            "invalid": 0,
+            "unique": 572,
+            "min": 30,
+            "p10": 30,
+            "median": 59.7,
+            "p90": 100,
+            "max": 100,
+            "mean": 62.9466,
+            "sd": 25.7202,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 387
+          }
+        },
+        "교통": {
+          "group": "입지",
+          "column": "교통_교육",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2669,
+            "missing": 48,
+            "invalid": 0,
+            "unique": 635,
+            "min": 18,
+            "p10": 44.48,
+            "median": 76,
+            "p90": 98,
+            "max": 100,
+            "mean": 72.6078,
+            "sd": 19.9283,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 182
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 635,
+            "min": 18,
+            "p10": 44.48,
+            "median": 76,
+            "p90": 98,
+            "max": 100,
+            "mean": 72.6078,
+            "sd": 19.9283,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 182
+          }
+        },
+        "상권활성도": {
+          "group": "입지",
+          "column": "상권활성도_교육",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2669,
+            "missing": 48,
+            "invalid": 0,
+            "unique": 778,
+            "min": 0,
+            "p10": 10,
+            "median": 50.1,
+            "p90": 90,
+            "max": 99.9,
+            "mean": 49.9993,
+            "sd": 28.8722,
+            "outOfRange": 0,
+            "zero": 1,
+            "hundred": 0
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 778,
+            "min": 0,
+            "p10": 10,
+            "median": 50.1,
+            "p90": 90,
+            "max": 99.9,
+            "mean": 49.9993,
+            "sd": 28.8722,
+            "outOfRange": 0,
+            "zero": 1,
+            "hundred": 0
+          }
+        },
+        "배후수요": {
+          "group": "입지",
+          "column": "배후수요_교육",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2669,
+            "missing": 48,
+            "invalid": 0,
+            "unique": 972,
+            "min": 0,
+            "p10": 10,
+            "median": 50,
+            "p90": 90,
+            "max": 100,
+            "mean": 49.9997,
+            "sd": 28.8721,
+            "outOfRange": 0,
+            "zero": 1,
+            "hundred": 1
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 972,
+            "min": 0,
+            "p10": 10,
+            "median": 50,
+            "p90": 90,
+            "max": 100,
+            "mean": 49.9997,
+            "sd": 28.8721,
+            "outOfRange": 0,
+            "zero": 1,
+            "hundred": 1
+          }
+        },
+        "용도일치도": {
+          "group": "업종적합",
+          "column": "용도일치도_교육",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2717,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 4,
+            "min": 30,
+            "p10": 30,
+            "median": 60,
+            "p90": 100,
+            "max": 100,
+            "mean": 58.2591,
+            "sd": 22.6052,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 486
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 4,
+            "min": 30,
+            "p10": 30,
+            "median": 60,
+            "p90": 100,
+            "max": 100,
+            "mean": 58.3702,
+            "sd": 22.6456,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 482
+          }
+        },
+        "건물용도": {
+          "group": "업종적합",
+          "column": "건물용도_교육",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2531,
+            "missing": 186,
+            "invalid": 0,
+            "unique": 4,
+            "min": 30,
+            "p10": 40,
+            "median": 80,
+            "p90": 100,
+            "max": 100,
+            "mean": 83.4295,
+            "sd": 19.4371,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 1074
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2531,
+            "missing": 138,
+            "invalid": 0,
+            "unique": 4,
+            "min": 30,
+            "p10": 40,
+            "median": 80,
+            "p90": 100,
+            "max": 100,
+            "mean": 83.4295,
+            "sd": 19.4371,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 1074
+          }
+        }
+      },
+      "groups": {
+        "비용": {
+          "configuredFactors": [
+            "임대료부담",
+            "가성비",
+            "보증금"
+          ],
+          "observedFactors": [
+            "가성비",
+            "보증금"
+          ],
+          "allComplete": 2717,
+          "eligibleComplete": 2669,
+          "eligiblePairwiseCorrelations": [
+            {
+              "a": "가성비",
+              "b": "보증금",
+              "n": 2669,
+              "r": 0.4129
+            }
+          ]
+        },
+        "공간": {
+          "configuredFactors": [
+            "층",
+            "면적적합도",
+            "건물연식"
+          ],
+          "observedFactors": [
+            "층",
+            "면적적합도",
+            "건물연식"
+          ],
+          "allComplete": 2671,
+          "eligibleComplete": 2623,
+          "eligiblePairwiseCorrelations": [
+            {
+              "a": "층",
+              "b": "면적적합도",
+              "n": 2643,
+              "r": 0.4939
+            },
+            {
+              "a": "층",
+              "b": "건물연식",
+              "n": 2623,
+              "r": 0.0693
+            },
+            {
+              "a": "면적적합도",
+              "b": "건물연식",
+              "n": 2649,
+              "r": 0.0504
+            }
+          ]
+        },
+        "입지": {
+          "configuredFactors": [
+            "교통",
+            "상권활성도",
+            "배후수요"
+          ],
+          "observedFactors": [
+            "교통",
+            "상권활성도",
+            "배후수요"
+          ],
+          "allComplete": 2669,
+          "eligibleComplete": 2669,
+          "eligiblePairwiseCorrelations": [
+            {
+              "a": "교통",
+              "b": "상권활성도",
+              "n": 2669,
+              "r": 0.426
+            },
+            {
+              "a": "교통",
+              "b": "배후수요",
+              "n": 2669,
+              "r": 0.1006
+            },
+            {
+              "a": "상권활성도",
+              "b": "배후수요",
+              "n": 2669,
+              "r": 0.1409
+            }
+          ]
+        },
+        "업종적합": {
+          "configuredFactors": [
+            "용도일치도",
+            "건물용도"
+          ],
+          "observedFactors": [
+            "용도일치도",
+            "건물용도"
+          ],
+          "allComplete": 2531,
+          "eligibleComplete": 2531,
+          "eligiblePairwiseCorrelations": [
+            {
+              "a": "용도일치도",
+              "b": "건물용도",
+              "n": 2531,
+              "r": 0.0919
+            }
+          ]
+        }
+      }
+    },
+    "의료": {
+      "eligible": 2669,
+      "excluded": 48,
+      "groupWeights": [
+        20,
+        20,
+        25,
+        35
+      ],
+      "withinGroup": {
+        "비용": [
+          50,
+          30,
+          20
+        ],
+        "공간": [
+          35,
+          45,
+          20
+        ],
+        "입지": [
+          25,
+          25,
+          50
+        ],
+        "업종적합": [
+          40,
+          60
+        ]
+      },
+      "factors": {
+        "임대료부담": {
+          "group": "비용",
+          "column": null,
+          "structuralAbsence": "not_exported_budget_null",
+          "all": {
+            "n": 2717,
+            "valid": 0,
+            "missing": 2717,
+            "invalid": 0,
+            "unique": 0,
+            "min": null,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "max": null,
+            "mean": null,
+            "sd": null,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 0
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 0,
+            "missing": 2669,
+            "invalid": 0,
+            "unique": 0,
+            "min": null,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "max": null,
+            "mean": null,
+            "sd": null,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 0
+          }
+        },
+        "가성비": {
+          "group": "비용",
+          "column": "가성비",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2717,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 788,
+            "min": 0,
+            "p10": 0,
+            "median": 60,
+            "p90": 98.1,
+            "max": 100,
+            "mean": 56.3077,
+            "sd": 32.2071,
+            "outOfRange": 0,
+            "zero": 322,
+            "hundred": 247
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 783,
+            "min": 0,
+            "p10": 0,
+            "median": 60,
+            "p90": 98,
+            "max": 100,
+            "mean": 56.1656,
+            "sd": 32.217,
+            "outOfRange": 0,
+            "zero": 320,
+            "hundred": 239
+          }
+        },
+        "보증금": {
+          "group": "비용",
+          "column": "보증금점수",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2717,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 48,
+            "min": 10,
+            "p10": 26.7,
+            "median": 60,
+            "p90": 100,
+            "max": 100,
+            "mean": 65.0371,
+            "sd": 25.7895,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 332
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 48,
+            "min": 10,
+            "p10": 20,
+            "median": 60,
+            "p90": 100,
+            "max": 100,
+            "mean": 64.944,
+            "sd": 25.868,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 326
+          }
+        },
+        "층": {
+          "group": "공간",
+          "column": "층_의료",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2691,
+            "missing": 26,
+            "invalid": 0,
+            "unique": 4,
+            "min": 40,
+            "p10": 45,
+            "median": 45,
+            "p90": 100,
+            "max": 100,
+            "mean": 64.2427,
+            "sd": 23.6661,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 659
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2643,
+            "missing": 26,
+            "invalid": 0,
+            "unique": 4,
+            "min": 40,
+            "p10": 45,
+            "median": 45,
+            "p90": 100,
+            "max": 100,
+            "mean": 64.44,
+            "sd": 23.7155,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 655
+          }
+        },
+        "면적적합도": {
+          "group": "공간",
+          "column": "면적적합도_의료",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2717,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 499,
+            "min": 0,
+            "p10": 0,
+            "median": 0,
+            "p90": 100,
+            "max": 100,
+            "mean": 25.4486,
+            "sd": 36.7467,
+            "outOfRange": 0,
+            "zero": 1473,
+            "hundred": 301
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 499,
+            "min": 0,
+            "p10": 0,
+            "median": 0,
+            "p90": 100,
+            "max": 100,
+            "mean": 25.6531,
+            "sd": 36.8598,
+            "outOfRange": 0,
+            "zero": 1442,
+            "hundred": 298
+          }
+        },
+        "건물연식": {
+          "group": "공간",
+          "column": "건물연식",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2697,
+            "missing": 20,
+            "invalid": 0,
+            "unique": 575,
+            "min": 30,
+            "p10": 30,
+            "median": 59.7,
+            "p90": 100,
+            "max": 100,
+            "mean": 62.9858,
+            "sd": 25.6901,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 394
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2649,
+            "missing": 20,
+            "invalid": 0,
+            "unique": 572,
+            "min": 30,
+            "p10": 30,
+            "median": 59.7,
+            "p90": 100,
+            "max": 100,
+            "mean": 62.9466,
+            "sd": 25.7202,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 387
+          }
+        },
+        "교통": {
+          "group": "입지",
+          "column": "교통_의료",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2669,
+            "missing": 48,
+            "invalid": 0,
+            "unique": 635,
+            "min": 18,
+            "p10": 44.48,
+            "median": 76,
+            "p90": 98,
+            "max": 100,
+            "mean": 72.6078,
+            "sd": 19.9283,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 182
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 635,
+            "min": 18,
+            "p10": 44.48,
+            "median": 76,
+            "p90": 98,
+            "max": 100,
+            "mean": 72.6078,
+            "sd": 19.9283,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 182
+          }
+        },
+        "상권활성도": {
+          "group": "입지",
+          "column": "상권활성도_의료",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2669,
+            "missing": 48,
+            "invalid": 0,
+            "unique": 562,
+            "min": 0,
+            "p10": 10,
+            "median": 50.2,
+            "p90": 90.02,
+            "max": 100,
+            "mean": 50.0016,
+            "sd": 28.8737,
+            "outOfRange": 0,
+            "zero": 1,
+            "hundred": 2
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 562,
+            "min": 0,
+            "p10": 10,
+            "median": 50.2,
+            "p90": 90.02,
+            "max": 100,
+            "mean": 50.0016,
+            "sd": 28.8737,
+            "outOfRange": 0,
+            "zero": 1,
+            "hundred": 2
+          }
+        },
+        "배후수요": {
+          "group": "입지",
+          "column": "배후수요_의료",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2669,
+            "missing": 48,
+            "invalid": 0,
+            "unique": 826,
+            "min": 0.1,
+            "p10": 11.8,
+            "median": 50.6,
+            "p90": 85.02,
+            "max": 99.5,
+            "mean": 50.0008,
+            "sd": 26.2495,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 0
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 826,
+            "min": 0.1,
+            "p10": 11.8,
+            "median": 50.6,
+            "p90": 85.02,
+            "max": 99.5,
+            "mean": 50.0008,
+            "sd": 26.2495,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 0
+          }
+        },
+        "용도일치도": {
+          "group": "업종적합",
+          "column": "용도일치도_의료",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2717,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 4,
+            "min": 30,
+            "p10": 30,
+            "median": 60,
+            "p90": 100,
+            "max": 100,
+            "mean": 56.3747,
+            "sd": 20.9985,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 373
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 4,
+            "min": 30,
+            "p10": 30,
+            "median": 60,
+            "p90": 100,
+            "max": 100,
+            "mean": 56.5043,
+            "sd": 21.0419,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 371
+          }
+        },
+        "건물용도": {
+          "group": "업종적합",
+          "column": "건물용도_의료",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2531,
+            "missing": 186,
+            "invalid": 0,
+            "unique": 4,
+            "min": 30,
+            "p10": 40,
+            "median": 80,
+            "p90": 100,
+            "max": 100,
+            "mean": 82.6393,
+            "sd": 20.7676,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 1110
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2531,
+            "missing": 138,
+            "invalid": 0,
+            "unique": 4,
+            "min": 30,
+            "p10": 40,
+            "median": 80,
+            "p90": 100,
+            "max": 100,
+            "mean": 82.6393,
+            "sd": 20.7676,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 1110
+          }
+        }
+      },
+      "groups": {
+        "비용": {
+          "configuredFactors": [
+            "임대료부담",
+            "가성비",
+            "보증금"
+          ],
+          "observedFactors": [
+            "가성비",
+            "보증금"
+          ],
+          "allComplete": 2717,
+          "eligibleComplete": 2669,
+          "eligiblePairwiseCorrelations": [
+            {
+              "a": "가성비",
+              "b": "보증금",
+              "n": 2669,
+              "r": 0.4129
+            }
+          ]
+        },
+        "공간": {
+          "configuredFactors": [
+            "층",
+            "면적적합도",
+            "건물연식"
+          ],
+          "observedFactors": [
+            "층",
+            "면적적합도",
+            "건물연식"
+          ],
+          "allComplete": 2671,
+          "eligibleComplete": 2623,
+          "eligiblePairwiseCorrelations": [
+            {
+              "a": "층",
+              "b": "면적적합도",
+              "n": 2643,
+              "r": 0.5048
+            },
+            {
+              "a": "층",
+              "b": "건물연식",
+              "n": 2623,
+              "r": 0.0745
+            },
+            {
+              "a": "면적적합도",
+              "b": "건물연식",
+              "n": 2649,
+              "r": 0.0291
+            }
+          ]
+        },
+        "입지": {
+          "configuredFactors": [
+            "교통",
+            "상권활성도",
+            "배후수요"
+          ],
+          "observedFactors": [
+            "교통",
+            "상권활성도",
+            "배후수요"
+          ],
+          "allComplete": 2669,
+          "eligibleComplete": 2669,
+          "eligiblePairwiseCorrelations": [
+            {
+              "a": "교통",
+              "b": "상권활성도",
+              "n": 2669,
+              "r": 0.3737
+            },
+            {
+              "a": "교통",
+              "b": "배후수요",
+              "n": 2669,
+              "r": 0.1839
+            },
+            {
+              "a": "상권활성도",
+              "b": "배후수요",
+              "n": 2669,
+              "r": 0.0003
+            }
+          ]
+        },
+        "업종적합": {
+          "configuredFactors": [
+            "용도일치도",
+            "건물용도"
+          ],
+          "observedFactors": [
+            "용도일치도",
+            "건물용도"
+          ],
+          "allComplete": 2531,
+          "eligibleComplete": 2531,
+          "eligiblePairwiseCorrelations": [
+            {
+              "a": "용도일치도",
+              "b": "건물용도",
+              "n": 2531,
+              "r": 0.0512
+            }
+          ]
+        }
+      }
+    },
+    "운동시설": {
+      "eligible": 2669,
+      "excluded": 48,
+      "groupWeights": [
+        30,
+        30,
+        20,
+        20
+      ],
+      "withinGroup": {
+        "비용": [
+          50,
+          30,
+          20
+        ],
+        "공간": [
+          35,
+          45,
+          20
+        ],
+        "입지": [
+          25,
+          25,
+          50
+        ],
+        "업종적합": [
+          40,
+          60
+        ]
+      },
+      "factors": {
+        "임대료부담": {
+          "group": "비용",
+          "column": null,
+          "structuralAbsence": "not_exported_budget_null",
+          "all": {
+            "n": 2717,
+            "valid": 0,
+            "missing": 2717,
+            "invalid": 0,
+            "unique": 0,
+            "min": null,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "max": null,
+            "mean": null,
+            "sd": null,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 0
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 0,
+            "missing": 2669,
+            "invalid": 0,
+            "unique": 0,
+            "min": null,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "max": null,
+            "mean": null,
+            "sd": null,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 0
+          }
+        },
+        "가성비": {
+          "group": "비용",
+          "column": "가성비",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2717,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 788,
+            "min": 0,
+            "p10": 0,
+            "median": 60,
+            "p90": 98.1,
+            "max": 100,
+            "mean": 56.3077,
+            "sd": 32.2071,
+            "outOfRange": 0,
+            "zero": 322,
+            "hundred": 247
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 783,
+            "min": 0,
+            "p10": 0,
+            "median": 60,
+            "p90": 98,
+            "max": 100,
+            "mean": 56.1656,
+            "sd": 32.217,
+            "outOfRange": 0,
+            "zero": 320,
+            "hundred": 239
+          }
+        },
+        "보증금": {
+          "group": "비용",
+          "column": "보증금점수",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2717,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 48,
+            "min": 10,
+            "p10": 26.7,
+            "median": 60,
+            "p90": 100,
+            "max": 100,
+            "mean": 65.0371,
+            "sd": 25.7895,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 332
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 48,
+            "min": 10,
+            "p10": 20,
+            "median": 60,
+            "p90": 100,
+            "max": 100,
+            "mean": 64.944,
+            "sd": 25.868,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 326
+          }
+        },
+        "층": {
+          "group": "공간",
+          "column": "층_운동시설",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2691,
+            "missing": 26,
+            "invalid": 0,
+            "unique": 4,
+            "min": 40,
+            "p10": 42,
+            "median": 42,
+            "p90": 100,
+            "max": 100,
+            "mean": 64.2638,
+            "sd": 26.1787,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 659
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2643,
+            "missing": 26,
+            "invalid": 0,
+            "unique": 4,
+            "min": 40,
+            "p10": 42,
+            "median": 42,
+            "p90": 100,
+            "max": 100,
+            "mean": 64.482,
+            "sd": 26.2207,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 655
+          }
+        },
+        "면적적합도": {
+          "group": "공간",
+          "column": "면적적합도_운동시설",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2717,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 544,
+            "min": 0,
+            "p10": 0,
+            "median": 3.9,
+            "p90": 100,
+            "max": 100,
+            "mean": 29.0998,
+            "sd": 37.6674,
+            "outOfRange": 0,
+            "zero": 1321,
+            "hundred": 324
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 543,
+            "min": 0,
+            "p10": 0,
+            "median": 4.5,
+            "p90": 100,
+            "max": 100,
+            "mean": 29.2812,
+            "sd": 37.7459,
+            "outOfRange": 0,
+            "zero": 1291,
+            "hundred": 322
+          }
+        },
+        "건물연식": {
+          "group": "공간",
+          "column": "건물연식",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2697,
+            "missing": 20,
+            "invalid": 0,
+            "unique": 575,
+            "min": 30,
+            "p10": 30,
+            "median": 59.7,
+            "p90": 100,
+            "max": 100,
+            "mean": 62.9858,
+            "sd": 25.6901,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 394
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2649,
+            "missing": 20,
+            "invalid": 0,
+            "unique": 572,
+            "min": 30,
+            "p10": 30,
+            "median": 59.7,
+            "p90": 100,
+            "max": 100,
+            "mean": 62.9466,
+            "sd": 25.7202,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 387
+          }
+        },
+        "교통": {
+          "group": "입지",
+          "column": "교통_운동시설",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2669,
+            "missing": 48,
+            "invalid": 0,
+            "unique": 635,
+            "min": 18,
+            "p10": 44.48,
+            "median": 76,
+            "p90": 98,
+            "max": 100,
+            "mean": 72.6078,
+            "sd": 19.9283,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 182
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 635,
+            "min": 18,
+            "p10": 44.48,
+            "median": 76,
+            "p90": 98,
+            "max": 100,
+            "mean": 72.6078,
+            "sd": 19.9283,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 182
+          }
+        },
+        "상권활성도": {
+          "group": "입지",
+          "column": "상권활성도_운동시설",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2669,
+            "missing": 48,
+            "invalid": 0,
+            "unique": 778,
+            "min": 0,
+            "p10": 10,
+            "median": 50.1,
+            "p90": 90,
+            "max": 99.9,
+            "mean": 49.9993,
+            "sd": 28.8722,
+            "outOfRange": 0,
+            "zero": 1,
+            "hundred": 0
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 778,
+            "min": 0,
+            "p10": 10,
+            "median": 50.1,
+            "p90": 90,
+            "max": 99.9,
+            "mean": 49.9993,
+            "sd": 28.8722,
+            "outOfRange": 0,
+            "zero": 1,
+            "hundred": 0
+          }
+        },
+        "배후수요": {
+          "group": "입지",
+          "column": "배후수요_운동시설",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2669,
+            "missing": 48,
+            "invalid": 0,
+            "unique": 976,
+            "min": 0,
+            "p10": 10,
+            "median": 50,
+            "p90": 90.1,
+            "max": 100,
+            "mean": 49.9997,
+            "sd": 28.8732,
+            "outOfRange": 0,
+            "zero": 1,
+            "hundred": 1
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 976,
+            "min": 0,
+            "p10": 10,
+            "median": 50,
+            "p90": 90.1,
+            "max": 100,
+            "mean": 49.9997,
+            "sd": 28.8732,
+            "outOfRange": 0,
+            "zero": 1,
+            "hundred": 1
+          }
+        },
+        "용도일치도": {
+          "group": "업종적합",
+          "column": "용도일치도_운동시설",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2717,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 4,
+            "min": 30,
+            "p10": 30,
+            "median": 60,
+            "p90": 60,
+            "max": 100,
+            "mean": 52.6573,
+            "sd": 18.1733,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 197
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2669,
+            "missing": 0,
+            "invalid": 0,
+            "unique": 4,
+            "min": 30,
+            "p10": 30,
+            "median": 60,
+            "p90": 60,
+            "max": 100,
+            "mean": 52.7351,
+            "sd": 18.2112,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 196
+          }
+        },
+        "건물용도": {
+          "group": "업종적합",
+          "column": "건물용도_운동시설",
+          "structuralAbsence": null,
+          "all": {
+            "n": 2717,
+            "valid": 2531,
+            "missing": 186,
+            "invalid": 0,
+            "unique": 4,
+            "min": 30,
+            "p10": 40,
+            "median": 80,
+            "p90": 100,
+            "max": 100,
+            "mean": 81.1853,
+            "sd": 21.0668,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 1002
+          },
+          "eligible": {
+            "n": 2669,
+            "valid": 2531,
+            "missing": 138,
+            "invalid": 0,
+            "unique": 4,
+            "min": 30,
+            "p10": 40,
+            "median": 80,
+            "p90": 100,
+            "max": 100,
+            "mean": 81.1853,
+            "sd": 21.0668,
+            "outOfRange": 0,
+            "zero": 0,
+            "hundred": 1002
+          }
+        }
+      },
+      "groups": {
+        "비용": {
+          "configuredFactors": [
+            "임대료부담",
+            "가성비",
+            "보증금"
+          ],
+          "observedFactors": [
+            "가성비",
+            "보증금"
+          ],
+          "allComplete": 2717,
+          "eligibleComplete": 2669,
+          "eligiblePairwiseCorrelations": [
+            {
+              "a": "가성비",
+              "b": "보증금",
+              "n": 2669,
+              "r": 0.4129
+            }
+          ]
+        },
+        "공간": {
+          "configuredFactors": [
+            "층",
+            "면적적합도",
+            "건물연식"
+          ],
+          "observedFactors": [
+            "층",
+            "면적적합도",
+            "건물연식"
+          ],
+          "allComplete": 2671,
+          "eligibleComplete": 2623,
+          "eligiblePairwiseCorrelations": [
+            {
+              "a": "층",
+              "b": "면적적합도",
+              "n": 2643,
+              "r": 0.5257
+            },
+            {
+              "a": "층",
+              "b": "건물연식",
+              "n": 2623,
+              "r": 0.0679
+            },
+            {
+              "a": "면적적합도",
+              "b": "건물연식",
+              "n": 2649,
+              "r": 0.0415
+            }
+          ]
+        },
+        "입지": {
+          "configuredFactors": [
+            "교통",
+            "상권활성도",
+            "배후수요"
+          ],
+          "observedFactors": [
+            "교통",
+            "상권활성도",
+            "배후수요"
+          ],
+          "allComplete": 2669,
+          "eligibleComplete": 2669,
+          "eligiblePairwiseCorrelations": [
+            {
+              "a": "교통",
+              "b": "상권활성도",
+              "n": 2669,
+              "r": 0.426
+            },
+            {
+              "a": "교통",
+              "b": "배후수요",
+              "n": 2669,
+              "r": 0.228
+            },
+            {
+              "a": "상권활성도",
+              "b": "배후수요",
+              "n": 2669,
+              "r": 0.4007
+            }
+          ]
+        },
+        "업종적합": {
+          "configuredFactors": [
+            "용도일치도",
+            "건물용도"
+          ],
+          "observedFactors": [
+            "용도일치도",
+            "건물용도"
+          ],
+          "allComplete": 2531,
+          "eligibleComplete": 2531,
+          "eligiblePairwiseCorrelations": [
+            {
+              "a": "용도일치도",
+              "b": "건물용도",
+              "n": 2531,
+              "r": 0.0258
+            }
+          ]
+        }
+      }
+    }
+  },
+  "reconstruction": {
+    "식음료": {
+      "maxGroupDifferenceFromRoundedFactors": 0.08,
+      "maxTotalDifferenceFromRoundedFactors": 0.0645,
+      "maxCoverageDifference": 0,
+      "groupDiffOver011": 0,
+      "totalDiffOver011": 0,
+      "coverageFlagErrors": 0
+    },
+    "소매": {
+      "maxGroupDifferenceFromRoundedFactors": 0.08,
+      "maxTotalDifferenceFromRoundedFactors": 0.062,
+      "maxCoverageDifference": 0,
+      "groupDiffOver011": 0,
+      "totalDiffOver011": 0,
+      "coverageFlagErrors": 0
+    },
+    "뷰티": {
+      "maxGroupDifferenceFromRoundedFactors": 0.08,
+      "maxTotalDifferenceFromRoundedFactors": 0.0635,
+      "maxCoverageDifference": 0,
+      "groupDiffOver011": 0,
+      "totalDiffOver011": 0,
+      "coverageFlagErrors": 0
+    },
+    "공연문화": {
+      "maxGroupDifferenceFromRoundedFactors": 0.0857,
+      "maxTotalDifferenceFromRoundedFactors": 0.0667,
+      "maxCoverageDifference": 0,
+      "groupDiffOver011": 0,
+      "totalDiffOver011": 0,
+      "coverageFlagErrors": 0
+    },
+    "사무업무": {
+      "maxGroupDifferenceFromRoundedFactors": 0.08,
+      "maxTotalDifferenceFromRoundedFactors": 0.0685,
+      "maxCoverageDifference": 0.05,
+      "groupDiffOver011": 0,
+      "totalDiffOver011": 0,
+      "coverageFlagErrors": 0
+    },
+    "교육": {
+      "maxGroupDifferenceFromRoundedFactors": 0.08,
+      "maxTotalDifferenceFromRoundedFactors": 0.0618,
+      "maxCoverageDifference": 0,
+      "groupDiffOver011": 0,
+      "totalDiffOver011": 0,
+      "coverageFlagErrors": 0
+    },
+    "의료": {
+      "maxGroupDifferenceFromRoundedFactors": 0.08,
+      "maxTotalDifferenceFromRoundedFactors": 0.0603,
+      "maxCoverageDifference": 0,
+      "groupDiffOver011": 0,
+      "totalDiffOver011": 0,
+      "coverageFlagErrors": 0
+    },
+    "운동시설": {
+      "maxGroupDifferenceFromRoundedFactors": 0.08,
+      "maxTotalDifferenceFromRoundedFactors": 0.0615,
+      "maxCoverageDifference": 0,
+      "groupDiffOver011": 0,
+      "totalDiffOver011": 0,
+      "coverageFlagErrors": 0
+    }
+  },
+  "baseSource": {
+    "rows": 2717,
+    "rowWidthErrors": [],
+    "missingListingIds": 0,
+    "duplicateIds": 0,
+    "managementMissing": 1657
+  },
+  "manifest": [
+    {
+      "source": "C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/점수_v2.csv",
+      "snapshot": "C:/Users/Green/Documents/Codex/2026-11-19/dl/work/scoring-stage1/baseline/점수_v2.csv",
+      "bytes": 2596928,
+      "modifiedUtc": "2026-11-17T07:45:16.407Z",
+      "sha256": "5f48b649401ad9bbf7b1ecdc3897bf2054097d84e39c07ed04ce717a87adb87a"
+    },
+    {
+      "source": "C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/점수_v2_config.json",
+      "snapshot": "C:/Users/Green/Documents/Codex/2026-11-19/dl/work/scoring-stage1/baseline/점수_v2_config.json",
+      "bytes": 10774,
+      "modifiedUtc": "2026-11-17T07:45:16.407Z",
+      "sha256": "cbd4208e54127ed54d8a7619c326a60c2cb857c0a9a8658504a21f15eeb6991f"
+    },
+    {
+      "source": "C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/점수_v2_검사.json",
+      "snapshot": "C:/Users/Green/Documents/Codex/2026-11-19/dl/work/scoring-stage1/baseline/점수_v2_검사.json",
+      "bytes": 9373,
+      "modifiedUtc": "2026-11-17T07:45:16.740Z",
+      "sha256": "b0bd053730fc1ae688c313ab6cf17b90f70f95b61db56c6d5a7d500e77955311"
+    },
+    {
+      "source": "C:/Users/Green/Desktop/k뉴딜/data/scripts/scoring_engine.py",
+      "snapshot": "C:/Users/Green/Documents/Codex/2026-11-19/dl/work/scoring-stage1/baseline/scoring_engine.py",
+      "bytes": 21927,
+      "modifiedUtc": "2026-11-17T07:45:13.497Z",
+      "sha256": "0c761ac8682d6ded23a39438a873350d3825e3f880add8dd610bb80dcfbfc5e4"
+    },
+    {
+      "source": "C:/Users/Green/Desktop/k뉴딜/data/scripts/classify_use.py",
+      "snapshot": "C:/Users/Green/Documents/Codex/2026-11-19/dl/work/scoring-stage1/baseline/classify_use.py",
+      "bytes": 20238,
+      "modifiedUtc": "2026-11-17T07:40:58.634Z",
+      "sha256": "f5c29d3951daabc78b1d40c8819801a47ee7f6a2ae72d38f3bca32749d22db53"
+    },
+    {
+      "source": "C:/Users/Green/Desktop/k뉴딜/data/07.대구_매물유형별_csv/대구_구역별_매물 (최종).csv",
+      "snapshot": "C:/Users/Green/Documents/Codex/2026-11-19/dl/work/scoring-stage1/baseline/대구_구역별_매물 (최종).csv",
+      "bytes": 875217,
+      "modifiedUtc": "2026-11-10T05:23:05.322Z",
+      "sha256": "c84ae725bfa577e96b62883825797f2e634b1af4438b1d30f0ce782899504b4a"
+    },
+    {
+      "source": "C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/외부인자_v1.csv",
+      "snapshot": "C:/Users/Green/Documents/Codex/2026-11-19/dl/work/scoring-stage1/baseline/외부인자_v1.csv",
+      "bytes": 898407,
+      "modifiedUtc": "2026-11-11T06:12:29.548Z",
+      "sha256": "013a9038f7caf43fd6c98acda11c53fb319c2f1bf85ee9ad7082bd1e74863779"
+    },
+    {
+      "source": "C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/건물용도_v1.csv",
+      "snapshot": "C:/Users/Green/Documents/Codex/2026-11-19/dl/work/scoring-stage1/baseline/건물용도_v1.csv",
+      "bytes": 2411522,
+      "modifiedUtc": "2026-11-10T08:48:36.151Z",
+      "sha256": "fcee80080930b20a6452d754a2aeae22166892fd0fd1ac2097637f0e036da2de"
+    },
+    {
+      "source": "C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/업종별_그룹안비중_추정.json",
+      "snapshot": "C:/Users/Green/Documents/Codex/2026-11-19/dl/work/scoring-stage1/baseline/업종별_그룹안비중_추정.json",
+      "bytes": 37330,
+      "modifiedUtc": "2026-11-18T08:32:15.839Z",
+      "sha256": "1186c6b383eea0aba628c1da4278082219a78f724a9385de6022a7af0f366302"
+    },
+    {
+      "source": "C:/Users/Green/Desktop/k뉴딜/data/scripts/weight_estimation.py",
+      "snapshot": "C:/Users/Green/Documents/Codex/2026-11-19/dl/work/scoring-stage1/baseline/weight_estimation.py",
+      "bytes": 13533,
+      "modifiedUtc": "2026-11-18T08:32:02.649Z",
+      "sha256": "d456062b9200f8299ec2d9f94d8c929bf1820cde1ad5d8de16b308ccc3fed74c"
+    }
+  ],
+  "taskDate": "2026-11-19",
+  "invariants": {
+    "onlyWithinGroupFutureScope": true,
+    "noNewWeightsCalculated": true,
+    "noEngineExecuted": true,
+    "noOriginalFilesModifiedByThisTask": true,
+    "groupWeightsPreserved": true,
+    "csvNumericInvalids": 0,
+    "csvOutOfRange": 0
+  },
+  "priorEstimate": {
+    "file": "C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/업종별_그룹안비중_추정.json",
+    "conditions": {
+      "임대료상한": 300,
+      "라벨매물": 1722,
+      "교차겹": 5,
+      "부트스트랩": 200
+    },
+    "methodNames": [
+      "FR",
+      "WofE",
+      "LR"
+    ],
+    "label": "추천용도·특징의 업종 명시 여부; 실제 good/bad 아님",
+    "estimatedGroups": [
+      "비용",
+      "공간",
+      "입지"
+    ],
+    "useFitGroupNotEstimated": true,
+    "referencedByScoringEngine": false,
+    "verification": "코드와 JSON 열람만; 재실행/교차검증 재검증하지 않음"
+  },
+  "nextStagePending": [
+    "임대료 부담: 예산 시나리오와 재계산 입력 결정. 현재 CSV에는 인자 열 자체가 없음",
+    "공연문화 층: 구조적 제외와 일반 결측 구분",
+    "그룹별 완전 관측 표본 또는 결측 처리 방식 결정",
+    "기존 라벨 기반 추정과 무라벨 CRITIC 실험 분리",
+    "점수 정규화 범위 및 상수·2인자 그룹의 예외 처리 검토"
+  ]
+}

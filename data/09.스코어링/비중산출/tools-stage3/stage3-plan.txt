@@ -1,0 +1,30 @@
+﻿# 3단계 CRITIC 그룹 내부 비중 계산 실행 계획
+For agentic workers: execute inline using executing-plans; no delegation requested.
+Goal: 승인된 2단계 규칙으로 8개 업종×4개 그룹 비중 후보만 계산하고 4단계는 진행하지 않는다.
+Architecture: 읽기 전용 기준 스냅샷 + 독립 계산 모듈 + 진단·검증 보고서. 원본 엔진을 import하거나 main을 실행하지 않는다.
+Tech Stack: 번들 Python 표준 라이브러리, Node를 이용한 독립 수치 검산.
+Spec: C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/비중산출/scoring-stage2-rules.json
+Global constraints: 기존 그룹 가중치·인자 산식 유지. 300만 원 기준 비용 조건, 그룹별 완전 관측 표본, 기존 점수/100 주 정규화, 표본 min-max 보조. 대상 외 파일 수정 금지.
+Review focus: 2인자 약분; 완전 상관·상수로 인한 산출 불가; 그룹별 같은 행 표본; 예산 초과·미입력; 표시 합계와 정밀도 분리.
+
+Task 1 계산 핵심: critic_core.py, test_critic_core.py
+- [ ] 수치 정답·결측·퇴화·예산 경계 테스트를 먼저 작성하고 실패 확인
+- [ ] fit_critic / rent_burden / quantile_linear / display_percentages 구현
+- [ ] 테스트 통과 확인
+Task 2 스냅샷 분석: calculate_stage3.py
+- [ ] 입력 해시와 ID 검증. 2,669건 기준 확인
+- [ ] 각 그룹의 표본·분포·상관·정보량·정밀 비중 기록
+- [ ] 300만 원, 예산 미입력, 분위수 예산, 관리비 기재 표본을 별도 결과로 생성
+- [ ] 원래·동일·고정척도 CRITIC·min-max 후보 벡터를 보존
+Task 3 검증 및 저장
+- [ ] 수치합·범위·표본수·공통 비용 동일성·2인자 비율 검증
+- [ ] JS 독립 계산으로 주요 결과 전수 검산
+- [ ] 원본 해시 보존 확인. 비중산출 폴더에 새 결과와 재현용 도구 저장
+- [ ] 결과 설명 후 사용자 확인 전 4단계 중지
+
+Ruling: 사용자가 명시적으로 승인한 3단계를 수행한다. 별도의 구현 계획 승인을 반복 요청하지 않는다.
+Ruling: 본 작업은 기존 저장소 기능 변경이 아닌 격리된 분석 도구 작성이다. 원본 git 브랜치·엔진은 건드리지 않는다.
+
+Ruling: 3인자 수기 fixture의 C_a=0.5*2=1을 예상식에 누락한 테스트 산술 오류를 수정. 계산 구현은 변경하지 않음. 다른 언어로 SD·상관·정보량을 다시 검산함.
+
+검토: 독립 검토자는 Critical/Important 없음으로 판단. 승인 해시는 이전 원본 manifest이고 현재 manifest는 재배치 wrapper임을 확인했으며, 두 해시와 파일별 일치 체인은 별도 검증 기록에 보존한다.

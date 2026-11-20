@@ -1,0 +1,87 @@
+{
+  "taskDate": "2026-11-19",
+  "targetDirectory": "C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/비중산출",
+  "stage1HistoricalReports": "stage1 audit is an unchanged historical copy and retains original snapshot path records; use this manifest for relocated snapshots",
+  "files": [
+    {
+      "source": "C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/점수_v2.csv",
+      "snapshot": "C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/비중산출/baseline-stage1/점수_v2.csv",
+      "bytes": 2596928,
+      "modifiedUtc": "2026-11-17T07:45:16.407Z",
+      "sha256": "5f48b649401ad9bbf7b1ecdc3897bf2054097d84e39c07ed04ce717a87adb87a",
+      "originalStage1Snapshot": "C:/Users/Green/Documents/Codex/2026-11-19/dl/work/scoring-stage1/baseline/점수_v2.csv"
+    },
+    {
+      "source": "C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/점수_v2_config.json",
+      "snapshot": "C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/비중산출/baseline-stage1/점수_v2_config.json",
+      "bytes": 10774,
+      "modifiedUtc": "2026-11-17T07:45:16.407Z",
+      "sha256": "cbd4208e54127ed54d8a7619c326a60c2cb857c0a9a8658504a21f15eeb6991f",
+      "originalStage1Snapshot": "C:/Users/Green/Documents/Codex/2026-11-19/dl/work/scoring-stage1/baseline/점수_v2_config.json"
+    },
+    {
+      "source": "C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/점수_v2_검사.json",
+      "snapshot": "C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/비중산출/baseline-stage1/점수_v2_검사.json",
+      "bytes": 9373,
+      "modifiedUtc": "2026-11-17T07:45:16.740Z",
+      "sha256": "b0bd053730fc1ae688c313ab6cf17b90f70f95b61db56c6d5a7d500e77955311",
+      "originalStage1Snapshot": "C:/Users/Green/Documents/Codex/2026-11-19/dl/work/scoring-stage1/baseline/점수_v2_검사.json"
+    },
+    {
+      "source": "C:/Users/Green/Desktop/k뉴딜/data/scripts/scoring_engine.py",
+      "snapshot": "C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/비중산출/baseline-stage1/scoring_engine.py",
+      "bytes": 21927,
+      "modifiedUtc": "2026-11-17T07:45:13.497Z",
+      "sha256": "0c761ac8682d6ded23a39438a873350d3825e3f880add8dd610bb80dcfbfc5e4",
+      "originalStage1Snapshot": "C:/Users/Green/Documents/Codex/2026-11-19/dl/work/scoring-stage1/baseline/scoring_engine.py"
+    },
+    {
+      "source": "C:/Users/Green/Desktop/k뉴딜/data/scripts/classify_use.py",
+      "snapshot": "C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/비중산출/baseline-stage1/classify_use.py",
+      "bytes": 20238,
+      "modifiedUtc": "2026-11-17T07:40:58.634Z",
+      "sha256": "f5c29d3951daabc78b1d40c8819801a47ee7f6a2ae72d38f3bca32749d22db53",
+      "originalStage1Snapshot": "C:/Users/Green/Documents/Codex/2026-11-19/dl/work/scoring-stage1/baseline/classify_use.py"
+    },
+    {
+      "source": "C:/Users/Green/Desktop/k뉴딜/data/07.대구_매물유형별_csv/대구_구역별_매물 (최종).csv",
+      "snapshot": "C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/비중산출/baseline-stage1/대구_구역별_매물 (최종).csv",
+      "bytes": 875217,
+      "modifiedUtc": "2026-11-10T05:23:05.322Z",
+      "sha256": "c84ae725bfa577e96b62883825797f2e634b1af4438b1d30f0ce782899504b4a",
+      "originalStage1Snapshot": "C:/Users/Green/Documents/Codex/2026-11-19/dl/work/scoring-stage1/baseline/대구_구역별_매물 (최종).csv"
+    },
+    {
+      "source": "C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/외부인자_v1.csv",
+      "snapshot": "C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/비중산출/baseline-stage1/외부인자_v1.csv",
+      "bytes": 898407,
+      "modifiedUtc": "2026-11-11T06:12:29.548Z",
+      "sha256": "013a9038f7caf43fd6c98acda11c53fb319c2f1bf85ee9ad7082bd1e74863779",
+      "originalStage1Snapshot": "C:/Users/Green/Documents/Codex/2026-11-19/dl/work/scoring-stage1/baseline/외부인자_v1.csv"
+    },
+    {
+      "source": "C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/건물용도_v1.csv",
+      "snapshot": "C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/비중산출/baseline-stage1/건물용도_v1.csv",
+      "bytes": 2411522,
+      "modifiedUtc": "2026-11-10T08:48:36.151Z",
+      "sha256": "fcee80080930b20a6452d754a2aeae22166892fd0fd1ac2097637f0e036da2de",
+      "originalStage1Snapshot": "C:/Users/Green/Documents/Codex/2026-11-19/dl/work/scoring-stage1/baseline/건물용도_v1.csv"
+    },
+    {
+      "source": "C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/업종별_그룹안비중_추정.json",
+      "snapshot": "C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/비중산출/baseline-stage1/업종별_그룹안비중_추정.json",
+      "bytes": 37330,
+      "modifiedUtc": "2026-11-18T08:32:15.839Z",
+      "sha256": "1186c6b383eea0aba628c1da4278082219a78f724a9385de6022a7af0f366302",
+      "originalStage1Snapshot": "C:/Users/Green/Documents/Codex/2026-11-19/dl/work/scoring-stage1/baseline/업종별_그룹안비중_추정.json"
+    },
+    {
+      "source": "C:/Users/Green/Desktop/k뉴딜/data/scripts/weight_estimation.py",
+      "snapshot": "C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/비중산출/baseline-stage1/weight_estimation.py",
+      "bytes": 13533,
+      "modifiedUtc": "2026-11-18T08:32:02.649Z",
+      "sha256": "d456062b9200f8299ec2d9f94d8c929bf1820cde1ad5d8de16b308ccc3fed74c",
+      "originalStage1Snapshot": "C:/Users/Green/Documents/Codex/2026-11-19/dl/work/scoring-stage1/baseline/weight_estimation.py"
+    }
+  ]
+}

@@ -1,0 +1,151 @@
+{
+  "taskDate": "2026-11-19",
+  "scope": "stages1_to3_review_only",
+  "findings": [
+    {
+      "id": "F1",
+      "kind": "implementation_contract_mismatch",
+      "priority": "fix_before_next_analysis",
+      "title": "산출 불가의 상태·대체값이 최종 보고서까지 이어지지 않음",
+      "location": "tools-stage3/calculate_stage3.py:172-174",
+      "evidence": {
+        "completed": false,
+        "errorType": "ValueError",
+        "error": "Main candidate unestimable: 식음료/공간",
+        "reportWritten": false
+      },
+      "currentImpact": "현재 144개 결과에는 산출 불가가 없어 현재 수치 영향 없음",
+      "recommendation": "candidate=null, status, fallback을 summary와 보고서에 그대로 보존하고 다른 그룹 출력을 완료. 상수·완전상관·표본부족의 driver 통합 테스트 추가.",
+      "fixApplied": false
+    },
+    {
+      "id": "F2",
+      "kind": "configuration_enforcement_gap",
+      "priority": "fix_before_next_analysis",
+      "title": "규칙 문서의 핵심 설정을 실행 코드가 검증하지 않음",
+      "location": "tools-stage3/calculate_stage3.py:55-61,140-141",
+      "evidence": {
+        "completed": true,
+        "reportWritten": true
+      },
+      "currentImpact": "현재 승인 규칙과 구현은 일치하므로 현재 계산 오류는 아님. 규칙 개정 후 재실행 위험.",
+      "recommendation": "지원 schema/method, 정규화·상관·결측·예산·제외 규칙을 로드하거나 지원값과 명시적으로 대조해 불일치 시 중단. 승인 manifest 해시와 재배치 체인 검증을 실행 진입점에 포함.",
+      "fixApplied": false
+    },
+    {
+      "id": "F3",
+      "kind": "presentation_baseline_ambiguity",
+      "priority": "correct_report_wording",
+      "title": "300만 원 시나리오의 기존 프리셋을 현재 실제 적용 비중으로 표현",
+      "location": "tools-stage3/calculate_stage3.py:223",
+      "evidence": {
+        "frozenBudget": null,
+        "usualCurrentCostEffective": [
+          null,
+          60,
+          40
+        ],
+        "cultureCurrentCostEffective": [
+          null,
+          50,
+          50
+        ],
+        "budget300PresetUsual": [
+          50,
+          30,
+          20
+        ],
+        "budget300PresetCulture": [
+          40,
+          30,
+          30
+        ]
+      },
+      "currentImpact": "비교 계산은 동일 예산 조건에서 타당하지만 현재 기본 상태와의 비교로 읽으면 잘못됨.",
+      "recommendation": "표제를 \"300만 원 시나리오의 기존 프리셋과 후보 비교\"로 바꾸고, 실제 무예산 기본 상태를 별도 표로 제시.",
+      "fixApplied": false
+    },
+    {
+      "id": "F4",
+      "kind": "pilot_generalization_limit",
+      "priority": "address_when_reusing_new_snapshot_or_categories",
+      "title": "기법은 일반적이지만 현재 도구는 8업종·현재 표본 크기에 고정",
+      "location": "tools-stage3/calculate_stage3.py:182-196",
+      "evidence": {
+        "completed": false,
+        "errorType": "ValueError",
+        "error": "Calculation validation failed: {'referenceN': False, 'totalResultRecords': 144, 'allMainGroups': True, 'allCandidateSumsValid': True, 'allDisplaysSumTo100': True, 'twoFactorIdentity': True, 'costIdenticalAcrossCategories': True, 'expectedNoncostSampleSizes': False, 'originalInputsUnchangedDuringRun': True}",
+        "reportWritten": false
+      },
+      "currentImpact": "현재 동결 스냅샷에서는 적절한 회귀 점검으로 작동. 새 버전용 범용 모듈로 그대로 재사용할 수는 없음.",
+      "recommendation": "동결 스냅샷 무결성 검증과 일반 알고리즘 검증을 분리. 일반 검증은 categories×groups 및 실제 완전 관측 수에서 계산하고, 버전별 예상값은 별도 회귀 fixture에 보존.",
+      "fixApplied": false
+    },
+    {
+      "id": "M1",
+      "kind": "methodological_choice",
+      "priority": "retain_as_parallel_candidates_not_final_choice",
+      "title": "고정척도 주 후보와 원문 정규화 후보 사이의 차이가 큼",
+      "evidence": {
+        "category": "사무업무",
+        "group": "공간",
+        "factor": "면적적합도",
+        "fixed": 43.966868882733536,
+        "minmax": 34.062451716221304,
+        "deltaPp": 9.904417166512232,
+        "absDeltaPp": 9.904417166512232
+      },
+      "currentImpact": "명시된 설계 선택이고 산술 오류는 아님. 임의성을 완전히 제거했다는 근거가 될 수 없음.",
+      "recommendation": "기존/동일/고정척도/min-max 가중치 후보를 구분해 비교. 원문 전체 재현을 원하면 정규화와 최종 집계 척도까지 별도 정의. 현재 min-max 결과는 가중치 산출의 정규화 비교로 명명.",
+      "fixApplied": false
+    },
+    {
+      "id": "M2",
+      "kind": "mathematical_limitation",
+      "priority": "disclose_in_summary_and_comparison",
+      "title": "2인자 그룹은 상관항이 약분되어 표준편차 비율로 귀결",
+      "evidence": {
+        "allVariantRecords": 34,
+        "mainGroups": 9,
+        "mainTotal": 32
+      },
+      "currentImpact": "계산 오류가 아니며 이미 상태 코드에 기록됨. 9개 주 그룹에서 상관구조로 비중을 차별화하는 효과가 없음.",
+      "recommendation": "2인자 표준편차 비율로 표시하고 기존·동일 비중과 함께 비교. 결과를 임차인 선호 중요도로 설명하지 않음.",
+      "fixApplied": false
+    },
+    {
+      "id": "M3",
+      "kind": "data_and_validation_limit",
+      "priority": "carry_into_next_validation",
+      "title": "관리비 미기재 처리와 품질 검증의 범위",
+      "evidence": {
+        "managementMissingFull": 1657,
+        "fullN": 2717,
+        "managementMissingReference": 1626,
+        "referenceN": 2669,
+        "mainBudgetFitN": 2235,
+        "managementKnownBudgetFitN": 825
+      },
+      "currentImpact": "누락 관리비의 0 대치는 기존 엔진을 재현하기 위한 선택. 실제 관리비가 0이거나 실제 예산 이내임을 검증한 것이 아님.",
+      "recommendation": "0대치와 관리비 기재 표본을 분리해 보고하고 결과를 실제 임차인 만족 확률로 해석하지 않음. 순위 안정성도 추천 정확도와 별도로 명시.",
+      "fixApplied": false
+    }
+  ],
+  "currentResultDisposition": "retain_as_reproducible_unvalidated_candidates; do_not_promote_to_final_weights",
+  "empiricalEvidenceFile": "review-stages1-3-evidence.json",
+  "existingFilesModified": false,
+  "stage4Started": false,
+  "rankingComputed": false,
+  "bootstrapComputed": false,
+  "fixesApplied": false,
+  "sources": [
+    {
+      "title": "CRITIC original paper, 1995",
+      "url": "https://doi.org/10.1016/0305-0548(94)00059-H"
+    },
+    {
+      "title": "JRC: Weights and Importance in Composite Indicators: Closing the Gap",
+      "url": "https://publications.jrc.ec.europa.eu/repository/handle/JRC105460"
+    }
+  ]
+}

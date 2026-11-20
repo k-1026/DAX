@@ -1,0 +1,66 @@
+{
+  "stage": 3,
+  "userApprovedStage3": true,
+  "unitTests": {
+    "count": 11,
+    "passed": true,
+    "log": "tools-stage3/unit-test-results.txt"
+  },
+  "independentNumericVerification": {
+    "language": "JavaScript independently reconstructed cohorts and CRITIC calculations",
+    "recordsChecked": 144,
+    "derivedRentScoresChecked": 10676,
+    "cohortSelectionFailures": 0,
+    "maxWeightDifferencePp": 6.536993168992922e-13,
+    "maxSdDifference": 1.021405182655144e-14,
+    "maxCorrelationDifference": 1.9373391779708982e-14,
+    "tolerancePp": 1e-8,
+    "pass": true
+  },
+  "provenance": {
+    "approvedOriginalManifestSha256": "73ee01b986e50c7af0ae2d19fc3fbdb35c64dc8ccefe5aac3ad4e6dd7664f559",
+    "approvedHashInRules": "73ee01b986e50c7af0ae2d19fc3fbdb35c64dc8ccefe5aac3ad4e6dd7664f559",
+    "relocatedManifestSha256": "09142f30515b07f443a38936cce0077223860fd1bc405346df0e7f90bc735b2b",
+    "approvedHashMatches": true,
+    "relocationChainFiles": 10,
+    "relocationChainVerified": true,
+    "explanation": "Original approved manifest is raw stage1 array. Relocated manifest is wrapper with new snapshot paths and originalStage1Snapshot. Source/bytes/hash linkage is verified."
+  },
+  "artifact": {
+    "resultFile": "scoring-stage3-results.json",
+    "sha256": "ac741a6aff171e164a42c32dfa4b90933430c21febc7524ab6efb12585f06b1f",
+    "reportFile": "scoring-stage3-report.txt"
+  },
+  "scriptHashes": [
+    {
+      "file": "tools-stage3/critic_core.py",
+      "sha256": "f15b4a6635f9959362325f79d9a1ef320462fc015d82291a9a6a5c111f0f2c9b"
+    },
+    {
+      "file": "tools-stage3/calculate_stage3.py",
+      "sha256": "bc001a2ab65fda3055924f65d6f7c97e9740000224e43869dabac5578c422511"
+    },
+    {
+      "file": "tools-stage3/test_critic_core.py",
+      "sha256": "e23f428a4e9ff438328eb0cfd13e79b50d828ae7f3df73461e3ce598e94f9683"
+    }
+  ],
+  "readOnlyReview": {
+    "critical": 0,
+    "important": 0,
+    "minor": [
+      "Original and relocated manifest hashes differ due to metadata relocation; exact approved raw manifest and verified chain preserved.",
+      "Validation artifact reference updated when validation record was completed."
+    ],
+    "verdict": "Safe to present as unvalidated statistical candidates"
+  },
+  "scope": {
+    "originalEngineExecuted": false,
+    "originalGroupWeightsModified": false,
+    "originalScoreFunctionsModified": false,
+    "productionApplied": false,
+    "rankingComputed": false,
+    "bootstrapComputed": false,
+    "stage4Started": false
+  }
+}

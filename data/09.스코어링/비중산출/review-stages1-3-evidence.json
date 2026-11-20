@@ -1,0 +1,327 @@
+{
+  "scope": "review_of_stages1_to3_no_stage4",
+  "hashChecks": [
+    {
+      "file": "C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/점수_v2.csv",
+      "snapshotMatches": true,
+      "liveOriginalMatches": true
+    },
+    {
+      "file": "C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/점수_v2_config.json",
+      "snapshotMatches": true,
+      "liveOriginalMatches": true
+    },
+    {
+      "file": "C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/점수_v2_검사.json",
+      "snapshotMatches": true,
+      "liveOriginalMatches": true
+    },
+    {
+      "file": "C:/Users/Green/Desktop/k뉴딜/data/scripts/scoring_engine.py",
+      "snapshotMatches": true,
+      "liveOriginalMatches": true
+    },
+    {
+      "file": "C:/Users/Green/Desktop/k뉴딜/data/scripts/classify_use.py",
+      "snapshotMatches": true,
+      "liveOriginalMatches": true
+    },
+    {
+      "file": "C:/Users/Green/Desktop/k뉴딜/data/07.대구_매물유형별_csv/대구_구역별_매물 (최종).csv",
+      "snapshotMatches": true,
+      "liveOriginalMatches": true
+    },
+    {
+      "file": "C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/외부인자_v1.csv",
+      "snapshotMatches": true,
+      "liveOriginalMatches": true
+    },
+    {
+      "file": "C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/건물용도_v1.csv",
+      "snapshotMatches": true,
+      "liveOriginalMatches": true
+    },
+    {
+      "file": "C:/Users/Green/Desktop/k뉴딜/data/09.스코어링/업종별_그룹안비중_추정.json",
+      "snapshotMatches": true,
+      "liveOriginalMatches": true
+    },
+    {
+      "file": "C:/Users/Green/Desktop/k뉴딜/data/scripts/weight_estimation.py",
+      "snapshotMatches": true,
+      "liveOriginalMatches": true
+    }
+  ],
+  "exactBaselineRentRounding": [
+    {
+      "budget": 70.0,
+      "checked": 2669,
+      "different": 0,
+      "examples": []
+    },
+    {
+      "budget": 120.0,
+      "checked": 2669,
+      "different": 0,
+      "examples": []
+    },
+    {
+      "budget": 230.0,
+      "checked": 2669,
+      "different": 0,
+      "examples": []
+    },
+    {
+      "budget": 300.0,
+      "checked": 2669,
+      "different": 0,
+      "examples": []
+    }
+  ],
+  "normalizationTopDeltas": [
+    {
+      "category": "사무업무",
+      "group": "공간",
+      "factor": "면적적합도",
+      "fixed": 43.966868882733536,
+      "minmax": 34.062451716221304,
+      "deltaPp": 9.904417166512232,
+      "absDeltaPp": 9.904417166512232
+    },
+    {
+      "category": "교육",
+      "group": "공간",
+      "factor": "면적적합도",
+      "fixed": 40.1286718624235,
+      "minmax": 30.472180505620877,
+      "deltaPp": 9.656491356802626,
+      "absDeltaPp": 9.656491356802626
+    },
+    {
+      "category": "식음료",
+      "group": "공간",
+      "factor": "면적적합도",
+      "fixed": 39.23766029121069,
+      "minmax": 29.632753516780628,
+      "deltaPp": 9.60490677443006,
+      "absDeltaPp": 9.60490677443006
+    },
+    {
+      "category": "뷰티",
+      "group": "공간",
+      "factor": "면적적합도",
+      "fixed": 42.350930460409565,
+      "minmax": 32.7861160562635,
+      "deltaPp": 9.564814404146063,
+      "absDeltaPp": 9.564814404146063
+    },
+    {
+      "category": "의료",
+      "group": "공간",
+      "factor": "면적적합도",
+      "fixed": 39.6355846666493,
+      "minmax": 30.082344782751374,
+      "deltaPp": 9.553239883897927,
+      "absDeltaPp": 9.553239883897927
+    },
+    {
+      "category": "운동시설",
+      "group": "공간",
+      "factor": "면적적합도",
+      "fixed": 38.788983581342954,
+      "minmax": 29.26694035166834,
+      "deltaPp": 9.522043229674615,
+      "absDeltaPp": 9.522043229674615
+    },
+    {
+      "category": "소매",
+      "group": "공간",
+      "factor": "면적적합도",
+      "fixed": 38.2006152020068,
+      "minmax": 28.682850300240265,
+      "deltaPp": 9.517764901766537,
+      "absDeltaPp": 9.517764901766537
+    },
+    {
+      "category": "식음료",
+      "group": "비용",
+      "factor": "임대료부담",
+      "fixed": 21.544482446131674,
+      "minmax": 30.64258139801919,
+      "deltaPp": -9.098098951887515,
+      "absDeltaPp": 9.098098951887515
+    },
+    {
+      "category": "소매",
+      "group": "비용",
+      "factor": "임대료부담",
+      "fixed": 21.544482446131674,
+      "minmax": 30.64258139801919,
+      "deltaPp": -9.098098951887515,
+      "absDeltaPp": 9.098098951887515
+    },
+    {
+      "category": "뷰티",
+      "group": "비용",
+      "factor": "임대료부담",
+      "fixed": 21.544482446131674,
+      "minmax": 30.64258139801919,
+      "deltaPp": -9.098098951887515,
+      "absDeltaPp": 9.098098951887515
+    },
+    {
+      "category": "공연문화",
+      "group": "비용",
+      "factor": "임대료부담",
+      "fixed": 21.544482446131674,
+      "minmax": 30.64258139801919,
+      "deltaPp": -9.098098951887515,
+      "absDeltaPp": 9.098098951887515
+    },
+    {
+      "category": "사무업무",
+      "group": "비용",
+      "factor": "임대료부담",
+      "fixed": 21.544482446131674,
+      "minmax": 30.64258139801919,
+      "deltaPp": -9.098098951887515,
+      "absDeltaPp": 9.098098951887515
+    }
+  ],
+  "syntheticFixtures": {
+    "allConstantMainGroup": {
+      "completed": false,
+      "errorType": "ValueError",
+      "error": "Main candidate unestimable: 식음료/공간",
+      "reportWritten": false
+    },
+    "updatedReferenceSize": {
+      "completed": false,
+      "errorType": "ValueError",
+      "error": "Calculation validation failed: {'referenceN': False, 'totalResultRecords': 144, 'allMainGroups': True, 'allCandidateSumsValid': True, 'allDisplaysSumTo100': True, 'twoFactorIdentity': True, 'costIdenticalAcrossCategories': True, 'expectedNoncostSampleSizes': False, 'originalInputsUnchangedDuringRun': True}",
+      "reportWritten": false
+    },
+    "unsupportedNormalizationRule": {
+      "completed": true,
+      "reportWritten": true
+    }
+  },
+  "fullStage3Rerun": {
+    "originalSha256": "ac741a6aff171e164a42c32dfa4b90933430c21febc7524ab6efb12585f06b1f",
+    "reproducedSha256": "ac741a6aff171e164a42c32dfa4b90933430c21febc7524ab6efb12585f06b1f",
+    "byteIdentical": true
+  },
+  "costBaselineLabelCheck": {
+    "식음료": {
+      "snapshotBudget": null,
+      "nominal": [
+        50,
+        30,
+        20
+      ],
+      "actualWhenBudgetAbsent": [
+        null,
+        60.0,
+        40.0
+      ]
+    },
+    "소매": {
+      "snapshotBudget": null,
+      "nominal": [
+        50,
+        30,
+        20
+      ],
+      "actualWhenBudgetAbsent": [
+        null,
+        60.0,
+        40.0
+      ]
+    },
+    "뷰티": {
+      "snapshotBudget": null,
+      "nominal": [
+        50,
+        30,
+        20
+      ],
+      "actualWhenBudgetAbsent": [
+        null,
+        60.0,
+        40.0
+      ]
+    },
+    "공연문화": {
+      "snapshotBudget": null,
+      "nominal": [
+        40,
+        30,
+        30
+      ],
+      "actualWhenBudgetAbsent": [
+        null,
+        50.0,
+        50.0
+      ]
+    },
+    "사무업무": {
+      "snapshotBudget": null,
+      "nominal": [
+        50,
+        30,
+        20
+      ],
+      "actualWhenBudgetAbsent": [
+        null,
+        60.0,
+        40.0
+      ]
+    },
+    "교육": {
+      "snapshotBudget": null,
+      "nominal": [
+        50,
+        30,
+        20
+      ],
+      "actualWhenBudgetAbsent": [
+        null,
+        60.0,
+        40.0
+      ]
+    },
+    "의료": {
+      "snapshotBudget": null,
+      "nominal": [
+        50,
+        30,
+        20
+      ],
+      "actualWhenBudgetAbsent": [
+        null,
+        60.0,
+        40.0
+      ]
+    },
+    "운동시설": {
+      "snapshotBudget": null,
+      "nominal": [
+        50,
+        30,
+        20
+      ],
+      "actualWhenBudgetAbsent": [
+        null,
+        60.0,
+        40.0
+      ]
+    }
+  },
+  "twoFactorRecords": 34,
+  "currentDataDegenerateRecords": 0,
+  "managementMissingFull": 1657,
+  "managementMissingReference": 1626,
+  "rankingComputed": false,
+  "bootstrapComputed": false,
+  "originalFilesModified": false
+}

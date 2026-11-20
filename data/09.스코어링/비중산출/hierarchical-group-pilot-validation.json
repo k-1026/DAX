@@ -1,0 +1,22 @@
+{
+  "taskDate": "2026-11-20",
+  "method": "hierarchical_fixed_score_CRITIC_pilot",
+  "independentVerification": {
+    "independentLanguage": "JavaScript",
+    "groupFitsChecked": 16,
+    "maxWeightDifferencePp": 1.6342482922482304e-13,
+    "tolerancePp": 1e-8,
+    "cohortMismatches": 0,
+    "pass": true
+  },
+  "originalStage3Hash": "ac741a6aff171e164a42c32dfa4b90933430c21febc7524ab6efb12585f06b1f",
+  "newPilotHash": "43aca369678decba7ed9a814e771bb1c806c6ce1031d009fcebe39a5480699c7",
+  "productionApplied": false,
+  "rankingComputed": false,
+  "bootstrapComputed": false,
+  "numericalBoundaryRoundoff": {
+    "tolerance": 1e-10,
+    "count": 4,
+    "maxCorrection": 1.4210854715202004e-14
+  }
+}
