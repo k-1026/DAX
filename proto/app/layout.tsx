@@ -33,6 +33,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <Link href="/privacy" className="font-bold underline">
             개인정보 처리방침
           </Link>
+          <Link href="/report" className="underline">
+            문제 신고
+          </Link>
         </footer>
       </body>
     </html>

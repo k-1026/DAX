@@ -1,8 +1,7 @@
 // 매물 검색 (서버 전용). 등급별 범위는 DB 함수 search_listings가 정한다.
 // 로그인 회원은 본인 로그인으로, 비로그인은 서버가 IP 제한을 걸어 대신 호출한다.
 import "server-only";
-import { createHmac } from "node:crypto";
-import { headers } from "next/headers";
+import { guestIpHash, signDetailToken } from "@/lib/net/guest";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 
@@ -47,6 +46,8 @@ export type ListingCard = {
   is_new: boolean;
   price_changed: boolean;
   needs_check: boolean;
+  /** 비로그인에게 보여 준 매물에만 붙는 상세 열람 표시 */
+  detail_token?: string;
 };
 
 export type SearchResult = {
@@ -89,16 +90,6 @@ export function parseSearchParams(params: Record<string, string | string[] | und
   return { filters, sort, offset: Math.floor(offset) };
 }
 
-// 비로그인 IP는 비밀값으로 해시해서 넘긴다. 원래 주소는 DB에 남지 않는다.
-async function guestIpHash() {
-  const secret = process.env.IP_HASH_SECRET;
-  if (!secret) return null;
-  const list = await headers();
-  const ip =
-    list.get("x-forwarded-for")?.split(",")[0]?.trim() || list.get("x-real-ip") || "unknown";
-  return createHmac("sha256", secret).update(ip).digest("hex");
-}
-
 const FAILED: SearchResult = {
   tier: "guest",
   total: null,
@@ -131,7 +122,9 @@ export async function searchListings(
   if (!service || !ipHash) return FAILED;
   const { data, error } = await service.rpc("search_listings", { ...args, p_ip_hash: ipHash });
   if (error || !data) return FAILED;
-  return data as SearchResult;
+  const result = data as SearchResult;
+  result.items = result.items.map((item) => ({ ...item, detail_token: signDetailToken(item.id) ?? undefined }));
+  return result;
 }
 
 export async function getAreas(): Promise<Record<string, string[]>> {

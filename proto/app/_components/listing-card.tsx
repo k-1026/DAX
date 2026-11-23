@@ -1,4 +1,5 @@
 // 매물 카드: 위치·가격·면적·상태 표시·출처
+import Link from "next/link";
 import type { ListingCard as Card } from "@/lib/search/listings";
 
 const SOURCE_LABELS: Record<string, string> = { naver: "네이버 부동산" };
@@ -10,11 +11,11 @@ export function sourceLabel(source: string) {
 
 // 네이버 원문에서 값을 고르지 않았을 때 들어오는 글자는 보여 주지 않는다.
 const EMPTY_TEXT = /^\(?선택\)?\s*안함$|^-$|^없음$/;
-const meaningful = (value: string | null) => (value && !EMPTY_TEXT.test(value.trim()) ? value : null);
+export const meaningful = (value: string | null) => (value && !EMPTY_TEXT.test(value.trim()) ? value : null);
 
-const won = (value: number | null) => (value === null ? "-" : value.toLocaleString("ko-KR"));
+export const won = (value: number | null) => (value === null ? "-" : value.toLocaleString("ko-KR"));
 
-function date(value: string | null) {
+export function date(value: string | null) {
   if (!value) return null;
   const parsed = new Date(value.length === 10 ? `${value}T00:00:00+09:00` : value);
   if (Number.isNaN(parsed.getTime())) return null;
@@ -46,11 +47,16 @@ export function ListingCardView({ card, showScore }: { card: Card; showScore: bo
       </div>
 
       <h3 className="text-base font-semibold">
+        <Link
+          href={`/listings/${card.id}${card.detail_token ? `?t=${card.detail_token}` : ""}`}
+          className="hover:underline"
+        >
         {card.gu} {card.dong}
         {floor && <span className="font-normal text-zinc-600 dark:text-zinc-400"> · {floor}</span>}
         {card.building_name && (
           <span className="font-normal text-zinc-600 dark:text-zinc-400"> · {card.building_name}</span>
         )}
+        </Link>
       </h3>
 
       <p className="text-lg font-bold">
