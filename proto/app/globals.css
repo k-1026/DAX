@@ -1,28 +1,176 @@
 @import "tailwindcss";
 
+/* 발표 데모(26.11.19)의 색 규칙. 문서: 앱 개발/10_발표데모_분석.md 2절 */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --canvas: #eef2f8;
+  --panel: #ffffff;
+  --soft: #f3f6fb;
+  --line: #e1e6ee;
+  --ink: #1f1f1f;
+  --muted: #5f6368;
+  --faint: #8a9099;
+  --accent: #0b57d0;
+  --accent-soft: #d3e3fd;
+  --brand: #1f1f1f;
+  --brand-ink: #ffffff;
+  --tile-blue: #e3ecfd;
+  --tile-green: #dcf3e2;
+  --tile-yellow: #fbefcc;
+  --tile-purple: #ece4fb;
+  --tile-pink: #fbe3ea;
+  --tile-teal: #d9f0f4;
+  --ok: #188038;
+  --ok-soft: #e6f4ea;
+  --warn: #b06000;
+  --warn-soft: #fef3e0;
+  --bad: #c5221f;
+  --bad-soft: #fce8e6;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --canvas: #131314;
+    --panel: #1e1f20;
+    --soft: #282a2c;
+    --line: #333537;
+    --ink: #e3e3e3;
+    --muted: #a8abb0;
+    --faint: #7c8087;
+    --accent: #a8c7fa;
+    --accent-soft: #0b3a7a;
+    --brand: #e3e3e3;
+    --brand-ink: #131314;
+    --tile-blue: #22304a;
+    --tile-green: #1f3a2a;
+    --tile-yellow: #3d3420;
+    --tile-purple: #33294a;
+    --tile-pink: #47252f;
+    --tile-teal: #1c3a40;
+    --ok: #81c995;
+    --ok-soft: #1d3626;
+    --warn: #fdd663;
+    --warn-soft: #3d3420;
+    --bad: #f28b82;
+    --bad-soft: #4a2220;
+  }
+}
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-panel: var(--panel);
+  --color-soft: var(--soft);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-brand: var(--brand);
+  --color-brand-ink: var(--brand-ink);
+  --color-tile-blue: var(--tile-blue);
+  --color-tile-green: var(--tile-green);
+  --color-tile-yellow: var(--tile-yellow);
+  --color-tile-purple: var(--tile-purple);
+  --color-tile-pink: var(--tile-pink);
+  --color-tile-teal: var(--tile-teal);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-bad: var(--bad);
+  --color-bad-soft: var(--bad-soft);
+  --font-sans: var(--font-noto), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono);
+}
+
+/*
+ * 기존 화면이 쓰는 회색(zinc)·파랑(blue) 값을 데모 색에 맞춘다.
+ * 한 곳만 바꾸면 모든 화면(마이페이지·담기·평가 등)이 같은 색으로 바뀐다.
+ */
+@theme {
+  --color-zinc-50: #f3f6fb;
+  --color-zinc-100: #e9eef6;
+  --color-zinc-200: #e1e6ee;
+  --color-zinc-300: #cfd6e1;
+  --color-zinc-400: #a8abb0;
+  --color-zinc-500: #8a9099;
+  --color-zinc-600: #5f6368;
+  --color-zinc-700: #3c4043;
+  --color-zinc-800: #2f3133;
+  --color-zinc-900: #1f1f1f;
+  --color-zinc-950: #131314;
+  --color-blue-50: #e3ecfd;
+  --color-blue-100: #d3e3fd;
+  --color-blue-200: #aecbfa;
+  --color-blue-300: #a8c7fa;
+  --color-blue-700: #0b57d0;
+  --color-blue-800: #0842a0;
+  --color-blue-950: #0b3a7a;
+  /* 초록 = 데모 ok, 빨강 = bad, 주황·노랑 = warn */
+  --color-green-50: #e6f4ea;
+  --color-green-100: #dcf3e2;
+  --color-green-200: #81c995;
+  --color-green-300: #81c995;
+  --color-green-400: #81c995;
+  --color-green-700: #188038;
+  --color-green-800: #188038;
+  --color-green-900: #137333;
+  --color-green-950: #1d3626;
+  --color-red-50: #fce8e6;
+  --color-red-200: #f28b82;
+  --color-red-300: #f28b82;
+  --color-red-400: #f28b82;
+  --color-red-600: #c5221f;
+  --color-red-700: #c5221f;
+  --color-red-800: #c5221f;
+  --color-red-900: #8c1d18;
+  --color-red-950: #4a2220;
+  --color-amber-50: #fef3e0;
+  --color-amber-100: #fbefcc;
+  --color-amber-200: #fdd663;
+  --color-amber-300: #fdd663;
+  --color-amber-700: #b06000;
+  --color-amber-800: #b06000;
+  --color-amber-900: #b06000;
+  --color-amber-950: #3d3420;
+  --color-purple-100: #ece4fb;
+  --color-purple-800: #5b3fa0;
+  --color-pink-100: #fbe3ea;
+  --color-pink-800: #a1294f;
+}
+
+/* 어두운 모드에서만 흰 글자 버튼 바탕을 데모 brand(#e3e3e3)에 맞춘다 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-zinc-100: #e3e3e3;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-noto), system-ui, sans-serif;
+}
+
+/* 카드: 둥근 흰 상자 + 얇은 테두리 (발표 데모의 패널 모양). 화면 안의 구역·카드에 `card`를 쓴다. */
+/* 일반 클래스로 둔다(화면 안 어디서든 `card`만 붙이면 된다). */
+.card {
+  border-radius: 1rem;
+  border: 1px solid var(--line);
+  background-color: var(--panel);
+}
+
+/* 굵기는 400·500 두 가지만 쓴다(데모와 같음). 굵은 글씨 태그도 500으로 맞춘다. */
+b,
+strong {
+  font-weight: 500;
+}
+
+/* 첫 화면(PC)은 화면을 꽉 채우므로 전체 바닥 링크줄을 숨기고, 같은 링크를 조건 패널 바닥에 둔다. */
+@media (min-width: 1024px) {
+  body:has([data-fullscreen]) .site-footer {
+    display: none;
+  }
 }
 
 /* 글자 크기 조절 (U23) */
@@ -32,3 +180,49 @@ html[data-font-size="large"] {
 html[data-font-size="xlarge"] {
   font-size: 125%;
 }
+
+/* 관리자 에이전트 상태 불빛 */
+.agent-dot { display: inline-block; width: 0.65rem; height: 0.65rem; border-radius: 9999px; flex: none; background: #b9c0cc; }
+.agent-dot[data-light="ok"] { background: #2e9e5b; }
+.agent-dot[data-light="warn"] { background: #f0a400; }
+.agent-dot[data-light="fail"] { background: #d93025; }
+.agent-dot[data-light="run"] { background: #2e9e5b; animation: agent-pulse 1s infinite; }
+@keyframes agent-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(46, 158, 91, 0.6); }
+  100% { box-shadow: 0 0 0 9px rgba(46, 158, 91, 0); }
+}
+@media (prefers-reduced-motion: reduce) { .agent-dot[data-light="run"] { animation: none; } }
+
+/* 추천 로딩 화면의 단계 문구: 하나씩 또렷해진다 */
+.loading-step { opacity: 0.25; animation: loading-step-on 0.4s ease forwards; }
+@keyframes loading-step-on { to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .loading-step { opacity: 1; animation: none; } }
+
+/* AI가 일하는 느낌: 글자 커서, 점 세 개, 카드가 하나씩 나타남 */
+.ai-caret { display: inline-block; width: 2px; height: 1em; margin-left: 1px; vertical-align: -0.12em; background: var(--accent); animation: ai-blink 0.9s steps(1) infinite; }
+@keyframes ai-blink { 50% { opacity: 0; } }
+.ai-dots::after { content: ""; display: inline-block; width: 1.2em; text-align: left; animation: ai-dots 1.2s steps(4) infinite; }
+@keyframes ai-dots { 0% { content: ""; } 25% { content: "."; } 50% { content: ".."; } 75% { content: "..."; } }
+.card-in { opacity: 0; animation: card-in 0.45s ease forwards; }
+@keyframes card-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.step-spin { animation: step-hide 0.01s forwards; }
+@keyframes step-hide { to { opacity: 0; visibility: hidden; } }
+.step-check { opacity: 0; animation: step-show 0.01s forwards; }
+@keyframes step-show { to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .ai-caret, .ai-dots::after { animation: none; }
+  .card-in, .step-check { opacity: 1; animation: none; }
+  .step-spin { animation: none; }
+}
+
+/* 안쪽 덩어리가 위에서부터 하나씩 나타난다 */
+.reveal-seq > * { opacity: 0; animation: card-in 0.45s ease forwards; }
+.reveal-seq > *:nth-child(2) { animation-delay: 0.12s; }
+.reveal-seq > *:nth-child(3) { animation-delay: 0.24s; }
+.reveal-seq > *:nth-child(4) { animation-delay: 0.36s; }
+.reveal-seq > *:nth-child(5) { animation-delay: 0.48s; }
+.reveal-seq > *:nth-child(6) { animation-delay: 0.6s; }
+.reveal-seq > *:nth-child(7) { animation-delay: 0.72s; }
+.reveal-seq > *:nth-child(8) { animation-delay: 0.84s; }
+.reveal-seq > *:nth-child(n+9) { animation-delay: 0.96s; }
+@media (prefers-reduced-motion: reduce) { .reveal-seq > * { opacity: 1; animation: none; } }

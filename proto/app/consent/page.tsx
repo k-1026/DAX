@@ -1,4 +1,5 @@
 // 동의 화면: 필수 동의를 마치지 않은 회원이 거쳐 가는 화면
+import { SiteLogo } from "@/app/_components/site-logo";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
@@ -42,16 +43,17 @@ async function ConsentContent({ searchParams }: PageProps<"/consent">) {
 
 export default function ConsentPage(props: PageProps<"/consent">) {
   return (
-    <main className="flex flex-1 flex-col items-center justify-center gap-6 p-8 text-center">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-2xl font-bold">서비스 이용 동의</h1>
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-          필수 항목에 동의하면 서비스를 이용할 수 있습니다.
-        </p>
+    <main className="flex flex-1 flex-col items-center justify-center gap-6 px-4 py-10">
+      <SiteLogo />
+      <div className="card flex w-full max-w-md flex-col gap-6 p-6 text-center">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-xl font-medium">서비스 이용 동의</h1>
+          <p className="text-sm text-muted">필수 항목에 동의하면 서비스를 이용할 수 있어요.</p>
+        </div>
+        <Suspense fallback={<p className="text-sm text-zinc-500">불러오는 중…</p>}>
+          <ConsentContent {...props} />
+        </Suspense>
       </div>
-      <Suspense fallback={<p className="text-sm text-zinc-500">불러오는 중…</p>}>
-        <ConsentContent {...props} />
-      </Suspense>
     </main>
   );
 }

@@ -4,6 +4,7 @@ import "server-only";
 import { guestIpHash, signDetailToken } from "@/lib/net/guest";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
+import { RANGES } from "./ranges";
 
 export const SORTS = [
   { key: "recommended", label: "추천순" },
@@ -15,9 +16,16 @@ export const SORTS = [
 
 export type SortKey = (typeof SORTS)[number]["key"];
 
+export const FLOOR_OPTIONS = [
+  { key: "ground1", label: "1층" },
+  { key: "upper", label: "지상 2층 이상" },
+  { key: "basement", label: "지하" },
+] as const;
+
 export type SearchFilters = {
   gu: string[];
   dong: string[];
+  floors: string[];
   rent_max?: number;
   deposit_max?: number;
   area_min?: number;
@@ -72,15 +80,20 @@ const amount = (value: string | string[] | undefined) => {
   return Number.isFinite(number) && number >= 0 && number < 1_000_000 ? number : undefined;
 };
 
+const below = (value: number | undefined, limit: number) => (value !== undefined && value < limit ? value : undefined);
+const above = (value: number | undefined, limit: number) => (value !== undefined && value > limit ? value : undefined);
+
 // 주소창의 값은 믿지 않고 범위를 확인한 뒤에만 쓴다.
 export function parseSearchParams(params: Record<string, string | string[] | undefined>) {
   const filters: SearchFilters = {
     gu: list(params.gu),
     dong: list(params.dong),
-    rent_max: amount(params.rent_max),
-    deposit_max: amount(params.deposit_max),
-    area_min: amount(params.area_min),
-    area_max: amount(params.area_max),
+    floors: list(params.floors).filter((key) => FLOOR_OPTIONS.some((option) => option.key === key)),
+    // 슬라이더를 끝까지 민 값은 "제한 없음"으로 본다.
+    rent_max: below(amount(params.rent_max), RANGES.rent.max),
+    deposit_max: below(amount(params.deposit_max), RANGES.deposit.max),
+    area_min: above(amount(params.area_min), RANGES.area.min),
+    area_max: below(amount(params.area_max), RANGES.area.max),
   };
   const sortText = Array.isArray(params.sort) ? params.sort[0] : params.sort;
   const sort: SortKey = SORTS.some((option) => option.key === sortText)
@@ -125,6 +138,20 @@ export async function searchListings(
   const result = data as SearchResult;
   result.items = result.items.map((item) => ({ ...item, detail_token: signDetailToken(item.id) ?? undefined }));
   return result;
+}
+
+export type MapPoint = { id: string; lat: number; lng: number };
+
+// 회원은 본인 로그인으로, 비로그인은 서버가 목록에 보여 준 매물(3곳) 좌표만 대신 가져온다.
+export async function getMapPoints(ids: string[], guest: boolean): Promise<MapPoint[] | null> {
+  if (ids.length === 0) return [];
+  const client = guest ? createServiceClient() : await createClient();
+  if (!client) return null;
+  const { data, error } = await client.rpc(guest ? "guest_map_points" : "listing_map_points", {
+    p_ids: ids.slice(0, 50),
+  });
+  if (error) return null;
+  return (data ?? []) as MapPoint[];
 }
 
 export async function getAreas(): Promise<Record<string, string[]>> {

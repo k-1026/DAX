@@ -70,5 +70,21 @@ export async function saveConsents(
     if (error) return { error: SAVE_ERROR };
   }
 
-  redirect(toSafePath(formData.get("next")));
+  const next = toSafePath(formData.get("next"));
+
+  // 이메일로 가입했고 사진이 없고 사진 설정 화면을 본 적이 없으면, 사진 설정 화면을 한 번 보여 준다.
+  // (카카오·구글 가입자는 그쪽 프로필 사진이 자동으로 들어온다.)
+  const provider = (data?.claims?.app_metadata as { provider?: string } | undefined)?.provider;
+  if (provider === "email") {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("avatar_url, avatar_prompted_at")
+      .eq("id", userId)
+      .maybeSingle();
+    if (profile && !profile.avatar_url && !profile.avatar_prompted_at) {
+      redirect(`/welcome/avatar?next=${encodeURIComponent(next)}`);
+    }
+  }
+
+  redirect(next);
 }

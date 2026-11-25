@@ -3,10 +3,14 @@ import Link from "next/link";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import { CopyButton } from "@/app/_components/copy-button";
+import { SiteLogo } from "@/app/_components/site-logo";
 import { date, meaningful, sourceLabel, won } from "@/app/_components/listing-card";
 import { daysSince, getListingDetail, type ListingDetail } from "@/lib/listing/detail";
 import { buildQuestions } from "@/lib/listing/questions";
 import { FeedbackForm } from "./feedback-form";
+import { SavedProvider } from "@/app/_components/saved-provider";
+import { SavedButton, SavedListSelector } from "@/app/_components/saved-button";
+import { getSavedState } from "@/lib/saved/server";
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -19,8 +23,8 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="flex flex-col gap-2 rounded-xl border border-zinc-200 p-4 dark:border-zinc-800">
-      <h2 className="font-semibold">{title}</h2>
+    <section className="flex flex-col gap-2 card p-4">
+      <h2 className="font-medium">{title}</h2>
       {children}
     </section>
   );
@@ -61,18 +65,35 @@ function DetailView({ item }: { item: ListingDetail }) {
         </p>
       )}
 
-      <header className="flex flex-col gap-1">
-        <p className="text-sm text-zinc-500">{d.subtype ?? d.property_type}</p>
-        <h1 className="text-xl font-bold">
-          {d.gu} {d.dong}
-          {floor && <span className="font-normal"> · {floor}</span>}
-        </h1>
-        {d.building_name && <p className="text-sm text-zinc-600 dark:text-zinc-400">{d.building_name}</p>}
-        <p className="mt-1 text-2xl font-bold">
-          보증금 {won(d.deposit)} / 월세 {won(d.rent)}
-          <span className="text-base font-normal text-zinc-600 dark:text-zinc-400"> (만원)</span>
-        </p>
-        <p className="text-sm">관리비 {d.maintenance_fee === null ? "미기재" : `${won(d.maintenance_fee)}만원`}</p>
+      <header className="card flex flex-col gap-4 p-5">
+        <div className="flex flex-col gap-1.5">
+          {(d.subtype ?? d.property_type) && (
+            <span className="self-start rounded-full bg-soft px-3 py-1 text-xs text-muted">{d.subtype ?? d.property_type}</span>
+          )}
+          <h1 className="text-xl font-medium">
+            {d.gu} {d.dong}
+            {floor && <span className="font-normal"> · {floor}</span>}
+          </h1>
+          {d.building_name && <p className="text-sm text-muted">{d.building_name}</p>}
+        </div>
+        <dl className="grid grid-cols-2 gap-x-3 gap-y-3 sm:grid-cols-4">
+          {[
+            ["넓이", d.area_m2 === null ? "-" : `${pyeong}평 (${d.area_m2}㎡)`],
+            ["보증금", d.deposit === null ? "-" : `${won(d.deposit)}만원`],
+            ["월세", d.rent === null ? "-" : `${won(d.rent)}만원`],
+            ["관리비", d.maintenance_fee === null ? "안 적힘" : `${won(d.maintenance_fee)}만원`],
+          ].map(([label, value]) => (
+            <div key={label} className="flex min-w-0 flex-col gap-0.5">
+              <dt className="text-xs text-faint">{label}</dt>
+              <dd className="break-words text-base font-medium">{value}</dd>
+            </div>
+          ))}
+        </dl>
+        <div className="flex flex-wrap items-center gap-3 border-t border-line pt-3">
+          <SavedListSelector />
+          <SavedButton listingId={item.id} />
+          <Link href="/#saved-studio" className="text-sm underline">담은 매물·비교 보기</Link>
+        </div>
       </header>
 
       <Section title="신뢰 정보">
@@ -127,7 +148,7 @@ function DetailView({ item }: { item: ListingDetail }) {
       </Section>
 
       <Section title="점수 근거">
-        <p className="text-sm text-zinc-500">점수는 준비 중입니다. 업종별 점수와 근거가 곧 이곳에 표시됩니다.</p>
+        <p className="text-sm text-zinc-500">미확정 · 점수 기준이 정해지면 업종별 점수와 근거가 이곳에 표시돼요.</p>
       </Section>
 
       <Section title="중개사에게 물어볼 질문">
@@ -192,13 +213,13 @@ async function DetailSection({ params, searchParams }: PageProps<"/listings/[id]
   await connection();
   const { id } = await params;
   const { t } = await searchParams;
-  const result = await getListingDetail(id, typeof t === "string" ? t : undefined);
+  const [result, savedState] = await Promise.all([getListingDetail(id, typeof t === "string" ? t : undefined), getSavedState()]);
 
   if (!result.found) {
     if (result.reason === "login_required") {
       return (
         <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-zinc-300 p-8 text-center dark:border-zinc-700">
-          <p className="font-semibold">이 매물의 자세한 정보는 로그인하면 볼 수 있어요</p>
+          <p className="font-medium">이 매물의 자세한 정보는 로그인하면 볼 수 있어요</p>
           <Link href="/login" className="rounded-lg bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white dark:bg-zinc-100 dark:text-zinc-900">
             무료로 로그인하기
           </Link>
@@ -211,15 +232,18 @@ async function DetailSection({ params, searchParams }: PageProps<"/listings/[id]
       </p>
     );
   }
-  return <DetailView item={result} />;
+  return <SavedProvider state={savedState}><DetailView item={result} /></SavedProvider>;
 }
 
 export default function ListingPage(props: PageProps<"/listings/[id]">) {
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-4 px-4 py-6">
-      <Link href="/" className="text-sm text-zinc-600 underline dark:text-zinc-400">
-        ← 검색으로
-      </Link>
+      <div className="flex items-center justify-between">
+        <SiteLogo />
+        <Link href="/" className="rounded-full border border-line bg-panel px-3.5 py-2 text-sm hover:bg-soft">
+          ← 검색으로
+        </Link>
+      </div>
       <Suspense fallback={<p className="text-sm text-zinc-500">매물을 불러오는 중…</p>}>
         <DetailSection {...props} />
       </Suspense>

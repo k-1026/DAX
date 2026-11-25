@@ -15,7 +15,7 @@ export function WithdrawForm() {
   return (
     <form action={action} className="flex flex-col gap-5">
       <fieldset className="flex flex-col gap-2 text-sm">
-        <legend className="mb-2 font-semibold">탈퇴 이유를 알려주세요 (선택)</legend>
+        <legend className="mb-2 font-medium">탈퇴 이유를 알려주세요 (선택)</legend>
         {WITHDRAWAL_REASONS.map((reason) => (
           <label key={reason.code} className="flex items-center gap-2">
             <input type="radio" name="reason" value={reason.code} className="size-4" />
@@ -25,7 +25,7 @@ export function WithdrawForm() {
       </fieldset>
 
       <div className="flex flex-col gap-2 rounded-xl border border-red-300 p-4 dark:border-red-900">
-        <p className="font-semibold">정말 탈퇴하시겠습니까?</p>
+        <p className="font-medium">정말 탈퇴하시겠습니까?</p>
         <label className="flex items-start gap-2 text-sm">
           <input
             type="checkbox"

@@ -1,4 +1,5 @@
 // 수신 거부 확인 화면. 로그인 없이 버튼 한 번으로 처리한다.
+import { SiteLogo } from "@/app/_components/site-logo";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
@@ -27,14 +28,15 @@ async function UnsubscribeForm({ searchParams }: PageProps<"/unsubscribe">) {
 
 export default function UnsubscribePage(props: PageProps<"/unsubscribe">) {
   return (
-    <main className="flex flex-1 flex-col items-center justify-center gap-4 p-8 text-center">
-      <h1 className="text-2xl font-bold">추천 메일 수신 거부</h1>
-      <p className="text-sm text-zinc-600 dark:text-zinc-400">
-        버튼을 누르면 추천 메일을 더 이상 받지 않습니다.
-      </p>
-      <Suspense fallback={null}>
-        <UnsubscribeForm {...props} />
-      </Suspense>
+    <main className="flex flex-1 flex-col items-center justify-center gap-6 px-4 py-10">
+      <SiteLogo />
+      <div className="card flex w-full max-w-md flex-col items-center gap-4 p-6 text-center">
+        <h1 className="text-xl font-medium">추천 메일 수신 거부</h1>
+        <p className="text-sm text-muted">버튼을 누르면 추천 메일을 더 이상 받지 않아요.</p>
+        <Suspense fallback={null}>
+          <UnsubscribeForm {...props} />
+        </Suspense>
+      </div>
     </main>
   );
 }

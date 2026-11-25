@@ -32,8 +32,8 @@ function ConsentItem({
         <span
           className={
             badge === "필수"
-              ? "mr-1 font-semibold text-red-700 dark:text-red-400"
-              : "mr-1 font-semibold text-zinc-600 dark:text-zinc-400"
+              ? "mr-1 font-medium text-red-700 dark:text-red-400"
+              : "mr-1 font-medium text-zinc-600 dark:text-zinc-400"
           }
         >
           [{badge}]
@@ -110,7 +110,7 @@ export function ConsentForm({
               required
               defaultValue={defaultEmail}
               autoComplete="email"
-              className="rounded-lg border border-zinc-300 bg-transparent px-3 py-2 dark:border-zinc-700"
+              className="rounded-xl border border-line bg-transparent px-3 py-2"
             />
           </label>
         )}
@@ -128,7 +128,7 @@ export function ConsentForm({
         <button
           type="submit"
           disabled={!requiredDone || pending}
-          className="rounded-lg bg-zinc-900 px-4 py-3 font-medium text-white disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900"
+          className="rounded-full bg-brand px-4 py-3 font-medium text-brand-ink disabled:opacity-50"
         >
           {pending ? "저장 중…" : "동의하고 시작하기"}
         </button>

@@ -1,4 +1,5 @@
 // 약관과 개인정보 처리방침의 본문을 화면에 표시한다.
+import { SiteLogo } from "@/app/_components/site-logo";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
@@ -53,13 +54,13 @@ function renderBlock(block: Block, index: number) {
   switch (block.type) {
     case "h1":
       return (
-        <h1 key={index} className="text-2xl font-bold">
+        <h1 key={index} className="text-2xl font-medium">
           {block.text}
         </h1>
       );
     case "h2":
       return (
-        <h2 key={index} className="mt-4 text-lg font-semibold">
+        <h2 key={index} className="mt-4 text-lg font-medium">
           {block.text}
         </h2>
       );
@@ -129,17 +130,22 @@ function renderBlock(block: Block, index: number) {
 
 export function LegalDocument({ source }: { source: string }) {
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-3 px-4 py-10 text-sm leading-7">
-      <p
-        role="note"
-        className="rounded-lg bg-amber-100 px-4 py-3 font-medium text-amber-900"
-      >
-        임시 문구입니다. 법률 검토를 마친 뒤 정식 문구로 교체합니다.
-      </p>
-      {parse(source).map(renderBlock)}
-      <Link href="/" className="mt-6 underline">
-        첫 화면으로 돌아가기
-      </Link>
+    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-4 px-4 py-6">
+      <div className="flex items-center justify-between">
+        <SiteLogo />
+        <Link href="/" className="rounded-full border border-line bg-panel px-3.5 py-2 text-sm hover:bg-soft">
+          첫 화면
+        </Link>
+      </div>
+      <article className="card flex flex-col gap-3 p-6 text-sm leading-7">
+        <p
+          role="note"
+          className="rounded-xl bg-warn-soft px-4 py-3 font-medium text-warn"
+        >
+          임시 문구입니다. 법률 검토를 마친 뒤 정식 문구로 교체합니다.
+        </p>
+        {parse(source).map(renderBlock)}
+      </article>
     </main>
   );
 }

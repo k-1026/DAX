@@ -29,7 +29,7 @@ export function LoginForm({ initialError }: { initialError?: string }) {
           type="submit"
           name="provider"
           value="kakao"
-          className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#FEE500] px-4 py-3 font-medium text-black/85 hover:brightness-95"
+          className="flex w-full items-center justify-center gap-2 rounded-full bg-[#FEE500] px-4 py-3 font-medium text-black/85 hover:brightness-95"
         >
           <svg aria-hidden width="18" height="18" viewBox="0 0 24 24">
             <path
@@ -43,7 +43,7 @@ export function LoginForm({ initialError }: { initialError?: string }) {
           type="submit"
           name="provider"
           value="google"
-          className="flex w-full items-center justify-center gap-2 rounded-lg border border-zinc-300 bg-white px-4 py-3 font-medium text-zinc-800 hover:bg-zinc-50"
+          className="flex w-full items-center justify-center gap-2 rounded-full border border-line bg-white px-4 py-3 font-medium text-zinc-800 hover:bg-zinc-50"
         >
           <svg aria-hidden width="18" height="18" viewBox="0 0 48 48">
             <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
@@ -72,7 +72,7 @@ export function LoginForm({ initialError }: { initialError?: string }) {
             type="email"
             required
             autoComplete="email"
-            className="rounded-lg border border-zinc-300 bg-transparent px-3 py-2 dark:border-zinc-700"
+            className="rounded-xl border border-line bg-transparent px-3 py-2"
           />
         </label>
         <label className="flex flex-col gap-1 text-left text-sm">
@@ -83,7 +83,7 @@ export function LoginForm({ initialError }: { initialError?: string }) {
             required
             minLength={6}
             autoComplete={mode === "signin" ? "current-password" : "new-password"}
-            className="rounded-lg border border-zinc-300 bg-transparent px-3 py-2 dark:border-zinc-700"
+            className="rounded-xl border border-line bg-transparent px-3 py-2"
           />
         </label>
 
@@ -97,7 +97,7 @@ export function LoginForm({ initialError }: { initialError?: string }) {
         <button
           type="submit"
           disabled={pending}
-          className="rounded-lg bg-zinc-900 px-4 py-3 font-medium text-white disabled:opacity-60 dark:bg-zinc-100 dark:text-zinc-900"
+          className="rounded-full bg-brand px-4 py-3 font-medium text-brand-ink disabled:opacity-60"
         >
           {pending ? "처리 중…" : mode === "signin" ? "이메일로 로그인" : "이메일로 가입"}
         </button>

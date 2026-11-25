@@ -1,5 +1,7 @@
 // 회원 탈퇴 화면
+import { SiteLogo } from "@/app/_components/site-logo";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
 import { Suspense } from "react";
@@ -20,15 +22,21 @@ async function WithdrawContent() {
 export default function WithdrawPage() {
   return (
     <main className="mx-auto flex w-full max-w-xl flex-1 flex-col gap-5 px-4 py-10">
-      <h1 className="text-2xl font-bold">회원 탈퇴</h1>
+      <div className="flex items-center justify-between">
+        <SiteLogo />
+        <Link href="/mypage" className="rounded-full border border-line bg-panel px-3.5 py-2 text-sm hover:bg-soft">
+          마이페이지
+        </Link>
+      </div>
+      <h1 className="text-xl font-medium">회원 탈퇴</h1>
 
-      <section className="flex flex-col gap-3 rounded-xl border border-zinc-200 p-5 text-sm leading-6 dark:border-zinc-800">
+      <section className="flex flex-col gap-3 card p-5 text-sm leading-6">
         <div>
-          <h2 className="font-semibold">바로 삭제되는 정보</h2>
+          <h2 className="font-medium">바로 삭제되는 정보</h2>
           <p>로그인 계정, 이름, 프로필 사진, 메일 수신 주소, 선호 조건, 담은 매물</p>
         </div>
         <div>
-          <h2 className="font-semibold">법령과 기록 보관을 위해 남는 정보</h2>
+          <h2 className="font-medium">법령과 기록 보관을 위해 남는 정보</h2>
           <ul className="list-disc pl-5">
             <li>동의 기록: 누구인지 알 수 없게 바꿔 5년 보관 후 삭제</li>
             <li>결제 기록: 관련 법령에 따라 5년 보관 후 삭제</li>
