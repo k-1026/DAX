@@ -40,7 +40,7 @@ export type BatchRecipient = {
   sold: ListingCard[];
 };
 
-const SERVICE_NAME = "대구 공실 매칭";
+const SERVICE_NAME = "DːON";
 const KST_OFFSET_MS = 9 * 60 * 60 * 1000;
 const QUIET_START_HOUR = 21;
 const QUIET_END_HOUR = 8;

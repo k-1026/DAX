@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { LegalDocument } from "@/app/_components/legal-document";
 import { PRIVACY_DOCUMENT } from "@/lib/legal/documents";
 
-export const metadata: Metadata = { title: "개인정보 처리방침 | 대구 공실 매칭" };
+export const metadata: Metadata = { title: "개인정보 처리방침 | DːON" };
 
 export default function PrivacyPage() {
   return <LegalDocument source={PRIVACY_DOCUMENT} />;

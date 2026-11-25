@@ -8,7 +8,7 @@ import { LEGAL_VERSIONS, toSafePath } from "@/lib/legal/versions";
 import { createClient } from "@/lib/supabase/server";
 import { ConsentForm } from "./consent-form";
 
-export const metadata: Metadata = { title: "약관 동의 | 대구 공실 매칭" };
+export const metadata: Metadata = { title: "약관 동의 | DːON" };
 
 async function ConsentContent({ searchParams }: PageProps<"/consent">) {
   // 로그인 상태는 요청할 때마다 확인한다.

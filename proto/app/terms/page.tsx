@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { LegalDocument } from "@/app/_components/legal-document";
 import { TERMS_DOCUMENT } from "@/lib/legal/documents";
 
-export const metadata: Metadata = { title: "이용약관 | 대구 공실 매칭" };
+export const metadata: Metadata = { title: "이용약관 | DːON" };
 
 export default function TermsPage() {
   return <LegalDocument source={TERMS_DOCUMENT} />;

@@ -9,7 +9,7 @@ import { buildFirstMail, type FirstRecipient } from "@/lib/mail/batch";
 import { createMailDeps } from "@/lib/mail/runtime";
 import { createClient } from "@/lib/supabase/server";
 
-export const metadata: Metadata = { title: "첫 추천 메일 미리보기 | 대구 공실 매칭" };
+export const metadata: Metadata = { title: "첫 추천 메일 미리보기 | DːON" };
 
 type Preview = {
   filters: Record<string, unknown>;

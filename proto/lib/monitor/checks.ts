@@ -91,13 +91,13 @@ function message(
 export function buildAlertMail(to: string, notice: Notice): MailMessage {
   const label = LABELS[notice.key] ?? notice.key;
   if (notice.type === "opened") {
-    return message(to, `[대구 공실 매칭 경보] ${label}`, [
+    return message(to, `[DːON 경보] ${label}`, [
       `1. 문제: ${label} (${notice.failures ?? 2}번 연속 실패)`,
       `2. 상태: ${notice.detail}`,
       `3. 마지막 오류: ${maskSensitive(notice.error) ?? "없음"}`,
     ]);
   }
-  return message(to, `[대구 공실 매칭 복구] ${label}`, [
+  return message(to, `[DːON 복구] ${label}`, [
     `1. 복구: ${label}`,
     `2. 현재 상태: ${notice.detail}`,
     `3. 경보 시작: ${notice.opened_at ? kstText(notice.opened_at) : "알 수 없음"}`,
@@ -109,7 +109,7 @@ export function buildDbDownMail(to: string, error: string, now: number): MailMes
   const day = new Date(now + 9 * 3600_000).toISOString().slice(0, 10);
   return message(
     to,
-    "[대구 공실 매칭 경보] DB 연결",
+    "[DːON 경보] DB 연결",
     [
       "1. 문제: DB 연결 (2번 연속 실패)",
       "2. 상태: 점검 기록을 남길 수 없어 복구 메일은 오지 않습니다. Supabase 상태를 확인하세요.",
@@ -130,7 +130,7 @@ export function buildUrgentMail(to: string, kinds: string[]): MailMessage {
   const counts = new Map<string, number>();
   for (const kind of kinds) counts.set(kind, (counts.get(kind) ?? 0) + 1);
   const summary = [...counts].map(([kind, count]) => `${URGENT_LABELS[kind] ?? kind} ${count}건`).join(", ");
-  return message(to, `[대구 공실 매칭 긴급] 긴급 리뷰 ${kinds.length}건`, [
+  return message(to, `[DːON 긴급] 긴급 리뷰 ${kinds.length}건`, [
     `1. 종류: ${summary}`,
     "2. 관리자 화면에서 개선 후보(긴급)를 확인해 주세요.",
     "3. 리뷰 글은 개인정보 보호를 위해 메일에 넣지 않았습니다.",

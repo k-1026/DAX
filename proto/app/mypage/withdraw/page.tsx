@@ -8,7 +8,7 @@ import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { WithdrawForm } from "./withdraw-form";
 
-export const metadata: Metadata = { title: "회원 탈퇴 | 대구 공실 매칭" };
+export const metadata: Metadata = { title: "회원 탈퇴 | DːON" };
 
 async function WithdrawContent() {
   await connection();

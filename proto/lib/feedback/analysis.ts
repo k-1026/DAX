@@ -133,7 +133,7 @@ export function buildFeedbackAlertMail(to: string, report: WeeklyReport): MailMe
   ];
   return {
     to,
-    subject: "[대구 공실 매칭 알림] AI 리뷰 분류 일치율 기준 미달",
+    subject: "[DːON 알림] AI 리뷰 분류 일치율 기준 미달",
     text: lines.join("\n"),
     html: `<ol>${lines.map((text) => `<li>${text.replace(/^\d\. /, "")}</li>`).join("")}</ol>`,
   };

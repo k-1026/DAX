@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "대구 공실 매칭",
+  title: "DːON",
   description: "업종에 맞는 대구 공실을 추천하는 AI 서비스",
 };
 

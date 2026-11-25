@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
-  title: "수신 거부 | 대구 공실 매칭",
+  title: "수신 거부 | DːON",
   robots: { index: false, follow: false },
 };
 

@@ -10,7 +10,7 @@ import { toSafePath } from "@/lib/legal/versions";
 import { createClient } from "@/lib/supabase/server";
 import { skipAvatar } from "./actions";
 
-export const metadata: Metadata = { title: "프로필 사진 | 대구 공실 매칭" };
+export const metadata: Metadata = { title: "프로필 사진 | DːON" };
 
 type Props = { searchParams: Promise<{ next?: string | string[] }> };
 

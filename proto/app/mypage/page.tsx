@@ -14,7 +14,7 @@ import type { FeedbackPage } from "./actions";
 import { FeedbackHistory } from "./feedback-history";
 import { ProfileCard } from "./profile-card";
 
-export const metadata: Metadata = { title: "마이페이지 | 대구 공실 매칭" };
+export const metadata: Metadata = { title: "마이페이지 | DːON" };
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("ko-KR", {

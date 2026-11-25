@@ -38,7 +38,7 @@ async function deliver(message: MailMessage): Promise<DeliveryResult> {
       ...(message.idempotencyKey ? { "Idempotency-Key": message.idempotencyKey } : {}),
     },
     body: JSON.stringify({
-      from: process.env.MAIL_FROM || "대구 공실 매칭 <onboarding@resend.dev>",
+      from: process.env.MAIL_FROM || "DːON <onboarding@resend.dev>",
       to: [live ? message.to : TEST_RECIPIENT],
       subject: message.subject,
       html: message.html,
