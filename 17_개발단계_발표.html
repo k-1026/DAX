@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DːON 개발 단계 발표</title>
+<style>
+:root{--bg:#0f1320;--card:#181e30;--line:#2c3550;--ink:#eef1f8;--muted:#a7b0c8;--accent:#6ea8ff;--ok:#5fd39a;--warn:#ffc55c}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#000;overflow:hidden;font-family:"Pretendard","Malgun Gothic",system-ui,sans-serif;color:var(--ink)}
+#stage{position:absolute;left:50%;top:50%;width:1280px;height:720px;background:var(--bg);transform-origin:0 0}
+section{position:absolute;inset:0;padding:54px 72px 60px;display:none;flex-direction:column;gap:22px}
+section.on{display:flex}
+.kicker{color:var(--accent);font-size:18px;font-weight:700}
+h1{font-size:60px;line-height:1.25}
+h2{font-size:36px;line-height:1.3}
+.lead{font-size:20px;color:var(--muted);line-height:1.6}
+.grid{display:grid;gap:16px}.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+.card h3{font-size:20px;margin-bottom:8px}
+.card p,.card li{font-size:16.5px;color:var(--muted);line-height:1.65}
+.card ul{padding-left:18px}
+.num{font-size:40px;font-weight:800;color:var(--accent)}
+table{width:100%;border-collapse:collapse;font-size:16.5px}
+th,td{border-bottom:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top;line-height:1.5}
+th{color:var(--muted);font-weight:600}
+.flow{display:flex;align-items:stretch;gap:8px}
+.flow>div{flex:1;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 10px;text-align:center;font-size:16px;line-height:1.5}
+.flow>div small{display:block;color:var(--muted);font-size:13.5px}
+.flow>i{align-self:center;color:var(--accent);font-style:normal}
+.tag{display:inline-block;border-radius:99px;padding:2px 10px;font-size:13.5px;font-weight:700;border:1px solid currentColor}
+.ok{color:var(--ok)}.warn{color:var(--warn)}
+.todo,.flow>div.todo{border:2px dashed var(--warn)}
+.card p.num{font-size:44px;font-weight:800;color:var(--accent);line-height:1.3}
+code{font-family:Consolas,monospace;color:#cfe0ff;font-size:.95em}
+.point{margin-top:auto;border-left:4px solid var(--accent);padding:8px 16px;font-size:19px}
+#bar{position:absolute;left:72px;right:72px;bottom:18px;display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
+#notes{position:fixed;left:0;right:0;bottom:0;background:#fff;color:#111;font-size:17px;line-height:1.7;padding:14px 24px;display:none;z-index:5}
+#notes.on{display:block}
+@media print{html,body{overflow:visible;height:auto}#stage{position:static;transform:none!important;height:auto;background:none}section{display:flex;position:relative;width:1280px;height:720px;background:var(--bg);page-break-after:always}#bar,#notes{display:none}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}@page{size:1280px 720px;margin:0}}
+</style>
+</head>
+<body>
+<div id="stage">
+
+<!-- 1. 표지 (약 30초) -->
+<section data-part="시작" data-note="DːON은 대구 상가 공실을 찾는 임차인용 웹 서비스입니다. 오늘은 기능 소개보다 어떤 순서로 만들었고 어떤 설계 결정을 했는지를 세 파트, 각 3분으로 말씀드리겠습니다.">
+  <div style="margin:auto 0">
+    <p class="kicker">대구 공실 매칭 MVP · PC 웹</p>
+    <h1>DːON 개발 단계<br>0단계부터 9단계까지</h1>
+    <p class="lead" style="margin-top:20px">① 기획·설계 (0~2) → ② 권한·자동화·점수 (3~5) → ③ 화면·운영·배포 (6~9)</p>
+    <p class="lead">2026-11-26 기준 · 점수(5단계) 내용은 추후 추가 예정</p>
+  </div>
+</section>
+
+<!-- 2. 전체 지도 (약 30초) -->
+<section data-part="시작" data-note="전체는 10단계입니다. 초록은 완료, 노랑은 진행 중이거나 남은 단계입니다. 완료는 대부분 내 PC와 테스트 DB 기준이고, 실서비스 반영은 9단계에서 합니다.">
+  <p class="kicker">전체 흐름</p><h2>10단계와 지금 위치</h2>
+  <table>
+    <tr><th style="width:70px">단계</th><th>할 일</th><th style="width:420px">상태</th></tr>
+    <tr><td>0</td><td>근거 → 기능 매핑</td><td><span class="tag ok">확정</span></td></tr>
+    <tr><td>1</td><td>기술 구조 확정</td><td><span class="tag ok">확정</span></td></tr>
+    <tr><td>2</td><td>데이터 설계</td><td><span class="tag ok">확정</span></td></tr>
+    <tr><td>3</td><td>로그인·동의·권한</td><td><span class="tag ok">구현</span> 소셜 로그인 설정 일부 남음</td></tr>
+    <tr><td>4</td><td>오케스트레이터·에이전트</td><td><span class="tag ok">테스트 DB 시험 완료</span></td></tr>
+    <tr><td>5</td><td>스코어링·피드백 반영</td><td><span class="tag warn">보류</span> 스코어링 방식 대기</td></tr>
+    <tr><td>6</td><td>사용자 화면</td><td><span class="tag ok">A~F 완료</span> <span class="tag warn">G 결제 남음</span></td></tr>
+    <tr><td>7</td><td>추천 메일</td><td><span class="tag ok">시험 모드 발송 확인</span></td></tr>
+    <tr><td>8</td><td>관리자 화면</td><td><span class="tag ok">읽기 화면 완료</span> <span class="tag warn">구독·결제 남음</span></td></tr>
+    <tr><td>9</td><td>최종 시험·배포·운영</td><td><span class="tag warn">준비 문서 작성, 대기</span></td></tr>
+  </table>
+</section>
+
+<!-- ===== PART 1 (3분) ===== -->
+<section data-part="파트 1 · 기획·설계" data-note="0단계는 기능을 아이디어가 아니라 근거에서 뽑았습니다. 불만 언급 513건 중 허위매물 계열이 268건, 52%였습니다. 그래서 3일 갱신과 상태 표시, 의심 신호가 핵심 기능이 됐습니다. (약 1분)">
+  <p class="kicker">0단계 · 근거 → 기능</p><h2>기능은 불만 데이터에서 출발</h2>
+  <div class="grid g3">
+    <div class="card"><p class="num">513건</p><p>분석한 불만 언급</p></div>
+    <div class="card"><p class="num">268건</p><p>허위매물 계열 (52%) — 가장 큰 불만</p></div>
+    <div class="card"><p class="num">97건</p><p>조건 필터 부족</p></div>
+  </div>
+  <table>
+    <tr><th>문제</th><th>앱의 대응</th></tr>
+    <tr><td>지금도 공실인지 알 수 없음</td><td>3일 갱신, “나간 매물” 상태 표시</td></tr>
+    <tr><td>허위·미끼 매물</td><td>의심 신호 5개 + 사유 한 줄, 문의 질문 생성</td></tr>
+    <tr><td>조건 입력이 어려움</td><td>문장으로 찾기</td></tr>
+    <tr><td>비교 기준·도구 부족</td><td>담기·나란히 비교, 점수 근거 화면(점수는 연결 전)</td></tr>
+  </table>
+</section>
+
+<section data-part="파트 1 · 기획·설계" data-note="1단계에서 스택을 정했습니다. Python 없이 TypeScript 하나로, Next.js가 화면과 서버를 맡고 Supabase가 인증, DB, 예약 실행을 맡습니다. 수집만 외부 PC의 Aside가 하고 API로 올립니다. 결제, AI는 설계에 있고 아직 연결 전입니다. (약 1분)">
+  <p class="kicker">1단계 · 기술 구조</p><h2>TypeScript 하나, 관리형 서비스 중심</h2>
+  <div class="flow">
+    <div>Aside 수집<small>사용자 PC · 3일마다</small></div><i>→</i>
+    <div><code>/api/ingest</code><small>비밀 키 인증</small></div><i>→</i>
+    <div>Supabase Postgres<small>RLS · DB 함수</small></div><i>→</i>
+    <div>Next.js 서버<small>Server Components·Actions</small></div><i>→</i>
+    <div>사용자·관리자 화면<small>PC 웹</small></div>
+  </div>
+  <div class="grid g3">
+    <div class="card"><h3>앱</h3><p>Next.js 16 · React 19<br>TypeScript · Tailwind v4<br>배포 예정: Vercel</p></div>
+    <div class="card"><h3>데이터·인증</h3><p>Supabase Auth / Postgres / Storage<br>예약: pg_cron → API 호출 (설계)</p></div>
+    <div class="card"><h3>외부 연동</h3><p>카카오맵 · Resend 메일<br>토스페이먼츠 <span class="tag warn">연결 전</span><br>AI API <span class="tag warn">연결 전</span></p></div>
+  </div>
+  <p class="point">몇 분 간격 모니터링이 필요해서, 시각 관리는 DB 예약 · 실제 작업은 앱 API로 나누도록 설계</p>
+</section>
+
+<section data-part="파트 1 · 기획·설계" data-note="2단계 데이터 설계는 35개 표, 7묶음입니다. 중요한 결정은 두 가지입니다. 스코어링이 정해지지 않아 점수는 빈 자리로 두고 버전으로 갈아끼우게 했고, 권한은 화면이 아니라 DB에서 판단합니다. AI는 점수를 바꾸지 않는다는 원칙도 여기서 정했습니다. (약 1분)">
+  <p class="kicker">2단계 · 데이터 설계</p><h2>35개 표, 그리고 바뀔 것을 대비한 설계</h2>
+  <div class="grid g4">
+    <div class="card"><h3>매물 4</h3><p>매물·변경 이력·의심 신호·수집 기록</p></div>
+    <div class="card"><h3>점수 4</h3><p>업종·점수 버전·점수·보정안</p></div>
+    <div class="card"><h3>사용자 7</h3><p>회원·동의·선호·담기·평가</p></div>
+    <div class="card"><h3>구독·결제 4</h3><p>구독·빌링키·결제·알림</p></div>
+    <div class="card"><h3>메일 2</h3><p>발송·담긴 매물</p></div>
+    <div class="card"><h3>AI 3</h3><p>결과 저장·열람·사용량</p></div>
+    <div class="card" style="grid-column:span 2"><h3>운영 11</h3><p>에이전트 로그·작업 대기열·상태 점검·품질 리포트·개선 후보·설정값</p></div>
+  </div>
+  <div class="grid g3">
+    <div class="card"><h3>점수는 교체형</h3><p>버전 단위로 저장, 값은 비워 둠</p></div>
+    <div class="card"><h3>AI의 역할 제한</h3><p>설명·변환·요약·제안만. 점수·순위는 바꾸지 않음</p></div>
+    <div class="card"><h3>변경은 승인 후</h3><p>제안 → 관리자 승인 → 반영, 실행은 로그로</p></div>
+  </div>
+</section>
+
+<!-- ===== PART 2 (3분) ===== -->
+<section data-part="파트 2 · 권한·자동화·점수" data-note="3단계는 로그인, 동의, 등급입니다. 네 등급의 한도를 서버와 DB에서만 판단하고, 확인에 실패하면 가장 낮은 권한으로 처리합니다. 행 단위 권한과 security definer 함수를 썼습니다. (약 1분)">
+  <p class="kicker">3단계 · 로그인·동의·권한</p><h2>권한은 DB에서 판단한다</h2>
+  <table>
+    <tr><th>등급</th><th>담기</th><th>비교</th><th>AI 기능</th></tr>
+    <tr><td>비로그인</td><td>불가</td><td>불가</td><td>브라우저당 3회</td></tr>
+    <tr><td>로그인 회원</td><td>3곳</td><td>2곳</td><td>하루 10회</td></tr>
+    <tr><td>구독 회원</td><td>제한 없음</td><td>5곳</td><td>하루 30회</td></tr>
+    <tr><td>관리자</td><td>제한 없음</td><td>5곳</td><td>제한 없음</td></tr>
+  </table>
+  <div class="grid g3">
+    <div class="card"><h3>RLS + 함수</h3><p>행 단위 권한, 열 권한, <code>security definer</code> 함수</p></div>
+    <div class="card"><h3>안전한 기본값</h3><p>등급 확인 실패 시 가장 낮은 권한</p></div>
+    <div class="card"><h3>동의·탈퇴</h3><p>필수·선택 동의 분리, 만 14세 확인, 탈퇴 시 계정 삭제</p></div>
+  </div>
+  <p class="point">SQL은 migration 파일로 관리하고 되돌리기(rollback) 파일을 함께 둠</p>
+</section>
+
+<section data-part="파트 2 · 권한·자동화·점수" data-note="4단계는 에이전트입니다. 3일 갱신은 품질 검사, 변화 비교, 검증, 점수, 메일 순서이고 단계마다 최대 3회 재시도합니다. 이미 성공한 단계는 다시 하지 않습니다. 필수 항목 누락이나 건수 급변이면 적재를 보류합니다. 에이전트라고 부르지만 지금은 규칙 기반 코드이고, AI 분류 자리는 개발용 가짜 분류기입니다. (약 1분)">
+  <p class="kicker">4단계 · 오케스트레이터와 에이전트</p><h2>갱신 1회 = 실행 1건, 단계별로 기록</h2>
+  <div class="flow">
+    <div>수집<small>Aside</small></div><i>→</i>
+    <div>품질 검사<small>누락·±30% → 보류</small></div><i>→</i>
+    <div>변화 비교<small>신규·변경·나감</small></div><i>→</i>
+    <div>검증<small>의심 신호</small></div><i>→</i>
+    <div class="todo">점수<small>지금은 건너뜀</small></div><i>→</i>
+    <div>메일<small>묶음 발송</small></div>
+  </div>
+  <div class="grid g3">
+    <div class="card"><h3>실패 처리</h3><p>단계별 최대 3회 재시도, 멈춘 단계 기록, 성공 단계는 반복하지 않음</p></div>
+    <div class="card"><h3>상시 · 주 1회</h3><p>모니터링 / 피드백 분석 → 품질 평가 → 개선 제안</p></div>
+    <div class="card"><h3>사람이 결정</h3><p>에이전트는 리포트·후보 등록까지. 채택·가중치 변경은 관리자</p></div>
+  </div>
+  <p class="point">현재는 규칙 기반 구현 · AI 분류는 개발용 가짜 분류기, 실제 AI는 연결 전</p>
+</section>
+
+<!-- ★ 스코어링 팀 내용이 정해지면 이 section 안만 고치면 됩니다 -->
+<section data-part="파트 2 · 권한·자동화·점수" data-note="5단계 스코어링은 아직 정해지지 않아 숫자를 말하지 않겠습니다. 대신 연결할 자리를 먼저 만들어 두었습니다. 새 가중치는 그림자 계산으로 비교한 뒤 관리자 승인으로 반영합니다. (약 1분)">
+  <p class="kicker">5단계 · 스코어링</p><h2>점수 방식은 대기, 연결 자리는 준비 <span class="tag warn">추후 추가</span></h2>
+  <div class="flow">
+    <div>점수 엔진<small class="warn">방식 미정</small></div><i>→</i>
+    <div>점수 저장<small>버전별</small></div><i>→</i>
+    <div>그림자 계산<small>순위 변화 비교</small></div><i>→</i>
+    <div>관리자 승인<small>사유 기록</small></div><i>→</i>
+    <div>새 버전 반영<small>되돌리기 가능</small></div>
+  </div>
+  <p class="lead">위 흐름은 설계이며, 점수 계산과 승인 버튼은 아직 구현 전입니다.</p>
+  <div class="grid g2">
+    <div class="card"><h3>준비된 것</h3><ul><li>점수·버전·보정안 표</li><li>파이프라인의 점수 단계 자리</li><li>점수 엔진 연결 규격서</li><li>평가(good/bad) 수집과 보정안 분석 틀</li></ul></div>
+    <div class="card todo"><h3>추가할 내용</h3><ul><li>점수 구성과 가중치: <b class="warn">미확정</b></li><li>업종 목록: <b class="warn">미확정</b></li><li>점수 구간 의미: <b class="warn">미확정</b></li><li>검증 결과: <b class="warn">미확정</b></li></ul></div>
+  </div>
+</section>
+
+<!-- ===== PART 3 (3분) ===== -->
+<section data-part="파트 3 · 화면·운영·배포" data-note="6단계 사용자 화면입니다. 검색, 상세, 지도, 담기와 비교, 마이페이지, AI 도우미 화면까지 만들었고 결제만 남았습니다. AI 도우미는 화면과 횟수 제한이 먼저 만들어져 있고 실제 모델은 아직 연결하지 않았습니다. (약 1분)">
+  <p class="kicker">6단계 · 사용자 화면</p><h2>6-A부터 6-F까지, 작게 나눠 만들기</h2>
+  <div class="grid g3">
+    <div class="card"><h3>찾기</h3><p>조건 검색, 등급별 노출, 지도 핀, 문장으로 찾기</p></div>
+    <div class="card"><h3>살펴보기</h3><p>매물 상세, 평가, 문제 신고, 질문 칩</p></div>
+    <div class="card"><h3>비교하기</h3><p>담기, 나란히 비교, 엑셀 저장</p></div>
+    <div class="card"><h3>내 정보</h3><p>선호 조건, 프로필 사진, 동의 철회, 탈퇴</p></div>
+    <div class="card"><h3>AI 도우미 화면</h3><p>공실이, 생성 중 표시, 등급별 횟수 차감<br><span class="tag warn">실제 AI 모델 연결 전</span></p></div>
+    <div class="card todo"><h3>6-G 결제</h3><p>구독 가격 결정 후 시험 결제부터</p></div>
+  </div>
+  <p class="point">3단 화면 배치(접기·너비 조절)와 발표 데모 디자인 반영</p>
+</section>
+
+<section data-part="파트 3 · 화면·운영·배포" data-note="7, 8단계입니다. 메일은 광고 표기, 수신 거부, 야간 미룸, 한도를 구현했고 시험 주소로만 보냅니다. 관리자 화면은 읽기 전용이고, 화면마다 다음 할 일을 제안합니다. 이 제안은 AI 호출이 아니라 마크다운 규칙 파일을 안전한 조건식으로 평가해서 운영 비용이 들지 않습니다. (약 1분)">
+  <p class="kicker">7·8단계 · 메일과 관리자</p><h2>운영하는 사람을 위한 화면</h2>
+  <div class="grid g2">
+    <div class="card"><h3>7 · 추천 메일</h3><ul><li>첫 추천 메일, 구독 묶음 메일 기반</li><li>(광고) 표기 · 수신 거부 · 야간 미룸 · 월 한도</li><li>시험 모드: 시험 주소로만 발송</li></ul></div>
+    <div class="card"><h3>8 · 관리자 (읽기 전용)</h3><ul><li>개요, 매물 갱신, 에이전트, 메일, AI 사용량</li><li>품질·개선, 가중치 보정안, 사용자, 설정값</li><li>구독·결제 화면과 승인 버튼은 남음</li></ul></div>
+  </div>
+  <div class="flow">
+    <div>DB 숫자<small>코드가 신호 계산</small></div><i>→</i>
+    <div>규칙 파일 <code>.md</code><small>조건·해석·할 일</small></div><i>→</i>
+    <div>조건식 평가기<small><code>eval</code> 없이 직접 해석</small></div><i>→</i>
+    <div>“다음에 할 일” 제안<small>지금 확인·곧 점검·참고</small></div>
+  </div>
+  <p class="point">AI 비용은 사용자가 쓰는 기능에만 — 관리자 제안은 규칙 파일로 해결</p>
+</section>
+
+<section data-part="파트 3 · 화면·운영·배포" data-note="9단계는 아직 시작 전이고 준비 문서를 만들었습니다. 실서비스 DB에는 SQL을 순서대로 하나씩 적용하고, 배포 후 예약 실행과 인증 주소를 등록합니다. 법적 검토 전이라 발표용 시연 범위로 진행하며, 실제 사용자에게 열기 전에는 재확인이 필요합니다. (약 1분)">
+  <p class="kicker">9단계 · 최종 시험·배포·운영</p><h2>남은 길과 배운 점</h2>
+  <div class="grid g3">
+    <div class="card"><h3>배포 순서</h3><ul><li>실서비스 DB에 SQL 순차 적용</li><li>Vercel 환경변수·빌드</li><li>로그인·지도 주소 등록</li><li>예약 실행 → 수집 연결 확인</li></ul></div>
+    <div class="card todo"><h3>남은 과제</h3><ul><li>스코어링 연결</li><li>실제 AI 연결</li><li>결제(시험 모드)</li><li>관리자 승인 버튼</li><li>법적 확인(일반 공개 전)</li></ul></div>
+    <div class="card"><h3>개발 방식</h3><ul><li>단계마다 확정 후 진행</li><li>테스트 DB 먼저, 실서비스는 별도</li><li>권한·계산 규칙은 시험 코드로 확인</li><li>미정 값은 지어내지 않고 “미확정”</li></ul></div>
+  </div>
+  <p class="point">감사합니다 · 질문 받겠습니다</p>
+</section>
+
+<div id="bar"><span id="part"></span><span>← → 넘기기 · N 발표 메모 · F 전체 화면 · <b id="clock">00:00</b> · <span id="page"></span></span></div>
+</div>
+<div id="notes"></div>
+<script>
+const stage=document.getElementById('stage'),slides=[...document.querySelectorAll('section')],notes=document.getElementById('notes');
+let i=Math.min(Math.max((parseInt(location.hash.slice(1))||1)-1,0),slides.length-1),start=null;
+function fit(){const s=Math.min(innerWidth/1280,innerHeight/720);stage.style.transform=`scale(${s}) translate(-50%,-50%)`;}
+function show(n){i=Math.min(Math.max(n,0),slides.length-1);slides.forEach((e,k)=>e.classList.toggle('on',k===i));
+  document.getElementById('part').textContent=slides[i].dataset.part;
+  document.getElementById('page').textContent=`${i+1} / ${slides.length}`;
+  notes.textContent=slides[i].dataset.note;history.replaceState(null,'','#'+(i+1));}
+function go(d){if(start===null&&d>0)start=Date.now();show(i+d);}
+addEventListener('keydown',e=>{
+  if(['ArrowRight','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();go(1);}
+  else if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){e.preventDefault();go(-1);}
+  else if(e.key==='Home'){show(0);start=null;document.getElementById('clock').textContent='00:00';}
+  else if(e.key==='End')show(slides.length-1);
+  else if(e.key.toLowerCase()==='n'||e.key==='ㅜ')notes.classList.toggle('on');
+  else if(e.key.toLowerCase()==='f'||e.key==='ㄹ')document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();
+});
+stage.addEventListener('click',e=>go(e.clientX<innerWidth/3?-1:1));
+setInterval(()=>{if(start!==null){const t=Math.floor((Date.now()-start)/1000);document.getElementById('clock').textContent=String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0');}},500);
+addEventListener('resize',fit);fit();show(i);
+</script>
+</body>
+</html>
