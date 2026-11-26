@@ -88,10 +88,10 @@ code{font-family:Consolas,monospace;color:#cfe0ff;font-size:.95em}
   </table>
 </section>
 
-<section data-part="파트 1 · 기획·설계" data-note="1단계에서 스택을 정했습니다. Python 없이 TypeScript 하나로, Next.js가 화면과 서버를 맡고 Supabase가 인증, DB, 예약 실행을 맡습니다. 수집만 외부 PC의 Aside가 하고 API로 올립니다. 결제, AI는 설계에 있고 아직 연결 전입니다. (약 1분)">
+<section data-part="파트 1 · 기획·설계" data-note="1단계에서 스택을 정했습니다. Python 없이 TypeScript 하나로, Next.js가 화면과 서버를 맡고 Supabase가 인증, DB, 예약 실행을 맡습니다. 수집만 외부 PC의 Aside가 맡아 API로 올리는 설계이고, 정기 자동 실행은 연결 전입니다. 결제, AI는 설계에 있고 아직 연결 전입니다. (약 1분)">
   <p class="kicker">1단계 · 기술 구조</p><h2>TypeScript 하나, 관리형 서비스 중심</h2>
   <div class="flow">
-    <div>Aside 수집<small>사용자 PC · 3일마다</small></div><i>→</i>
+    <div>Aside 수집<small>3일 주기 설계 · 정기 실행 전</small></div><i>→</i>
     <div><code>/api/ingest</code><small>비밀 키 인증</small></div><i>→</i>
     <div>Supabase Postgres<small>RLS · DB 함수</small></div><i>→</i>
     <div>Next.js 서버<small>Server Components·Actions</small></div><i>→</i>
@@ -106,7 +106,7 @@ code{font-family:Consolas,monospace;color:#cfe0ff;font-size:.95em}
 </section>
 
 <section data-part="파트 1 · 기획·설계" data-note="2단계 데이터 설계는 35개 표, 7묶음입니다. 중요한 결정은 두 가지입니다. 스코어링이 정해지지 않아 점수는 빈 자리로 두고 버전으로 갈아끼우게 했고, 권한은 화면이 아니라 DB에서 판단합니다. AI는 점수를 바꾸지 않는다는 원칙도 여기서 정했습니다. (약 1분)">
-  <p class="kicker">2단계 · 데이터 설계</p><h2>35개 표, 그리고 바뀔 것을 대비한 설계</h2>
+  <p class="kicker">2단계 · 데이터 설계</p><h2>설계 기준 35개 표, 그리고 바뀔 것을 대비한 설계</h2>
   <div class="grid g4">
     <div class="card"><h3>매물 4</h3><p>매물·변경 이력·의심 신호·수집 기록</p></div>
     <div class="card"><h3>점수 4</h3><p>업종·점수 버전·점수·보정안</p></div>
@@ -141,11 +141,11 @@ code{font-family:Consolas,monospace;color:#cfe0ff;font-size:.95em}
   <p class="point">SQL은 migration 파일로 관리하고 되돌리기(rollback) 파일을 함께 둠</p>
 </section>
 
-<section data-part="파트 2 · 권한·자동화·점수" data-note="4단계는 에이전트입니다. 3일 갱신은 품질 검사, 변화 비교, 검증, 점수, 메일 순서이고 단계마다 최대 3회 재시도합니다. 이미 성공한 단계는 다시 하지 않습니다. 필수 항목 누락이나 건수 급변이면 적재를 보류합니다. 에이전트라고 부르지만 지금은 규칙 기반 코드이고, AI 분류 자리는 개발용 가짜 분류기입니다. (약 1분)">
+<section data-part="파트 2 · 권한·자동화·점수" data-note="4단계는 에이전트입니다. 3일 갱신은 품질 검사, 변화 비교, 검증, 점수, 메일 순서이고 단계마다 최대 3회 재시도합니다. 이미 성공한 단계는 다시 하지 않습니다. 필수 항목 누락이 10% 이상이거나 건수가 30% 이상 변하면 적재를 보류합니다. 에이전트라고 부르지만 지금은 규칙 기반 코드이고, AI 분류 자리는 개발용 가짜 분류기입니다. (약 1분)">
   <p class="kicker">4단계 · 오케스트레이터와 에이전트</p><h2>갱신 1회 = 실행 1건, 단계별로 기록</h2>
   <div class="flow">
     <div>수집<small>Aside</small></div><i>→</i>
-    <div>품질 검사<small>누락·±30% → 보류</small></div><i>→</i>
+    <div>품질 검사<small>누락 10%·변화 30% 이상 → 보류</small></div><i>→</i>
     <div>변화 비교<small>신규·변경·나감</small></div><i>→</i>
     <div>검증<small>의심 신호</small></div><i>→</i>
     <div class="todo">점수<small>지금은 건너뜀</small></div><i>→</i>
@@ -190,7 +190,7 @@ code{font-family:Consolas,monospace;color:#cfe0ff;font-size:.95em}
   <p class="point">3단 화면 배치(접기·너비 조절)와 발표 데모 디자인 반영</p>
 </section>
 
-<section data-part="파트 3 · 화면·운영·배포" data-note="7, 8단계입니다. 메일은 광고 표기, 수신 거부, 야간 미룸, 한도를 구현했고 시험 주소로만 보냅니다. 관리자 화면은 읽기 전용이고, 화면마다 다음 할 일을 제안합니다. 이 제안은 AI 호출이 아니라 마크다운 규칙 파일을 안전한 조건식으로 평가해서 운영 비용이 들지 않습니다. (약 1분)">
+<section data-part="파트 3 · 화면·운영·배포" data-note="7, 8단계입니다. 관리자 화면은 구독·결제를 뺀 읽기 화면입니다. 메일은 광고 표기, 수신 거부, 야간 미룸, 한도를 구현했고 시험 주소로만 보냅니다. 관리자 화면은 읽기 전용이고, 화면마다 다음 할 일을 제안합니다. 이 제안은 AI 호출이 아니라 마크다운 규칙 파일을 안전한 조건식으로 평가해서 운영 비용이 들지 않습니다. (약 1분)">
   <p class="kicker">7·8단계 · 메일과 관리자</p><h2>운영하는 사람을 위한 화면</h2>
   <div class="grid g2">
     <div class="card"><h3>7 · 추천 메일</h3><ul><li>첫 추천 메일, 구독 묶음 메일 기반</li><li>(광고) 표기 · 수신 거부 · 야간 미룸 · 월 한도</li><li>시험 모드: 시험 주소로만 발송</li></ul></div>
@@ -210,7 +210,7 @@ code{font-family:Consolas,monospace;color:#cfe0ff;font-size:.95em}
   <div class="grid g3">
     <div class="card"><h3>배포 순서</h3><ul><li>실서비스 DB에 SQL 순차 적용</li><li>Vercel 환경변수·빌드</li><li>로그인·지도 주소 등록</li><li>예약 실행 → 수집 연결 확인</li></ul></div>
     <div class="card todo"><h3>남은 과제</h3><ul><li>스코어링 연결</li><li>실제 AI 연결</li><li>결제(시험 모드)</li><li>관리자 승인 버튼</li><li>법적 확인(일반 공개 전)</li></ul></div>
-    <div class="card"><h3>개발 방식</h3><ul><li>단계마다 확정 후 진행</li><li>테스트 DB 먼저, 실서비스는 별도</li><li>권한·계산 규칙은 시험 코드로 확인</li><li>미정 값은 지어내지 않고 “미확정”</li></ul></div>
+    <div class="card"><h3>개발 방식</h3><ul><li>단계마다 확정 후 진행</li><li>테스트 DB 먼저, 실서비스는 별도</li><li>관리자 규칙·담기 권한 등은 시험 코드로 확인</li><li>미정 값은 지어내지 않고 “미확정”</li></ul></div>
   </div>
   <p class="point">감사합니다 · 질문 받겠습니다</p>
 </section>
