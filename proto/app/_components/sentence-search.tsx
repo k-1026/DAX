@@ -1,7 +1,8 @@
 "use client";
 // 조건 패널 맨 위 "문장으로 찾기" (데모 모양). 규칙 기반 시험용 응답이다.
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
+import { mergeQuery } from "@/lib/search/query";
 import { convertSearchText, type SentenceResult } from "./sentence-search-actions";
 
 export type AiSummary = { ok: boolean; tier: string; limit: number | null; remaining: number | null; period: "total" | "day" };
@@ -17,12 +18,15 @@ export function SentenceSearch({ summary }: { summary: AiSummary }) {
   const [result, setResult] = useState<SentenceResult | null>(null);
   const [remaining, setRemaining] = useState<number | null>(summary.remaining);
   const [pending, startTransition] = useTransition();
+  const router = useRouter();
 
   function convert() {
     startTransition(async () => {
       const next = summary.ok ? await convertSearchText(text) : ({ ok: false, message: "AI를 지금 쓸 수 없어요. 잠시 후 다시 시도해 주세요.", remaining: null } as SentenceResult);
       setResult(next);
       if (next.remaining !== null) setRemaining(next.remaining);
+      // 알아들은 조건을 바로 추천에 반영한다(지금 정렬은 그대로).
+      if (next.ok) router.replace(mergeQuery(window.location.search, next.href, ["sort"]), { scroll: false });
     });
   }
 
@@ -71,11 +75,9 @@ export function SentenceSearch({ summary }: { summary: AiSummary }) {
                   {note}
                 </p>
               ))}
-              <Link href={result.href} className="self-start rounded-full bg-brand px-4 py-1.5 text-sm font-medium text-brand-ink">
-                이 조건으로 검색
-              </Link>
+              <p className="text-xs font-medium text-ok">✓ 조건 상자와 추천에 바로 반영했어요.</p>
               <p className="text-[11px] text-faint">
-                {remainingText(summary, remaining)} · 시험용 응답(규칙 기반)이에요. 바뀐 조건은 검색 후 아래에서 고칠 수 있어요.
+                {remainingText(summary, remaining)} · 시험용 응답(규칙 기반)이에요. 바뀐 조건은 아래에서 바로 고칠 수 있어요.
               </p>
             </>
           ) : (

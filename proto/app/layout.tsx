@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   description: "업종에 맞는 대구 공실을 추천하는 AI 서비스",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children, modal }: LayoutProps<"/">) {
   return (
     <html
       lang="ko"
@@ -29,6 +29,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         {children}
+        {modal}
         <footer className="site-footer flex justify-center gap-4 border-t border-zinc-200 px-4 py-4 text-xs text-zinc-600 dark:border-zinc-800 dark:text-zinc-400">
           <Link href="/terms" className="underline">
             이용약관

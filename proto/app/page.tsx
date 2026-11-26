@@ -4,7 +4,10 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 import { Avatar } from "@/app/_components/avatar";
 import { FontSizeControl } from "@/app/_components/font-size-control";
-import { date, ListingCardView, won } from "@/app/_components/listing-card";
+import { date, won } from "@/app/_components/listing-card";
+import { RankList } from "@/app/_components/rank-list";
+import { ConditionBar } from "@/app/_components/condition-bar";
+import { AutoApplyForm } from "@/app/_components/auto-apply-form";
 import { ListingMap, type MapPin } from "@/app/_components/listing-map";
 import { Panel } from "@/app/_components/panel";
 import { SiteLogo } from "@/app/_components/site-logo";
@@ -12,7 +15,6 @@ import { AreaRange, LimitSlider } from "@/app/_components/range-fields";
 import { RegionList } from "@/app/_components/region-list";
 import { SentenceSearch } from "@/app/_components/sentence-search";
 import { SummaryChips } from "@/app/_components/summary-chips";
-import { AskBar } from "@/app/_components/ask-bar";
 import { PrefNote } from "@/app/_components/pref-note";
 import { AiSummary } from "@/app/_components/typed-text";
 import { GongsilChat } from "@/app/_components/gongsil-chat";
@@ -102,9 +104,12 @@ function SearchForm({
   canSort,
   alwaysOpen = false,
   bare = false,
+  wide = false,
   prefHref,
 }: {
   prefHref?: string;
+  /** 추천 위 가로 상자: 칸을 여러 줄로 나란히 */
+  wide?: boolean;
   bare?: boolean;
   areas: Record<string, string[]>;
   filters: SearchFilters;
@@ -128,7 +133,7 @@ function SearchForm({
         <span className="text-zinc-500 group-open:hidden">펼치기</span>
         <span className="hidden text-zinc-500 group-open:inline">접기</span>
       </summary>
-    <form id={bare ? "search-form" : undefined} action="/" method="get" className={`flex flex-col gap-4 ${bare ? "" : "border-t border-zinc-200 p-4 dark:border-zinc-800"}`}>
+    <AutoApplyForm auto={bare} id={bare ? "search-form" : undefined} className={`${wide ? "grid gap-x-8 gap-y-5 md:grid-cols-2 xl:grid-cols-3" : "flex flex-col gap-4"} ${bare ? "" : "border-t border-zinc-200 p-4 dark:border-zinc-800"}`}>
       <div className="flex flex-col gap-1.5 text-sm">
         <span>업종</span>
         <p className="rounded-xl border border-dashed border-line bg-soft px-3 py-3 text-xs text-muted">
@@ -139,10 +144,12 @@ function SearchForm({
 
       <AreaRange min={filters.area_min} max={filters.area_max} />
       <LimitSlider name="deposit_max" label="보증금 상한" kind="deposit" value={filters.deposit_max} />
-      <LimitSlider name="rent_max" label="월세+관리비 상한" kind="rent" value={filters.rent_max} />
-      <p className="-mt-2 text-xs text-muted">
-        슬라이더를 끝까지 밀면 제한 없음이에요. 관리비가 적혀 있지 않은 매물은 관리비를 0으로 계산해요.
-      </p>
+      <div className="flex flex-col gap-2">
+        <LimitSlider name="rent_max" label="월세+관리비 상한" kind="rent" value={filters.rent_max} />
+        <p className="text-xs text-muted">
+          슬라이더를 끝까지 밀면 제한 없음이에요. 관리비가 적혀 있지 않은 매물은 관리비를 0으로 계산해요.
+        </p>
+      </div>
 
       <div className="flex flex-col gap-1.5 text-sm">
         <span>무엇을 가장 중요하게 볼까요?</span>
@@ -163,7 +170,7 @@ function SearchForm({
         </div>
       </fieldset>
 
-      <div className="flex flex-col gap-2">
+      <div className={`flex flex-col gap-2 ${wide ? "md:col-span-2 xl:col-span-2" : ""}`}>
         <RegionList areas={Object.keys(areas)} selected={filters.gu} />
         <details className="text-sm" open={filters.dong.length > 0}>
           <summary className="cursor-pointer text-zinc-600 dark:text-zinc-400">동 고르기</summary>
@@ -214,7 +221,7 @@ function SearchForm({
           )}
         </>
       )}
-    </form>
+    </AutoApplyForm>
     </details>
   );
 }
@@ -268,19 +275,7 @@ async function SearchSection({ searchParams }: { searchParams: PageProps<"/">["s
   const [result, areas, savedState] = await Promise.all([searchListings(filters, sort, offset), getAreas(), getSavedState()]);
   const guest = result.tier === "guest";
   const points = result.items.length > 0 ? await getMapPoints(result.items.map((card) => card.id), guest) : [];
-  // 회원이면 이 쪽 매물에 내가 남긴 좋아요·싫어요를 함께 읽는다.
-  const myRatings = new Map<string, "good" | "bad">();
-  if (!guest && result.items.length > 0) {
-    const supabase = await createClient();
-    const { data: mine } = await supabase
-      .from("listing_feedback")
-      .select("listing_id, rating")
-      .in("listing_id", result.items.map((card) => card.id))
-      .is("category_id", null);
-    for (const row of mine ?? []) myRatings.set(row.listing_id, row.rating as "good" | "bad");
-  }
   const pins = points ? buildPins(result.items, points, result.offset) : null;
-  const pointById = new Map((points ?? []).map((point) => [point.id, point]));
   // 회원이 선호 조건을 저장해 뒀으면 "내 선호 조건으로 검색" 링크를 만든다.
   let prefHref: string | undefined;
   if (!guest) {
@@ -305,49 +300,46 @@ async function SearchSection({ searchParams }: { searchParams: PageProps<"/">["s
     return query.toString();
   })();
   const headingLine = conditionLine(filters);
+  const hasConditions = filters.gu.length + filters.dong.length + filters.floors.length > 0 || [filters.rent_max, filters.deposit_max, filters.area_min, filters.area_max].some((v) => v !== undefined);
   const aiBox = <SentenceSearch summary={aiStatus} />;
   const formProps = { areas, filters, sort: result.sort ?? sort, canSort: !guest, prefHref };
 
   return (
     <SavedProvider state={savedState}>
-    <PanelLayout>
+    <PanelLayout withLeft={false}>
       <div className="flex flex-col gap-4 lg:hidden">
         {aiBox}
-        <SearchForm {...formProps} />
+        <SearchForm key={searchString} {...formProps} />
       </div>
-      <Slot side="left" label="조건" mobileHidden>
-      <Panel
-        title="조건"
-        label="검색 조건"
-        className="hidden lg:flex"
-        footer={
-          <div className="flex flex-col gap-2">
-            <button type="submit" form="search-form" className="inline-flex items-center justify-center gap-2 rounded-full bg-brand py-3 text-sm font-medium text-brand-ink">
+
+      <Slot side="center">
+      <div className="flex min-h-0 min-w-0 flex-col gap-4 lg:overflow-y-auto">
+      <ConditionBar
+        summary={headingLine}
+        defaultOpen={!hasConditions}
+        actions={
+          <div className="flex shrink-0 items-center gap-3">
+            <Link href="/" className="text-xs underline">초기화</Link>
+            {prefHref && <Link href={prefHref} className="text-xs underline">내 선호 조건</Link>}
+            <button type="submit" form="search-form" className="rounded-full bg-brand px-5 py-2 text-sm font-medium text-brand-ink">
               이 조건으로 추천 받기
             </button>
-            <div className="flex items-center justify-center gap-4 text-xs">
-              <Link href="/" className="underline">초기화</Link>
-              {prefHref && <Link href={prefHref} className="underline">내 선호 조건으로 검색</Link>}
-            </div>
-            <p className="text-center text-[11px] text-faint">네이버 부동산 실제 매물 · 3일마다 갱신 예정</p>
-            <p className="flex justify-center gap-3 text-[11px] text-faint">
-              <Link href="/terms" className="underline">이용약관</Link>
-              <Link href="/privacy" className="font-medium underline">개인정보 처리방침</Link>
-              <Link href="/report" className="underline">문제 신고</Link>
-            </p>
           </div>
         }
       >
         <div className="flex flex-col gap-5">
           {aiBox}
-          <SearchForm {...formProps} alwaysOpen bare />
+          <SearchForm key={searchString} {...formProps} alwaysOpen bare wide />
           <PrefNote />
         </div>
-      </Panel>
-      </Slot>
+      </ConditionBar>
 
-      <Slot side="center">
-      <Panel title="추천" right={<span className="text-xs text-muted">조건에 맞는 매물 {(result.total ?? 0).toLocaleString("ko-KR")}곳</span>} footer={<AskBar total={result.total ?? 0} enabled={Boolean(summary && summary.total > 0)} />}>
+      <Panel
+        title="추천"
+        className="lg:min-h-[640px] lg:flex-1 lg:shrink-0"
+        bodyClassName="flex flex-col gap-4 lg:overflow-y-auto"
+        right={<span className="text-xs text-muted">조건에 맞는 매물 {(result.total ?? 0).toLocaleString("ko-KR")}곳</span>}
+      >
       {result.error ? (
         <p role="alert" className="rounded-lg bg-red-50 p-4 text-sm text-red-800 dark:bg-red-950 dark:text-red-200">
           매물을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.
@@ -360,107 +352,83 @@ async function SearchSection({ searchParams }: { searchParams: PageProps<"/">["s
           </Link>
         </div>
       ) : (
-        <section aria-label="검색 결과" className="flex flex-col gap-4">
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-3">
-              <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-tile-blue text-accent" aria-hidden="true">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M4 21V5h10v16 M14 9h6v12 M8 9h2 M8 13h2 M8 17h2 M17 13h.01 M17 17h.01 M3 21h18" />
-                </svg>
-              </span>
-              <div className="min-w-0">
-                <h3 className="text-lg font-medium">조건에 맞는 대구 공실</h3>
-                <p className="truncate text-xs text-muted">
-                  {headingLine || "조건을 정하면 더 좁혀 보여 드려요"}
-                </p>
-              </div>
-            </div>
-            {summary && <AiSummary text={summaryText(summary)} />}
-          </div>
+        <>
           {!result.has_scores && result.sort === "recommended" && (
-            <p className="text-xs text-muted">점수가 준비되기 전까지 최근 확인순으로 보여 드립니다.</p>
+            <p className="shrink-0 text-xs text-muted">점수가 준비되기 전까지 최근 확인순으로 보여 드립니다.</p>
           )}
-
-          {result.items.length > 0 &&
-            (pins === null ? (
-              <p className="rounded-lg bg-zinc-50 p-4 text-sm text-zinc-600 dark:bg-zinc-900 dark:text-zinc-400">
-                지도를 불러오지 못했습니다. 아래 목록에서 매물을 볼 수 있어요.
-              </p>
-            ) : (
-              <ListingMap pins={pins} missing={result.items.length - pins.length} />
-            ))}
-
-          {guest && (result.total ?? 0) > result.items.length && (
-            <p className="-mt-3 flex flex-wrap items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
-              나머지 매물은 로그인하면 지도에서 볼 수 있어요.
-              <Link href="/login" className="underline">
-                로그인하기
-              </Link>
-            </p>
-          )}
-
-          {summary && summary.total > 0 && <SummaryChips search={searchString} guest={guest} remaining={aiStatus.remaining} />}
 
           {result.items.length === 0 ? (
             <p className="rounded-lg bg-zinc-50 p-6 text-center text-sm text-zinc-600 dark:bg-zinc-900 dark:text-zinc-400">
               조건에 맞는 매물이 없습니다. 지역을 넓히거나 금액 조건을 조금 올려 보세요.
             </p>
           ) : (
-            result.items.map((card, index) => (
-              <div key={card.id} className="card-in" style={{ animationDelay: `${Math.min(index, 12) * 90 + 300}ms` }}>
-                <ListingCardView
-                  card={card}
-                  showScore={!guest}
-                  n={result.offset + index + 1}
-                  myRating={myRatings.get(card.id) ?? null}
-                  point={pointById.get(card.id) ?? null}
-                />
+            <section aria-label="검색 결과" className="flex min-h-0 shrink-0 flex-col gap-4 lg:h-[560px] lg:flex-row">
+              <div className="flex min-h-0 min-w-0 flex-col lg:flex-1">
+                {pins === null ? (
+                  <p className="rounded-lg bg-zinc-50 p-4 text-sm text-zinc-600 dark:bg-zinc-900 dark:text-zinc-400">
+                    지도를 불러오지 못했습니다. 오른쪽 목록에서 매물을 볼 수 있어요.
+                  </p>
+                ) : (
+                  <ListingMap pins={pins} missing={result.items.length - pins.length} fill />
+                )}
               </div>
-            ))
+
+              <div className="flex min-h-0 flex-col gap-3 lg:w-[380px] lg:shrink-0 lg:overflow-y-auto lg:pr-1">
+                <p className="text-xs text-muted">순위를 누르면 자세한 정보 창이 열려요.</p>
+                <RankList items={result.items} offset={result.offset} showScore={!guest} />
+
+                {guest && (result.total ?? 0) > result.items.length && (
+                  <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-zinc-300 p-4 text-center dark:border-zinc-700">
+                    <p className="text-sm font-medium">
+                      나머지 {((result.total ?? 0) - result.items.length).toLocaleString("ko-KR")}곳은 로그인하면 볼 수 있어요
+                    </p>
+                    <p className="text-xs text-zinc-600 dark:text-zinc-400">로그인하면 정렬, 전체 지도, 담기, 비교, 점수 근거도 쓸 수 있어요. 가입은 무료예요.</p>
+                    <Link href="/login" className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-zinc-100 dark:text-zinc-900">
+                      무료로 로그인하기
+                    </Link>
+                  </div>
+                )}
+
+                {!guest && (result.total ?? 0) > result.page_size && (
+                  <nav aria-label="쪽 이동" className="flex items-center justify-between text-sm">
+                    {result.offset > 0 ? (
+                      <Link href={pageLink(params, Math.max(result.offset - result.page_size, 0))} className="underline">← 이전</Link>
+                    ) : (
+                      <span />
+                    )}
+                    <span className="text-xs text-zinc-500">
+                      {result.offset + 1}–{Math.min(result.offset + result.page_size, result.total ?? 0)} / {(result.total ?? 0).toLocaleString("ko-KR")}
+                    </span>
+                    {result.offset + result.page_size < (result.total ?? 0) ? (
+                      <Link href={pageLink(params, result.offset + result.page_size)} className="underline">다음 →</Link>
+                    ) : (
+                      <span />
+                    )}
+                  </nav>
+                )}
+                <p className="text-[11px] leading-relaxed text-faint">
+                  매물 정보는 네이버 부동산에 중개사가 올린 내용을 수집한 것으로, 실제와 다를 수 있어요. 공실 여부와 조건은 계약 전에 원문과 현장에서 꼭 확인하세요. AI 추천은 참고용이며, 계약 전 등기부등본·건축물대장도 꼭 확인해 주세요.
+                </p>
+                <p className="flex flex-wrap gap-3 text-[11px] text-faint">
+                  <span>네이버 부동산 실제 매물 · 3일마다 갱신 예정</span>
+                  <Link href="/terms" className="underline">이용약관</Link>
+                  <Link href="/privacy" className="font-medium underline">개인정보 처리방침</Link>
+                  <Link href="/report" className="underline">문제 신고</Link>
+                </p>
+              </div>
+            </section>
           )}
 
-          {guest && (result.total ?? 0) > result.items.length && (
-            <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-zinc-300 p-6 text-center dark:border-zinc-700">
-              <p className="font-medium">
-                나머지 {((result.total ?? 0) - result.items.length).toLocaleString("ko-KR")}곳은 로그인하면 볼 수 있어요
-              </p>
-              <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                로그인하면 정렬, 전체 지도, 담기, 비교, 점수 근거도 쓸 수 있습니다. 가입은 무료입니다.
-              </p>
-              <Link href="/login" className="rounded-lg bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white dark:bg-zinc-100 dark:text-zinc-900">
-                무료로 로그인하기
-              </Link>
+          {summary && (
+            <div className="flex shrink-0 flex-col gap-2 border-t border-line pt-4">
+              {summary && <AiSummary text={summaryText(summary)} />}
+              {summary && summary.total > 0 && <SummaryChips search={searchString} guest={guest} remaining={aiStatus.remaining} />}
             </div>
           )}
-
-          {!guest && (result.total ?? 0) > result.page_size && (
-            <nav aria-label="쪽 이동" className="flex items-center justify-between text-sm">
-              {result.offset > 0 ? (
-                <Link href={pageLink(params, Math.max(result.offset - result.page_size, 0))} className="underline">
-                  ← 이전
-                </Link>
-              ) : (
-                <span />
-              )}
-              <span className="text-zinc-500">
-                {result.offset + 1}–{Math.min(result.offset + result.page_size, result.total ?? 0)} /{" "}
-                {(result.total ?? 0).toLocaleString("ko-KR")}
-              </span>
-              {result.offset + result.page_size < (result.total ?? 0) ? (
-                <Link href={pageLink(params, result.offset + result.page_size)} className="underline">
-                  다음 →
-                </Link>
-              ) : (
-                <span />
-              )}
-            </nav>
-          )}
-        </section>
+        </>
       )}
-      <p className="mt-4 text-xs leading-relaxed text-faint">
-        매물 정보는 네이버 부동산에 중개사가 올린 내용을 수집한 것으로, 실제와 다를 수 있습니다. 공실 여부와 조건은 계약 전에 원문과 현장에서 꼭 확인하세요.
-      </p>
       </Panel>
+      </div>
       </Slot>
       <Slot side="right" label="스튜디오">
       <Panel title="스튜디오" label="담기·비교 스튜디오">

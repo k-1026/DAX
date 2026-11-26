@@ -29,11 +29,11 @@ declare global {
 
 let loader: Promise<any> | null = null;
 
-function loadKakao(key: string) {
+export function loadKakao(key: string) {
   if (window.kakao?.maps?.LatLng) return Promise.resolve(window.kakao);
   loader ??= new Promise((resolve, reject) => {
     const script = document.createElement("script");
-    script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${encodeURIComponent(key)}&autoload=false`;
+    script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${encodeURIComponent(key)}&libraries=services&autoload=false`;
     script.async = true;
     script.onload = () => window.kakao.maps.load(() => resolve(window.kakao));
     script.onerror = () => {
@@ -48,7 +48,8 @@ function loadKakao(key: string) {
 const PIN_CLASS =
   "flex h-7 min-w-7 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border-2 border-white bg-blue-700 px-1 text-xs font-medium text-white shadow";
 
-export function ListingMap({ pins, missing }: { pins: MapPin[]; missing: number }) {
+export function ListingMap({ pins, missing, fill = false }: { pins: MapPin[]; missing: number; fill?: boolean }) {
+  const listWord = fill ? "오른쪽 목록" : "아래 목록";
   const box = useRef<HTMLDivElement>(null);
   const [failed, setFailed] = useState(false);
   const [selected, setSelected] = useState<MapPin | null>(null);
@@ -125,15 +126,15 @@ export function ListingMap({ pins, missing }: { pins: MapPin[]; missing: number 
   }, [pins]);
 
   return (
-    <section aria-label="지도" className="flex flex-col gap-2">
-      <div className="relative h-80 overflow-hidden card bg-zinc-50 dark:bg-zinc-900 lg:h-96">
+    <section aria-label="지도" className={`flex flex-col gap-2 ${fill ? "h-full min-h-0" : ""}`}>
+      <div className={`relative overflow-hidden card bg-zinc-50 dark:bg-zinc-900 ${fill ? "h-80 lg:h-auto lg:min-h-0 lg:flex-1" : "h-80 lg:h-96"}`}>
         {!key || failed ? (
           <p className="p-6 text-center text-sm text-zinc-600 dark:text-zinc-400">
-            지도를 불러오지 못했습니다. 아래 목록에서 매물을 볼 수 있어요.
+            지도를 불러오지 못했습니다. {listWord}에서 매물을 볼 수 있어요.
           </p>
         ) : pins.length === 0 ? (
           <p className="p-6 text-center text-sm text-zinc-600 dark:text-zinc-400">
-            이 쪽 매물은 위치 정보가 없어 지도에 표시할 수 없어요. 아래 목록에서 볼 수 있어요.
+            이 쪽 매물은 위치 정보가 없어 지도에 표시할 수 없어요. {listWord}에서 볼 수 있어요.
           </p>
         ) : (
           <div ref={box} className="h-full w-full" />
@@ -167,7 +168,7 @@ export function ListingMap({ pins, missing }: { pins: MapPin[]; missing: number 
       </div>
       {missing > 0 && pins.length > 0 && (
         <p className="text-xs text-zinc-500">
-          이 쪽 매물 중 {missing}곳은 위치 정보가 없어 지도에서 빠졌어요. 아래 목록에서 볼 수 있어요.
+          이 쪽 매물 중 {missing}곳은 위치 정보가 없어 지도에서 빠졌어요. {listWord}에서 볼 수 있어요.
         </p>
       )}
     </section>

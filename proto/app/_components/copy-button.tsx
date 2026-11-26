@@ -2,7 +2,7 @@
 // 글을 복사하는 작은 버튼
 import { useState } from "react";
 
-export function CopyButton({ text, label = "복사" }: { text: string; label?: string }) {
+export function CopyButton({ text, label = "복사", className }: { text: string; label?: string; className?: string }) {
   const [copied, setCopied] = useState(false);
   return (
     <button
@@ -16,7 +16,7 @@ export function CopyButton({ text, label = "복사" }: { text: string; label?: s
           setCopied(false);
         }
       }}
-      className="rounded border border-zinc-300 px-2 py-1 text-xs dark:border-zinc-700"
+      className={className ?? "rounded border border-zinc-300 px-2 py-1 text-xs dark:border-zinc-700"}
     >
       {copied ? "복사됨" : label}
     </button>

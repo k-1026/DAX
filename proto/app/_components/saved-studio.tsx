@@ -20,7 +20,7 @@ const buttonClass = "rounded-lg border border-zinc-300 px-3 py-2 text-sm disable
 export function SavedStudio({ candidates = [] }: { candidates?: Candidate[] }) {
   const [view, setView] = useState<StudioView | null>(null);
   const [comparing, setComparing] = useState(false);
-  const { state, listId, selectList, pending: saving, toggle } = useSaved();
+  const { state, listId, selectList, isPending, toggle } = useSaved();
   const hydrated = useHydrated();
   const [chosenIds, setChosenIds] = useState<string[]>([]);
   const [comparison, setComparison] = useState<{ key: string; items: SavedItem[] } | null>(null);
@@ -29,7 +29,7 @@ export function SavedStudio({ candidates = [] }: { candidates?: Candidate[] }) {
   const [rateOpen, setRateOpen] = useState(false);
   const [ratings, setRatings] = useState<Record<string, "good" | "bad"> | null>(null);
   const [pending, startTransition] = useTransition();
-  const busy = saving || pending || !hydrated;
+  const busy = pending || !hydrated;
   const items = state.items.filter((item) => item.list_id === listId);
   const selected = chosenIds.filter((id) => items.some((item) => item.listing_id === id && item.available));
   const comparisonKey = JSON.stringify([listId, selected, state.items, state.compare_limit]);
@@ -108,14 +108,15 @@ export function SavedStudio({ candidates = [] }: { candidates?: Candidate[] }) {
         {items.length === 0 ? <p className="rounded-lg bg-zinc-50 p-4 text-sm text-zinc-500 dark:bg-zinc-900">아직 담은 매물이 없어요. 매물의 ‘담기’를 눌러 후보를 모아 보세요.</p> : <ul className="flex flex-col gap-2">
           {items.map((item) => {
             const checked = selected.includes(item.listing_id);
-            const title = item.available && item.data ? savedTitle(item.data) : "이용할 수 없는 매물";
+            const loading = item.available && !item.data;
+            const title = loading ? "담는 중…" : item.available && item.data ? savedTitle(item.data) : "이용할 수 없는 매물";
             return <li key={item.listing_id} className="rounded-lg border border-zinc-200 p-3 dark:border-zinc-800">
               <div className="flex items-start justify-between gap-2">
                 <label className="flex min-w-0 items-start gap-2 text-sm">
-                  <input type="checkbox" checked={checked} disabled={busy || !item.available || (!checked && selected.length >= state.compare_limit)} onChange={(e) => choose(item.listing_id, e.target.checked)} className="mt-1" />
+                  <input type="checkbox" checked={checked} disabled={busy || loading || !item.available || (!checked && selected.length >= state.compare_limit)} onChange={(e) => choose(item.listing_id, e.target.checked)} className="mt-1" />
                   <span className="break-words">{title}<span className="sr-only"> 비교 선택</span></span>
                 </label>
-                <button type="button" onClick={() => toggle(item.listing_id, true)} disabled={busy} aria-label={`${title} 담기 해제`} className="shrink-0 text-xs text-zinc-500 underline disabled:opacity-50">빼기</button>
+                <button type="button" onClick={() => toggle(item.listing_id, true)} disabled={busy || isPending(item.listing_id)} aria-label={`${title} 담기 해제`} className="shrink-0 text-xs text-zinc-500 underline disabled:opacity-50">빼기</button>
               </div>
               {item.available && item.data && <div className="mt-1 pl-5 text-xs text-zinc-500">
                 <p>보증금 {money(item.data.deposit)} · 월세 {money(item.data.rent)}</p>

@@ -16,7 +16,7 @@ const KEY = "dax.panel-layout.v1";
 type Ctx = { layout: Layout; setSide: (side: Side, width: number) => void; toggle: (side: Side) => void; reset: (side: Side) => void; grid: React.RefObject<HTMLDivElement | null> };
 const LayoutContext = createContext<Ctx | null>(null);
 
-export function PanelLayout({ children }: { children: React.ReactNode }) {
+export function PanelLayout({ children, withLeft = true }: { children: React.ReactNode; withLeft?: boolean }) {
   const [layout, setLayout] = useState<Layout>(DEFAULT);
   const grid = useRef<HTMLDivElement>(null);
 
@@ -49,14 +49,14 @@ export function PanelLayout({ children }: { children: React.ReactNode }) {
     (side: Side, width: number) => {
       setLayout((current) => {
         const total = grid.current?.clientWidth ?? 1400;
-        const other = side === "left" ? (current.rightOff ? COLLAPSED : current.right) : current.leftOff ? COLLAPSED : current.left;
+        const other = side === "left" ? (current.rightOff ? COLLAPSED : current.right) : withLeft ? (current.leftOff ? COLLAPSED : current.left) : 0;
         const room = total - other - CENTER_MIN - GAP * 2;
         const next = { ...current, [side]: Math.round(Math.max(LIMITS[side][0], Math.min(LIMITS[side][1], room, width))) };
         save(next);
         return next;
       });
     },
-    [save],
+    [save, withLeft],
   );
   const toggle = useCallback(
     (side: Side) => {
@@ -87,7 +87,7 @@ export function PanelLayout({ children }: { children: React.ReactNode }) {
       <div
         ref={grid}
         className="grid min-h-0 min-w-0 gap-4 lg:h-full lg:[grid-template-columns:var(--cols)]"
-        style={{ ["--cols" as string]: `${left}px minmax(0,1fr) ${right}px` }}
+        style={{ ["--cols" as string]: withLeft ? `${left}px minmax(0,1fr) ${right}px` : `minmax(0,1fr) ${right}px` }}
       >
         {children}
       </div>

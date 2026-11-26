@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { gongsilFind, gongsilStart, type GongsilChoice } from "./gongsil-actions";
 import { convertSearchText } from "./sentence-search-actions";
+import { mergeQuery } from "@/lib/search/query";
 
 type Option = { label: string; value: string };
 type Msg = { id: number; from: "bot" | "me"; text: string; options?: Option[]; step?: string; link?: { href: string; label: string } };
@@ -128,7 +129,11 @@ export function GongsilChat() {
 
   async function finish() {
     await say({ text: "조건에 맞는 자리를 찾아볼게예…" });
-    const result = await gongsilFind(choice.current);
+    // 화면에 이미 걸린 층·보증금 조건은 그대로 두고 함께 센다(뒤 화면과 숫자가 같도록).
+    const now = new URLSearchParams(window.location.search);
+    const keep = { floors: now.getAll("floors"), deposit_max: now.get("deposit_max") ? Number(now.get("deposit_max")) : null, sort: now.get("sort") };
+    const keptText = [keep.floors.length ? "층" : null, keep.deposit_max ? "보증금" : null].filter(Boolean).join("·");
+    const result = await gongsilFind(choice.current, keep);
     if (!result.ok && result.reason === "limit") {
       await say({ text: "AI 이용 횟수를 다 썼어예. 조건은 정해졌으니 아래 버튼으로 직접 확인해 보이소.", link: { href: result.href, label: "이 조건으로 보기" }, options: [{ label: "처음부터 다시", value: "restart" }], step: "end" });
       return;
@@ -142,9 +147,10 @@ export function GongsilChat() {
       return;
     }
     const first = result.first ? ` 1번은 ${result.first.place}, 보증금 ${man(result.first.deposit)}에 월세 ${man(result.first.rent)}이라예.` : "";
+    const applied = apply(result.href, ["floors", "deposit_max", "sort"]);
     await say({
-      text: `알겠심더! 조건에 맞는 빈 상가가 ${result.total.toLocaleString("ko-KR")}곳 있어예 🔍 점수는 아직 준비 중이라 최근 확인된 순으로 보여 드릴게예.${first}${result.remaining === null ? "" : ` (AI 횟수 ${result.remaining}회 남았어예)`}`,
-      link: { href: result.href, label: "지도와 목록 보기" },
+      text: `알겠심더! 조건에 맞는 빈 상가가 ${result.total.toLocaleString("ko-KR")}곳 있어예 🔍 뒤에 조건하고 지도·순위에 바로 반영해 놨어예.${keptText ? ` (먼저 골라 두신 ${keptText} 조건도 그대로 넣었어예.)` : ""}${first}${result.remaining === null ? "" : ` (AI 횟수 ${result.remaining}회 남았어예)`}`,
+      link: { href: applied, label: "창 닫고 지도·순위 보기" },
       options: [{ label: "처음부터 다시", value: "restart" }],
       step: "end",
     });
@@ -184,9 +190,10 @@ export function GongsilChat() {
     if (!result) await say({ text: "지금은 잘 못 알아들었어예. 잠시 후 다시 말씀해 주이소." });
     else if (!result.ok) await say({ text: result.message });
     else {
+      const applied = apply(result.href, ["sort"]);
       await say({
-        text: `이렇게 알아들었심더: ${result.chips.join(", ")}${result.notes.length ? ` (${result.notes.join(" ")})` : ""}`,
-        link: { href: result.href, label: "이 조건으로 보기" },
+        text: `이렇게 알아들었심더: ${result.chips.join(", ")}${result.notes.length ? ` (${result.notes.join(" ")})` : ""}. 뒤에 바로 반영해 놨어예.`,
+        link: { href: applied, label: "창 닫고 지도·순위 보기" },
       });
     }
   }
@@ -194,6 +201,14 @@ export function GongsilChat() {
   function go(href: string) {
     setOpen(false);
     router.push(href);
+  }
+
+  // 대화로 정한 조건을 뒤의 조건 상자·추천에 바로 반영한다(대화 창은 그대로 둔다).
+  // 공실이가 묻지 않는 조건(층·보증금·정렬)은 지금 화면의 값을 남긴다.
+  function apply(href: string, keep: string[]) {
+    const next = mergeQuery(window.location.search, href, keep);
+    router.replace(next, { scroll: false });
+    return next;
   }
 
   return (

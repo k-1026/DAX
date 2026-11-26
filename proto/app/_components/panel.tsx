@@ -6,6 +6,7 @@ export function Panel({
   className = "",
   label,
   footer,
+  bodyClassName = "lg:overflow-y-auto",
 }: {
   title: string;
   right?: React.ReactNode;
@@ -13,6 +14,8 @@ export function Panel({
   className?: string;
   label?: string;
   footer?: React.ReactNode;
+  /** 안쪽 영역 모양. 기본은 안에서 스크롤 */
+  bodyClassName?: string;
 }) {
   return (
     <section
@@ -23,7 +26,7 @@ export function Panel({
         <h2 className="text-sm font-medium">{title}</h2>
         {right}
       </div>
-      <div className="min-h-0 flex-1 px-5 py-4 lg:overflow-y-auto">{children}</div>
+      <div className={`min-h-0 flex-1 px-5 py-4 ${bodyClassName}`}>{children}</div>
       {footer && <div className="shrink-0 border-t border-line px-5 py-4">{footer}</div>}
     </section>
   );

@@ -3,7 +3,9 @@
 import { useState, useTransition } from "react";
 import { setSavedMemo } from "@/app/saved/actions";
 
-export function SavedMemo({ listId, listingId, memo, canEdit }: { listId: string; listingId: string; memo: string | null; canEdit: boolean }) {
+export function SavedMemo({ listId, listingId, memo: initial, canEdit }: { listId: string; listingId: string; memo: string | null; canEdit: boolean }) {
+  // 저장한 글을 바로 보여 준다(상세 창은 서버가 다시 그리지 않으므로).
+  const [memo, setMemo] = useState(initial);
   const [editing, setEditing] = useState(false);
   const [text, setText] = useState(memo ?? "");
   const [message, setMessage] = useState("");
@@ -27,7 +29,7 @@ export function SavedMemo({ listId, listingId, memo, canEdit }: { listId: string
     startTransition(async () => {
       try {
         const result = await setSavedMemo(listId, listingId, text);
-        if (result.ok) { setEditing(false); setMessage("저장했어요."); }
+        if (result.ok) { setMemo(text.trim() || null); setEditing(false); setMessage("저장했어요."); }
         else setMessage(result.message ?? "저장하지 못했어요.");
       } catch { setMessage("저장하지 못했어요. 다시 시도해 주세요."); }
     });

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSaved } from "./saved-provider";
 import { useHydrated } from "./use-hydrated";
+import { PRIMARY_BUTTON, SAVED_BUTTON } from "./action-styles";
 
 function BookmarkIcon({ filled }: { filled: boolean }) {
   return (
@@ -12,31 +13,48 @@ function BookmarkIcon({ filled }: { filled: boolean }) {
   );
 }
 
-export function SavedButton({ listingId, variant = "text" }: { listingId: string; variant?: "text" | "icon" }) {
-  const { state, listId, pending, toggle } = useSaved();
+export function SavedButton({ listingId, variant = "text" }: { listingId: string; variant?: "text" | "icon" | "primary" }) {
+  const { state, isPending, isSaved, full, toggle } = useSaved();
   const hydrated = useHydrated();
-  const classes = "inline-flex items-center justify-center rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700";
-  const iconClasses = "inline-flex h-9 w-9 items-center justify-center rounded-lg text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800";
-  if (variant === "icon") {
-    if (state.tier === "guest") {
-      return <Link href="/login" className={iconClasses} aria-label="로그인하고 매물 담기" title="로그인하고 담기"><BookmarkIcon filled={false} /></Link>;
-    }
-    const isSaved = state.items.some((item) => item.listing_id === listingId && item.list_id === listId);
+  const busy = isPending(listingId);
+  const saved = isSaved(listingId);
+  const blocked = !saved && full && !state.items.some((item) => item.listing_id === listingId);
+
+  if (variant === "primary") {
+    if (state.tier === "guest") return <Link href="/login" className={PRIMARY_BUTTON}><BookmarkIcon filled={false} />로그인하고 담기</Link>;
     return (
-      <button type="button" aria-pressed={isSaved} aria-label={isSaved ? "담기 해제" : "매물 담기"} title={isSaved ? "담음 · 눌러서 해제" : "담기"}
-        disabled={!hydrated || pending || !state.ok} onClick={() => toggle(listingId)}
-        className={`${iconClasses} ${isSaved ? "text-blue-700 dark:text-blue-300" : ""} disabled:opacity-50`}>
-        <BookmarkIcon filled={isSaved} />
+      <button type="button" aria-pressed={saved} disabled={!hydrated || busy || !state.ok} onClick={() => toggle(listingId)}
+        title={saved ? "눌러서 담기에서 빼기" : blocked ? `담기 한도(${state.saved_limit}곳)가 찼어요` : undefined}
+        className={`${saved ? SAVED_BUTTON : PRIMARY_BUTTON} disabled:opacity-60`}>
+        <BookmarkIcon filled={saved} />
+        {saved ? "담음 ✓" : "담기"}
       </button>
     );
   }
+  if (variant === "icon") {
+    const base = "inline-flex h-9 items-center justify-center gap-1 rounded-lg px-2.5 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800";
+    if (state.tier === "guest") {
+      return <Link href="/login" className={`${base} text-zinc-600 dark:text-zinc-400`} aria-label="로그인하고 매물 담기" title="로그인하고 담기"><BookmarkIcon filled={false} />담기</Link>;
+    }
+    return (
+      <button type="button" aria-pressed={saved} aria-label={saved ? "담기 해제" : "매물 담기"}
+        title={saved ? "담음 · 눌러서 빼기" : blocked ? `담기 한도(${state.saved_limit}곳)가 찼어요` : "담기"}
+        disabled={!hydrated || busy || !state.ok} onClick={() => toggle(listingId)}
+        className={`${base} ${saved ? "font-medium text-blue-700 dark:text-blue-300" : blocked ? "text-zinc-400 dark:text-zinc-600" : "text-zinc-600 dark:text-zinc-400"} disabled:opacity-60`}>
+        <BookmarkIcon filled={saved} />
+        {saved ? "담음" : "담기"}
+      </button>
+    );
+  }
+  const classes = "inline-flex items-center justify-center gap-1 rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700";
   if (state.tier === "guest") return <Link href="/login" className={classes} aria-label="로그인하고 매물 담기">담기 · 로그인</Link>;
-  const saved = state.items.some((item) => item.listing_id === listingId && item.list_id === listId);
   return (
-    <button type="button" aria-pressed={saved} disabled={!hydrated || pending || !state.ok}
-      onClick={() => toggle(listingId)} title={!state.ok ? "담기 정보를 불러오지 못했어요." : undefined}
-      className={`${classes} ${saved ? "bg-blue-50 text-blue-800 dark:bg-blue-950 dark:text-blue-200" : ""} disabled:opacity-50`}>
-      {saved ? "✓ 담음 · 해제" : "담기"}
+    <button type="button" aria-pressed={saved} disabled={!hydrated || busy || !state.ok}
+      onClick={() => toggle(listingId)}
+      title={!state.ok ? "담기 정보를 불러오지 못했어요." : blocked ? `담기 한도(${state.saved_limit}곳)가 찼어요` : undefined}
+      className={`${classes} ${saved ? "bg-blue-50 text-blue-800 dark:bg-blue-950 dark:text-blue-200" : ""} disabled:opacity-60`}>
+      <BookmarkIcon filled={saved} />
+      {saved ? "담음 · 빼기" : "담기"}
     </button>
   );
 }

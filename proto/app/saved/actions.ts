@@ -3,12 +3,13 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { LEGAL_VERSIONS } from "@/lib/legal/versions";
-import type { SavedResult } from "@/lib/saved/types";
+import type { SavedResult, SavedState } from "@/lib/saved/types";
+import { getSavedState } from "@/lib/saved/server";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const MESSAGES: Record<string, string> = {
   login_required: "로그인 후 이용할 수 있어요.",
-  saved_limit: "담기 한도에 도달했어요. 담은 매물을 빼고 다른 매물을 담아 주세요.",
+  saved_limit: "담기 한도가 찼어요. 담은 매물을 하나 빼거나, 구독하면 무제한으로 담을 수 있어요.",
   list_limit: "무료 회원은 담기 목록 1개를 이용할 수 있어요. 기존 목록을 선택해 주세요.",
   compare_limit: "한 번에 비교할 수 있는 개수를 넘었어요. 비교 대상을 줄여 주세요.",
   choose_two: "비교할 매물을 2곳 이상 골라 주세요.",
@@ -36,14 +37,13 @@ async function callSaved(name: string, args: Record<string, unknown>): Promise<S
   return data as SavedResult;
 }
 
-export async function setSaved(listingId: string, saved: boolean, listId: string | null): Promise<SavedResult> {
+// 화면 전체(검색 포함)를 다시 그리지 않고, 바뀐 담기 정보만 돌려준다. 화면은 누르자마자 먼저 바뀐다.
+export async function setSaved(listingId: string, saved: boolean, listId: string | null): Promise<SavedResult & { state?: SavedState }> {
   if (!UUID.test(listingId) || (listId !== null && !UUID.test(listId)) || typeof saved !== "boolean") return FAILED;
   const result = await callSaved("saved_set", { p_listing: listingId, p_saved: saved, p_list: listId });
-  if (result.ok) {
-    revalidatePath("/");
-    revalidatePath(`/listings/${listingId}`);
-  }
-  return result;
+  if (!result.ok) return result;
+  const fresh = await getSavedState();
+  return fresh.ok ? { ...result, state: fresh } : result;
 }
 
 export async function createSavedList(name: string): Promise<SavedResult> {
