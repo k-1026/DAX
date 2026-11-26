@@ -280,6 +280,7 @@ async function SearchSection({ searchParams }: { searchParams: PageProps<"/">["s
     for (const row of mine ?? []) myRatings.set(row.listing_id, row.rating as "good" | "bad");
   }
   const pins = points ? buildPins(result.items, points, result.offset) : null;
+  const pointById = new Map((points ?? []).map((point) => [point.id, point]));
   // 회원이 선호 조건을 저장해 뒀으면 "내 선호 조건으로 검색" 링크를 만든다.
   let prefHref: string | undefined;
   if (!guest) {
@@ -412,6 +413,7 @@ async function SearchSection({ searchParams }: { searchParams: PageProps<"/">["s
                   showScore={!guest}
                   n={result.offset + index + 1}
                   myRating={myRatings.get(card.id) ?? null}
+                  point={pointById.get(card.id) ?? null}
                 />
               </div>
             ))

@@ -16,6 +16,9 @@ const MESSAGES: Record<string, string> = {
   not_available: "지금은 이용할 수 없는 매물이에요. 담은 매물 목록을 확인해 주세요.",
   not_found: "목록을 찾을 수 없어요. 새로고침 후 다시 시도해 주세요.",
   name: "목록 이름을 1~50자로 입력해 주세요.",
+  subscriber_only: "메모는 구독 회원 기능이에요.",
+  memo_length: "메모는 300자까지 쓸 수 있어요.",
+  memo_not_saved: "담은 매물에만 메모를 쓸 수 있어요.",
 };
 const FAILED: SavedResult = { ok: false, message: "처리하지 못했어요. 잠시 후 다시 시도해 주세요." };
 
@@ -53,4 +56,12 @@ export async function createSavedList(name: string): Promise<SavedResult> {
 export async function compareSaved(ids: string[]): Promise<SavedResult> {
   if (!Array.isArray(ids) || ids.length > 50 || !ids.every((id) => typeof id === "string" && UUID.test(id))) return FAILED;
   return callSaved("saved_compare", { p_ids: [...new Set(ids)] });
+}
+
+export async function setSavedMemo(listId: string, listingId: string, memo: string): Promise<SavedResult> {
+  if (!UUID.test(listId) || !UUID.test(listingId) || typeof memo !== "string") return FAILED;
+  if (memo.trim().length > 300) return { ok: false, message: MESSAGES.memo_length };
+  const result = await callSaved("saved_memo_set", { p_list: listId, p_listing: listingId, p_memo: memo });
+  if (result.ok) revalidatePath("/");
+  return result;
 }

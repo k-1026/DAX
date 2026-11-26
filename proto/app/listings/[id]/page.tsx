@@ -11,6 +11,8 @@ import { FeedbackForm } from "./feedback-form";
 import { SavedProvider } from "@/app/_components/saved-provider";
 import { SavedButton, SavedListSelector } from "@/app/_components/saved-button";
 import { getSavedState } from "@/lib/saved/server";
+import { getMapPoints } from "@/lib/search/listings";
+import { PlaceLinks } from "@/app/_components/place-links";
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -41,7 +43,7 @@ function LoginPrompt({ what }: { what: string }) {
   );
 }
 
-function DetailView({ item }: { item: ListingDetail }) {
+function DetailView({ item, point }: { item: ListingDetail; point: { lat: number; lng: number } | null }) {
   const d = item.data;
   const guest = item.tier === "guest";
   const confirmedDays = daysSince(d.confirmed_at);
@@ -75,6 +77,7 @@ function DetailView({ item }: { item: ListingDetail }) {
             {floor && <span className="font-normal"> · {floor}</span>}
           </h1>
           {d.building_name && <p className="text-sm text-muted">{d.building_name}</p>}
+          <PlaceLinks lat={point?.lat} lng={point?.lng} gu={d.gu} dong={d.dong} building={d.building_name} />
         </div>
         <dl className="grid grid-cols-2 gap-x-3 gap-y-3 sm:grid-cols-4">
           {[
@@ -232,7 +235,8 @@ async function DetailSection({ params, searchParams }: PageProps<"/listings/[id]
       </p>
     );
   }
-  return <SavedProvider state={savedState}><DetailView item={result} /></SavedProvider>;
+  const points = await getMapPoints([result.id], result.tier === "guest");
+  return <SavedProvider state={savedState}><DetailView item={result} point={points?.[0] ?? null} /></SavedProvider>;
 }
 
 export default function ListingPage(props: PageProps<"/listings/[id]">) {

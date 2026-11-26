@@ -1,4 +1,5 @@
 // 매물 카드: 번호·위치·점수 자리·가격 4칸·링크 줄·담기 아이콘
+import { PlaceLinks } from "./place-links";
 import Link from "next/link";
 import type { ListingCard as Card } from "@/lib/search/listings";
 import { MapFocusButton } from "./map-focus-button";
@@ -43,7 +44,7 @@ function Cell({ label, value }: { label: string; value: React.ReactNode }) {
   );
 }
 
-export function ListingCardView({ card, showScore, n, myRating = null }: { card: Card; showScore: boolean; n?: number; myRating?: "good" | "bad" | null }) {
+export function ListingCardView({ card, showScore, n, myRating = null, point = null }: { card: Card; showScore: boolean; n?: number; myRating?: "good" | "bad" | null; point?: { lat: number; lng: number } | null }) {
   const pyeong = card.area_m2 === null ? null : Math.round(card.area_m2 / 3.3058);
   const floor = [card.floor, card.total_floors && `/${card.total_floors}`].filter(Boolean).join("");
   const kind = card.subtype ?? card.property_type;
@@ -102,6 +103,7 @@ export function ListingCardView({ card, showScore, n, myRating = null }: { card:
             상세 보기
           </Link>
           <MapFocusButton listingId={card.id} />
+          <PlaceLinks lat={point?.lat} lng={point?.lng} gu={card.gu} dong={card.dong} building={card.building_name} />
         </div>
         <div className="flex items-center">
           <QuickRate listingId={card.id} initial={myRating} guest={!showScore} />

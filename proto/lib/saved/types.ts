@@ -22,6 +22,8 @@ export type SavedItem = {
   checked_at?: string;
   data?: SavedData;
   needs_check?: boolean;
+  /** 담은 매물 메모(구독 회원이 씀). 구독이 끝나도 읽을 수는 있다. */
+  memo?: string | null;
 };
 export type SavedState = {
   ok: boolean;

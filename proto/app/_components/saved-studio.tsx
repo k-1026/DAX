@@ -13,6 +13,7 @@ import { SavedCompare } from "./saved-compare";
 import { AiWorking } from "./ai-working";
 import { StudioDetail, type Candidate, type StudioView } from "./studio-views";
 import { useHydrated } from "./use-hydrated";
+import { SavedMemo } from "./saved-memo";
 
 const buttonClass = "rounded-lg border border-zinc-300 px-3 py-2 text-sm disabled:opacity-50 dark:border-zinc-700";
 
@@ -103,6 +104,7 @@ export function SavedStudio({ candidates = [] }: { candidates?: Candidate[] }) {
           <input aria-label="새 담기 목록 이름" placeholder="새 목록 이름" value={name} onChange={(e) => setName(e.target.value)} maxLength={50} required className="min-w-0 flex-1 rounded-lg border border-zinc-300 bg-transparent px-2 text-sm dark:border-zinc-700" />
           <button type="submit" disabled={busy || !name.trim()} className={buttonClass}>목록 추가</button>
         </form>}
+        {state.tier === "member" && items.length > 0 && <p className="text-xs text-muted">✏️ 담은 매물마다 메모를 남기는 기능은 구독 회원 혜택이에요.</p>}
         {items.length === 0 ? <p className="rounded-lg bg-zinc-50 p-4 text-sm text-zinc-500 dark:bg-zinc-900">아직 담은 매물이 없어요. 매물의 ‘담기’를 눌러 후보를 모아 보세요.</p> : <ul className="flex flex-col gap-2">
           {items.map((item) => {
             const checked = selected.includes(item.listing_id);
@@ -121,6 +123,7 @@ export function SavedStudio({ candidates = [] }: { candidates?: Candidate[] }) {
                 {item.needs_check && <p className="text-amber-700 dark:text-amber-300">확인 필요</p>}
                 <Link href={`/listings/${item.listing_id}`} className="underline">상세 보기</Link>
               </div>}
+              {listId && <SavedMemo key={`${item.listing_id}-${item.memo ?? ""}`} listId={listId} listingId={item.listing_id} memo={item.memo ?? null} canEdit={state.tier === "subscriber" || state.tier === "admin"} />}
               {rateOpen && item.available && <div className="mt-2 flex flex-wrap items-center pl-3">
                 {ratings === null ? <span className="text-xs text-zinc-500">불러오는 중…</span>
                   : <QuickRate key={`${item.listing_id}-${ratings[item.listing_id] ?? "none"}`} listingId={item.listing_id} initial={ratings[item.listing_id] ?? null} guest={false} />}
