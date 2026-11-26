@@ -75,7 +75,7 @@ const SOCIAL_PROVIDERS = {
 export type SocialProvider = keyof typeof SOCIAL_PROVIDERS;
 
 export async function signInWithSocial(formData: FormData) {
-  if (process.env.NEXT_PUBLIC_SOCIAL_LOGIN !== "on") redirect("/login");
+  if (process.env.NEXT_PUBLIC_SOCIAL_LOGIN === "off") redirect("/login");
   const key = String(formData.get("provider")) as SocialProvider;
   const target = SOCIAL_PROVIDERS[key];
   if (!target) redirect("/login");

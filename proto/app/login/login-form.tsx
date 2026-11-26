@@ -8,8 +8,8 @@ import {
   type FormState,
 } from "./actions";
 
-// 카카오·구글 로그인은 지금 쓰지 않는다(2026-11-26 결정: 이메일 로그인만). NEXT_PUBLIC_SOCIAL_LOGIN=on 이면 다시 보인다.
-const SOCIAL_LOGIN = process.env.NEXT_PUBLIC_SOCIAL_LOGIN === "on";
+// 카카오·구글 로그인 버튼. 기본은 보이고, NEXT_PUBLIC_SOCIAL_LOGIN=off 이면 숨긴다(이메일 로그인만).
+const SOCIAL_LOGIN = process.env.NEXT_PUBLIC_SOCIAL_LOGIN !== "off";
 
 export function LoginForm({ initialError }: { initialError?: string }) {
   const [mode, setMode] = useState<"signin" | "signup">("signin");
