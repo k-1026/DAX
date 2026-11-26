@@ -1,0 +1,1074 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>업종 적합 그룹</title>
+<style>
+:root{
+  --bg:#f6f7f9; --card:#ffffff; --ink:#1c2230; --sub:#5b6476; --line:#e3e6ec; --soft:#eef1f6;
+  --accent:#3a5bd9; --accent-soft:#e8edfc;
+  --gA:#2e9d6a; --gB:#3d7fd1; --gC:#e2a23a; --gD:#d2574b; --gX:#9aa3b2;
+  --u1:#3a5bd9; --u2:#22a3a0; --u3:#b3bac7;
+  --hl:#fff4d6;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#12151b; --card:#1b2029; --ink:#e7eaf0; --sub:#a0a8b8; --line:#2c3340; --soft:#232935;
+    --accent:#7d97ff; --accent-soft:#252f4d;
+    --gA:#43b883; --gB:#5b9be6; --gC:#e8b155; --gD:#e2726a; --gX:#6c7586;
+    --u1:#7d97ff; --u2:#3cc3bf; --u3:#5d6575;
+    --hl:#3a3220;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#12151b; --card:#1b2029; --ink:#e7eaf0; --sub:#a0a8b8; --line:#2c3340; --soft:#232935;
+  --accent:#7d97ff; --accent-soft:#252f4d;
+  --gA:#43b883; --gB:#5b9be6; --gC:#e8b155; --gD:#e2726a; --gX:#6c7586;
+  --u1:#7d97ff; --u2:#3cc3bf; --u3:#5d6575;
+  --hl:#3a3220;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,sans-serif;line-height:1.6;font-size:15px;-webkit-text-size-adjust:100%}
+header.top{background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+.wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+.top .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px;padding-top:12px;padding-bottom:0}
+.top h1{font-size:18px;margin:0 0 8px}
+.tabs{display:flex;gap:4px;overflow-x:auto;margin-left:auto}
+.tabs button{appearance:none;border:0;background:none;color:var(--sub);font:inherit;font-weight:600;padding:10px 14px;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+main{padding:24px 0 60px}
+section.panel{display:none}
+section.panel.on{display:block}
+h2{font-size:22px;margin:8px 0 4px}
+h3{font-size:17px;margin:0 0 10px}
+.lead{color:var(--sub);margin:0 0 20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;margin:0 0 16px;overflow:hidden}
+.card > p:last-child{margin-bottom:0}
+.note{font-size:13px;color:var(--sub)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media (max-width:760px){.grid2,.grid3,.grid4{grid-template-columns:1fr}}
+.toc{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 18px}
+.toc a{font-size:13px;padding:4px 10px;border-radius:999px;background:var(--soft);color:var(--ink);text-decoration:none}
+.toc a:hover{background:var(--accent-soft)}
+.secttl{display:flex;align-items:baseline;gap:10px;margin:28px 0 12px}
+.secttl .n{font-size:13px;font-weight:700;color:var(--accent);background:var(--accent-soft);border-radius:6px;padding:2px 8px}
+.secttl h3{margin:0;font-size:19px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--soft);font-weight:600;white-space:nowrap}
+td.r,th.r{text-align:right;font-variant-numeric:tabular-nums}
+.tbl{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.pill{display:inline-block;font-size:12px;font-weight:700;border-radius:6px;padding:1px 8px;color:#fff;white-space:nowrap}
+.pA{background:var(--gA)}.pB{background:var(--gB)}.pC{background:var(--gC)}.pD{background:var(--gD)}.pX{background:var(--gX)}
+.p1{background:var(--u1)}.p2{background:var(--u2)}.p3{background:var(--u3);color:var(--ink)}
+.big{font-size:30px;font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums}
+.stat{background:var(--soft);border-radius:10px;padding:14px}
+.stat .k{font-size:13px;color:var(--sub)}
+.tag{display:inline-block;font-size:12px;border:1px solid var(--line);border-radius:6px;padding:0 6px;color:var(--sub);margin-left:4px}
+.warn{background:var(--hl);border-radius:10px;padding:12px 14px;font-size:14px}
+ul.clean{margin:6px 0 0;padding-left:20px}
+ul.clean li{margin:3px 0}
+/* flow */
+.flow{display:flex;flex-direction:column;gap:0;align-items:stretch}
+.fstep{display:flex;gap:12px;align-items:flex-start;background:var(--soft);border-radius:10px;padding:12px 14px}
+.fstep .no{flex:0 0 28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:14px}
+.fstep b{display:block}
+.fstep .d{font-size:14px;color:var(--sub)}
+.farrow{text-align:center;color:var(--sub);font-size:16px;line-height:20px;height:20px}
+.hflow{display:flex;align-items:stretch;gap:6px;flex-wrap:wrap}
+.hflow .box{flex:1 1 140px;background:var(--soft);border-radius:10px;padding:10px 12px;font-size:14px}
+.hflow .box b{display:block;margin-bottom:2px}
+.hflow .ar{align-self:center;color:var(--sub)}
+@media (max-width:760px){.hflow .ar{display:none}}
+/* decision */
+.dec{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+.dec .q{background:var(--soft);border-radius:10px;padding:10px 12px;font-size:14px}
+.dec .res{text-align:center;border-radius:10px;padding:10px 14px;color:#fff;font-weight:700;min-width:110px}
+.dec .res small{display:block;font-weight:500;opacity:.9}
+.dec .no{grid-column:1 / -1;font-size:13px;color:var(--sub);padding-left:14px}
+/* bars */
+.bars{display:flex;flex-direction:column;gap:8px}
+.bar{display:grid;grid-template-columns:150px 1fr 70px;gap:10px;align-items:center;font-size:14px}
+.bar .lb{color:var(--ink)}
+.bar .tr{background:var(--soft);border-radius:6px;height:22px;position:relative;overflow:hidden}
+.bar .fl{height:100%;border-radius:6px}
+.bar .vl{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+@media (max-width:560px){.bar{grid-template-columns:96px 1fr 58px;font-size:13px}}
+.stack{display:grid;grid-template-columns:90px 1fr 64px;gap:10px;align-items:center;font-size:14px;margin-bottom:6px}
+.stack .tr{display:flex;height:24px;border-radius:6px;overflow:hidden;background:var(--soft)}
+.stack .tr span{display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;overflow:hidden;white-space:nowrap}
+.stack .vl{text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
+@media (max-width:560px){.stack{grid-template-columns:64px 1fr 52px;font-size:13px}}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:13px;color:var(--sub);margin:0 0 10px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.bigstack{display:flex;height:44px;border-radius:10px;overflow:hidden;margin:8px 0}
+.bigstack span{display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;line-height:1.2}
+.bigstack span small{font-weight:500;font-size:12px}
+/* column chart */
+.cols{display:flex;align-items:flex-end;gap:6px;height:200px;padding:0 2px;border-bottom:1px solid var(--line)}
+.cols .c{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.cols .c .v{font-size:12px;font-weight:700;margin-bottom:3px;font-variant-numeric:tabular-nums}
+.cols .c .b{width:100%;max-width:56px;border-radius:5px 5px 0 0}
+.colx{display:flex;gap:6px;padding:4px 2px 0}
+.colx span{flex:1;text-align:center;font-size:11px;color:var(--sub);line-height:1.3}
+/* waterfall */
+.wf{display:flex;align-items:flex-end;gap:10px;height:220px;border-bottom:1px solid var(--line)}
+.wf .c{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;position:relative}
+.wf .b{width:100%;max-width:90px;border-radius:5px 5px 0 0;background:var(--gB)}
+.wf .v{font-weight:700;font-size:13px;margin-bottom:3px}
+.wf .dlt{font-size:12px;color:var(--gD);font-weight:700}
+.wfx{display:flex;gap:10px;padding-top:6px}
+.wfx span{flex:1;text-align:center;font-size:12px;color:var(--sub);line-height:1.35}
+/* grade matrix */
+.mx td{text-align:center;font-size:13px;vertical-align:middle}
+.mx td:first-child{text-align:left;font-weight:600;white-space:nowrap}
+.cell{display:flex;flex-direction:column;gap:3px;align-items:center}
+.cell .ln{display:flex;gap:5px;align-items:center;white-space:nowrap}
+.cell .ln small{color:var(--sub);font-size:12px}
+/* ladder */
+.ladder{display:flex;flex-direction:column;gap:4px}
+.rung{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;background:var(--soft);border-radius:8px;padding:7px 10px;font-size:14px}
+.rung .num{font-weight:800;color:var(--sub);text-align:center}
+.rung.me{outline:2px solid var(--accent);background:var(--accent-soft)}
+.rung .ex{font-size:12px;color:var(--sub)}
+.gcard{border-radius:12px;padding:16px;color:#fff}
+.gcard .gl{font-size:28px;font-weight:800;line-height:1}
+.gcard .gs{font-size:14px;opacity:.95;margin-top:4px}
+.gcard p{margin:8px 0 0;font-size:13px;opacity:.95}
+.ucard{border-radius:12px;padding:16px;border:2px solid}
+.ucard .gl{font-size:26px;font-weight:800}
+.kbd{font-family:ui-monospace,Consolas,monospace;font-size:13px;background:var(--soft);padding:1px 6px;border-radius:5px}
+pre{background:var(--soft);border-radius:10px;padding:14px;overflow-x:auto;font-size:13px;line-height:1.55;margin:0}
+.chg td:nth-child(2){color:var(--sub)}
+.chg td:nth-child(3){font-weight:600}
+footer{color:var(--sub);font-size:13px;text-align:center;padding:20px 0 40px}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <h1>업종 적합 그룹</h1>
+    <nav class="tabs" role="tablist">
+      <button role="tab" data-tab="ov" aria-selected="true">개요</button>
+      <button role="tab" data-tab="use" aria-selected="false">용도 일치도</button>
+      <button role="tab" data-tab="bld" aria-selected="false">건물 용도</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ===================================================== 개요 -->
+<section class="panel on" id="ov">
+  <h2>업종 적합 그룹: 이 매물에 고른 업종이 맞는가</h2>
+  <p class="lead">사용자가 업종을 하나 고르면, 매물마다 두 인자로 "이 업종과 맞는 정도"를 잰다. 두 인자 모두 <b>매물 × 업종</b>마다 점수가 하나씩 나오므로, 같은 매물이라도 고른 업종에 따라 점수가 다르다.</p>
+
+  <div class="grid2">
+    <div class="card">
+      <span class="pill p1">인자 1</span>
+      <h3 style="margin-top:8px">용도 일치도</h3>
+      <p style="font-size:17px;font-weight:700;margin:0 0 10px">"중개사가 이 업종을 추천했는가"</p>
+      <table>
+        <tr><th>보는 자료</th><td>매물의 <b>추천용도 칸</b>과 <b>특징 칸</b> (중개사가 쓴 글)</td></tr>
+        <tr><th>점수 단계</th><td><span class="pill p1">명시 100</span> <span class="pill p2">다용도 50</span> <span class="pill p3">그 밖 25</span></td></tr>
+        <tr><th>빈칸</th><td>결측으로 빼지 않고 "그 밖" 25점</td></tr>
+        <tr><th>대상</th><td>매물 2,717건 × 업종 8개 = 21,736쌍</td></tr>
+        <tr><th>상태</th><td>계산식·점수 확정, 코드에는 아직 반영하지 않음</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <span class="pill pB">인자 2</span>
+      <h3 style="margin-top:8px">건물 용도</h3>
+      <p style="font-size:17px;font-weight:700;margin:0 0 10px">"건축물대장상 이 칸에 이 업종이 바로 들어갈 수 있는가"</p>
+      <table>
+        <tr><th>보는 자료</th><td><b>건축물대장</b>(표제부·층별개요)의 등록 용도 + 매물 좌표·층·전용면적·사용승인일</td></tr>
+        <tr><th>점수 단계</th><td><span class="pill pA">A 100</span> <span class="pill pB">B 80</span> <span class="pill pC">C 40</span> <span class="pill pD">D 30</span></td></tr>
+        <tr><th>빈칸</th><td>매칭신뢰도 "확인필요"면 이 인자를 비움</td></tr>
+        <tr><th>대상</th><td>대장과 연결된 2,664건 중 <b>2,452건</b> 사용</td></tr>
+        <tr><th>상태</th><td>판정 규칙·점수 확정, 이 폴더의 복사본 코드에만 반영</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>두 인자가 보는 것은 서로 다르다</h3>
+    <div class="hflow">
+      <div class="box" style="border-left:4px solid var(--u1)"><b>용도 일치도</b>중개사의 <b>글</b>을 본다. 대장 용도가 실제로 맞는지는 보지 않는다.</div>
+      <div class="box" style="border-left:4px solid var(--gB)"><b>건물 용도</b>대장의 <b>등록 용도</b>를 본다. 실제로 그 용도로 쓰이는지, 중개사가 어떤 업종을 추천했는지는 보지 않는다.</div>
+    </div>
+    <p class="note" style="margin-top:12px">두 인자 모두 세부 업종을 골라도(예: 식음료 &gt; 배달전문) 대분류 업종 기준으로 판정한다. 점수값(100·50·25, 100·80·40·30)은 사용자 good/bad 피드백으로 검증되기 전까지는 가설이다.</p>
+  </div>
+
+  <div class="card">
+    <h3>업종 8개</h3>
+    <div class="grid4" style="font-size:14px">
+      <div class="stat">식음료</div><div class="stat">소매</div><div class="stat">뷰티</div><div class="stat">의료</div>
+      <div class="stat">운동시설</div><div class="stat">교육</div><div class="stat">사무업무</div><div class="stat">공연문화</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>이 화면의 출처 (6개 문서)</h3>
+    <div class="tbl"><table>
+      <tr><th>인자</th><th>계산식</th><th>변경사항</th><th>근거자료</th></tr>
+      <tr><td>용도 일치도</td><td>업종 적합_용도 일치도.md</td><td>용도 일치도 변경사항.md</td><td>용도 일치도 근거자료.md</td></tr>
+      <tr><td>건물 용도</td><td>업종 적합_건물 용도.md</td><td>건물 용도 변경사항.md</td><td>건물 용도 근거자료.md</td></tr>
+    </table></div>
+  </div>
+</section>
+
+<!-- ===================================================== 용도 일치도 -->
+<section class="panel" id="use">
+  <h2>용도 일치도</h2>
+  <p class="lead">점수의 뜻: <b>"중개사가 이 업종을 추천했는가."</b> 작성일 2026-11-23 · 계산식·점수 방식 확정 (코드에는 아직 반영하지 않음)</p>
+  <nav class="toc">
+    <a href="#u1">계산 흐름</a><a href="#u2">분류 방법</a><a href="#u3">예시</a><a href="#u4">분포</a><a href="#u5">바뀐 점</a><a href="#u6">근거</a><a href="#u7">한계</a>
+  </nav>
+
+  <div class="secttl" id="u1"><span class="n">1</span><h3>계산 흐름</h3></div>
+  <div class="grid2">
+    <div class="card">
+      <h3>업종 목록 만들기</h3>
+      <div class="flow">
+        <div class="fstep"><div class="no">0</div><div><b>입력: 사용자가 고른 업종 C</b><span class="d">8개 업종 중 하나. 세부 업종을 골라도 그 대분류</span></div></div>
+        <div class="farrow">↓</div>
+        <div class="fstep"><div class="no">1</div><div><b>두 칸을 따로 분류</b><span class="d">추천용도 칸 → 업종 / 특징 칸 → 업종 (특징 칸은 위치 설명을 지우고)</span></div></div>
+        <div class="farrow">↓</div>
+        <div class="fstep"><div class="no">2</div><div><b>합치기</b><span class="d">두 칸의 업종을 합쳐 이 매물의 업종 목록을 만든다. 한 칸이라도 다용도 표시가 있으면 "다용도 표시 있음"</span></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>판정 (위에서부터, 처음 맞는 조건에서 끝)</h3>
+      <div class="dec">
+        <div class="q">C가 이 매물의 업종 목록에 있나?</div>
+        <div class="res" style="background:var(--u1)">명시 100<small>중개사가 직접 추천</small></div>
+        <div class="no">↓ 아니오</div>
+        <div class="q">다용도 표시가 있나?</div>
+        <div class="res" style="background:var(--u2)">다용도 50<small>그 업종도 열어 둠</small></div>
+        <div class="no">↓ 아니오</div>
+        <div class="q">둘 다 아님 (다른 업종만 / 아무 정보 없음)</div>
+        <div class="res" style="background:var(--u3);color:var(--ink)">그 밖 25<small>빈칸도 여기</small></div>
+      </div>
+      <p class="note" style="margin-top:12px">결측은 없다. 추천용도·특징이 모두 비어 있어도 "그 밖" 25점을 받는다. 고른 업종이 적혀 있으면 다용도 표시가 있어도 100점이다.</p>
+    </div>
+  </div>
+
+  <div class="secttl" id="u2"><span class="n">2</span><h3>텍스트를 업종으로 분류하는 방법</h3></div>
+  <div class="card">
+    <p class="note" style="margin-top:0">순서는 <span class="kbd">classify_use.py</span>를 따른다.</p>
+    <div class="hflow">
+      <div class="box"><b>① 정규화</b>오타·다른 표기 통일<br><span class="note">까페→카페, 샾→샵, 헬쓰→헬스, 맛사지→마사지, 피티→PT샵</span></div>
+      <div class="ar">→</div>
+      <div class="box"><b>② 합성어 먼저</b>다른 업종 말이 섞인 표현을 먼저 판정하고 지움<br><span class="note">스터디카페→교육, 키즈카페·동물병원→밖, 쇼핑몰→사무업무</span></div>
+      <div class="ar">→</div>
+      <div class="box"><b>③ 위치 설명 지우기</b><span class="tag">특징 칸만</span><br><span class="note">"이마트 옆", "○○병원 앞", "오피스상권"</span></div>
+      <div class="ar">→</div>
+      <div class="box"><b>④ 업종 키워드</b>남은 글에서 찾음. 한 매물이 여러 업종에 들어갈 수 있음</div>
+      <div class="ar">→</div>
+      <div class="box"><b>⑤ 그 밖의 표시</b>다용도·범용어·비정보·8업종 밖 말을 따로 기록</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>업종별 키워드</h3>
+    <div class="tbl"><table>
+      <tr><th>업종</th><th>넣는 말</th><th>넣지 않는 말 (가는 곳)</th></tr>
+      <tr><td><b>식음료</b></td><td>카페·커피, 음식점·식당, 한식·중식·일식, 분식·김밥·치킨, 베이커리·디저트, 술집·호프·포차, 배달음식, 테이크아웃, 무인카페</td><td>스터디카페(교육), 키즈카페·애견카페(밖)</td></tr>
+      <tr><td><b>소매</b></td><td>소매점·판매점·매장, 의류·잡화·소품, 편의점·마트, 꽃집, 휴대폰·대리점, 무인점포, 정육·반찬·과일, 쇼룸, 자동차·가구 전시장, 의료기기·보청기, 골프샵</td><td>쇼핑몰(사무업무), 약국(밖)</td></tr>
+      <tr><td><b>뷰티</b></td><td>미용실·헤어, 네일, 뷰티샵, 피부샵·에스테틱, 속눈썹·왁싱·반영구·타투·태닝, 마사지</td><td>피부과(의료), 애견미용(밖)</td></tr>
+      <tr><td><b>의료</b></td><td>병원·의원·병의원, 치과, 한의원, 진료과목(○○외과·내과 등), 메디컬·클리닉, 요양병원</td><td>동물병원(밖), 약국(밖), 의료기기(소매)</td></tr>
+      <tr><td><b>운동시설</b></td><td>헬스·피트니스·PT, 필라테스·요가, 체육관·체육시설, 태권도·복싱, 골프연습장, 테니스·탁구·당구·클라이밍, <mark>점핑</mark></td><td>골프샵(소매)</td></tr>
+      <tr><td><b>교육</b></td><td>학원·교습소·공부방, 교육장, 독서실·스터디카페, 발레, 유치원</td><td>어린이집(밖)</td></tr>
+      <tr><td><b>사무업무</b></td><td>사무실·오피스, 세무·회계·법무, 부동산, 보험·금융, 본사·지사, 쇼핑몰, 사무실 겸 창고</td><td>창고·공장만(밖)</td></tr>
+      <tr><td><b>공연문화</b></td><td>공연·소극장, 연습실, <mark>음악·악기·댄스·보컬 연습실</mark>, 스튜디오, 갤러리·전시실, 공방·작업실, 사진관·촬영, 댄스·무용</td><td>자동차·가구 전시장(소매), 노래방·노래연습장(밖)</td></tr>
+    </table></div>
+    <p class="note">표시한 말이 기존에서 바뀐 곳이다.</p>
+  </div>
+
+  <div class="card">
+    <h3>업종이 아닌 표시</h3>
+    <div class="tbl"><table>
+      <tr><th>표시</th><th>넣는 말</th><th>처리</th></tr>
+      <tr><td><span class="pill p2">다용도</span></td><td>다용도·다목적, 모든업종·전업종·업종무관·업종불문·자유업종, 업종다양</td><td>판정 "다용도" 50</td></tr>
+      <tr><td>범용어</td><td>프랜차이즈·체인점, 상가·점포, 서비스업</td><td>업종으로 치지 않음 → "그 밖" 25</td></tr>
+      <tr><td>비정보</td><td><span class="kbd">(선택)안함</span>, <span class="kbd">공실</span>, 기호, 법정 용도명(제1·2종근린생활시설)</td><td>빈칸과 같음 → "그 밖" 25</td></tr>
+      <tr><td>8업종 밖</td><td>창고·제조·물류, 놀이·여가(PC방·노래방·키즈카페·파티룸), 반려동물, 생활서비스(세탁소·인테리어), 약국, 노유자·복지, 유흥</td><td>업종으로 치지 않음 → "그 밖" 25</td></tr>
+    </table></div>
+  </div>
+
+  <div class="secttl" id="u3"><span class="n">3</span><h3>예시: 사용자가 "교육"을 골랐을 때</h3></div>
+  <div class="card">
+    <div class="tbl"><table>
+      <tr><th>매물 추천용도</th><th>이 매물의 업종 목록</th><th>판정</th><th class="r">점수</th></tr>
+      <tr><td>"학원, 사무실"</td><td>교육, 사무업무</td><td><span class="pill p1">명시</span></td><td class="r"><b>100</b></td></tr>
+      <tr><td>"카페 네일 등 다용도"</td><td>식음료, 뷰티 + 다용도</td><td><span class="pill p2">다용도</span></td><td class="r"><b>50</b></td></tr>
+      <tr><td>"카페, 음식점"</td><td>식음료</td><td><span class="pill p3">그 밖</span></td><td class="r"><b>25</b></td></tr>
+      <tr><td>(빈칸)</td><td>없음</td><td><span class="pill p3">그 밖</span></td><td class="r"><b>25</b></td></tr>
+      <tr><td>"약국"</td><td>없음 (8업종 밖)</td><td><span class="pill p3">그 밖</span></td><td class="r"><b>25</b></td></tr>
+    </table></div>
+  </div>
+
+  <div class="secttl" id="u4"><span class="n">4</span><h3>대구 매물 전체의 분포</h3></div>
+  <div class="card">
+    <p style="margin-top:0">매물 2,717건 × 업종 8개 = <b>21,736쌍</b> <span class="note">(지금 classify_use.py 기준, 연습실·점핑 변경 전. 변경 후에는 3쌍이 "그 밖"에서 "명시"로 옮겨 간다)</span></p>
+    <div class="bigstack">
+      <span style="width:16.7%;background:var(--u1)">명시<small>16.7%</small></span>
+      <span style="width:40.4%;background:var(--u2)">다용도<small>40.4%</small></span>
+      <span style="width:42.9%;background:var(--u3);color:var(--ink)">그 밖<small>42.9%</small></span>
+    </div>
+    <div class="grid4" style="margin-top:14px">
+      <div class="stat"><div class="k">명시</div><div class="big">3,626</div><div class="note">쌍</div></div>
+      <div class="stat"><div class="k">다용도</div><div class="big">8,783</div><div class="note">쌍</div></div>
+      <div class="stat"><div class="k">그 밖</div><div class="big">9,327</div><div class="note">쌍</div></div>
+      <div class="stat"><div class="k">평균 점수</div><div class="big">47.6</div><div class="note">점</div></div>
+    </div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <h3>매물 기준 (2,717건)</h3>
+      <div class="bars" id="useSignal"></div>
+    </div>
+    <div class="card">
+      <h3>명시 3,626쌍은 어느 칸에서 나왔나</h3>
+      <div class="bars" id="useWhere"></div>
+      <p class="note">어느 칸에 적혔든 명시면 똑같이 100점이다.</p>
+    </div>
+  </div>
+
+  <div class="secttl" id="u5"><span class="n">5</span><h3>기존에서 바뀐 점</h3></div>
+  <div class="card">
+    <h3>점수 단계 4개 → 3개</h3>
+    <div class="legend"><span><i style="background:var(--gX)"></i>기존</span><span><i style="background:var(--accent)"></i>변경</span></div>
+    <div id="useBefore"></div>
+    <div class="grid2" style="margin-top:14px">
+      <div class="stat"><div class="k">평균 점수</div><div class="big">57.7 → 47.6</div></div>
+      <div class="stat"><div class="k">가장 크게 내려가는 매물</div><div style="font-weight:700">추천용도·특징이 빈 533건 (19.6%)</div><div class="note">50점 → 25점</div></div>
+    </div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <h3>왜 바꿨나</h3>
+      <ul class="clean">
+        <li>점수값(100·60·50·30)을 정해 주는 외부 공식 기준이 없었다.</li>
+        <li>데이터로 확인된 순서는 <b>"명시가 맨 위"</b> 하나뿐이었다 (층 일치도 89.5 &gt; 언급 없음 73.0).</li>
+        <li>다른 업종만 적힌 매물과 아무것도 안 적힌 매물을 나눌 근거가 없었다.</li>
+        <li><b>어긋남 해소:</b> 기존에는 약국·창고처럼 8업종 밖 말만 적힌 매물이 "신호 없음" 50점을 받아 다른 업종만 적힌 매물(30점)보다 높았다.</li>
+        <li>빈칸 533건은 결측으로 빼지 않고 "그 밖" 25점을 주기로 했다.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>경계 업종 2개 배정 변경</h3>
+      <table>
+        <tr><th>말</th><th>기존</th><th>변경</th></tr>
+        <tr><td>음악·악기·댄스·보컬 연습실</td><td>8업종 밖 (놀이·여가)</td><td><b>공연문화</b></td></tr>
+        <tr><td>점핑 (점핑다이어트 등)</td><td>교육 (발레와 같은 줄)</td><td><b>운동시설</b></td></tr>
+      </table>
+      <p class="note">연습실: 단독 "연습실"·"댄스"는 이미 공연문화인데 붙여 쓰면 밖으로 가서 어긋났다. 점핑: 운동 프로그램이며 별표1로 보면 체력단련장 쪽이다.</p>
+      <table>
+        <tr><th>매물번호</th><th>적힌 말</th><th>바뀐 점수</th></tr>
+        <tr><td>2654172243</td><td>"개인, 법인사무실, 운동시설, 음악연습실"</td><td>공연문화 25 → 100</td></tr>
+        <tr><td>2659528412</td><td>"타투샵, 테닝샵, 뷰티샵, 음악연습실, 사무실, 창고 등"</td><td>공연문화 25 → 100</td></tr>
+        <tr><td>2656946285</td><td>특징 "음악연습실. 공장. 창고적지"</td><td>공연문화 25 → 100</td></tr>
+      </table>
+      <p class="note">점핑 매물(2658250993)은 필라테스·태권도로 이미 운동시설 명시라 점수 변화 없음.</p>
+    </div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <h3>기존에서 이어받은 것</h3>
+      <ul class="clean">
+        <li>판정 순서: 고른 업종 말 → 다용도 표시 → 그 밖</li>
+        <li>추천용도 칸과 특징 칸을 따로 분류한 뒤 합침</li>
+        <li>어느 칸에 적혔든, 몇 개를 나열했든 명시 100점</li>
+        <li>세부 업종을 골라도 대분류 기준</li>
+        <li>분류 절차와 키워드 사전 (위 두 경계 업종 말고는 그대로)</li>
+        <li>그대로 둔 경계 업종: 마사지(뷰티), 공방·작업실(공연문화), 키즈카페(밖), 동물병원·어린이집(밖), 스터디카페·독서실(교육), 쇼핑몰(사무업무), 자동차·가구 전시장(소매), 당구·골프연습장(운동시설), 요양병원(의료), 의료기기·보청기(소매)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>정했지만 점수에 넣지 않은 것</h3>
+      <ul class="clean">
+        <li><b>약국 → 소매:</b> 별표1 제1종 근생 가목 소매점에 "의약품"이 있어 소매로 결정. 기록만 두고 점수에는 넣지 않음 (넣으면 13건이 소매를 얻음).</li>
+        <li><b>넓은 키워드 오탐:</b> 180쌍 중 틀림 18쌍(명시의 0.5%). 오탐이 적어 사전은 바꾸지 않음.</li>
+      </ul>
+      <h3 style="margin-top:16px">함께 고쳐야 하는 곳 (아직 코드 미반영)</h3>
+      <ul class="clean note">
+        <li><span class="kbd">scoring_engine.py</span> USE_SCORE → 명시 100 · 다용도 50 · 신호없음 25 · 타업종만 25</li>
+        <li><span class="kbd">classify_use.py</span> COMPOUND: 연습실 줄 → 공연문화, 점핑 → 운동시설</li>
+        <li>설계 문서 3-1장 표와 v2 HTML의 점수값 갱신</li>
+        <li>그룹 안 비중 후보(CRITIC) 다시 계산</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="secttl" id="u6"><span class="n">6</span><h3>계산식의 근거</h3></div>
+  <div class="card">
+    <h3>"명시"가 가장 높은 이유: 층 일치도</h3>
+    <p class="note" style="margin-top:0">층 일치도 = 그 업종의 층 점수표에서 매물의 층이 받는 점수의 평균. 실제로 그 업종에 맞는 매물일수록 높다. (설계 문서 3-1장)</p>
+    <div class="bars" id="useFloor"></div>
+    <div class="grid2" style="margin-top:16px">
+      <div>
+        <b style="font-size:14px">추천용도 칸에 적은 업종 수별 층 일치도</b>
+        <div class="cols" id="useCount" style="height:150px;margin-top:8px"></div>
+        <div class="colx" id="useCountX"></div>
+        <p class="note">나열 수로 점수를 나눌 근거가 없다 → 몇 개를 나열해도 100점.</p>
+      </div>
+      <div class="warn">
+        <b>판정: 부분 일치</b><br>"명시가 맨 위"라는 순서만 데이터로 뒷받침된다. 다용도와 그 밖 사이의 순서는 데이터로 확인하지 않았다.<br><br>
+        <span class="note">층 점수표는 추천용도 칸 매물로 만들었으므로, "추천용도 칸 89.5"는 근거로 약하다. 특징 칸(87.2~88.8)과의 비교는 이 문제가 없다.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>키워드 사전 점검: 넓은 말 하나만으로 업종이 붙은 180쌍</h3>
+    <div class="legend"><span><i style="background:var(--gA)"></i>맞음</span><span><i style="background:var(--gC)"></i>애매</span><span><i style="background:var(--gD)"></i>틀림</span></div>
+    <div id="useKw"></div>
+    <p class="note">합계 180쌍: 맞음 144 · 애매 18 · 틀림 18 → 틀림은 명시 3,626쌍의 0.5%. 틀림 대부분은 소매 <span class="kbd">매장</span>("프랜차이즈매장", "디저트 매장")이다. 판정은 사람이 원문을 읽고 한 것이라 팀 확인이 필요하다. 식음료는 넓은 말만으로 붙은 쌍이 0이다.</p>
+  </div>
+
+  <div class="card">
+    <h3>근거 한 장 정리</h3>
+    <div class="tbl"><table>
+      <tr><th>계산식의 조각</th><th>어디서 왔나</th><th>무엇을 가져왔나</th></tr>
+      <tr><td>경계 업종 배정 (의료기기→소매, 요양병원→의료, 독서실→교육 등)</td><td>건축법 시행령 [별표 1]</td><td>그 시설이 법령상 어느 항목에 있는지</td></tr>
+      <tr><td>연습실·공방·작업실 → 공연문화</td><td><span class="pill pX">우리 설계</span> (별표1에 없음)</td><td>단독 "연습실"과 맞추기, "창작·문화" 묶음</td></tr>
+      <tr><td>순서 있는 단계에 숫자를 붙이는 방식</td><td>FAO 토지 적합성 평가, Esri Weighted Overlay</td><td>단계를 나누고 숫자는 분석자가 정한다는 것</td></tr>
+      <tr><td>명시 / 다용도 / 그 밖 세 단계</td><td><span class="pill pX">우리 설계</span> (토지이용 호환성 표와 구조가 닮음)</td><td>조건부로 열어 둔 단계를 가운데 둠</td></tr>
+      <tr><td>명시가 가장 높음</td><td>우리 데이터</td><td>명시 89.5 &gt; 언급 없음 73.0</td></tr>
+      <tr><td>어느 칸이든, 몇 개 나열하든 명시 100</td><td>우리 데이터</td><td>칸별·나열 수별 층 일치도 차이 없음</td></tr>
+      <tr><td>점수값 100·50·25</td><td><span class="pill pX">우리 설계</span></td><td>외부 기준 없음</td></tr>
+      <tr><td>빈칸 매물도 25 (결측으로 빼지 않음)</td><td><span class="pill pX">우리 설계</span></td><td>외부 규칙 확인하지 못함 (OECD·JRC 핸드북은 원문 접속 거부)</td></tr>
+      <tr><td>키워드 사전 그대로 사용</td><td>우리 데이터 (2026-11-23 점검)</td><td>오탐 0.5%</td></tr>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <h3>경계 업종 배정과 별표1 (주요 항목)</h3>
+    <p class="note" style="margin-top:0">별표1은 건물 용도를 <b>등록</b>하는 분류이지, 업종끼리 얼마나 비슷한지를 정한 기준이 아니다. 그래서 배정의 "참고 기준"으로만 쓴다 (예: 세탁소는 미용원과 같은 목이지만 뷰티에 넣지 않음).</p>
+    <div class="tbl"><table>
+      <tr><th>경계 업종</th><th>배정</th><th>별표1 위치</th><th>판정</th></tr>
+      <tr><td>의료기기·보청기, 무인점포</td><td>소매</td><td>3호 가목 소매점 ("의료기기")</td><td>일치</td></tr>
+      <tr><td>무인카페</td><td>식음료</td><td>3호 나목 휴게음식점</td><td>일치</td></tr>
+      <tr><td>마사지</td><td>뷰티</td><td>3호 라목 안마원 / 4호 러목 안마시술소</td><td>별표1은 진료 쪽. 매물 6건이 "마사지샵"이라 뷰티 유지</td></tr>
+      <tr><td>요양병원</td><td>의료</td><td>9호 가목 병원</td><td>일치</td></tr>
+      <tr><td>점핑, 당구·골프연습장</td><td>운동시설</td><td>4호 파목 체력단련장 등</td><td>일치 (점핑은 추정)</td></tr>
+      <tr><td>키즈카페</td><td>8업종 밖</td><td>4호 파목 놀이형시설</td><td>매물 12건 모두 2층 이상·188㎡라 밖 유지</td></tr>
+      <tr><td>스터디카페·독서실</td><td>교육</td><td>4호 타목 독서실</td><td>일치 (스터디카페는 추정)</td></tr>
+      <tr><td>사무실, 쇼핑몰, 부동산</td><td>사무업무</td><td>3호 자목 / 4호 하목 / 14호 업무시설</td><td>일치 (쇼핑몰은 추정)</td></tr>
+      <tr><td>자동차·가구 전시장</td><td>소매</td><td>4호 다목 자동차영업소 / 7호 판매시설</td><td>일치</td></tr>
+      <tr><td>음악·댄스 연습실</td><td>공연문화</td><td>별표1에 없음</td><td>단독 "연습실"과 맞춤</td></tr>
+      <tr><td>노래방·PC방</td><td>8업종 밖</td><td>4호 러목·사목</td><td>놀이·여가로 밖</td></tr>
+      <tr><td>동물병원, 어린이집</td><td>8업종 밖</td><td>3호 카목 / 11호 노유자시설</td><td>일치</td></tr>
+      <tr><td>공방·작업실</td><td>공연문화</td><td>별표1에 없음</td><td>"창작·문화" 묶음으로 유지 (팀 판단)</td></tr>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <h3>근거가 없는 부분 (우리 설계)</h3>
+    <ul class="clean">
+      <li>점수값 100·50·25와 그 간격은 팀이 정한 값이다. 외부 공식 기준은 찾지 못했다.</li>
+      <li>다용도(50)가 그 밖(25)보다 높다는 순서는 데이터로 확인하지 않았다.</li>
+      <li>다른 업종만 적힌 매물과 아무것도 안 적힌 매물을 같은 25점으로 본 것도 팀 판단이다.</li>
+    </ul>
+  </div>
+
+  <div class="secttl" id="u7"><span class="n">7</span><h3>한계</h3></div>
+  <div class="card">
+    <ul class="clean">
+      <li>점수값 100·50·25는 사용자 good/bad 피드백으로 검증되기 전까지 가설이다. 피드백이 쌓이면 단계별 good 비율로 다시 맞춘다.</li>
+      <li>빈칸이 많은 매물(533건, 19.6%)은 다른 업종을 추천받은 매물과 구별되지 않는다.</li>
+      <li>키워드 오탐이 일부 남아 있다: 소매 <span class="kbd">매장</span>(12쌍), <span class="kbd">의료기</span>(2쌍), 법정 용도명 <span class="kbd">업무시설</span>(2쌍), "메디컬빌딩" 같은 건물 이름 (명시 쌍의 0.5% 수준).</li>
+      <li>위치 설명 지우기는 특징 칸에만 적용된다. 추천용도 칸의 건물 이름은 지우지 않는다.</li>
+      <li>공연문화에서 스튜디오·연습실을 골라도 "공방"·"작업실"만 적힌 매물(100건)이 명시 100점을 받는다. 이 매물들은 1층 81%·면적 중앙값 49㎡로, 스튜디오·연습실 쪽(1층 16%·153㎡)과 쓰임이 다르다.</li>
+      <li>중개사가 적은 글을 그대로 믿는다. 적지 않은 업종이 실제로 맞을 수도, 적은 업종이 실제로 맞지 않을 수도 있다.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===================================================== 건물 용도 -->
+<section class="panel" id="bld">
+  <h2>건물 용도</h2>
+  <p class="lead">점수의 뜻: <b>"건축물대장상 이 칸에 이 업종이 바로 들어갈 수 있는가, 들어가려면 어떤 절차가 필요한가."</b> 작성일 2026-11-25 · 판정 규칙·점수 확정 (이 폴더의 복사본 코드에만 반영)</p>
+  <nav class="toc">
+    <a href="#b1">계산 흐름</a><a href="#b2">매칭 신뢰도</a><a href="#b3">층 줄 고르기</a><a href="#b4">등급</a><a href="#b5">업종별 규칙</a><a href="#b6">결과 분포</a><a href="#b7">바뀐 점</a><a href="#b8">데이터 근거</a><a href="#b9">검증</a><a href="#b10">법령 근거</a><a href="#b11">한계</a>
+  </nav>
+
+  <div class="secttl" id="b1"><span class="n">1</span><h3>계산 흐름</h3></div>
+  <div class="grid2">
+    <div class="card">
+      <div class="flow">
+        <div class="fstep"><div class="no">1</div><div><b>건물 찾기</b><span class="d">좌표가 들어 있는 필지의 대장 → <b>점포함</b><br>건물이 없으면 반경 30m 안 가장 가까운 필지 → <b>근사</b><br>사용승인일·층수 둘 다 틀리면 30m 안에서 날짜가 맞는 건물로 교체 → <b>검증보정</b></span></div></div>
+        <div class="farrow">↓</div>
+        <div class="fstep"><div class="no">2</div><div><b>동 고르기</b><span class="d">사용승인일 → 전체층 → 건물명이 맞는 동, 그래도 여럿이면 주거동이 아닌 동, 그래도 여럿이면 연면적이 가장 큰 동</span></div></div>
+        <div class="farrow">↓</div>
+        <div class="fstep"><div class="no">3</div><div><b>신뢰도</b><span class="d">사용승인일·층수·건물명 대조 → 높음 / 보통 / 확인필요</span></div></div>
+        <div class="farrow">↓</div>
+        <div class="fstep"><div class="no">4</div><div><b>층 줄 고르기</b><span class="d">고른 동의 층별개요에서 매물 층의 줄</span></div></div>
+        <div class="farrow">↓</div>
+        <div class="fstep"><div class="no">5</div><div><b>등급</b><span class="d">고른 줄의 용도 코드 × 업종 × 전용면적 → A / B / C / D</span></div></div>
+        <div class="farrow">↓</div>
+        <div class="fstep"><div class="no">6</div><div><b>점수</b><span class="d">A 100 · B 80 · C 40 · D 30. 확인필요면 이 인자는 비움</span></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>건축물대장은 두 부분</h3>
+      <div class="grid2">
+        <div class="stat"><b>표제부</b><div class="note">건물(동)마다 한 장</div><div style="font-size:14px;margin-top:6px">주용도, 지상·지하 층수, 사용승인일, 연면적</div></div>
+        <div class="stat"><b>층별개요</b><div class="note">층마다 여러 줄</div><div style="font-size:14px;margin-top:6px">줄마다 층, 용도 코드·명칭, 기타용도, 면적</div></div>
+      </div>
+      <div class="warn" style="margin-top:14px">등급을 정하는 것은 고른 줄의 <b>용도 코드 앞 두 자리</b>(대분류)다. 예: 03 제1종 근생, 04 제2종 근생, 14 업무시설, 20 자동차관련시설.<br>기타용도 글자는 <b>단지 내 상가인지</b>, <b>공용 공간 줄인지</b> 가릴 때만 본다.</div>
+      <h3 style="margin-top:18px">어디까지 쓰이나</h3>
+      <div class="bigstack" style="height:52px">
+        <span style="width:73.2%;background:var(--gA)">높음<small>1,950</small></span>
+        <span style="width:18.8%;background:var(--gB)">보통<small>502</small></span>
+        <span style="width:8.0%;background:var(--gX)">확인<small>212</small></span>
+      </div>
+      <p class="note">대장과 연결된 2,664건 기준. 높음+보통 <b>2,452건</b>이 인자를 쓴다. 이 밖에 53건은 좌표나 건물이 없어 판정 대상이 아니다 (매물 전체 2,717건).</p>
+    </div>
+  </div>
+
+  <div class="secttl" id="b2"><span class="n">2</span><h3>매칭 신뢰도</h3></div>
+  <div class="grid2">
+    <div class="card">
+      <h3>대조 항목</h3>
+      <div class="tbl"><table>
+        <tr><th>항목</th><th>일치</th><th>불일치</th><th>비교불가</th></tr>
+        <tr><td>사용승인일</td><td>같거나 <b>1일 이내</b> (연월만 있으면 같은 달)</td><td>그 밖</td><td>한쪽 없음·형식 다름</td></tr>
+        <tr><td>층수</td><td>매물 전체층 = 대장 지상층수</td><td>다름</td><td>한쪽 없음</td></tr>
+        <tr><td>건물명</td><td>한쪽 이름이 다른 쪽에 들어 있음</td><td>다름</td><td>한쪽 없음</td></tr>
+      </table></div>
+      <h3 style="margin-top:16px">신뢰도</h3>
+      <table>
+        <tr><th>신뢰도</th><th>조건</th><th>인자</th></tr>
+        <tr><td><span class="pill pA">높음</span></td><td>맞는 항목 ≥ 1, 틀린 항목 없음</td><td>사용</td></tr>
+        <tr><td><span class="pill pB">보통</span></td><td>맞음·틀림이 섞임, 또는 모두 비교불가</td><td>사용</td></tr>
+        <tr><td><span class="pill pX">확인필요</span></td><td>틀린 항목만 있음</td><td><b>제외</b></td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>확인필요 212건은 어디서 나왔나</h3>
+      <div class="bars" id="bldConfirm"></div>
+      <p class="note">대조 결과로 179건, 그 밖에 아래 경우는 대조 결과와 상관없이 확인필요로 내린다 (위에서부터 처음 걸린 조건으로 셈).</p>
+      <ul class="clean note">
+        <li><b>다른 동에만 층 줄:</b> 매물이 어느 동인지 대장으로 확인할 수 없음</li>
+        <li><b>용도 코드 불명:</b> 공백·b0, Z3·Z6·Z8이 아닌 Z 코드</li>
+        <li><b>공동주택 공용 공간 줄:</b> 계단실 줄을 주택으로 볼 근거가 없음</li>
+        <li><b>단지 내 상가 공용 공간 줄:</b> 매물 칸이 상가인지 알 수 없음</li>
+        <li><b>지하층 미등재:</b> 대장에 없는 공간의 용도를 추정하게 됨</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card">
+    <p class="note" style="margin:0"><b>공용 공간 낱말:</b> 계단, 기계실, 경비실, 주차, 대피, 로비, 보일러, 전기실, 발전기, 수위실, 관리실, 관리사무, 승강기, 엘리베이터, 홀, 복도, 물탱크, 저수조, 펌프, 피트, 공조, 화장실, 방재, 변전, 통신실, 램프, 덕트, 옥탑, 설비실, MDF, EPS, 창고</p>
+  </div>
+
+  <div class="secttl" id="b3"><span class="n">3</span><h3>층 줄 고르기</h3></div>
+  <div class="grid2">
+    <div class="card">
+      <h3>일반 매물</h3>
+      <div class="tbl"><table>
+        <tr><th>상황</th><th>고르는 줄</th><th class="r">매물</th></tr>
+        <tr><td>매물 층이 "전체층", "저·중·고층"</td><td>표제부 <b>건물 주용도</b></td><td class="r">25</td></tr>
+        <tr><td>고른 동에 매물 층 줄이 없음</td><td>(확인필요)</td><td class="r">0</td></tr>
+        <tr><td>매물 층 줄이 하나</td><td>그 줄</td><td class="r">1,840</td></tr>
+        <tr><td>줄 여러 개, 대분류 모두 같음</td><td>면적이 전용면적과 가장 비슷한 줄 (등급은 같음)</td><td class="r">218</td></tr>
+        <tr><td>줄 여러 개, 대분류 다름</td><td>면적이 전용면적과 가장 비슷한 줄</td><td class="r">360</td></tr>
+      </table></div>
+      <ul class="clean note">
+        <li>같은 층에 주택 줄과 주택이 아닌 줄이 섞이면 주택 줄은 후보에서 뺀다 (매물은 모두 상가로 내놓은 것).</li>
+        <li>층 정보가 없어 주용도로 판정한 매물은 화면에 <b>"층 정보가 없어 건물 주용도로 판정"</b>이라고 표시한다.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>아파트 단지 내 상가</h3>
+      <p class="note" style="margin-top:0">단지 상가는 대장에서 공동주택 코드(02001 아파트, 02004 생활편익시설, 02005 부대시설, 02006 복리시설)로 등록되는 일이 많다. 코드만 보면 주거 D가 되므로 따로 처리한다. "단지 내 상가"는 네이버 세부유형이 아니라 판정 코드가 대장 문구로 붙이는 이름이다.</p>
+      <div class="flow">
+        <div class="fstep"><div class="no">1</div><div><b>단지 내 상가인가</b><span class="d">고른 줄 코드가 <b>02</b>이고, 명칭·기타용도에 생활편익시설·부대시설·복리시설·근린생활시설·상가·판매시설·점포 중 하나</span></div></div>
+        <div class="farrow">↓</div>
+        <div class="fstep"><div class="no">2</div><div><b>같은 동·같은 층 상가 줄 찾기</b><span class="d">주택(01·02) 코드가 아니고 공용 공간도 아닌 줄</span></div></div>
+        <div class="farrow">↓</div>
+        <div class="dec">
+          <div class="q">상가 줄의 대분류가 하나?</div>
+          <div class="res" style="background:var(--gA)">업종별 판정<small>가장 큰 줄 · 9건</small></div>
+          <div class="no">↓ 없거나 둘 이상</div>
+          <div class="q">고른 줄 기타용도가 공용 공간?</div>
+          <div class="res" style="background:var(--gX)">확인필요<small>5건</small></div>
+          <div class="no">↓ 아니오</div>
+          <div class="q">근생 종류가 적혀 있지 않음</div>
+          <div class="res" style="background:var(--gB)">8업종 모두 B<small>37건</small></div>
+        </div>
+      </div>
+      <p class="note">단독주택(01)은 단지 내 상가로 보지 않는다 (상가주택의 주택 층은 D). "생활시설(세탁소, 화장실)"처럼 점포 종류 말이 있으면 상가 줄이다.</p>
+    </div>
+  </div>
+
+  <div class="secttl" id="b4"><span class="n">4</span><h3>등급</h3></div>
+  <div class="grid4">
+    <div class="gcard" style="background:var(--gA)"><div class="gl">A · 100</div><div class="gs">등록 용도 그대로 입점</div><p>절차 없음</p></div>
+    <div class="gcard" style="background:var(--gB)"><div class="gl">B · 80</div><div class="gs">같은 근린생활시설군 안 변경</div><p>제1종 ↔ 제2종 근생. 대부분 신청도 불필요, 의원·학원·공연장만 기재내용 변경 신청</p></div>
+    <div class="gcard" style="background:var(--gC)"><div class="gl">C · 40</div><div class="gs">다른 시설군 → 용도변경</div><p>하위군은 신고, 상위군은 허가. 건축기준·부설주차장 기준 충족</p></div>
+    <div class="gcard" style="background:var(--gD)"><div class="gl">D · 30</div><div class="gs">주거용도 (단독·공동주택)</div><p>주거업무시설군 → 근린생활시설군 용도변경 허가</p></div>
+  </div>
+  <div class="grid2" style="margin-top:16px">
+    <div class="card">
+      <h3>시설군 사다리 (건축법 제19조 ④, 시행령 제14조 ⑤)</h3>
+      <p class="note" style="margin-top:0">번호가 <b>작은 쪽(위)으로</b> 가면 허가, <b>큰 쪽(아래)으로</b> 가면 신고, <b>같은 군 안</b>은 기재내용 변경.</p>
+      <div class="ladder">
+        <div class="rung"><span class="num">1</span><span>자동차 관련 시설군 <span class="ex">자동차관련시설</span></span><span class="pill pC">C 신고</span></div>
+        <div class="rung"><span class="num">2</span><span>산업 등 시설군 <span class="ex">운수·창고·공장·위험물·자원순환</span></span><span class="pill pC">C 신고</span></div>
+        <div class="rung"><span class="num">3</span><span>전기통신시설군</span><span class="pill pC">C 신고</span></div>
+        <div class="rung"><span class="num">4</span><span>문화집회시설군 <span class="ex">문화및집회·종교·위락</span></span><span class="pill pC">C 신고</span></div>
+        <div class="rung"><span class="num">5</span><span>영업시설군 <span class="ex">판매·운동·숙박·고시원</span></span><span class="pill pC">C 신고</span></div>
+        <div class="rung"><span class="num">6</span><span>교육 및 복지시설군 <span class="ex">의료·교육연구·노유자</span></span><span class="pill pC">C 신고</span></div>
+        <div class="rung me"><span class="num">7</span><span><b>근린생활시설군</b> <span class="ex">제1종·제2종 근생 (고시원 제외)</span></span><span class="pill pB">A / B</span></div>
+        <div class="rung"><span class="num">8</span><span>주거업무시설군 <span class="ex">주택 → D, 업무시설 → C</span></span><span class="pill pD">D / C 허가</span></div>
+        <div class="rung"><span class="num">9</span><span>그 밖의 시설군 <span class="ex">동물 및 식물 관련 시설</span></span><span class="pill pX">-</span></div>
+      </div>
+      <p class="note">업종이 들어가는 목표는 대부분 7번 근린생활시설군(또는 그 업종의 전용 시설)이다.</p>
+    </div>
+    <div class="card">
+      <h3>판정 순서 (위에서부터, 처음 맞는 조건)</h3>
+      <table>
+        <tr><th>#</th><th>고른 줄의 용도</th><th>등급</th></tr>
+        <tr><td>1</td><td>용도 코드 공백·b0·그 밖의 Z 코드</td><td><span class="pill pX">확인필요</span></td></tr>
+        <tr><td>2</td><td>Z3 (옛 분류 근린생활시설)</td><td><span class="pill pB">모두 B</span></td></tr>
+        <tr><td>3</td><td>제2종 근생 중 고시원(다중생활시설)</td><td><span class="pill pC">모두 C</span></td></tr>
+        <tr><td>4</td><td>Z6 (판매및영업), Z8 (교육연구및복지)</td><td><span class="pill pC">모두 C</span></td></tr>
+        <tr><td>5</td><td>공동주택(02) + 단지 내 상가 낱말 (상가 줄 못 찾음)</td><td><span class="pill pB">모두 B</span></td></tr>
+        <tr><td>6</td><td>단독주택(01), 공동주택(02)</td><td><span class="pill pD">모두 D</span></td></tr>
+        <tr><td>7</td><td>그 밖</td><td>업종별 규칙 ↓</td></tr>
+      </table>
+      <h3 style="margin-top:18px">점수 간격이 법 절차 차이에 맞춰져 있다</h3>
+      <div class="bars" id="bldGap"></div>
+      <p class="note">A-B 20: 같은 시설군 안 (대부분 신청 불필요) · B-C 40: 시설군 변경 (신고·허가, 건축기준·주차) · C-D 10: 같은 허가 절차. 숫자 자체는 비용·기간으로 계산한 값이 아닌 판단값이다.</p>
+    </div>
+  </div>
+
+  <div class="secttl" id="b5"><span class="n">5</span><h3>업종별 규칙 (업종 × 등록 용도)</h3></div>
+  <div class="card">
+    <p class="note" style="margin-top:0">면적은 매물 전용면적. 표에 없는 용도는 C("다른 시설군이라 용도변경 필요"). 모든 업종에서 고시원 C, 주택 D.</p>
+    <div class="tbl"><table class="mx" id="bldMatrix"></table></div>
+  </div>
+  <div class="card">
+    <h3>업종별로 B가 실제로 뜻하는 것</h3>
+    <div class="tbl"><table>
+      <tr><th>업종</th><th>B인 경우</th><th>바꿀 용도</th><th>신청</th></tr>
+      <tr><td>식음료</td><td>제1종 근생</td><td>일반음식점 (제2종)</td><td>필요 없음</td></tr>
+      <tr><td>소매</td><td>제2종 근생</td><td>소매점 (제1종)</td><td>필요 없음</td></tr>
+      <tr><td>뷰티</td><td>제2종 근생</td><td>미용원 (제1종)</td><td>필요 없음</td></tr>
+      <tr><td>사무업무</td><td>제1종 근생 30㎡ 이상</td><td>사무소 (제2종)</td><td>필요 없음</td></tr>
+      <tr><td>운동시설</td><td>제1종 근생</td><td>체력단련장 (제2종)</td><td>필요 없음</td></tr>
+      <tr><td>의료</td><td>제2종 근생</td><td>의원 (제1종)</td><td><b>기재내용 변경 신청</b></td></tr>
+      <tr><td>교육</td><td>제1종 근생</td><td>학원 (제2종)</td><td><b>기재내용 변경 신청</b></td></tr>
+      <tr><td>공연문화</td><td>제1종 근생</td><td>공연장 (제2종)</td><td><b>기재내용 변경 신청</b></td></tr>
+    </table></div>
+    <p class="note">"신청 필요 없음"은 용도지역 제한(국토계획법)에 맞는 범위에서만이다. 점수는 신청 여부와 상관없이 B 80점이다.</p>
+  </div>
+
+  <div class="secttl" id="b6"><span class="n">6</span><h3>결과 분포 (2,452건)</h3></div>
+  <div class="card">
+    <div class="legend"><span><i style="background:var(--gA)"></i>A</span><span><i style="background:var(--gB)"></i>B</span><span><i style="background:var(--gC)"></i>C</span><span><i style="background:var(--gD)"></i>D</span><span>오른쪽 숫자: A+B 비율</span></div>
+    <div id="bldDist"></div>
+    <div class="grid3" style="margin-top:14px">
+      <div class="stat"><div class="k">등급을 가르는 것</div><div style="font-weight:700">제1종 근생이냐 제2종 근생이냐</div><div class="note">판정에 쓰인 용도의 약 84%</div></div>
+      <div class="stat"><div class="k">제1종 근생</div><div style="font-size:14px">소매·뷰티·의료 <b>A</b>, 나머지 <b>B</b> (30㎡ 미만이면 사무업무도 A)</div></div>
+      <div class="stat"><div class="k">제2종 근생</div><div style="font-size:14px">식음료·공연문화·사무업무·교육·운동시설 <b>A</b>, 나머지 <b>B</b></div></div>
+    </div>
+    <p class="note">C는 주로 업무시설, 교육연구시설(학원), 판매시설, 자동차관련시설, 500㎡ 이상 근생에서 나온다. D는 단독주택·다가구·다세대·아파트 줄이다. C·D는 업종마다 12~15%다.</p>
+  </div>
+
+  <div class="secttl" id="b7"><span class="n">7</span><h3>기존에서 바뀐 점</h3></div>
+  <div class="card">
+    <h3>쓸 수 있는 매물 수: 2,531 → 2,452</h3>
+    <div class="wf" id="bldWf"></div>
+    <div class="wfx" id="bldWfx"></div>
+    <p class="note">모든 등급이 조금씩 줄어든 것은 확인필요가 늘어 점수에 쓰는 매물이 79건 줄었기 때문이다. D는 88 → 73건.</p>
+  </div>
+  <div class="card">
+    <h3>등급 판정 규칙</h3>
+    <div class="tbl"><table class="chg">
+      <tr><th>바뀐 곳</th><th>기존</th><th>변경</th><th class="r">매물</th></tr>
+      <tr><td>식음료 × 위락시설</td><td>A "주점류 가능"</td><td><span class="pill pC">C</span> 일반음식점은 근생군이라 용도변경 신고 필요</td><td class="r">4</td></tr>
+      <tr><td>제1종 근생 × 교육(학원)</td><td>면적 무관 B</td><td>500㎡ 이상 <span class="pill pC">C</span></td><td class="r">34</td></tr>
+      <tr><td>제1종 근생 × 사무업무</td><td>30㎡ 미만 A, 이상 B</td><td>30~500㎡ B, 500㎡ 이상 <span class="pill pC">C</span></td><td class="r">34</td></tr>
+      <tr><td>제1종 근생 × 공연문화</td><td>면적 무관 B</td><td>500㎡ 이상 <span class="pill pC">C</span></td><td class="r">34</td></tr>
+      <tr><td>Z3 (근린생활시설)</td><td>C</td><td>모든 업종 <span class="pill pB">B</span></td><td class="r">11</td></tr>
+      <tr><td>Z6·Z8</td><td>C</td><td>C 그대로, 사유 문구만 정리</td><td class="r">3</td></tr>
+      <tr><td>코드 공백·b0·그 밖의 Z</td><td>C</td><td><span class="pill pX">확인필요</span> → 인자 제외</td><td class="r">8</td></tr>
+      <tr><td>고시원(다중생활시설)</td><td>제2종 근생 규칙</td><td>모든 업종 <span class="pill pC">C</span> (영업시설군)</td><td class="r">3</td></tr>
+      <tr><td>용도 이름표</td><td>08·19·20·22가 숫자로 표시</td><td>운수·위험물·자동차관련·자원순환 이름 추가 (등급 그대로)</td><td class="r">20</td></tr>
+    </table></div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <h3>아파트 단지 내 상가</h3>
+      <div class="tbl"><table class="chg">
+        <tr><th>바뀐 곳</th><th>기존</th><th>변경</th><th class="r">매물</th></tr>
+        <tr><td>적용 대상</td><td>01 단독 · 02 공동</td><td><b>02 공동주택만</b></td><td class="r">2</td></tr>
+        <tr><td>상가 낱말</td><td>6개</td><td>+ <b>점포</b></td><td class="r">1</td></tr>
+        <tr><td>등급</td><td>8업종 모두 B</td><td>같은 층 실제 상가 줄로 업종별 판정</td><td class="r">9</td></tr>
+        <tr><td>공용 공간 줄을 고름</td><td>B</td><td>확인필요</td><td class="r">5</td></tr>
+        <tr><td>사유 문구</td><td>"…관리규약 확인 필요"</td><td>"근린생활시설 종류가 적혀 있지 않아 판정 불가"</td><td class="r">-</td></tr>
+      </table></div>
+      <p class="note">일괄 B에는 법적 근거가 없었고, 기존 57건 중 13건은 공용 공간 줄이나 다른 동 줄을 골라 생긴 오류였다.</p>
+    </div>
+    <div class="card">
+      <h3>건물·층 매칭</h3>
+      <div class="tbl"><table class="chg">
+        <tr><th>바뀐 곳</th><th>기존</th><th>변경</th><th class="r">영향</th></tr>
+        <tr><td>사용승인일 근접일치</td><td>62일</td><td><b>1일</b></td><td class="r">약 -63</td></tr>
+        <tr><td>고른 동에 층 줄 없음</td><td>다른 동 줄 사용</td><td>확인필요</td><td class="r">-10</td></tr>
+        <tr><td>지하층인데 대장에 없음</td><td>주용도로 판정</td><td>확인필요</td><td class="r">-3</td></tr>
+        <tr><td>02 코드 공용 공간 줄</td><td>주거 D</td><td>확인필요</td><td class="r">-7</td></tr>
+      </table></div>
+      <h3 style="margin-top:14px">화면 표시</h3>
+      <p style="font-size:14px;margin:0">층 정보가 없어 주용도로 판정한 25건은 <b>"층 정보가 없어 건물 주용도로 판정"</b>이라고 표시하기로 함. 점수 엔진이 <span class="kbd">판정기준</span>을 넘기도록 고쳐야 나타난다.</p>
+    </div>
+  </div>
+  <div class="card">
+    <h3>기존에서 그대로 둔 것</h3>
+    <div class="tbl"><table>
+      <tr><th>항목</th><th>유지한 내용</th><th>이유</th></tr>
+      <tr><td>등급 점수</td><td>A 100 · B 80 · C 40 · D 30</td><td>등급 사이 간격이 법 절차 차이에 맞음</td></tr>
+      <tr><td>C 안의 허가·신고</td><td>나누지 않고 모두 C</td><td>하위군 신고와 상위군 허가를 같은 등급으로 둠</td></tr>
+      <tr><td>주거용도 D</td><td>사무업무 포함 모든 업종 D</td><td>500㎡ 미만 사무소는 제2종 근생이라 주택에서 바꾸려면 허가</td></tr>
+      <tr><td>반경</td><td>30m</td><td>거리 구간별 일치율이 거의 같음</td></tr>
+      <tr><td>신뢰도 사용 범위</td><td>확인필요만 제외</td><td>보통이 높음과 비슷, 확인필요와 확실히 다름</td></tr>
+      <tr><td>층 정보 없는 매물</td><td>건물 주용도로 판정</td><td>현실적 대안이고, 통임대는 주용도가 오히려 맞음</td></tr>
+      <tr><td>일반 건물 층 줄 고르기</td><td>면적이 가장 비슷한 줄</td><td>공용 공간 줄 빼기는 단지 내 상가에만</td></tr>
+      <tr><td>면적 기준</td><td>매물 전용면적으로 근사</td><td>별표1 비고 2: 칸별로 면적을 셈</td></tr>
+      <tr><td>단지 내 상가 B 46건</td><td>규칙 추가 안 함</td><td>실험만 하고 적용하지 않기로 함</td></tr>
+    </table></div>
+  </div>
+
+  <div class="secttl" id="b8"><span class="n">8</span><h3>데이터 근거</h3></div>
+  <div class="card">
+    <h3>사용승인일 허용 폭을 1일로: 날짜 차이별 층수 일치율</h3>
+    <p class="note" style="margin-top:0">"맞는 건물인지"의 대리 지표로 층수 일치율(매물 전체층 = 대장 지상층수)을 썼다. 막대 아래 숫자는 건수. 노란 구간이 기존 허용 폭(1~62일)이다.</p>
+    <div class="cols" id="bldDate"></div>
+    <div class="colx" id="bldDateX"></div>
+    <div class="grid2" style="margin-top:14px">
+      <div>
+        <ul class="clean" style="font-size:14px">
+          <li><b>0일만 확실히 높다.</b> 1~62일 안에서는 가까울수록 정확해지는 경향이 없다.</li>
+          <li>일반 건물만 봐도, 필지에 건물이 하나뿐인 경우만 봐도 1~62일이 낮다.</li>
+          <li>62일이라는 숫자는 데이터상 근거가 없었다.</li>
+          <li>구간별 건수가 8~32건으로 작아 우연일 가능성도 있다.</li>
+        </ul>
+      </div>
+      <div class="warn"><b>팀 판단</b><br>공인중개사는 건축물대장 등 공적 자료를 보고 사용승인일을 적으므로 원칙적으로 대장과 같아야 한다. 단순 오기(1일 이내)만 허용한다. (네이버 부동산의 입력 방식은 공식 자료로 확인하지 못함)<br><br><b>층수 일치율 92.7% → 94.4%</b></div>
+    </div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <h3>반경 30m: 거리 구간별 층수 일치율</h3>
+      <div class="legend"><span><i style="background:var(--gB)"></i>근사</span><span><i style="background:var(--gA)"></i>검증보정</span><span><i style="background:var(--gX)"></i>점포함(기준) 87%</span></div>
+      <div class="bars" id="bldDist30"></div>
+      <p class="note">거리가 멀어져도 일치율이 거의 떨어지지 않아 반경을 줄일 근거가 없다. 30m 밖은 조회한 적이 없다. (2026-11-24, 62일 기준)</p>
+    </div>
+    <div class="card">
+      <h3>"확인필요"만 빼는 이유: 신뢰도별 별도 점검</h3>
+      <div class="legend"><span><i style="background:var(--gB)"></i>매물 층이 대장에 있음</span><span><i style="background:var(--gA)"></i>전용면적 ≤ 연면적</span></div>
+      <div class="bars" id="bldConf"></div>
+      <p class="note">"보통"은 두 점검 모두 "높음"과 거의 같고 "확인필요"와 확실히 다르다. 근사 매칭도 신뢰도별로 점포함과 거의 같다. 두 점검은 크게 틀린 매칭만 잡아낸다.</p>
+    </div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <h3>기존 단지 내 상가 B 57건을 대장으로 보니</h3>
+      <div class="bars" id="bldApt"></div>
+      <p class="note">층별개요의 상가 줄은 그 층 상가 전체를 합친 면적(예: 1,198㎡)이라, 매물 전용면적(30~70㎡)과 가장 가까운 줄을 고르면 작은 계단실·기계실이 뽑혔다.</p>
+    </div>
+    <div class="card">
+      <h3>기존 주거 D 75건을 대장으로 보니</h3>
+      <div class="bars" id="bldHouse"></div>
+      <p class="note">75건 중 70건은 대장상 실제 주택이라 D가 맞다. 모두 매물 원본에서 세부유형 "일반상가", 현재용도 "공실"이다.</p>
+    </div>
+  </div>
+
+  <div class="secttl" id="b9"><span class="n">9</span><h3>판정이 맞는지 확인한 결과</h3></div>
+  <div class="grid3">
+    <div class="card"><div class="k note">등급별 표본 40건 직접 확인</div><div class="big" style="color:var(--gA)">94.9%</div><div class="note">판단 가능한 39건 중 37건 맞음. 틀린 2건(고시원, 시장 점포)은 규칙을 고쳐 바로잡음</div></div>
+    <div class="card"><div class="k note">매물 글에 근생 종류가 적힌 55건</div><div class="big" style="color:var(--gB)">85.5%</div><div class="note">47건이 판정과 같음. 다른 8건 중 4건은 모순 아님, 4건은 대장과 글이 실제로 다름</div></div>
+    <div class="card"><div class="k note">글에 적힌 업종이 A 또는 B</div><div class="big" style="color:var(--accent)">82~95%</div><div class="note">C·D는 대부분 법상 용도변경이 필요한 경우라 오류로 보지 않음</div></div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <h3>등급별 표본 (각 10건, seed 20261125)</h3>
+      <div class="legend"><span><i style="background:var(--gA)"></i>맞음</span><span><i style="background:var(--gD)"></i>틀림</span><span><i style="background:var(--gX)"></i>판단 불가</span></div>
+      <div id="bldSample"></div>
+      <p class="note">판단 불가 1건은 오피스텔 1층에 경비실·계단실 줄만 있는 경우다.</p>
+    </div>
+    <div class="card">
+      <h3>글에 업종이 적힌 매물의 그 업종 A+B 비율</h3>
+      <div class="bars" id="bldMention"></div>
+    </div>
+  </div>
+
+  <div class="secttl" id="b10"><span class="n">10</span><h3>법령 근거 한 장 정리</h3></div>
+  <div class="card">
+    <div class="tbl"><table>
+      <tr><th>판정 규칙</th><th>어디서 왔나</th><th>무엇을 가져왔나</th></tr>
+      <tr><td>업종별 A가 되는 등록 용도</td><td>건축법 시행령 별표 1 제3·4·5·7·9·10·13·14호</td><td>업종이 어느 용도에 속하는지</td></tr>
+      <tr><td>300·500·1,000·30㎡ 면적 기준</td><td>별표 1 제3·4호</td><td>근생에 들어가는 면적 한도</td></tr>
+      <tr><td>전용면적으로 근사</td><td>별표 1 비고 2</td><td>칸을 나눠 독립적으로 쓰면 칸별 면적</td></tr>
+      <tr><td>A / B / C / D 구분</td><td>건축법 제19조, 시행령 제14조 제5항</td><td>같은 시설군 / 신고 / 허가</td></tr>
+      <tr><td>B 대부분 신청 불필요</td><td>시행령 제14조 제4항</td><td>근생 상호 변경 면제와 예외</td></tr>
+      <tr><td>고시원 C</td><td>시행령 제14조 제5항 제5호 라목</td><td>다중생활시설은 영업시설군</td></tr>
+      <tr><td>위락시설 식음료 C</td><td>별표 1 제16호</td><td>위락시설에 일반·휴게음식점 없음</td></tr>
+      <tr><td>C·D의 추가 부담</td><td>건축법 제19조 제5·6·7항, 주차장법 시행령 제6조 제4항</td><td>사용승인·설계·건축기준·주차 (5년 지난 1천㎡ 미만은 주차 면제)</td></tr>
+      <tr><td>단지 내 상가를 근생 규칙으로</td><td>주택법 시행령 제7조, 공동주택관리법 시행령 별표 3</td><td>복리시설의 근생 사이 변경은 건축법 절차</td></tr>
+      <tr><td>사용승인일 1일</td><td>우리 데이터 + 팀 판단</td><td>날짜 차이별 층수 일치율</td></tr>
+      <tr><td>반경 30m / 확인필요만 제외</td><td>우리 데이터</td><td>거리 구간별 일치율 / 신뢰도별 별도 점검</td></tr>
+      <tr><td>점수 100·80·40·30</td><td><span class="pill pX">우리 설계</span></td><td>법 절차 차이에 맞춘 판단값</td></tr>
+      <tr><td>공용 공간·단지 내 상가 낱말 목록</td><td><span class="pill pX">우리 설계</span> + 우리 데이터</td><td>대장 원본에서 본 표현</td></tr>
+    </table></div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <h3>용도변경 처리기간 (민원사무편람, 한 기관 사례)</h3>
+      <table>
+        <tr><th>민원</th><th>처리기간</th></tr>
+        <tr><td>용도변경 <b>허가</b></td><td>2층 이하 또는 1천㎡ 미만 7일 ~ 16층 이상 또는 3만㎡ 이상 25일</td></tr>
+        <tr><td>용도변경 <b>신고</b></td><td>3일</td></tr>
+        <tr><td>대장 기재내용 변경</td><td>서식상 7일 (원문 미확인)</td></tr>
+      </table>
+      <p class="note">등급 간격의 정확한 숫자를 정하는 데는 쓰지 않았다. 설계비·공사비 공식 자료는 찾지 못했다.</p>
+    </div>
+    <div class="card">
+      <h3>근거가 없는 부분 (우리 설계)</h3>
+      <ul class="clean">
+        <li>점수값 100·80·40·30은 비용·기간 자료로 계산한 값이 아니다.</li>
+        <li>C 안에 하위군 신고와 상위군 허가가 섞여 있다. 업무시설 → 근생은 주택 → 근생(D)과 같은 허가인데 C다.</li>
+        <li>B 안의 신청 필요 여부(5업종 불필요, 3업종 신청)를 점수에 반영하지 않는다.</li>
+        <li>사용승인일 1일은 업무 관행에 근거한 팀 판단이다.</li>
+        <li>공용 공간·단지 내 상가 낱말 목록은 데이터를 보고 정했다.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="secttl" id="b11"><span class="n">11</span><h3>경우별 처리와 한계</h3></div>
+  <div class="grid2">
+    <div class="card">
+      <h3>경우별 처리</h3>
+      <table>
+        <tr><th>경우</th><th>처리</th></tr>
+        <tr><td>좌표 없음 / 30m 안에 건물 없음</td><td>판정 없음 (인자 비움)</td></tr>
+        <tr><td>매칭신뢰도 확인필요</td><td>인자 비움</td></tr>
+        <tr><td>매물 층 "전체층"·"저/중/고층"</td><td>건물 주용도, 화면에 표시</td></tr>
+        <tr><td>건물 통임대 (가장 낮은 층만 적힘)</td><td>그 층 줄로 판정 (한계)</td></tr>
+        <tr><td>상가주택의 주택 층</td><td>D</td></tr>
+        <tr><td>단지 상가, "생활편익시설"·"상가"만</td><td>8업종 모두 B</td></tr>
+        <tr><td>단지 상가, 같은 층에 근생 줄</td><td>그 근생 줄로 업종별 판정</td></tr>
+        <tr><td>오피스텔 1층, 경비실·계단실 줄만</td><td>업무시설로 C (한계)</td></tr>
+        <tr><td>Z3 / Z6·Z8</td><td>B / C</td></tr>
+        <tr><td>고시원 줄</td><td>모든 업종 C</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>한계</h3>
+      <ul class="clean">
+        <li>같은 임차인이 여러 칸을 같은 용도로 쓰거나 다른 임차인과 연계해 쓰면 법은 면적을 합산하지만 매물 데이터로는 알 수 없다.</li>
+        <li>일반 건물은 면적이 가장 비슷한 줄을 고르므로 작은 계단실·경비실 줄이 뽑힐 수 있다.</li>
+        <li>용도변경 후 대장이 갱신되지 않았다면 틀린다.</li>
+        <li>건물 통임대 매물이 전체에 몇 건인지 확인하지 않았다.</li>
+        <li>분양 계약의 업종 제한(동종 업종 금지)은 반영하지 않는다.</li>
+        <li>용도지역 제한(국토계획법)은 매물별 용도지역 데이터가 없어 반영하지 않는다.</li>
+        <li>사용승인일 1일 기준의 검증보정은 API를 다시 부르지 않아 확정되지 않았다 (기존 24건 교체가 대부분 확인필요로 빠질 것으로 추정).</li>
+        <li>실제 입점 가능 여부는 관할 구청 건축과 확인이 필요하다. 이 판정은 참고용이다.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+</main>
+<footer>업종 적합 그룹 · 출처: 용도 일치도 3개 문서(2026-11-23), 건물 용도 3개 문서(2026-11-25)</footer>
+
+<script>
+// ---------- tabs ----------
+const btns=[...document.querySelectorAll('.tabs button')];
+function show(id){
+  btns.forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===id));
+  document.querySelectorAll('section.panel').forEach(s=>s.classList.toggle('on',s.id===id));
+}
+btns.forEach(b=>b.addEventListener('click',()=>{show(b.dataset.tab);window.scrollTo(0,0)}));
+document.querySelectorAll('.toc a').forEach(a=>a.addEventListener('click',e=>{
+  e.preventDefault();const t=document.querySelector(a.getAttribute('href'));
+  const y=t.getBoundingClientRect().top+window.scrollY-70;window.scrollTo({top:y,behavior:'smooth'});
+}));
+
+// ---------- helpers ----------
+const V=n=>`var(--${n})`;
+const fmt=n=>n.toLocaleString('ko-KR');
+function bars(id,rows,max,opt={}){
+  const el=document.getElementById(id);
+  const m=max||Math.max(...rows.map(r=>r.v));
+  el.innerHTML=rows.map(r=>`<div class="bar"><span class="lb">${r.l}</span><div class="tr"><div class="fl" style="width:${(r.v/m*100).toFixed(1)}%;background:${r.c||V('accent')}"></div></div><span class="vl">${r.t!==undefined?r.t:fmt(r.v)+(opt.suf||'')}</span></div>`).join('');
+}
+function stacks(id,rows,colors,opt={}){
+  const el=document.getElementById(id);
+  el.innerHTML=rows.map(r=>{
+    const tot=r.p.reduce((a,b)=>a+b,0);
+    return `<div class="stack"><span>${r.l}</span><div class="tr">${r.p.map((v,i)=>v?`<span style="width:${v/tot*100}%;background:${colors[i]}" title="${fmt(v)}">${v/tot>0.07?fmt(v):''}</span>`:'').join('')}</div><span class="vl">${r.t||fmt(tot)}</span></div>`;
+  }).join('');
+}
+
+// ---------- 용도 일치도 ----------
+bars('useSignal',[
+  {l:'업종 말이 있음',v:1722,t:'1,722 (63.4%)',c:V('u1')},
+  {l:'다용도 표시만',v:462,c:V('u2')},
+  {l:'아무 신호 없음',v:533,t:'533 (19.6%)',c:V('u3')}
+]);
+bars('useWhere',[
+  {l:'추천용도 칸',v:3068,c:V('u1')},
+  {l:'특징 칸에서만',v:558,c:V('u2')}
+]);
+(function(){
+  const rows=[
+    ['명시',3626,100,100],['다용도',8783,60,50],['다른 업종만',5063,30,25],['신호 없음',4264,50,25]
+  ];
+  const el=document.getElementById('useBefore');
+  el.innerHTML=`<div class="tbl"><table><tr><th>판정</th><th class="r">쌍</th><th style="width:45%">점수 (기존 → 변경)</th><th class="r">기존</th><th class="r">변경</th></tr>`+
+  rows.map(r=>`<tr><td>${r[0]}${r[0]==='다른 업종만'||r[0]==='신호 없음'?' <span class="tag">→ 그 밖</span>':''}</td><td class="r">${fmt(r[1])}</td><td>
+    <div style="background:var(--soft);border-radius:4px;height:9px;margin:3px 0"><div style="width:${r[2]}%;height:100%;background:var(--gX);border-radius:4px"></div></div>
+    <div style="background:var(--soft);border-radius:4px;height:9px;margin:3px 0"><div style="width:${r[3]}%;height:100%;background:var(--accent);border-radius:4px"></div></div>
+  </td><td class="r">${r[2]}</td><td class="r"><b>${r[3]}</b></td></tr>`).join('')+`</table></div>`;
+})();
+bars('useFloor',[
+  {l:'추천용도 칸 명시',v:89.5,t:'89.5',c:V('u1')},
+  {l:'특징 · 추천 문장',v:88.8,t:'88.8',c:V('u1')},
+  {l:'특징 · 업종 나열',v:87.9,t:'87.9',c:V('u1')},
+  {l:'특징 · 단독 언급',v:87.2,t:'87.2',c:V('u1')},
+  {l:'언급 없는 쌍',v:73.0,t:'73.0',c:V('u3')}
+],100);
+(function(){
+  const d=[['1개',89.9],['2개',90.3],['3개',89.2],['4개 이상',88.2]];
+  document.getElementById('useCount').innerHTML=d.map(x=>`<div class="c"><span class="v">${x[1]}</span><div class="b" style="height:${(x[1]-60)/40*100}%;background:var(--u1)"></div></div>`).join('');
+  document.getElementById('useCountX').innerHTML=d.map(x=>`<span>${x[0]}</span>`).join('');
+})();
+stacks('useKw',[
+  {l:'소매',p:[38,5,12]},{l:'운동시설',p:[56,1,0]},{l:'공연문화',p:[38,8,1]},
+  {l:'교육',p:[11,0,0]},{l:'의료',p:[0,3,2]},{l:'사무업무',p:[1,1,3]}
+],[V('gA'),V('gC'),V('gD')]);
+
+// ---------- 건물 용도 ----------
+bars('bldConfirm',[
+  {l:'대조 결과 (틀림만)',v:179,c:V('gX')},
+  {l:'다른 동에만 층 줄',v:10,c:V('gC')},
+  {l:'용도 코드 불명',v:8,c:V('gC')},
+  {l:'공동주택 공용 공간',v:7,c:V('gC')},
+  {l:'단지 상가 공용 공간',v:5,c:V('gC')},
+  {l:'지하층 미등재',v:3,c:V('gC')}
+]);
+bars('bldGap',[
+  {l:'A',v:100,c:V('gA')},{l:'B',v:80,c:V('gB')},{l:'C',v:40,c:V('gC')},{l:'D',v:30,c:V('gD')}
+],100);
+
+// matrix
+(function(){
+  const G=(g,s)=>`<div class="ln"><span class="pill p${g}">${g}</span>${s?`<small>${s}</small>`:''}</div>`;
+  const cell=(...x)=>`<div class="cell">${x.join('')}</div>`;
+  const rows=[
+    ['식음료', cell(G('B','휴게·제과만, 일반음식점은 2종으로')), cell(G('A')), cell(G('C','위락시설'))],
+    ['소매', cell(G('A','1,000㎡ 미만'),G('C','이상')), cell(G('B')), cell(G('A','판매시설'))],
+    ['뷰티', cell(G('A')), cell(G('B')), '<span class="note">-</span>'],
+    ['의료', cell(G('A')), cell(G('B')), cell(G('A','의료시설'))],
+    ['운동시설', cell(G('B','500㎡ 미만, 체육도장·탁구장만'),G('C','이상')), cell(G('A','500㎡ 미만'),G('C','이상')), cell(G('A','운동시설'))],
+    ['교육', cell(G('B','500㎡ 미만'),G('C','이상')), cell(G('A','500㎡ 미만'),G('C','이상')), cell(G('A','교육연구시설'))],
+    ['사무업무', cell(G('A','30㎡ 미만'),G('B','30~500㎡'),G('C','이상')), cell(G('A','500㎡ 미만'),G('C','이상')), cell(G('A','업무시설'))],
+    ['공연문화', cell(G('B','500㎡ 미만'),G('C','이상')), cell(G('A','500㎡ 미만'),G('C','이상')), cell(G('A','문화및집회시설'))]
+  ];
+  document.getElementById('bldMatrix').innerHTML=
+    `<tr><th>업종</th><th style="text-align:center">제1종 근생</th><th style="text-align:center">제2종 근생</th><th style="text-align:center">업종의 전용 시설</th><th style="text-align:center">주택</th><th style="text-align:center">그 밖</th></tr>`+
+    rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td><span class="pill pD">D</span></td><td><span class="pill pC">C</span></td></tr>`).join('');
+})();
+
+stacks('bldDist',[
+  {l:'식음료',p:[987,1132,260,73],t:'86.4%'},
+  {l:'소매',p:[1115,1035,229,73],t:'87.7%'},
+  {l:'뷰티',p:[1084,1035,260,73],t:'86.4%'},
+  {l:'공연문화',p:[986,1098,295,73],t:'85.0%'},
+  {l:'사무업무',p:[1118,1046,215,73],t:'88.3%'},
+  {l:'교육',p:[1060,1098,221,73],t:'88.0%'},
+  {l:'의료',p:[1090,1035,254,73],t:'86.7%'},
+  {l:'운동시설',p:[989,1098,292,73],t:'85.1%'}
+],[V('gA'),V('gB'),V('gC'),V('gD')]);
+
+// waterfall
+(function(){
+  const d=[
+    ['기존<br>(62일)',2531,null],
+    ['사용승인일 1일<br>코드 불명·지하층',2474,-57],
+    ['다른 동 줄<br>안 씀',2464,-10],
+    ['단지 상가<br>공용 공간',2459,-5],
+    ['공동주택<br>공용 공간',2452,-7]
+  ];
+  const lo=2400,hi=2540;
+  document.getElementById('bldWf').innerHTML=d.map((x,i)=>`<div class="c">${x[2]?`<span class="dlt">${x[2]}</span>`:''}<span class="v">${fmt(x[1])}</span><div class="b" style="height:${(x[1]-lo)/(hi-lo)*100}%;${i===d.length-1?'background:var(--accent)':i===0?'background:var(--gX)':''}"></div></div>`).join('');
+  document.getElementById('bldWfx').innerHTML=d.map(x=>`<span>${x[0]}</span>`).join('');
+})();
+document.getElementById('bldWf').insertAdjacentHTML('afterend','');
+
+// date diff chart
+(function(){
+  const d=[['0일',94,2108],['1일',60,15],['2~3일',75,8],['4~7일',61,18],['8~14일',58,31],['15~31일',62,32],['32~45일',42,12],['46~62일',65,17],['63~92일',88,25],['93~183일',87,31]];
+  document.getElementById('bldDate').innerHTML=d.map((x,i)=>{
+    const old=i>=1&&i<=7;
+    return `<div class="c" style="${old?'background:var(--hl);border-radius:6px 6px 0 0':''}"><span class="v">${x[1]}%</span><div class="b" style="height:${x[1]}%;background:${i===0?'var(--gA)':old?'var(--gC)':'var(--gX)'}"></div></div>`;
+  }).join('');
+  document.getElementById('bldDateX').innerHTML=d.map(x=>`<span>${x[0]}<br>${fmt(x[2])}건</span>`).join('');
+})();
+
+bars('bldDist30',[
+  {l:'근사 0~10m',v:83,t:'83%',c:V('gB')},
+  {l:'근사 10~20m',v:81,t:'81%',c:V('gB')},
+  {l:'근사 20~30m',v:82,t:'82%',c:V('gB')},
+  {l:'검증보정 0~10m',v:97,t:'97%',c:V('gA')},
+  {l:'검증보정 10~20m',v:94,t:'94%',c:V('gA')},
+  {l:'검증보정 20~30m',v:94,t:'94%',c:V('gA')}
+],100);
+
+(function(){
+  const d=[['높음 (1,964)',99,99],['보통 (504)',99,97],['확인필요 (172)',79,85]];
+  document.getElementById('bldConf').innerHTML=d.map(x=>`
+   <div class="bar"><span class="lb">${x[0]}</span><div>
+    <div class="tr" style="height:11px;margin-bottom:3px"><div class="fl" style="width:${x[1]}%;background:var(--gB)"></div></div>
+    <div class="tr" style="height:11px"><div class="fl" style="width:${x[2]}%;background:var(--gA)"></div></div>
+   </div><span class="vl">${x[1]}% · ${x[2]}%</span></div>`).join('');
+})();
+
+bars('bldApt',[
+  {l:'종류 불명 (상가·생활편익)',v:32,c:V('gB')},
+  {l:'상가 아닌 공간 줄',v:15,c:V('gD')},
+  {l:'근생 종류 명시',v:6,c:V('gA')},
+  {l:'대장 주용도 단독주택',v:2,c:V('gX')},
+  {l:'상가·비상가 한 줄 혼재',v:1,c:V('gX')},
+  {l:'해당 층 정보 없음',v:1,c:V('gX')}
+]);
+bars('bldHouse',[
+  {l:'건물 전체가 주거',v:51,c:V('gD')},
+  {l:'상가주택의 주택 층',v:19,c:V('gD')},
+  {l:'주택 줄에 점포 등 혼재',v:3,c:V('gX')},
+  {l:'같은 층 상가 줄 두고 주택 줄',v:2,c:V('gC')}
+]);
+stacks('bldSample',[
+  {l:'A',p:[9,1,0]},{l:'B',p:[10,0,0]},{l:'C',p:[9,0,1]},{l:'D',p:[9,1,0]}
+],[V('gA'),V('gD'),V('gX')]);
+bars('bldMention',[
+  {l:'소매 (277)',v:94.6,t:'94.6%',c:V('gA')},
+  {l:'교육 (435)',v:91.0,t:'91.0%',c:V('gA')},
+  {l:'뷰티 (370)',v:90.8,t:'90.8%',c:V('gA')},
+  {l:'식음료 (600)',v:89.8,t:'89.8%',c:V('gA')},
+  {l:'공연문화 (183)',v:84.7,t:'84.7%',c:V('gA')},
+  {l:'사무업무 (792)',v:84.2,t:'84.2%',c:V('gA')},
+  {l:'의료 (373)',v:81.8,t:'81.8%',c:V('gA')},
+  {l:'운동시설 (169)',v:81.7,t:'81.7%',c:V('gA')}
+],100);
+</script>
+</body>
+</html>

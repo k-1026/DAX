@@ -1,0 +1,967 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>비용 그룹</title>
+<style>
+:root{
+  --bg:#f6f7f9; --card:#ffffff; --ink:#1c2230; --sub:#5b6476; --line:#e3e6ec; --soft:#eef1f6;
+  --accent:#3a5bd9; --accent-soft:#e8edfc;
+  --gA:#2e9d6a; --gB:#3d7fd1; --gC:#e2a23a; --gD:#d2574b; --gX:#9aa3b2;
+  --u1:#3a5bd9; --u2:#22a3a0; --u3:#b3bac7;
+  --hl:#fff4d6;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#12151b; --card:#1b2029; --ink:#e7eaf0; --sub:#a0a8b8; --line:#2c3340; --soft:#232935;
+    --accent:#7d97ff; --accent-soft:#252f4d;
+    --gA:#43b883; --gB:#5b9be6; --gC:#e8b155; --gD:#e2726a; --gX:#6c7586;
+    --u1:#7d97ff; --u2:#3cc3bf; --u3:#5d6575;
+    --hl:#3a3220;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#12151b; --card:#1b2029; --ink:#e7eaf0; --sub:#a0a8b8; --line:#2c3340; --soft:#232935;
+  --accent:#7d97ff; --accent-soft:#252f4d;
+  --gA:#43b883; --gB:#5b9be6; --gC:#e8b155; --gD:#e2726a; --gX:#6c7586;
+  --u1:#7d97ff; --u2:#3cc3bf; --u3:#5d6575;
+  --hl:#3a3220;
+}
+/* 비용 그룹 색 이름 */
+:root{--rent:var(--accent); --dep:var(--gC); --val:var(--u2)}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,sans-serif;line-height:1.6;font-size:15px;-webkit-text-size-adjust:100%}
+header.top{background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+.wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+.top .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px;padding-top:12px;padding-bottom:0}
+.top h1{font-size:18px;margin:0 0 8px}
+.tabs{display:flex;gap:4px;overflow-x:auto;margin-left:auto}
+.tabs button{appearance:none;border:0;background:none;color:var(--sub);font:inherit;font-weight:600;padding:10px 14px;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+main{padding:24px 0 60px}
+section.panel{display:none}
+section.panel.on{display:block}
+h2{font-size:22px;margin:8px 0 4px}
+h3{font-size:17px;margin:0 0 10px}
+.lead{color:var(--sub);margin:0 0 20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;margin:0 0 16px;overflow:hidden}
+.card > p:last-child{margin-bottom:0}
+.note{font-size:13px;color:var(--sub)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media (max-width:760px){.grid2,.grid3,.grid4{grid-template-columns:1fr}}
+.toc{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 18px}
+.toc a{font-size:13px;padding:4px 10px;border-radius:999px;background:var(--soft);color:var(--ink);text-decoration:none}
+.toc a:hover{background:var(--accent-soft)}
+.secttl{display:flex;align-items:baseline;gap:10px;margin:28px 0 12px}
+.secttl .n{font-size:13px;font-weight:700;color:var(--accent);background:var(--accent-soft);border-radius:6px;padding:2px 8px}
+.secttl h3{margin:0;font-size:19px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--soft);font-weight:600;white-space:nowrap}
+td.r,th.r{text-align:right;font-variant-numeric:tabular-nums}
+td.c,th.c{text-align:center}
+.tbl{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tbl.nw td,.tbl.nw th{white-space:nowrap}
+.pill{display:inline-block;font-size:12px;font-weight:700;border-radius:6px;padding:1px 8px;color:#fff;white-space:nowrap}
+.pA{background:var(--gA)}.pB{background:var(--gB)}.pC{background:var(--gC)}.pD{background:var(--gD)}.pX{background:var(--gX)}
+.pR{background:var(--rent)}.pV{background:var(--val)}
+.big{font-size:30px;font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums}
+.stat{background:var(--soft);border-radius:10px;padding:14px}
+.stat .k{font-size:13px;color:var(--sub)}
+.tag{display:inline-block;font-size:12px;border:1px solid var(--line);border-radius:6px;padding:0 6px;color:var(--sub);margin-left:4px}
+.warn{background:var(--hl);border-radius:10px;padding:12px 14px;font-size:14px}
+ul.clean{margin:6px 0 0;padding-left:20px}
+ul.clean li{margin:3px 0}
+/* flow */
+.flow{display:flex;flex-direction:column;gap:0;align-items:stretch}
+.fstep{display:flex;gap:12px;align-items:flex-start;background:var(--soft);border-radius:10px;padding:12px 14px}
+.fstep .no{flex:0 0 28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:14px}
+.fstep b{display:block}
+.fstep .d{font-size:14px;color:var(--sub)}
+.farrow{text-align:center;color:var(--sub);font-size:16px;line-height:20px;height:20px}
+.hflow{display:flex;align-items:stretch;gap:6px;flex-wrap:wrap}
+.hflow .box{flex:1 1 140px;background:var(--soft);border-radius:10px;padding:10px 12px;font-size:14px}
+.hflow .box b{display:block;margin-bottom:2px}
+.hflow .ar{align-self:center;color:var(--sub)}
+@media (max-width:760px){.hflow .ar{display:none}}
+.v-panel .fstep .no{background:var(--val)}
+/* decision */
+.dec{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+.dec .q{background:var(--soft);border-radius:10px;padding:10px 12px;font-size:14px}
+.dec .res{text-align:center;border-radius:10px;padding:10px 14px;color:#fff;font-weight:700;min-width:110px}
+.dec .res small{display:block;font-weight:500;opacity:.9}
+.dec .no{grid-column:1 / -1;font-size:13px;color:var(--sub);padding-left:14px}
+/* bars */
+.bars{display:flex;flex-direction:column;gap:8px}
+.bar{display:grid;grid-template-columns:150px 1fr 70px;gap:10px;align-items:center;font-size:14px}
+.bars.wide .bar{grid-template-columns:200px 1fr 80px}
+.bar .lb{color:var(--ink)}
+.bar .tr{background:var(--soft);border-radius:6px;height:22px;position:relative;overflow:hidden}
+.bar .fl{height:100%;border-radius:6px}
+.bar .vl{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+@media (max-width:560px){.bar,.bars.wide .bar{grid-template-columns:110px 1fr 64px;font-size:13px}}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:13px;color:var(--sub);margin:0 0 10px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.bigstack{display:flex;height:44px;border-radius:10px;overflow:hidden;margin:8px 0}
+.bigstack span{display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;line-height:1.2;overflow:hidden;white-space:nowrap}
+.bigstack span small{font-weight:500;font-size:12px}
+.kbd{font-family:ui-monospace,Consolas,monospace;font-size:13px;background:var(--soft);padding:1px 6px;border-radius:5px}
+.chg td:nth-child(2){color:var(--sub)}
+.chg td:nth-child(3){font-weight:600}
+footer{color:var(--sub);font-size:13px;text-align:center;padding:20px 0 40px}
+/* 식 */
+.formula{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:17px;font-weight:700;background:var(--soft);border-radius:10px;padding:14px}
+.formula .tok{border-radius:8px;padding:2px 10px;color:#fff}
+.formula .tok.r{background:var(--rent)}.formula .tok.d{background:var(--dep)}.formula .tok.a{background:var(--gX)}
+.quote{border-left:4px solid var(--rent);background:var(--accent-soft);border-radius:0 10px 10px 0;padding:12px 14px;font-weight:700;font-size:16px}
+.quote.v{border-left-color:var(--val);background:var(--soft)}
+/* 계산기 */
+.field{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--sub);flex:1 1 140px}
+.field input{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
+.field input:focus{outline:2px solid var(--accent);outline-offset:0}
+.frow{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 12px}
+.glabel{font-size:13px;font-weight:700;margin:0 0 6px}
+.meter{display:flex;height:22px;border-radius:6px;overflow:hidden;background:var(--soft);margin:10px 0 6px}
+.meter div{display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;transition:width .2s}
+.passrow{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 6px}
+.passrow .pill{font-size:13px;padding:3px 10px}
+.verdict{font-size:14px;font-weight:600}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:14px}
+.kv b{text-align:right;font-variant-numeric:tabular-nums}
+/* 칩 */
+.condgrid{display:grid;grid-template-columns:70px 1fr;gap:10px 12px;align-items:center}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips span{background:var(--soft);border-radius:8px;padding:4px 10px;font-size:14px}
+.chips.v span{border-left:3px solid var(--val)}
+/* svg */
+svg{display:block;width:100%;height:auto}
+svg text{fill:var(--sub);font-size:12px;font-family:inherit}
+svg .strong{fill:var(--ink);font-weight:700}
+@media (max-width:560px){.condgrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <h1>비용 그룹</h1>
+    <nav class="tabs" role="tablist">
+      <button role="tab" data-tab="ov" aria-selected="true">개요</button>
+      <button role="tab" data-tab="rent" aria-selected="false">임대료 부담+보증금</button>
+      <button role="tab" data-tab="val" aria-selected="false">가성비</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ===================================================== 개요 -->
+<section class="panel on" id="ov">
+  <h2>비용 그룹: 이 매물이 싼 편인가</h2>
+  <p class="lead">두 인자 모두 월세에 보증금을 월 1%로 바꿔 더한 <b>환산 월 임대료</b>에서 출발한다. 그 다음 <b>무엇과 비교하는지</b>가 다르다. 관리비는 두 인자 모두 식에 넣지 않는다.</p>
+
+  <div class="grid2">
+    <div class="card">
+      <span class="pill pR">인자 1</span>
+      <h3 style="margin-top:8px">임대료 부담+보증금</h3>
+      <p style="font-size:17px;font-weight:700;margin:0 0 10px">"내가 빌릴 수 있는 가게 중 얼마나 싼 편인가"</p>
+      <table>
+        <tr><th>보는 값</th><td>환산 월 임대료 = 월세 + 보증금 × 1%</td></tr>
+        <tr><th>비교 상대</th><td>월세 ≤ A <b>그리고</b> 보증금 ≤ B 인 후보 전체</td></tr>
+        <tr><th>점수 단계</th><td>후보의 10% 경계값 이하 <b>100</b> → 90% 경계값 20 → 가장 비싼 후보 <b>10</b>, 사이는 선형 보간. 후보가 30건 미만이면 경계값만 대구 매물 전체로</td></tr>
+        <tr><th>미입력</th><td>A·B를 넣지 않으면 대구 매물 전체가 후보</td></tr>
+        <tr><th>상태</th><td>계산식·점수 방식 확정 (2026-11-17), 점수 엔진은 아직 고치지 않음</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <span class="pill pV">인자 2</span>
+      <h3 style="margin-top:8px">가성비</h3>
+      <p style="font-size:17px;font-weight:700;margin:0 0 10px">"비슷한 조건의 가게들과 비교해 ㎡당 얼마나 싼 편인가"</p>
+      <table>
+        <tr><th>보는 값</th><td>㎡당 환산 임대료 = (월세 + 보증금 × 1%) ÷ 전용면적</td></tr>
+        <tr><th>비교 상대</th><td>같은 동 + 층·연식·면적이 같은 매물 (내 매물 제외, 10건 이상)</td></tr>
+        <tr><th>점수 단계</th><td>0.5배 이하 <b>100</b> · 1.0배 50 · 1.5배 25 · 1.75배 이상 <b>0</b>, 사이는 선형 보간</td></tr>
+        <tr><th>대상</th><td>매물 2,717건 − 중복 13 = <b>2,704건</b> (점수 못 받는 매물 0건)</td></tr>
+        <tr><th>상태</th><td>계산식·비교 순서·점수 구간 확정 (2026-11-23), 점수 엔진은 아직 기존 방식</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>같은 환산식에서 두 갈래로</h3>
+    <div class="hflow">
+      <div class="box" style="border-left:4px solid var(--gX)"><b>환산 월 임대료</b>월세 + 보증금 × 1%</div>
+      <div class="ar">→</div>
+      <div class="box" style="border-left:4px solid var(--rent)"><b>그대로 비교</b>내 예산(A·B) 안 후보끼리 줄 세우기<br><span class="pill pR" style="margin-top:6px">임대료 부담+보증금 10~100점</span></div>
+      <div class="box" style="border-left:4px solid var(--val)"><b>÷ 전용면적 → ㎡당 값</b>비슷한 매물의 중앙값과 비교<br><span class="pill pV" style="margin-top:6px">가성비 0~100점</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>두 인자 나란히 보기</h3>
+    <div class="tbl"><table>
+      <tr><th></th><th>임대료 부담+보증금</th><th>가성비</th></tr>
+      <tr><th>기준</th><td>후보의 10%·20%·…·90% 경계값 (예산을 넣을 때마다 다시 계산)</td><td>비교 그룹 중앙값 대비 배율 (기준점 0.5·1.0·1.5·1.75배 고정)</td></tr>
+      <tr><th>관리비</th><td>식에 넣지 않음, 화면에 따로 표시</td><td>넣지 않음 (부가가치세도 제외)</td></tr>
+      <tr><th>기존 대비 큰 변화</th><td>임대료 부담·보증금 두 인자를 하나로 합침</td><td>보증금을 새로 넣고, 비교 조건에 층 4구간·연식·면적 추가</td></tr>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <h3>두 인자가 함께 쓰는 근거</h3>
+    <div class="tbl"><table>
+      <tr><th>계산식 조각</th><th>근거 자료</th><th>판정</th><th class="c">임대료</th><th class="c">가성비</th></tr>
+      <tr><td><b>월세 + 보증금 환산해 더하기</b></td><td>한국부동산원 상업용부동산 임대동향조사 (국가승인통계 제408001호): "환산임대료 = (보증금*전환율/12)+월 임대료"</td><td><span class="pill pA">일치</span></td><td class="c">●</td><td class="c">●</td></tr>
+      <tr><td><b>보증금도 임대료에 넣는 원칙</b></td><td>감정평가 실무기준 [670-3.3]④ 실질임대료</td><td><span class="pill pA">일치</span></td><td class="c"></td><td class="c">●</td></tr>
+      <tr><td><b>보증금 × 1%</b></td><td>상가건물 임대차보호법 시행령 제2조 제3항 "1분의 100", 제5조 "연 1할2푼", 법 제12조</td><td><span class="pill pC">일치, 용도 주의</span></td><td class="c">●</td><td class="c">●</td></tr>
+      <tr><td><b>관리비·부가세 제외</b></td><td>한국부동산원 통계산출항목</td><td><span class="pill pA">일치</span></td><td class="c">●</td><td class="c">●</td></tr>
+    </table></div>
+    <div class="warn" style="margin-top:12px">
+      <b>1%는 법정 상한이다.</b> 실제 상한 = min(연 12%, 기준금리 × 4.5). 기준금리 3.00%에서는 13.5%라 상한은 12%(월 1%)다. 기준금리가 <b>2.67%</b>(12 ÷ 4.5) 밑으로 내려가야 상한이 달라진다.
+      <div class="note" style="margin-top:6px">한국부동산원은 상권별 시장 전환율을 쓰고 ㎡당 값은 임대가능면적(전용+공용)으로 나눈다. 그래서 이 자료는 "환산해 더하는 구조"와 "관리비·부가세 제외"의 근거로만 쓴다.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>이 화면의 출처 (6개 문서)</h3>
+    <div class="tbl"><table>
+      <tr><th>인자</th><th>계산식</th><th>변경사항</th><th>근거자료</th></tr>
+      <tr><td>임대료 부담+보증금</td><td>비용_임대료 부담+보증금.md</td><td>임대료 부담+보증금 변경사항.md</td><td>임대료 부담+보증금 근거자료.md</td></tr>
+      <tr><td>가성비</td><td>비용_가성비.md</td><td>가성비 변경사항.md</td><td>가성비 근거자료.md</td></tr>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <h3>외부 자료 링크</h3>
+    <div class="grid2">
+      <div><b style="font-size:14px">두 인자 공통</b><ul class="clean note">
+        <li><a href="https://www.reb.or.kr/reb/cm/cntnts/cntntsView.do?mi=10335&amp;cntntsId=1049&amp;statId=S237220284" target="_blank" rel="noopener">한국부동산원 상업용부동산 임대동향조사</a></li>
+        <li><a href="https://www.law.go.kr/법령/상가건물임대차보호법시행령" target="_blank" rel="noopener">상가건물 임대차보호법 시행령</a> (<a href="https://www.law.go.kr/법령/상가건물임대차보호법시행령/제2조" target="_blank" rel="noopener">제2조</a>, <a href="https://www.law.go.kr/법령/상가건물임대차보호법시행령/제5조" target="_blank" rel="noopener">제5조</a>)</li>
+        <li><a href="https://www.law.go.kr/법령/상가건물임대차보호법" target="_blank" rel="noopener">상가건물 임대차보호법</a></li>
+        <li><a href="https://www.bok.or.kr/portal/singl/baseRate/list.do?dataSeCd=01&amp;menuNo=200643" target="_blank" rel="noopener">한국은행 기준금리</a></li>
+      </ul></div>
+      <div><b style="font-size:14px">가성비</b><ul class="clean note">
+        <li><a href="https://www.law.go.kr/행정규칙/감정평가실무기준" target="_blank" rel="noopener">감정평가 실무기준</a>, <a href="https://www.law.go.kr/법령/감정평가에관한규칙" target="_blank" rel="noopener">감정평가에 관한 규칙</a></li>
+        <li><a href="https://www.ejrea.org/archive/view_article?pid=jrea-9-1-137" target="_blank" rel="noopener">유기용·이재우(2023)</a>, <a href="https://journal.kci.go.kr/jkca/archive/articlePdf?artiId=ART002139646" target="_blank" rel="noopener">김종근·주승민(2016)</a></li>
+        <li><a href="https://www.nts.go.kr/nts/na/ntt/selectNttInfo.do?mi=2205&amp;nttSn=1347752" target="_blank" rel="noopener">국세청 건물 기준시가 계산방법 고시</a></li>
+        <li><a href="https://www.molit.go.kr/USR/NEWS/m_71/dtl.jsp?id=95092471" target="_blank" rel="noopener">국토교통부 2025년 건축물 현황 통계</a></li>
+        <li><a href="https://kosis.kr/statHtml/statHtml.do?orgId=142&amp;tblId=DT_3ME0133" target="_blank" rel="noopener">소상공인실태조사 사업장 면적 (KOSIS)</a></li>
+        <li><a href="https://www.iaao.org/wp-content/uploads/Standard_on_Ratio_Studies.pdf" target="_blank" rel="noopener">IAAO Standard on Ratio Studies</a>, <a href="https://bluefoxr.github.io/COINrDoc/normalisation.html" target="_blank" rel="noopener">COINr 정규화 문서</a></li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================== 임대료 부담+보증금 -->
+<section class="panel" id="rent">
+  <h2>임대료 부담+보증금</h2>
+  <p class="lead">점수의 뜻: <b>"내가 빌릴 수 있는 가게 중 얼마나 싼 편인가."</b> 작성일 2026-11-17 · 계산식·점수 방식 확정 (점수 엔진은 아직 고치지 않음)</p>
+  <nav class="toc">
+    <a href="#r1">계산 흐름</a><a href="#r2">환산 계산기</a><a href="#r3">칸마다 따로 거르기</a><a href="#r4">점수 눈금</a><a href="#r5">최소 후보 30건</a><a href="#r6">바뀐 점</a><a href="#r7">근거</a><a href="#r8">한계</a>
+  </nav>
+
+  <div class="secttl" id="r1"><span class="n">1</span><h3>계산 흐름</h3></div>
+  <div class="card">
+    <div class="formula"><span>환산 월 임대료</span><span>=</span><span class="tok r">월세</span><span>+</span><span class="tok d">보증금 × 1%</span></div>
+    <p class="note" style="margin-bottom:0">단위는 만원. 관리비는 식에 넣지 않고 화면에 따로 표시한다. 이용자마다 자기 예산 안의 후보로 줄을 세우므로 기준 예산을 쓰지 않는다. 같은 예산이면 같은 매물은 항상 같은 점수다.</p>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <h3>5단계 (예산을 넣을 때마다 다시 계산)</h3>
+      <div class="flow">
+        <div class="fstep"><div class="no">0</div><div><b>입력: 월세 상한 A, 보증금 상한 B</b><span class="d">A·B는 후보를 고르는 데만 쓴다. 점수는 후보끼리의 순서로 정해진다</span></div></div>
+        <div class="farrow">↓</div>
+        <div class="fstep"><div class="no">1</div><div><b>후보 고르기</b><span class="d">월세 ≤ A <b>그리고</b> 보증금 ≤ B 인 대구 매물</span></div></div>
+        <div class="farrow">↓</div>
+        <div class="fstep"><div class="no">2</div><div><b>환산하기</b><span class="d">월세 + 보증금 × 1%</span></div></div>
+        <div class="farrow">↓</div>
+        <div class="fstep"><div class="no">3</div><div><b>줄 세우기</b><span class="d">환산 월 임대료가 싼 순서</span></div></div>
+        <div class="farrow">↓</div>
+        <div class="fstep"><div class="no">4</div><div><b>경계값 구하기</b><span class="d">후보의 10%, 20%, … 90% 분위값 (금액). 후보가 30건 미만이면 대구 매물 전체의 분위값</span></div></div>
+        <div class="farrow">↓</div>
+        <div class="fstep"><div class="no">5</div><div><b>점수</b><span class="d">10% 경계값 이하 100 … 90% 경계값 20, 가장 비싼 후보 10. 사이는 선형 보간</span></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>입력 상태별 후보</h3>
+      <div class="dec">
+        <div class="q">A, B 둘 다 입력</div><div class="res" style="background:var(--rent)">월세 ≤ A<small>그리고 보증금 ≤ B</small></div>
+        <div class="q">월세 상한만 입력</div><div class="res" style="background:var(--rent)">월세 ≤ A</div>
+        <div class="q">보증금 상한만 입력</div><div class="res" style="background:var(--rent)">보증금 ≤ B</div>
+        <div class="q">둘 다 미입력</div><div class="res" style="background:var(--gX)">대구 매물 전체</div>
+      </div>
+      <p class="note" style="margin-top:12px">어느 경우든 점수 매기는 방식은 같다 (4장 점수 눈금). 후보에서 빠진 매물은 목록에 표시되지 않는다.</p>
+    </div>
+  </div>
+
+  <div class="secttl" id="r2"><span class="n">2</span><h3>환산 계산기</h3></div>
+  <div class="card">
+    <div class="grid2">
+      <div>
+        <div class="glabel">매물</div>
+        <div class="frow">
+          <label class="field"><span>월세 (만원)</span><input id="rm" type="number" min="0" value="100"></label>
+          <label class="field"><span>보증금 (만원)</span><input id="rd" type="number" min="0" step="100" value="1000"></label>
+        </div>
+        <div class="glabel">내 예산 (비워 두면 미입력)</div>
+        <div class="frow">
+          <label class="field"><span>월세 상한 A</span><input id="rA" type="number" min="0" placeholder="미입력"></label>
+          <label class="field"><span>보증금 상한 B</span><input id="rB" type="number" min="0" step="100" placeholder="미입력"></label>
+        </div>
+      </div>
+      <div class="stat">
+        <div class="k">환산 월 임대료</div>
+        <div class="big" id="rTotal">-</div>
+        <div class="meter"><div id="rBarR" style="background:var(--rent)"></div><div id="rBarD" style="background:var(--dep)"></div></div>
+        <div class="legend" style="margin:0"><span><i style="background:var(--rent)"></i>월세 <b id="rLr"></b></span><span><i style="background:var(--dep)"></i>보증금 × 1% <b id="rLd"></b></span></div>
+        <div class="passrow"><span class="pill" id="rPA"></span><span class="pill" id="rPB"></span></div>
+        <div class="verdict" id="rVerdict"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="secttl" id="r3"><span class="n">3</span><h3>월세와 보증금을 칸마다 따로 거르는 이유</h3></div>
+  <div class="grid2">
+    <div class="card">
+      <svg viewBox="0 0 400 280" role="img" aria-label="칸마다 따로 거르는 영역과 환산 예산 하나로 거르는 영역 비교">
+        <line x1="50" y1="240" x2="380" y2="240" stroke="var(--gX)" stroke-width="1.2"/>
+        <line x1="50" y1="240" x2="50" y2="20" stroke="var(--gX)" stroke-width="1.2"/>
+        <text x="380" y="262" text-anchor="end">월세 →</text>
+        <text x="44" y="16">↑ 보증금</text>
+        <polygon points="50,240 330,240 50,40" fill="var(--gC)" fill-opacity=".12" stroke="var(--gC)" stroke-dasharray="5 4" stroke-width="1.5"/>
+        <polygon points="50,140 190,140 50,40" fill="var(--gD)" fill-opacity=".28"/>
+        <rect x="50" y="140" width="190" height="100" fill="var(--gA)" fill-opacity=".22" stroke="var(--gA)" stroke-width="2"/>
+        <text x="240" y="258" text-anchor="middle" class="strong">A</text>
+        <text x="38" y="144" text-anchor="end" class="strong">B</text>
+        <text x="145" y="195" text-anchor="middle" class="strong">칸마다 따로</text>
+        <text x="145" y="212" text-anchor="middle">월세 ≤ A 그리고 보증금 ≤ B</text>
+        <text x="58" y="98" class="strong" style="fill:var(--gD)">보증금 상한을</text>
+        <text x="58" y="114" class="strong" style="fill:var(--gD)">넘는데 통과</text>
+        <text x="215" y="60" class="strong" style="fill:var(--gC)">점선 삼각형 =</text>
+        <text x="215" y="76" style="fill:var(--gC)">환산 예산 하나로만</text>
+        <text x="215" y="92" style="fill:var(--gC)">거른 영역</text>
+      </svg>
+      <p class="note" style="margin-bottom:0">개념 그림이다. 실제 매물 점이 아니다.</p>
+    </div>
+    <div class="card">
+      <h3>시험 결과: 월 100만 / 보증금 1,000만 원 예산</h3>
+      <div class="stat"><div class="k">환산 예산만으로 거르면 보증금 상한을 넘는데도 통과한 매물</div><div class="big" style="color:var(--gD)">229건</div></div>
+      <p>그래서 필터는 <b>칸마다 따로</b> 적용한다. 환산해 합치는 것은 줄을 세울 때뿐이다.</p>
+    </div>
+  </div>
+
+  <div class="secttl" id="r4"><span class="n">4</span><h3>점수 눈금</h3></div>
+  <div class="card">
+    <p style="margin-top:0">후보의 환산 월 임대료로 10%마다 <b>경계값(금액)</b>을 구하고, 경계값마다 점수를 찍은 뒤 사이를 선형 보간한다.</p>
+    <div class="tbl nw"><table>
+      <tr><th>위치</th><th class="c">10% 이하</th><th class="c">20%</th><th class="c">30%</th><th class="c">40%</th><th class="c">50% (중앙값)</th><th class="c">60%</th><th class="c">70%</th><th class="c">80%</th><th class="c">90%</th><th class="c">가장 비싼 후보</th></tr>
+      <tr><td><b>점수</b></td><td class="c">100</td><td class="c">90</td><td class="c">80</td><td class="c">70</td><td class="c">60</td><td class="c">50</td><td class="c">40</td><td class="c">30</td><td class="c">20</td><td class="c">10</td></tr>
+    </table></div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <h3>경계값별 점수</h3>
+      <svg viewBox="0 0 440 300" role="img" aria-label="경계값별 점수 꺾은선"><g id="rScale"></g></svg>
+      <p class="note" style="margin-bottom:0">가로축은 경계값 순서다. 경계값 사이의 금액 간격은 후보마다 다르다.</p>
+    </div>
+    <div class="card">
+      <h3>선형 보간 예시</h3>
+      <svg viewBox="0 0 440 300" role="img" aria-label="선형 보간 예시"><g id="rInterp"></g></svg>
+      <p class="note" style="margin-bottom:0">85만 원이 50% 경계값(60점), 100만 원이 60% 경계값(50점)이면, 15만 원 동안 10점 내려가므로 <b>86만 원은 약 59.3점</b>이다.</p>
+    </div>
+  </div>
+  <div class="card">
+    <ul class="clean" style="margin-top:0">
+      <li><b>경계값은 금액이다.</b> 줄에서 몇 번째인지가 아니라 환산 월 임대료가 얼마인지로 점수가 정해진다.</li>
+      <li><b>같은 가격은 같은 점수</b>이고, 경계를 넘어도 점수가 한 번에 크게 바뀌지 않는다.</li>
+    </ul>
+    <h3 style="margin-top:14px;font-size:15px">재현 예 (월세 150만 / 보증금 2,000만 원, 후보 1,499건)</h3>
+    <div class="bars" id="rRepro"></div>
+  </div>
+
+  <div class="secttl" id="r5"><span class="n">5</span><h3>후보가 적을 때 (최소 후보 30건)</h3></div>
+  <div class="card">
+    <h3>규칙</h3>
+    <div class="flow">
+      <div class="fstep"><div class="no">1</div><div><b>후보 고르기는 그대로</b><span class="d">월세 ≤ A 그리고 보증금 ≤ B. 예산 밖 매물은 목록에 나오지 않는다</span></div></div>
+      <div class="farrow">↓</div>
+      <div class="fstep"><div class="no">2</div><div><b>후보가 30건 미만이면 경계값만 대구 매물 전체로</b><span class="d">10%~90% 분위값과 "가장 비싼 값"을 대구 매물 전체(2,717건)에서 구한다. 10% 경계값은 환산 50.6만 원</span></div></div>
+    </div>
+    <p class="note" style="margin-bottom:0">후보가 적으면 후보 사이 가격 폭이 좁아, 작은 가격 차이가 큰 점수 차이로 과장된다.</p>
+  </div>
+  <div class="card">
+    <h3>예: 월세 25만 / 보증금 300만 원 (후보 22건)</h3>
+    <div class="grid2">
+      <div><div class="glabel">후보끼리 비교 (규칙 없을 때)</div><div class="bars" id="r5Before"></div></div>
+      <div><div class="glabel">30건 규칙 (대구 매물 전체 경계값)</div><div class="bars" id="r5After"></div></div>
+    </div>
+    <ul class="clean">
+      <li>후보끼리만 비교하면 <b>22만 원(90점)과 23만 원(66.2점)</b>이 1만 원 차이에 23.8점 벌어진다.</li>
+      <li>22건 모두 대구 매물 전체의 10% 경계값(50.6만 원)보다 싸서 <b>모두 100점</b>이 된다.</li>
+    </ul>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <h3>후보 수별 경계값 폭 (중앙값)</h3>
+      <div class="bars" id="r5Width"></div>
+      <p class="note" style="margin-bottom:0">10% 경계값(100점)과 90% 경계값(20점) 사이 금액. 이 폭 안에서 80점이 갈린다. 30건 이상은 가장 좁아도 11.0만 원이다.</p>
+    </div>
+    <div class="card">
+      <h3>영향 범위</h3>
+      <div class="stat"><div class="k">예산 10,100개 중 후보 30건 미만</div><div class="big">674개 <small style="font-size:16px">(6.7%)</small></div></div>
+      <p class="note" style="margin-bottom:0">모두 <b>월세 상한 30만 원 미만</b>이거나 <b>보증금 상한 200만 원 이하</b>다. 그 밖의 예산은 점수가 바뀌지 않는다. (월세 상한 5만~500만 원 × 보증금 상한 0~1억 원)</p>
+    </div>
+  </div>
+  <div class="card">
+    <h3>후보가 30건 이상이어도 같은 가격이 몰린 경우: 월세 30만 / 보증금 300만 원 (후보 56건)</h3>
+    <div class="bigstack">
+      <span style="width:16.07%;background:var(--gA)">100점<small>9건</small></span>
+      <span style="width:42.86%;background:var(--gC)">50점<small>24건</small></span>
+      <span style="width:41.07%;background:var(--gX)">그 밖<small>23건</small></span>
+    </div>
+    <div class="grid2" style="margin-top:14px">
+      <div class="stat"><div class="k">100점 비율</div><div class="big">16.1%</div><div class="note">"약 10%"보다 많음</div></div>
+      <div class="stat"><div class="k">10점 받는 매물</div><div class="big">0건</div><div class="note">가장 비싼 값에 24건이 몰림</div></div>
+    </div>
+    <ul class="clean">
+      <li>가장 비싼 가격(환산 33만 원)에 24건이 몰려 60~90% 경계값이 모두 33만 원이 된다.</li>
+      <li>이 24건은 60% 경계값 점수인 50점을 받는다.</li>
+      <li>그래서 "100점은 후보의 약 10%"가 이런 예산에서는 성립하지 않는다.</li>
+    </ul>
+  </div>
+
+  <div class="secttl" id="r6"><span class="n">6</span><h3>기존에서 바뀐 점</h3></div>
+  <div class="card">
+    <h3>두 인자 → 한 인자</h3>
+    <div class="tbl"><table class="chg">
+      <tr><th></th><th>기존</th><th>변경</th></tr>
+      <tr><td>인자 수</td><td>2개 (임대료 부담, 보증금)</td><td>1개 (임대료 부담+보증금)</td></tr>
+      <tr><td>사용자 입력</td><td>예산 1칸</td><td>월세 상한 + 보증금 상한 2칸</td></tr>
+      <tr><td>필터</td><td>월세 + 관리비 ≤ 예산</td><td>월세 ≤ 월세 상한 그리고 보증금 ≤ 보증금 상한</td></tr>
+      <tr><td>임대료 부담 식</td><td>(월세 + 관리비) ÷ 예산</td><td>월세 + 보증금 × 1%</td></tr>
+      <tr><td>관리비</td><td>식에 포함</td><td>식에서 제외, 화면에 따로 표시</td></tr>
+      <tr><td>임대료 부담 점수</td><td>50% 이하 100점, 100%에서 40점 (모두 같은 구간)</td><td>예산 안 후보의 10% 경계값마다 100 → 10, 선형 보간</td></tr>
+      <tr><td>보증금 점수</td><td>500만 100 · 2,000만 60 · 8,000만 20 · 1억 이상 10</td><td>별도 점수 없음 (통합)</td></tr>
+      <tr><td>구간 만드는 시점</td><td>미리 고정</td><td>예산을 입력할 때마다</td></tr>
+      <tr><td>무권리</td><td>+10점 가점</td><td>삭제 (권리금 정보라 새 식에 들어갈 자리가 없음)</td></tr>
+      <tr><td>예산 미입력</td><td>임대료 부담 인자를 빼고 보증금 점수만 계산</td><td>대구 매물 전체를 후보로 같은 방식</td></tr>
+      <tr><td>후보가 적을 때</td><td>해당 없음 (모두 같은 고정 구간)</td><td>후보가 30건 미만이면 경계값을 대구 매물 전체로 (후보는 그대로)</td></tr>
+    </table></div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <h3>왜 관리비를 뺐나</h3>
+      <div class="bars"><div class="bar"><span class="lb">관리비 결측</span><div class="tr"><div class="fl" style="width:61%;background:var(--gD)"></div></div><span class="vl">61%</span></div></div>
+      <p class="note">1,657건. 식에 넣으면 빈값을 0으로 채워야 했다.</p>
+    </div>
+    <div class="card">
+      <h3>왜 구간을 예산마다 다시 만드나</h3>
+      <div class="bars"><div class="bar"><span class="lb">기존 100점 비율</span><div class="tr"><div class="fl" style="width:86.6%;background:var(--gD)"></div></div><span class="vl">86.6%</span></div></div>
+      <p class="note">월세 500만 / 보증금 1억 원 예산에서. 예산이 크면 대부분 만점이었다.</p>
+    </div>
+  </div>
+
+  <div class="secttl" id="r7"><span class="n">7</span><h3>계산식의 근거</h3></div>
+  <div class="card">
+    <h3>근거 한 장 정리</h3>
+    <div class="tbl"><table>
+      <tr><th>계산식의 조각</th><th>어디서 왔나</th><th>무엇을 가져왔나</th><th>판정</th></tr>
+      <tr><td><b>월세 + 보증금 × 전환율 ÷ 12</b></td><td>한국부동산원</td><td>보증금을 월세로 바꿔 더하는 방법</td><td><span class="pill pA">일치</span></td></tr>
+      <tr><td><b>전환율 = 12%</b></td><td>시행령 제5조</td><td>전환율에 넣을 숫자 (법정 상한)</td><td><span class="pill pC">일치, 용도 주의</span></td></tr>
+      <tr><td><b>보증금 × 1%</b></td><td>시행령 제2조 제3항</td><td>같은 숫자인지 검산 (법 적용 범위 판단용)</td><td><span class="pill pC">일치, 용도 주의</span></td></tr>
+      <tr><td><b>관리비 없음</b></td><td>한국부동산원</td><td>관리비를 빼는 기준</td><td><span class="pill pA">일치</span></td></tr>
+      <tr><td><b>월세 ≤ A, 보증금 ≤ B</b></td><td><span class="pill pX">우리 설계</span></td><td>내 예산으로 빌릴 수 있는 후보 고르기</td><td><span class="pill pX">우리 설계</span></td></tr>
+      <tr><td><b>10% 경계값마다 100 → 10, 선형 보간</b></td><td><span class="pill pX">우리 설계</span> + 우리 데이터</td><td>후보를 줄 세워 구한 경계값에 점수 찍기</td><td><span class="pill pX">우리 설계</span></td></tr>
+    </table></div>
+  </div>
+  <div class="card">
+    <h3>근거가 없는 부분 (우리 설계)</h3>
+    <ul class="clean">
+      <li>A·B를 칸마다 따로 거르는 필터는 팀이 정한 방식이다 (근거는 3장의 229건 시험).</li>
+      <li>경계값마다 10점씩 내려가는 눈금과 가장 비싼 후보 10점은 팀 설정이다.</li>
+      <li>최소 후보 30건은 우리 데이터로 정했다. 후보가 30건 이상이면 10%~90% 경계값 폭이 모두 11만 원 이상이다 (외부 근거 없음).</li>
+    </ul>
+  </div>
+
+  <div class="secttl" id="r8"><span class="n">8</span><h3>한계와 함께 고쳐야 하는 곳</h3></div>
+  <div class="grid2">
+    <div class="card">
+      <h3>한계</h3>
+      <ul class="clean">
+        <li>예산이 넉넉해도 점수가 10~100점으로 고르게 퍼진다.</li>
+        <li>기준금리 2.67% 미만이면 법정 상한이 달라진다 (2026-11-16 기준금리 3.00%).</li>
+        <li>경계값마다 10점씩 내려가는 방식은 good/bad 피드백으로 검증되기 전까지 가설이다.</li>
+        <li>후보가 29건일 때와 30건일 때 점수 기준이 달라져, 예산을 조금 바꾸면 점수가 갑자기 바뀔 수 있다.</li>
+        <li>후보가 30건 미만인 예산에서는 후보 대부분이 100점 근처에 모여 매물을 거의 구별하지 못한다.</li>
+        <li>30건이라는 숫자에는 외부 근거가 없다.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>함께 고쳐야 하는 곳</h3>
+      <ul class="clean note">
+        <li>입력 칸 1칸 → 2칸, 화면과 입력 설명</li>
+        <li>"월세 + 관리비" 상한 → "월세"만의 상한, 입력 칸 문구</li>
+        <li>인자 수(2 → 1)를 적은 문서와 점수 설정</li>
+        <li>예산을 받을 때마다 후보를 고르고 칸을 다시 나누는 점수 엔진</li>
+        <li>후보 30건 미만이면 경계값을 대구 매물 전체로 구하는 분기</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================== 가성비 -->
+<section class="panel v-panel" id="val">
+  <h2>가성비</h2>
+  <p class="lead">점수의 뜻: <b>"비슷한 조건의 가게들과 비교해 ㎡당 얼마나 싼 편인가."</b> 작성일 2026-11-23 · 계산식·비교 순서·점수 구간 확정 (점수 엔진은 아직 기존 방식)</p>
+  <nav class="toc">
+    <a href="#v1">계산 흐름</a><a href="#v2">계산기</a><a href="#v3">비교 조건</a><a href="#v4">비교 순서</a><a href="#v5">순서의 이유</a><a href="#v6">점수 구간</a><a href="#v7">분포·데이터 처리</a><a href="#v8">바뀐 점</a><a href="#v9">근거</a><a href="#v10">한계</a>
+  </nav>
+
+  <div class="secttl" id="v1"><span class="n">1</span><h3>계산 흐름</h3></div>
+  <div class="card">
+    <div class="formula"><span>㎡당 환산 임대료</span><span>=</span><span>(</span><span class="tok r">월세</span><span>+</span><span class="tok d">보증금 × 1%</span><span>)</span><span>÷</span><span class="tok a">전용면적</span></div>
+    <p class="note" style="margin-bottom:0">단위는 만원. 관리비와 부가가치세는 넣지 않는다. 배율 = 내 ㎡당 환산 임대료 ÷ 비교 그룹 중앙값. 1보다 작으면 비슷한 매물보다 싸고, 크면 비싸다.</p>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <h3>4단계</h3>
+      <div class="flow">
+        <div class="fstep"><div class="no">1</div><div><b>내 값</b><span class="d">(월세 + 보증금 × 1%) ÷ 전용면적</span></div></div>
+        <div class="farrow">↓</div>
+        <div class="fstep"><div class="no">2</div><div><b>비교 그룹</b><span class="d">같은 동 + 같은 층·연식·면적 구간 매물 (내 매물 제외). 10건 미만이면 4장 순서대로 넓힘</span></div></div>
+        <div class="farrow">↓</div>
+        <div class="fstep"><div class="no">3</div><div><b>배율</b><span class="d">내 값 ÷ 비교 그룹 중앙값</span></div></div>
+        <div class="farrow">↓</div>
+        <div class="fstep"><div class="no">4</div><div><b>점수</b><span class="d">0.5배 이하 100 · 1.0배 50 · 1.5배 25 · 1.75배 이상 0, 사이는 선형 보간</span></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>점수 판정 (배율 기준)</h3>
+      <div class="dec">
+        <div class="q">0.5배 이하 (절반 이하로 쌈)</div><div class="res" style="background:var(--gA)">100<small>상한 고정</small></div>
+        <div class="q">1.0배 (비슷한 매물과 같은 값)</div><div class="res" style="background:var(--val)">50<small>가운데</small></div>
+        <div class="q">1.5배</div><div class="res" style="background:var(--gC)">25</div>
+        <div class="q">1.75배 이상</div><div class="res" style="background:var(--gD)">0<small>하한 고정</small></div>
+      </div>
+      <p class="note" style="margin-top:12px">상·하한을 고정하고 사이를 직선으로 잇기 때문에, 매물을 갱신해도 같은 배율은 같은 점수를 받는다.</p>
+    </div>
+  </div>
+
+  <div class="secttl" id="v2"><span class="n">2</span><h3>가성비 계산기</h3></div>
+  <div class="card">
+    <div class="grid2">
+      <div>
+        <div class="glabel">매물</div>
+        <div class="frow">
+          <label class="field"><span>월세 (만원)</span><input id="vm" type="number" min="0" value="100"></label>
+          <label class="field"><span>보증금 (만원)</span><input id="vd" type="number" min="0" step="100" value="1000"></label>
+          <label class="field"><span>전용면적 (㎡)</span><input id="va" type="number" min="1" step="0.1" value="66"></label>
+        </div>
+        <div class="glabel">비교 그룹</div>
+        <div class="frow">
+          <label class="field"><span>㎡당 환산 임대료 중앙값 (만원)</span><input id="vmed" type="number" min="0.01" step="0.01" value="1.92"></label>
+        </div>
+        <p class="note" style="margin:0">기본값 1.92만원은 가성비 근거자료 10장의 "1층 ㎡당 환산 임대료 중앙값"이다. 참고: 1층 1.92 · 2층 1.16 · 3층 이상 1.16 · 지하 0.99 (만원)</p>
+      </div>
+      <div class="stat">
+        <div class="kv">
+          <span class="note">환산 월 임대료</span><b id="vTot">-</b>
+          <span class="note">㎡당 환산 임대료</span><b id="vPer">-</b>
+          <span class="note">배율</span><b id="vRatio">-</b>
+        </div>
+        <div class="k" style="margin-top:12px">점수</div>
+        <div class="big" id="vScore" style="color:var(--val)">-</div>
+        <div class="meter"><div id="vBar" style="background:var(--val)"></div></div>
+        <div class="verdict" id="vVerdict"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="secttl" id="v3"><span class="n">3</span><h3>비교 조건 4가지</h3></div>
+  <div class="card">
+    <div class="condgrid">
+      <b>지역</b><div class="chips v"><span>같은 동에서 시작</span><span>동은 항상 구+동으로 묶음 (달서구 도원동 ≠ 중구 도원동)</span></div>
+      <b>층</b><div class="chips v"><span>지하</span><span>1층</span><span>2층</span><span>3층 이상</span></div>
+      <b>연식</b><div class="chips v"><span>10년 미만</span><span>10∼15년</span><span>15∼20년</span><span>20∼25년</span><span>25∼30년</span><span>30년 이상</span></div>
+      <b>면적</b><div class="chips v"><span>33㎡ 미만</span><span>33∼66㎡</span><span>66∼99㎡</span><span>99∼132㎡</span><span>132㎡ 이상</span></div>
+    </div>
+    <ul class="clean" style="margin-top:12px">
+      <li>연식은 사용승인일부터 매물 확인일까지의 경과년수다.</li>
+      <li>층이 "전체층·기타"인 매물은 건물 전체 층수의 중앙값을 층으로 본다(0.5는 올림). 2층 건물 → 2층, 3층 건물 → 2층, 4층 건물 → 3층.</li>
+    </ul>
+  </div>
+
+  <div class="secttl" id="v4"><span class="n">4</span><h3>비교 순서: 10건이 모일 때까지 넓히기</h3></div>
+  <p class="note" style="margin-top:-4px">각 단계에서 비교 매물(내 매물 제외)이 10건 이상이면 멈추고 그 중앙값을 쓴다. 막대는 그 단계에서 멈춘 매물 수다.</p>
+  <div class="grid2">
+    <div class="card"><h3>지상 매물 (2,638건, 6단계)</h3><div class="bars wide" id="stepsUp"></div></div>
+    <div class="card"><h3>지하 매물 (66건, 8단계)</h3><div class="bars wide" id="stepsDown"></div></div>
+  </div>
+  <div class="card">
+    <ul class="clean" style="margin-top:0">
+      <li>이 순서로 하면 점수를 받지 못하는 매물은 <b>0건</b>이다 (지상 2,638 + 지하 66 = 2,704건).</li>
+      <li>지하 ①∼③은 지금 0건이지만 지상과 틀을 맞추고, 매물이 늘어날 때를 대비해 둔다.</li>
+    </ul>
+  </div>
+
+  <div class="secttl" id="v5"><span class="n">5</span><h3>왜 이 순서인가: 빼도 덜 바뀌는 조건부터</h3></div>
+  <p class="note" style="margin-top:-4px">조건을 하나 빼거나 지역을 넓혔을 때 비교 매물 중앙값이 바뀌는 정도(변화율의 중앙값)다. 짧을수록 빼도 괜찮은 조건이다.</p>
+  <div class="grid2">
+    <div class="card"><h3>지상</h3><div class="bars" id="chgUp"></div>
+      <p class="note">면적은 같은 동 안에서 빼도 거의 바뀌지 않아 먼저 뺀다. 층·연식은 구로 넘어가 지키고, 가장 크게 바뀌는 연식은 마지막까지 지킨다.</p></div>
+    <div class="card"><h3>지하</h3><div class="bars" id="chgDown"></div>
+      <p class="note">연식에 따라 차이가 매우 커서, 같은 구보다 연식을 먼저 지킨다.</p></div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <h3>지하를 끝까지 지하끼리 비교하는 이유</h3>
+      <div class="bars">
+        <div class="bar"><span class="lb">1층 등과 섞으면</span><div class="tr"><div class="fl" style="width:58%;background:var(--gD)"></div></div><span class="vl">0.58</span></div>
+        <div class="bar"><span class="lb">지하끼리 비교</span><div class="tr"><div class="fl" style="width:93%;background:var(--val)"></div></div><span class="vl">0.93</span></div>
+      </div>
+      <p class="note">배율 중앙값. 섞으면 실제로 싸서가 아니라 비교 상대 때문에 가성비가 좋아 보인다.</p>
+    </div>
+    <div class="card">
+      <h3>10건 미만 처리 방식 비교</h3>
+      <div class="bars">
+        <div class="bar"><span class="lb">조건 하나씩 풀기</span><div class="tr"><div class="fl" style="width:0.6%;background:var(--val)"></div></div><span class="vl">0건</span></div>
+        <div class="bar"><span class="lb">대구 전체로 비교</span><div class="tr"><div class="fl" style="width:18.1%;background:var(--gD)"></div></div><span class="vl">204건</span></div>
+        <div class="bar"><span class="lb">점수 비우기</span><div class="tr"><div class="fl" style="width:100%;background:var(--gD)"></div></div><span class="vl">1,126건</span></div>
+      </div>
+      <p class="note">점수를 받지 못하는 매물 수. 조건 하나씩 풀기만 모든 매물에 점수를 준다.</p>
+    </div>
+  </div>
+  <div class="warn">네 조건을 모두 걸면 같은 동에서 10건 이상인 매물은 <b>227건(8.4%)</b>뿐이고, 같은 구로 넓혀도 <b>1,126건(41.6%)</b>은 10건 미만이다.</div>
+
+  <div class="secttl" id="v6"><span class="n">6</span><h3>점수 구간</h3></div>
+  <div class="card">
+    <p style="margin-top:0">1.0배(비슷한 매물과 같은 값)가 0∼100점의 가운데인 50점이다. 그래프 아래 숫자는 우리 매물 중 그 배율 <b>미만</b>인 비율이다.</p>
+    <svg viewBox="0 0 760 320" role="img" aria-label="배율별 가성비 점수 꺾은선"><g id="vScale"></g></svg>
+    <div class="tbl nw" style="margin-top:12px"><table>
+      <tr><th>배율</th><th class="c">0.5배 이하</th><th class="c">0.75배</th><th class="c">1.0배</th><th class="c">1.25배</th><th class="c">1.5배</th><th class="c">1.6배</th><th class="c">1.75배 이상</th></tr>
+      <tr><td><b>점수</b></td><td class="c">100</td><td class="c">75</td><td class="c">50</td><td class="c">37.5</td><td class="c">25</td><td class="c">15</td><td class="c">0</td></tr>
+    </table></div>
+  </div>
+
+  <div class="secttl" id="v7"><span class="n">7</span><h3>결과 분포와 데이터 처리</h3></div>
+  <div class="card">
+    <h3>배율 분포 (2,704건, 배율 중앙값 0.98)</h3>
+    <div class="bigstack">
+      <span style="width:7.7%;background:var(--gA)">7.7%</span>
+      <span style="width:43.6%;background:var(--val)">0.5∼1.0배<small>43.6%</small></span>
+      <span style="width:28.7%;background:var(--gC)">1.0∼1.5배<small>28.7%</small></span>
+      <span style="width:20.0%;background:var(--gD)">1.5배+<small>20.0%</small></span>
+    </div>
+    <div class="legend"><span><i style="background:var(--gA)"></i>0.5배 미만</span><span><i style="background:var(--val)"></i>0.5∼1.0배</span><span><i style="background:var(--gC)"></i>1.0∼1.5배</span><span><i style="background:var(--gD)"></i>1.5배 이상</span></div>
+  </div>
+  <div class="card">
+    <h3>데이터 처리</h3>
+    <div class="hflow">
+      <div class="box"><span class="note">매물 CSV</span><b class="big" style="font-size:24px">2,717</b></div>
+      <div class="ar">−</div>
+      <div class="box" style="border-left:4px solid var(--gD)"><span class="note">중복</span><b class="big" style="font-size:24px">13</b></div>
+      <div class="ar">=</div>
+      <div class="box" style="border-left:4px solid var(--val)"><span class="note">계산 대상</span><b class="big" style="font-size:24px">2,704</b></div>
+      <div class="ar">→</div>
+      <div class="box"><span class="note">지상</span><b class="big" style="font-size:24px">2,638</b></div>
+      <div class="box"><span class="note">지하</span><b class="big" style="font-size:24px">66</b></div>
+    </div>
+    <ul class="clean" style="margin-top:12px">
+      <li><b>중복:</b> 동·층·전용면적·보증금·월세가 같고, 좌표 100m 이내이며 사용승인일 차이가 62일 이내인 쌍은 하나만 남긴다.</li>
+      <li><b>층 미상 26건:</b> 건물 층수 중앙값으로 층을 정해 포함 (1층 2, 2층 16, 3층 이상 8).</li>
+      <li><b>사용승인일:</b> 연월만 있으면 그달 1일, 연도만 있으면 그해 7월 1일. 확인일보다 늦으면 경과 0년.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>확인필요 (점수 대신 표시, 지금 2건)</h3>
+    <p class="note" style="margin-top:0">매물 정보만으로 점수를 믿을 수 없는 매물은 계산에서 빼지 않고 "확인필요"로 표시하고 목록으로 알린다.</p>
+    <div class="tbl"><table>
+      <tr><th>매물</th><th>값</th><th class="r">배율</th><th>이유</th></tr>
+      <tr><td>2658788057 북구 산격동 1층 전용 61.48㎡</td><td>보증금 13,500 / 월세 370</td><td class="r">6.54</td><td>1층 2개 호실과 2층을 묶은 가격인데 면적은 한 호실 값</td></tr>
+      <tr><td>2658789341 북구 산격동 1층 전용 43.2㎡</td><td>보증금 13,500 / 월세 370</td><td class="r">9.31</td><td>위 매물과 같은 묶음의 다른 호실</td></tr>
+    </table></div>
+  </div>
+
+  <div class="secttl" id="v8"><span class="n">8</span><h3>기존에서 바뀐 점</h3></div>
+  <div class="card">
+    <div class="tbl"><table class="chg">
+      <tr><th></th><th>기존</th><th>변경</th></tr>
+      <tr><td>내 값</td><td>월세 ÷ 전용면적</td><td>(월세 + 보증금 × 1%) ÷ 전용면적</td></tr>
+      <tr><td>비교 조건</td><td>같은 동 + 층대</td><td>같은 동 + 층 + 연식 + 면적</td></tr>
+      <tr><td>층 구분</td><td>1층 / 그 외 (2구간)</td><td>지하 / 1층 / 2층 / 3층 이상 (4구간)</td></tr>
+      <tr><td>연식·면적</td><td>없음</td><td>연식 6구간, 면적 5구간</td></tr>
+      <tr><td>표본 부족 시</td><td>같은 동·층대 10건 미만이면 같은 구·층대</td><td>단계별로 조건을 풀거나 넓힘 (지상 6단계, 지하 8단계)</td></tr>
+      <tr><td>지하</td><td>"그 외"에 섞여 비교</td><td>끝까지 지하끼리</td></tr>
+      <tr><td>자기 자신</td><td>비교 그룹에 포함</td><td>제외</td></tr>
+      <tr><td>점수 구간</td><td>0.5배 100 · 1.0배 60 · 1.5배 20 · 1.75배+ 0</td><td>0.5배 이하 100 · 1.0배 50 · 1.5배 25 · 1.75배 이상 0</td></tr>
+      <tr><td>층 미상 26건</td><td>규칙 없음</td><td>건물 층수 중앙값을 층으로</td></tr>
+      <tr><td>중복 매물</td><td>처리 없음</td><td>13쌍은 하나만 남김</td></tr>
+      <tr><td>믿기 어려운 점수</td><td>처리 없음</td><td>"확인필요" 표시 (지금 2건)</td></tr>
+    </table></div>
+  </div>
+  <div class="card">
+    <h3>1.0배 점수: 60 → 50</h3>
+    <div class="legend"><span><i style="background:var(--gX)"></i>기존</span><span><i style="background:var(--val)"></i>변경</span></div>
+    <div id="vBefore"></div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <h3>왜 바꿨나</h3>
+      <ul class="clean">
+        <li><b>보증금:</b> 월세만 보면 보증금이 큰 매물과 작은 매물이 같은 값으로 비교됐다.</li>
+        <li><b>층 4구간:</b> 기존 "그 외"에 2층·3층 이상·지하가 섞여 있었는데, 셋은 임대료·가격 수준이 서로 다르다.</li>
+        <li><b>연식·면적:</b> 같은 구 기준으로 연식 조건을 빼면 배율이 약 26% 바뀌었다.</li>
+        <li><b>자기 자신 제외:</b> 표본이 적을 때 내 값이 중앙값에 섞이면 배율이 1 쪽으로 끌려간다.</li>
+        <li><b>점수 구간:</b> 1.0배를 가운데 50점에 두었다. 기존 1.0배 60점에는 근거가 없었다.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>기존에서 이어받은 것</h3>
+      <ul class="clean">
+        <li>비슷한 매물의 중앙값 대비 배율, 분모는 전용면적</li>
+        <li>같은 동에서 시작, 10건 미만이면 같은 구로 넓히는 방향</li>
+        <li>기준점 위치(0.5·1.0·1.5·1.75배), 양 끝 점수, 사이 선형 보간</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="secttl" id="v9"><span class="n">9</span><h3>계산식의 근거</h3></div>
+  <div class="card">
+    <h3>근거 한 장 정리</h3>
+    <div class="tbl"><table>
+      <tr><th>계산식의 조각</th><th>어디서 왔나</th><th>무엇을 가져왔나</th><th>판정</th></tr>
+      <tr><td><b>월세 + 보증금 환산</b></td><td>감정평가 실무기준 [670-3.3]④, 한국부동산원</td><td>보증금도 임대료에 넣는 원칙(실질임대료), 환산해 더하는 구조</td><td><span class="pill pA">일치</span></td></tr>
+      <tr><td><b>보증금 × 1%</b></td><td>상가임대차법 시행령 제2조 제3항, 제5조, 법 제12조</td><td>환산 비율 (법정 상한)</td><td><span class="pill pC">일치, 용도 주의</span></td></tr>
+      <tr><td><b>관리비·부가세 없음</b></td><td>한국부동산원</td><td>관리비를 빼는 기준</td><td><span class="pill pA">일치</span></td></tr>
+      <tr><td><b>÷ 전용면적</b></td><td>소상공인실태조사 조사표 문20</td><td>공용면적을 뺀 영업 면적</td><td><span class="pill pA">일치</span></td></tr>
+      <tr><td><b>비슷한 매물과 비교</b></td><td>감정평가에 관한 규칙 제2조 제8호·제22조, 실무기준 [400-3.3.2.2]</td><td>위치적·물적 유사성이 있는 사례와 비교 (임대사례비교법)</td><td><span class="pill pA">일치</span><div class="note">층·연식·면적을 물적 유사성으로 본 것은 우리 해석</div></td></tr>
+      <tr><td><b>층 4구간</b></td><td>유기용·이재우(2023), 김종근·주승민(2016), 실무기준 [610-3.1.3]②, 국세청 고시 제11조</td><td>지하 / 1층 / 2층 / 3층 이상 구분</td><td><span class="pill pA">일치</span></td></tr>
+      <tr><td><b>연식 6구간</b></td><td>국토교통부 2025년 건축물 현황 통계</td><td>5년 단위 구간, 30년 이상 = 노후</td><td><span class="pill pA">일치</span></td></tr>
+      <tr><td><b>면적 5구간</b></td><td>중소벤처기업부 소상공인실태조사</td><td>33㎡(10평) 단위 구간</td><td><span class="pill pA">일치</span></td></tr>
+      <tr><td><b>10건 기준</b></td><td><span class="pill pX">우리 설계</span> + IAAO Standard on Ratio Studies</td><td>5건 미만 표본은 신뢰도가 매우 낮다는 최소선보다 엄격하게</td><td><span class="pill pB">참고</span></td></tr>
+      <tr><td><b>비교 순서</b></td><td><span class="pill pX">우리 설계</span> + 우리 데이터</td><td>덜 바뀌는 조건부터 풀기</td><td><span class="pill pX">우리 설계</span></td></tr>
+      <tr><td><b>점수 구간</b></td><td><span class="pill pX">우리 설계</span> + COINr 정규화 문서 (EU JRC)</td><td>상·하한 고정, 사이는 직선 (방식만)</td><td><span class="pill pX">우리 설계</span><div class="note">기준점과 점수값은 팀 설정</div></td></tr>
+    </table></div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <h3>층 4구간 근거 한 줄씩</h3>
+      <ul class="clean">
+        <li><b>유기용·이재우(2023):</b> 층을 지하층 / 1층 / 2층 / 3층 이상 더미로 나눈 회귀분석. 지하·2층·3층 이상 모두 1층 대비 유의한 음(−)의 관계.</li>
+        <li><b>김종근·주승민(2016):</b> 3층 이상의 효용비율은 서로 비슷하다는 문장 (이재우 2005, 국토교통부 2013 인용).</li>
+        <li><b>국세청 고시 제11조:</b> 상가 1층 120, 2층 105, 지하 1층 80, 지하 2층 이상 70 (상속·증여세 기준시가용, 보조 근거).</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>근거가 없는 부분 (우리 설계)</h3>
+      <ul class="clean">
+        <li>기준점(0.5·1.0·1.5·1.75배)과 점수값(100·50·25·0)은 팀 설정이다. 외부 자료에서는 "상·하한 고정, 사이는 직선"이라는 방식만 가져왔다.</li>
+        <li>10건 기준은 IAAO 최소선(5건)보다 엄격하게 팀이 정했다.</li>
+        <li>비교 순서는 우리 데이터의 변화율로 정했다.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="secttl" id="v10"><span class="n">10</span><h3>한계와 함께 고쳐야 하는 곳</h3></div>
+  <div class="grid2">
+    <div class="card">
+      <h3>한계</h3>
+      <ul class="clean">
+        <li>매물 가격은 호가이고 시점수정을 하지 않는다. 감정평가액이 아닌 상대 지표다.</li>
+        <li>늦은 단계일수록 비교가 느슨하다 (지상 ⑥ 79건, 지하 ⑦·⑧ 19건).</li>
+        <li>대구 전체 비교는 동네 차이를 반영하지 못한다 (지하 ⑤·⑥·⑧ 44건).</li>
+        <li>지하는 66건뿐이라 영향 수치가 크게 나왔을 수 있다.</li>
+        <li>층 미상 26건에는 통임대처럼 여러 층을 빌려주는 매물이 섞여 있다.</li>
+        <li>전용면적과 공급면적이 같은 매물이 많아(1,751건) 계약면적이 섞였을 수 있다.</li>
+        <li>1%는 법정 상한이다 (기준금리 2.67% 미만이면 달라짐).</li>
+        <li>값이 많이 튀는 매물 28건은 아직 하나씩 보지 않았다.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>함께 고쳐야 하는 곳</h3>
+      <ul class="clean note">
+        <li>점수 엔진의 가성비 계산이 아직 기존 방식이다.</li>
+        <li>엔진을 다시 돌려 점수 설정과 결과 파일을 새 기준으로 바꿔야 한다.</li>
+        <li>설계 HTML의 가성비 설명이 기존 방식이다.</li>
+        <li>"확인필요" 표시와 목록을 보여줄 화면 자리가 필요하다.</li>
+        <li>2026-11-20에 고친 매물 CSV 4건을 반영해 다시 계산해야 한다.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+</main>
+<footer>비용 그룹 · 출처: 임대료 부담+보증금 3개 문서(2026-11-17), 가성비 3개 문서(2026-11-23)</footer>
+
+<script>
+// ---------- tabs ----------
+const btns=[...document.querySelectorAll('.tabs button')];
+function show(id){
+  btns.forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===id));
+  document.querySelectorAll('section.panel').forEach(s=>s.classList.toggle('on',s.id===id));
+}
+btns.forEach(b=>b.addEventListener('click',()=>{show(b.dataset.tab);window.scrollTo(0,0)}));
+document.querySelectorAll('.toc a').forEach(a=>a.addEventListener('click',e=>{
+  e.preventDefault();const t=document.querySelector(a.getAttribute('href'));
+  const y=t.getBoundingClientRect().top+window.scrollY-70;window.scrollTo({top:y,behavior:'smooth'});
+}));
+
+// ---------- helpers ----------
+const V=n=>`var(--${n})`;
+const $=id=>document.getElementById(id);
+const fmt=(v,d=1)=>{const p=10**d;return (Math.round(v*p)/p).toLocaleString('ko-KR')};
+const num=x=>{const v=parseFloat(x.value);return isNaN(v)?null:v};
+const NS='http://www.w3.org/2000/svg';
+function el(tag,attrs,text){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(text!=null)e.textContent=text;return e}
+function bars(id,rows,max){
+  const m=max||Math.max(...rows.map(r=>r.v));
+  $(id).innerHTML=rows.map(r=>`<div class="bar"><span class="lb">${r.l}</span><div class="tr"><div class="fl" style="width:${r.v?Math.max(r.v/m*100,0.6).toFixed(1):0}%;background:${r.c||V('accent')}"></div></div><span class="vl">${r.t!==undefined?r.t:r.v.toLocaleString('ko-KR')}</span></div>`).join('');
+}
+
+// ---------- 임대료 계산기 ----------
+['rm','rd','rA','rB'].forEach(i=>$(i).addEventListener('input',rCalc));
+function setPill(node,label,ok){
+  if(ok===null){node.className='pill pX';node.textContent=label+': 미입력 (적용 안 함)'}
+  else{node.className='pill '+(ok?'pA':'pD');node.textContent=label+(ok?': 통과':': 넘음')}
+}
+function rCalc(){
+  const m=num($('rm'))||0,d=num($('rd'))||0,A=num($('rA')),B=num($('rB'));
+  const dc=d*0.01,t=m+dc;
+  $('rTotal').textContent=fmt(t)+'만 원';$('rLr').textContent=fmt(m)+'만';$('rLd').textContent=fmt(dc)+'만';
+  const pr=t>0?m/t*100:0,pd=t>0?dc/t*100:0;
+  $('rBarR').style.width=pr+'%';$('rBarD').style.width=pd+'%';
+  $('rBarR').textContent=pr>=14?'월세 '+Math.round(pr)+'%':'';$('rBarD').textContent=pd>=14?'보증금 '+Math.round(pd)+'%':'';
+  const okA=A===null?null:m<=A,okB=B===null?null:d<=B;
+  setPill($('rPA'),'월세 ≤ A',okA);setPill($('rPB'),'보증금 ≤ B',okB);
+  const v=$('rVerdict');
+  if(okA===false||okB===false){v.style.color=V('gD');v.textContent='후보에서 빠집니다. 목록에 표시되지 않습니다.'}
+  else if(okA===null&&okB===null){v.style.color=V('sub');v.textContent='둘 다 미입력: 대구 매물 전체가 후보입니다.'}
+  else{v.style.color=V('gA');v.textContent='후보입니다. 같은 예산의 후보들과 줄을 세워 점수를 매깁니다.'}
+}
+rCalc();
+
+// ---------- 가성비 계산기 ----------
+function vScore(r){
+  if(r<=0.5)return 100; if(r<=1.0)return 100-50*(r-0.5)/0.5; if(r<=1.5)return 50-25*(r-1.0)/0.5; if(r<1.75)return 25-25*(r-1.5)/0.25; return 0;
+}
+['vm','vd','va','vmed'].forEach(i=>$(i).addEventListener('input',vCalc));
+function vCalc(){
+  const m=num($('vm'))||0,d=num($('vd'))||0,a=num($('va')),med=num($('vmed'));
+  const t=m+d*0.01;$('vTot').textContent=fmt(t)+'만 원';
+  const v=$('vVerdict');
+  if(!a||a<=0||!med||med<=0){$('vPer').textContent='-';$('vRatio').textContent='-';$('vScore').textContent='-';$('vBar').style.width='0';v.style.color=V('sub');v.textContent='전용면적과 중앙값을 0보다 크게 넣어 주세요.';return}
+  const per=t/a,r=per/med,s=vScore(r);
+  $('vPer').textContent=fmt(per,2)+'만 원/㎡';$('vRatio').textContent=fmt(r,2)+'배';
+  $('vScore').textContent=fmt(s)+'점';$('vBar').style.width=s+'%';
+  if(r<1){v.style.color=V('gA');v.textContent='비슷한 매물보다 ㎡당 '+fmt((1-r)*100,0)+'% 싼 편입니다.'}
+  else if(r>1){v.style.color=V('gD');v.textContent='비슷한 매물보다 ㎡당 '+fmt((r-1)*100,0)+'% 비싼 편입니다.'}
+  else{v.style.color=V('sub');v.textContent='비슷한 매물과 같은 값입니다.'}
+}
+vCalc();
+
+// ---------- 임대료: 점수 눈금 ----------
+(function(){
+  const g=$('rScale'),L=50,R=420,T=20,Bt=250;
+  const x=i=>L+(R-L)*i/10, y=s=>Bt-(Bt-T)*s/100;
+  [0,20,40,60,80,100].forEach(s=>{g.appendChild(el('line',{x1:L,y1:y(s),x2:R,y2:y(s),stroke:'var(--line)'}));g.appendChild(el('text',{x:L-8,y:y(s)+4,'text-anchor':'end'},s))});
+  const labels=['','10%','20%','30%','40%','50%','60%','70%','80%','90%','최고가'];
+  for(let i=1;i<=10;i++)g.appendChild(el('text',{x:x(i),y:Bt+18,'text-anchor':'middle'},labels[i]));
+  g.appendChild(el('text',{x:(L+R)/2,y:Bt+38,'text-anchor':'middle'},'경계값 (후보의 환산 월 임대료 분위값) →'));
+  g.appendChild(el('rect',{x:L,y:T,width:x(1)-L,height:Bt-T,fill:'var(--gA)','fill-opacity':.1}));
+  g.appendChild(el('text',{x:(L+x(1))/2,y:Bt-8,'text-anchor':'middle',style:'fill:var(--gA);font-size:11px'},'100점'));
+  const pts=[[0,100]];for(let k=1;k<=9;k++)pts.push([k,110-10*k]);pts.push([10,10]);
+  g.appendChild(el('polyline',{points:pts.map(p=>x(p[0])+','+y(p[1])).join(' '),fill:'none',stroke:'var(--rent)','stroke-width':3,'stroke-linejoin':'round'}));
+  for(let j=1;j<pts.length;j++){const p=pts[j];
+    g.appendChild(el('circle',{cx:x(p[0]),cy:y(p[1]),r:4.5,fill:'var(--card)',stroke:'var(--rent)','stroke-width':2.5}));
+    g.appendChild(el('text',{x:x(p[0])+(j===10?-4:6),y:y(p[1])-8,'text-anchor':j===10?'end':'start',class:'strong',style:'font-size:11px'},p[1]))}
+})();
+
+// ---------- 임대료: 보간 예시 ----------
+(function(){
+  const g=$('rInterp'),L=55,R=415,T=30,Bt=240,x0=83,x1=102,y0=45,y1=65;
+  const x=v=>L+(R-L)*(v-x0)/(x1-x0), y=s=>Bt-(Bt-T)*(s-y0)/(y1-y0);
+  [45,50,55,60,65].forEach(s=>{g.appendChild(el('line',{x1:L,y1:y(s),x2:R,y2:y(s),stroke:'var(--line)'}));g.appendChild(el('text',{x:L-8,y:y(s)+4,'text-anchor':'end'},s+'점'))});
+  [85,90,95,100].forEach(v=>g.appendChild(el('text',{x:x(v),y:Bt+18,'text-anchor':'middle'},v+'만')));
+  g.appendChild(el('text',{x:(L+R)/2,y:Bt+38,'text-anchor':'middle'},'환산 월 임대료 →'));
+  g.appendChild(el('line',{x1:x(85),y1:y(60),x2:x(100),y2:y(50),stroke:'var(--rent)','stroke-width':3}));
+  const s86=60-10/15;
+  g.appendChild(el('line',{x1:x(86),y1:Bt,x2:x(86),y2:y(s86),stroke:'var(--gC)','stroke-dasharray':'4 3','stroke-width':1.5}));
+  g.appendChild(el('line',{x1:L,y1:y(s86),x2:x(86),y2:y(s86),stroke:'var(--gC)','stroke-dasharray':'4 3','stroke-width':1.5}));
+  [[85,60,'50% 경계값 85만 → 60점'],[100,50,'60% 경계값 100만 → 50점']].forEach((p,i)=>{
+    g.appendChild(el('circle',{cx:x(p[0]),cy:y(p[1]),r:6,fill:'var(--rent)'}));
+    g.appendChild(el('text',{x:x(p[0])+(i?-10:10),y:y(p[1])+(i?22:-12),'text-anchor':i?'end':'start',class:'strong'},p[2]))});
+  g.appendChild(el('circle',{cx:x(86),cy:y(s86),r:6,fill:'var(--gC)',stroke:'var(--card)','stroke-width':2}));
+  g.appendChild(el('text',{x:x(86)+12,y:y(s86)+58,style:'fill:var(--gC);font-weight:700'},'86만 → 약 59.3점'));
+})();
+
+// ---------- 임대료: 재현 예 ----------
+bars('rRepro',[
+  {l:'44만',v:99.8,t:'99.8점',c:V('rent')},{l:'60만',v:85.0,t:'85.0점',c:V('rent')},
+  {l:'85만',v:60.0,t:'60.0점',c:V('rent')},{l:'86만',v:59.3,t:'59.3점',c:V('gC')},
+  {l:'140만',v:20.0,t:'20.0점',c:V('rent')},{l:'141만',v:19.7,t:'19.7점',c:V('rent')}
+],100);
+
+// ---------- 임대료: 최소 후보 30건 ----------
+const r5Rows=[['16만',100],['19만',100],['21만',100],['22만 ×6',90],['23만 ×2',66.2],['25만',53.9],['25.1만',53.3],['26만 ×3',40],['28만 ×6',30]];
+bars('r5Before',r5Rows.map(([l,v])=>({l,v,t:v+'점',c:V(v===100?'rent':'gD')})),100);
+bars('r5After',r5Rows.map(([l])=>({l,v:100,t:'100점',c:V('rent')})),100);
+bars('r5Width',[
+  {l:'10~19건',v:4.0,c:V('gD')},{l:'20~29건',v:9.3,c:V('gC')},{l:'30~99건',v:20.7,c:V('rent')},
+  {l:'100~499건',v:27.0,c:V('rent')}
+].map(r=>({...r,t:r.v.toFixed(1)+'만'})),27);
+
+// ---------- 가성비: 단계 막대 ----------
+bars('stepsUp',[
+  {l:'① 동 + 층·연식·면적',v:227},{l:'② 동 + 층·연식',v:603},{l:'③ 구 + 층·연식·면적',v:912},
+  {l:'④ 구 + 층·연식',v:616},{l:'⑤ 구 + 연식',v:201},{l:'⑥ 구 전체',v:79}
+].map(r=>({...r,c:V('val'),t:r.v.toLocaleString('ko-KR')+'건'})),912);
+bars('stepsDown',[
+  {l:'① 동 + 지하·연식·면적',v:0},{l:'② 동 + 지하·연식',v:0},{l:'③ 구 + 지하·연식·면적',v:0},{l:'④ 구 + 지하·연식',v:11},
+  {l:'⑤ 대구 + 지하·연식·면적',v:21},{l:'⑥ 대구 + 지하·연식',v:15},{l:'⑦ 구 + 지하',v:11},{l:'⑧ 대구 + 지하',v:8}
+].map(r=>({...r,c:V('val'),t:r.v+'건'})),21);
+bars('chgUp',[
+  {l:'면적 빼기 (동)',v:6,t:'5∼6%',c:V('val')},{l:'층 빼기 (구)',v:7,t:'7%',c:V('val')},
+  {l:'동 → 구로 넓히기',v:21,t:'12∼21%',c:V('val')},{l:'연식 빼기 (구)',v:26,t:'26%',c:V('gC')}
+],160);
+bars('chgDown',[
+  {l:'면적 빼기',v:16,t:'16%',c:V('val')},{l:'구 → 대구 넓히기',v:105,t:'105%',c:V('gC')},{l:'연식 빼기',v:157,t:'157%',c:V('gD')}
+],160);
+
+// ---------- 가성비: 점수 구간 ----------
+(function(){
+  const g=$('vScale'),L=60,R=730,T=24,Bt=240,xmax=2.0;
+  const x=r=>L+(R-L)*r/xmax, y=s=>Bt-(Bt-T)*s/100;
+  [0,25,50,75,100].forEach(s=>{g.appendChild(el('line',{x1:L,y1:y(s),x2:R,y2:y(s),stroke:'var(--line)'}));g.appendChild(el('text',{x:L-8,y:y(s)+4,'text-anchor':'end'},s))});
+  g.appendChild(el('line',{x1:x(1),y1:T,x2:x(1),y2:Bt,stroke:'var(--gX)','stroke-dasharray':'3 4'}));
+  g.appendChild(el('text',{x:x(1)+6,y:T+12},'비슷한 매물과 같은 값'));
+  const pts=[[0,100],[0.5,100],[1.0,50],[1.5,25],[1.75,0],[2.0,0]];
+  g.appendChild(el('polyline',{points:pts.map(p=>x(p[0])+','+y(p[1])).join(' '),fill:'none',stroke:'var(--val)','stroke-width':3.5,'stroke-linejoin':'round'}));
+  [[0.5,100,'7.7%','0.5'],[1.0,50,'51.3%','1.0'],[1.5,25,'80.0%','1.5'],[1.75,0,'88.1%','1.75']].forEach(m=>{
+    g.appendChild(el('circle',{cx:x(m[0]),cy:y(m[1]),r:6,fill:'var(--val)',stroke:'var(--card)','stroke-width':2}));
+    g.appendChild(el('text',{x:x(m[0])+8,y:y(m[1])-9,class:'strong'},m[1]+'점'));
+    g.appendChild(el('text',{x:x(m[0]),y:Bt+18,'text-anchor':'middle',class:'strong'},m[3]+'배'));
+    g.appendChild(el('text',{x:x(m[0]),y:Bt+36,'text-anchor':'middle'},m[2]));
+  });
+  [[0.75,75],[1.25,37.5],[1.6,15]].forEach(e=>{
+    g.appendChild(el('circle',{cx:x(e[0]),cy:y(e[1]),r:4,fill:'var(--card)',stroke:'var(--gC)','stroke-width':2}));
+    g.appendChild(el('text',{x:x(e[0])-8,y:y(e[1])+18,'text-anchor':'end',style:'fill:var(--gC);font-size:11.5px;font-weight:700'},e[0]+'배 → '+e[1]+'점'));
+  });
+  g.appendChild(el('text',{x:L,y:Bt+36,'text-anchor':'end'},'미만 비율'));
+  g.appendChild(el('text',{x:(L+R)/2,y:Bt+60,'text-anchor':'middle'},'배율 (내 ㎡당 환산 임대료 ÷ 비교 그룹 중앙값) →'));
+})();
+
+// ---------- 가성비: 기존 → 변경 점수 ----------
+(function(){
+  const rows=[['0.5배',100,100],['1.0배',60,50],['1.5배',20,25],['1.75배 이상',0,0]];
+  $('vBefore').innerHTML=`<div class="tbl"><table><tr><th>기준점</th><th style="width:50%">점수 (기존 → 변경)</th><th class="r">기존</th><th class="r">변경</th></tr>`+
+  rows.map(r=>`<tr><td>${r[0]}</td><td>
+    <div style="background:var(--soft);border-radius:4px;height:9px;margin:3px 0"><div style="width:${r[1]}%;height:100%;background:var(--gX);border-radius:4px"></div></div>
+    <div style="background:var(--soft);border-radius:4px;height:9px;margin:3px 0"><div style="width:${r[2]}%;height:100%;background:var(--val);border-radius:4px"></div></div>
+  </td><td class="r">${r[1]}</td><td class="r"><b>${r[2]}</b></td></tr>`).join('')+`</table></div>`;
+})();
+</script>
+</body>
+</html>
