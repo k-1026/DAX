@@ -8,6 +8,9 @@ import {
   type FormState,
 } from "./actions";
 
+// 카카오·구글 로그인은 지금 쓰지 않는다(2026-11-26 결정: 이메일 로그인만). NEXT_PUBLIC_SOCIAL_LOGIN=on 이면 다시 보인다.
+const SOCIAL_LOGIN = process.env.NEXT_PUBLIC_SOCIAL_LOGIN === "on";
+
 export function LoginForm({ initialError }: { initialError?: string }) {
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [signInState, signInAction, signingIn] = useActionState<FormState, FormData>(
@@ -24,6 +27,7 @@ export function LoginForm({ initialError }: { initialError?: string }) {
 
   return (
     <div className="flex w-full max-w-sm flex-col gap-6">
+      {SOCIAL_LOGIN && (<>
       <form action={signInWithSocial} className="flex flex-col gap-2">
         <button
           type="submit"
@@ -60,6 +64,7 @@ export function LoginForm({ initialError }: { initialError?: string }) {
         또는 이메일로
         <span className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
       </div>
+      </>)}
 
       <form
         action={mode === "signin" ? signInAction : signUpAction}

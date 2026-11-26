@@ -15,7 +15,7 @@ export default function LoginPage(props: PageProps<"/login">) {
       <div className="card flex w-full max-w-md flex-col gap-6 p-6 text-center">
         <div className="flex flex-col gap-2">
           <h1 className="text-xl font-medium">로그인</h1>
-          <p className="text-sm text-muted">SNS 계정 또는 이메일로 시작하세요.</p>
+          <p className="text-sm text-muted">{process.env.NEXT_PUBLIC_SOCIAL_LOGIN === "on" ? "SNS 계정 또는 이메일로 시작하세요." : "이메일로 시작하세요."}</p>
         </div>
         <Suspense fallback={<LoginForm />}>
           <LoginFormWithError {...props} />
