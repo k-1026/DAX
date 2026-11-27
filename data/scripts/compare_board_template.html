@@ -153,7 +153,7 @@ var D = /*@@DATA@@*/null;
   var GL = {'비용':'비용','공간':'공간','입지':'입지','업종적합':'업종 적합','공통':'공통'};
   var CATS = D.cats.map(function(c){ return c.cat; });
   var byCat = {}; D.cats.forEach(function(c){ byCat[c.cat] = c; });
-  function floors(a){ return !a ? '<span class="na">층 인자 제외</span>' : a.slice(0, 3).join(' / ') + (a[3] == null ? ' · 지하 보류' : ''); }
+  function floors(a){ return !a ? '<span class="na">층 인자 제외</span>' : a.slice(0, 3).join(' / ') + (a[3] == null ? ' · 지하 보류' : ' · 지하 ' + a[3]); }
   function arrow(a, b, fmt){ fmt = fmt || String; var s = fmt(a) === fmt(b); return '<span class="' + (s ? 'same' : '') + '">' + fmt(a) + '</span><span class="arrow">→</span><span class="' + (s ? 'same' : 'chg') + '">' + fmt(b) + '</span>'; }
   function src(k){ var s = D.src[k]; return s ? '<a href="' + esc(s[1]) + '" target="_blank" rel="noopener">' + esc(s[0]) + '</a>' : ''; }
   function judge(j){ return '<span class="pill ' + ({'있음':'p-ok','부분':'p-part','없음':'p-no'}[j]) + '">' + ({'있음':'● 있음','부분':'◐ 부분','없음':'○ 없음'}[j]) + '</span>'; }
@@ -178,7 +178,8 @@ var D = /*@@DATA@@*/null;
       ['층 점수표', '손으로 적은 값 → v2 분류 결과(추천용도 + 특징 합계)에서 엔진이 계산해 config에 고정'],
       ['기본 면적', D.cats.filter(function(c){ return Math.round(c.v1.area) !== Math.round(c.v2.area); }).map(function(c){ return c.cat + ' ' + Math.round(c.v1.area) + '→' + Math.round(c.v2.area) + '㎡'; }).join(' · ')],
       ['세부 업종', '없음 → 10개 (5개 대분류 × 2). 층 점수표·기본 면적만 따로, 나머지는 대분류 값'],
-      ['층 인자 제외', '없음 → 층 분포 카이제곱 p ≥ 0.05면 제외: ' + ex.join(', ')],
+      ['층 인자 제외', '11-18 p ≥ 0.05면 제외(공연문화·전시장·쇼룸) → 11-25 없앰: 수축 선택비가 대신함' + (ex.length ? ' (남은 제외: ' + ex.join(', ') + ')' : '')],
+      ['공간 인자 (11-25)', '층 = 수축 선택비 100 × ÷ 최대(하한 40·지하 일괄 40 없앰), 면적 = 11구간 수축 선택비(희망 면적은 최소 조건), 연식 = 헤도닉 곡선, 공간 그룹 안 비중 업종별(' + CATS.map(function(c){ return c + ' ' + D.same_cfg.space_weight[c][1].join('·'); }).join(' · ') + ')'],
       ['용도 일치도 판정', '점수표(100·60·50·30)는 그대로, 판정이 바뀐 매물 ' + D.cats.map(function(c){ return c.cat + ' ' + c.chg.use_changed; }).join(' · ')],
       ['엔진·파일', 'scoring_engine.py v2, v1 사본(scoring_engine_v1.py), 점수_v2.csv·config·검사, 분류 열·세부 업종 열 추가'],
       ['임대료 부담+보증금', '두 인자 → 한 인자. 환산 월 임대료 = 월세 + 보증금 × 1%, 월세·보증금 상한 안 후보의 10% 분위값마다 100 → 20점, 가장 비싼 후보 10점. 관리비 제외, 무권리 +10 삭제, 비용 비중 ' + D.cost.s1['식음료'].join(' · ') + ' → ' + D.cost.s2['식음료'].join(' · ')],
@@ -186,19 +187,19 @@ var D = /*@@DATA@@*/null;
     ];
     var same = [
       ['그룹 4개 · 비용 밖 인자 8개 구성 (비용은 3 → 2개)', D.same_cfg.groups && D.same_cfg.factors_noncost],
-      ['업종별 그룹 가중치 · 비용 밖 그룹 안 비중 · 지하철 비율', D.same_cfg.weights],
-      ['구간 기준값 6종 (가성비·면적·연식·지하철·버스) — 임대료 부담·보증금 고정 구간은 삭제', D.same_cfg.breakpoints],
+      ['업종별 그룹 가중치 · 입지·업종 적합 그룹 안 비중 · 지하철 비율 (공간 비중은 11-25 바뀜)', D.same_cfg.weights],
+      ['구간 기준값 (가성비·지하철·버스) — 임대료 부담·보증금 고정 구간 삭제, 면적은 선택비, 연식은 헤도닉 곡선으로 바뀜', D.same_cfg.breakpoints],
       ['용도 일치도 점수 100 · 60 · 50 · 30', D.same_cfg.use_score],
       ['반영률 60 미만 추천 제외 (v2는 좌표 없는 매물도 제외)', D.same_cfg.min_coverage],
       ['결측은 그룹 안에서 재분배 · 절대평가 (예외: 임대료 부담+보증금 · 면적 적합도)', true],
       ['외부 인자(상권 활성도 · 배후 수요) · 건물 용도 등급 — v1 결과 파일 그대로', true],
-      ['가성비 표본 10건 · 지하 40점(공연문화 보류)', true],
+      ['가성비 표본 10건', true],
       ['추천 대상 매물 수 (' + (CATS.every(function(c){ return D.nscored[c] === D.nscored_v1[c]; }) ? '업종마다 ' + D.nscored['식음료'].toLocaleString() + '건, 좌표 없는 매물 제외' : CATS.filter(function(c){ return D.nscored[c] !== D.nscored_v1[c]; }).map(function(c){ return c + ' ' + D.nscored_v1[c].toLocaleString() + '→' + D.nscored[c].toLocaleString(); }).join(' · ')) + ')', CATS.every(function(c){ return D.nscored[c] === D.nscored_v1[c]; })]
     ];
     return '<section class="view on rows" data-v="summary"><div class="kpis">' +
       kpi('업종 분류', 'v2', '추천용도 + 특징 칸, 규칙 파일로 분리') +
       kpi('세부 업종', '0 → 10', '층 점수표·기본 면적만 따로') +
-      kpi('층 인자 제외', '0 → ' + ex.length, ex.join(' · ')) +
+      kpi('공간 인자', '11-25', '층·면적 수축 선택비 · 연식 헤도닉 · 비중 업종별') +
       kpi('순위 상관 (7개 업종)', Math.min.apply(null, rho7).toFixed(3) + '+', 'v1 대비, 공연문화만 ' + byCat['공연문화'].chg.rho.toFixed(3)) +
       kpi('계산식 근거', t['있음'] + ' · ' + t['부분'] + ' · ' + t['없음'], '있음 · 부분 · 없음 (요소 ' + (t['있음'] + t['부분'] + t['없음']) + '개)') +
       kpi('화면', 'v1', '스코어링 보드는 아직 v1 점수') + '</div>' +
@@ -291,9 +292,9 @@ var D = /*@@DATA@@*/null;
       '<div class="panel" style="overflow:visible"><div class="ph"><h2>세부 업종 10개 (v2에서 새로 생김)</h2><p>분류 규칙은 설계 문서 표에서 읽음 · 점수는 v2 엔진, 예산·희망 면적 미입력</p></div>' +
       '<table><thead><tr><th>대분류</th><th>세부 업종</th><th style="width:30%">분류 규칙</th><th class="r">매물</th><th class="r">양쪽</th><th class="r">1층</th><th class="r">기본 면적</th><th>층 점수 (1 / 2 / 3층+)</th><th class="r">p</th><th class="r">점수 중앙값</th><th class="r">최고점</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
       '<div class="stack" style="grid-template-columns:repeat(4,minmax(0,1fr))">' +
-      '<div class="card"><h3>층 점수 식</h3><p class="mono">' + esc(fr['식']) + '</p><p class="small">하한 ' + fr['하한'] + ' — <b>' + esc(fr['하한_상태']) + '</b>. 지하 ' + fr['지하'] + '점, ' + fr['지하_보류'].join('·') + '는 보류(v1과 같음)</p></div>' +
+      '<div class="card"><h3>층 점수 식</h3><p class="mono">' + esc(fr['식']) + '</p><p class="small">하한 <b>' + esc(fr['하한_상태']) + '</b>. 지하: ' + esc(fr['지하']) + '</p></div>' +
       '<div class="card"><h3>표본</h3><p>' + esc(fr['표본']) + '</p><p class="small">추천용도 칸만 쓰면 피부·마사지가 기준 50건 아래로 내려감. 결과 차이는 8개 업종 중 6개가 3점 이내</p></div>' +
-      '<div class="card"><h3>층 인자 제외</h3><p class="mono">' + esc(fr['층인자_제외']) + '</p><p class="small">지금 해당: ' + D.excluded.join(', ') + '. 결측과 같이 공간 그룹 안에서 비중 재분배</p></div>' +
+      '<div class="card"><h3>수축 세기 m (11-24)</h3><p class="mono">' + Object.keys(fr['m']).map(function(k){ return k + ' ' + fr['m'][k]; }).join(' · ') + '</p><p class="small">' + esc(fr['수축']) + '. 층 인자 제외: ' + esc(fr['층인자_제외']) + '</p></div>' +
       '<div class="card"><h3>세부 업종이 갖는 것</h3><p>층 점수표와 기본 면적만</p><p class="small">가중치·교통 비율·배후 수요·상권 활성도·건물 용도·용도 일치도는 대분류 값. 같은 대분류 안 상위 10개 겹침: ' + Object.keys(D.overlap.sub).map(function(k){ return k + ' ' + D.overlap.sub[k]; }).join(' · ') + '</p></div>' +
       '</div></section>';
   }
@@ -325,7 +326,7 @@ var D = /*@@DATA@@*/null;
     return '<section class="view rows" data-v="scores">' +
       '<div class="panel" style="overflow:visible"><div class="ph"><h2>업종별 점수 분포와 v1 대비 변화</h2><p>예산·희망 면적 미입력 · 변화는 두 버전 모두 추천 대상인 매물 기준</p></div>' +
       '<table><thead><tr><th>업종</th><th class="r">하위 10%</th><th class="r">중앙값</th><th class="r">상위 10%</th><th class="r">최고점</th><th class="r">반영률</th><th class="r">추천 대상</th><th class="r">순위 상관</th><th class="r">평균 점수 차</th><th class="r">5점+ 바뀐 매물</th><th class="r">상위 10 유지</th><th class="r">상위 50 유지</th><th class="r">용도 일치도 바뀐 매물</th></tr></thead><tbody>' + rows + '</tbody></table>' +
-      '<p class="tiny">v2 점수에는 분류 변경과 함께 임대료 부담+보증금 통합이 들어 있습니다(예산 미입력: v1은 보증금 구간 점수만, v2는 대구 매물 전체를 후보로 한 환산 월 임대료 분위 점수). 반영률이 오른 것도 이 때문입니다. 이 통합으로 좌표 없는 48건이 일부 업종에서 반영률 60을 넘게 되어, v2는 좌표 없는 매물을 반영률과 관계없이 추천에서 뺍니다. 공연문화만 크게 바뀐 이유: 층 인자 제외(v1 층 점수 86 / 100 / 81이 빠짐)와 기본 면적 ' + Math.round(byCat['공연문화'].v1.area) + ' → ' + Math.round(byCat['공연문화'].v2.area) + '㎡.</p></div>' +
+      '<p class="tiny">v2 점수에는 분류 변경과 함께 임대료 부담+보증금 통합이 들어 있습니다(예산 미입력: v1은 보증금 구간 점수만, v2는 대구 매물 전체를 후보로 한 환산 월 임대료 분위 점수). 반영률이 오른 것도 이 때문입니다. 이 통합으로 좌표 없는 48건이 일부 업종에서 반영률 60을 넘게 되어, v2는 좌표 없는 매물을 반영률과 관계없이 추천에서 뺍니다. 11-25부터는 공간 인자 보완(층·면적 수축 선택비, 연식 헤도닉 곡선, 업종별 공간 비중)도 들어 있어 상위 매물이 많이 바뀝니다. 공연문화가 가장 크게 바뀐 이유: 공간 그룹 가중치가 30으로 크고, 면적 비중 70 · 층 인자가 다시 쓰임(11-18에는 제외).</p></div>' +
       '<div class="stack" style="grid-template-columns:minmax(0,5fr) minmax(0,4fr) minmax(0,5fr)">' +
       '<div class="panel"><div class="ph"><h2>용도 일치도 판정 (매물 수)</h2><p>v1 → v2</p></div><table><thead><tr><th>업종</th><th class="r">명시 100</th><th class="r">다용도 60</th><th class="r">신호 없음 50</th><th class="r">다른 업종만 30</th></tr></thead><tbody>' + useRows + '</tbody></table></div>' +
       '<div class="panel"><div class="ph"><h2>업종 간 상위 10 겹침</h2></div><div class="kv"><dt>v1 대구</dt><dd class="small">' + top(D.overlap.v1) + '</dd><dt>v2 대구</dt><dd class="small">' + top(D.overlap.v2) + '</dd></div>' +
@@ -459,7 +460,8 @@ var D = /*@@DATA@@*/null;
       '<div class="panel" style="overflow:visible"><div class="ph"><h2>확인한 것</h2></div><ol class="list">' + [
         'v1 사본이 기존 점수_v1.csv를 완전히 같게 재현',
         'v2 엔진의 층 점수표·기본 면적·표본 수 18개가 분류 결과(설계 문서 표)와 같음',
-        '층 인자 제외 업종은 2,717건 모두 층 점수가 비어 있음',
+        '공간 인자(11-25): 엔진 층 점수표 18개가 층점수_수축.json과 같고, 면적 점수는 area_fit_review 결과와 0.05점 안에서 같음',
+        '면적 조건(최소 80 · 최대 200㎡) 시험: 미달 1,790건 추천 제외, 통과 매물 면적 적합도 비움',
         '임대료 부담+보증금: 문서 재현 예(월세 150만 · 보증금 2,000만 → 후보 1,499건, 점수 99.8 · 85 · 60 · 59.3 · 20 · 19.7)와 같음',
         '좌표 없는 매물 48건 추천 제외 후 추천 대상 수가 8개 업종 모두 v1과 같음',
         '이 화면의 숫자는 결과 파일과 설계 문서 표에서 빌드할 때 읽음'

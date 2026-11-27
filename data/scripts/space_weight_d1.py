@@ -74,8 +74,8 @@ def fr_weights(F, M, y):
     return list(s / s.sum() * 100) if s.sum() > 0 else [100 / 3] * 3
 
 
-def main():
-    sys.stdout.reconfigure(encoding="utf-8")
+def build_factors():
+    """5겹 교차 인자 점수. 반환: 라벨 있는 매물 id, 겹 번호, 업종별 인자 점수, 라벨."""
     listings, ext, bld, use, cfs, cost = we.load()
     ids = [L["매물번호"] for L in listings]
     band = {L["매물번호"]: cu.floor_band(L["층"]) for L in listings}
@@ -115,6 +115,12 @@ def main():
 
     labeled = [k for k in ids if use[k]["cats"]]
     fl = np.array([fold[k] for k in labeled])
+    return labeled, fl, fac, use
+
+
+def main():
+    sys.stdout.reconfigure(encoding="utf-8")
+    labeled, fl, fac, use = build_factors()
     res = {}
     rng = np.random.default_rng(SEED)
     for c in se.CATS:

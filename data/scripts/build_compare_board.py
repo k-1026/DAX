@@ -70,6 +70,16 @@ S = {  # 출처 (이름, 주소)
     "wofe": ["Bonham-Carter·Agterberg·Wright (1989) 증거가중치 — W+, W−, 대비 C (UNICAMP 설명)", "https://www.ige.unicamp.br/wofe/documentation/wofeintr.htm"],
     "survival": ["젠트리피케이션 지역 음식점업 생존율의 공간적 요인 (서울) — 지하철역 접근성 효과가 지역·업종별로 다름", "https://www.kci.go.kr/kciportal/ci/sereArticleSearch/ciSereArtiView.kci?sereArticleSearchBean.artiId=ART002629633"],
     "flagship": ["플래그십 스토어 입지선정 요인 연구 (부동산연구 2021) — 전문가 설문 AHP, 상위 5개 · 하위 20개 요인", "https://journal.kci.go.kr/krer/archive/articleView?artiId=ART002698360"],
+    # 2026-11-23~25 공간 인자 보완 (권혜림, 기록: 09.스코어링/공간_작업기록_1123.md)
+    "efron": ["Efron·Morris (1975) Data Analysis Using Stein's Estimator and its Generalizations, JASA — 적은 표본 추정값을 전체 쪽으로 당기는 수축", "https://www.jstor.org/stable/2285814"],
+    "casella": ["Casella (1985) An Introduction to Empirical Bayes Data Analysis, The American Statistician — 베타-이항 경험적 베이즈, 당기는 세기를 자료로 추정", "https://www.jstor.org/stable/2682801"],
+    "cohen": ["Wuensch, Effect size conventions — Cohen w 기준 0.1 작음 · 0.3 중간 · 0.5 큼", "https://core.ecu.edu/wuenschk/docs30/EffectSizeConventions.pdf"],
+    "effsz": ["R effectsize: Effect sizes for contingency tables — 분할표 효과크기(Cohen w, Cramér V)", "https://cran.r-project.org/web/packages/effectsize/vignettes/xtabs.html"],
+    "holm": ["Holm (1979) A Simple Sequentially Rejective Multiple Test Procedure, Scandinavian Journal of Statistics — 여러 검정 동시 보정", "https://www.jstor.org/stable/4615733"],
+    "rosen": ["Rosen (1974) Hedonic Prices and Implicit Markets, Journal of Political Economy — 헤도닉 가격 방법", "https://www.jstor.org/stable/1830899"],
+    "cameron": ["Cameron·Miller (2015) A Practitioner's Guide to Cluster-Robust Inference, JHR — 같은 건물 매물 묶음 군집 강건 표준오차", "https://cameron.econ.ucdavis.edu/research/Cameron_Miller_JHR_2015_February.pdf"],
+    "molit": ["국토교통부 상업업무용 부동산 매매 실거래가 자료 (공공데이터포털 API) — 대구 2023~2025", "https://www.data.go.kr/data/15126463/openapi.do"],
+    "varma": ["Varma·Simon (2006) Bias in error estimation when using cross-validation for model selection, BMC Bioinformatics — 고르는 과정까지 교차검증 안에 넣는 중첩 교차검증", "https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-7-91"],
 }
 
 # 판정: 있음 = 그 식(또는 요소)을 그대로 쓰는 문헌·법령 / 부분 = 형태·기준점·방향 일부만 대응 / 없음 = 대응하는 근거를 찾지 못함
@@ -195,6 +205,83 @@ for _e in EVIDENCE:
     _m = MY_ADDED.get((_e["group"], _e["factor"]))
     if _m:
         _e["added"] = (_e.get("added") or []) + _m
+
+
+D25 = " 11.25"
+
+
+def apply_space(evidence, c2):
+    """공간 인자 보완 (2026-11-23~25 시험·결정, 11-25 엔진 적용). 계산식·비중·m은 엔진 config에서 읽고,
+    시험 숫자는 09.스코어링/층점수_수축.json · 면적적합도_보완.json · 건물연식_보완.json · 공간_그룹안비중_D1_최소비중.json · 지하점수_확인.json."""
+    row = {(e["group"], e["factor"]): e for e in evidence}
+    fr, ar = c2["floor_rule"], c2["area_rule"]
+    m = " · ".join("%s %s" % (k.replace("3층이상", "3층+"), v) for k, v in fr["m"].items())
+    age = " · ".join("%g년 %d" % (x, y) for x, y in c2["breakpoints"]["건물연식"])
+    sw = " · ".join(c + " " + "·".join(str(x) for x in c2["preset"][c]["s"]["공간"]) for c in CATS)
+    before = c2["space_weight_before"]
+
+    e = row[("공간", "층")]
+    e["formula"] = ("100 × 수축 선택비 ÷ 업종 최대 (1층 · 2층 · 3층 이상 · 지하). 수축 비율 = (업종 개수 + m × 전체 비율) ÷ (업종 매물 수 + m), "
+                    "선택비 = 수축 비율 ÷ 전체 비율. m은 층 구간마다 대분류 8개로 정함(" + m + "), 세부 업종은 대분류 쪽으로 당김")
+    e["parts"] = [["선택비(업종 비율 ÷ 전체 비율)", "있음", "자원선택 분석의 선택비, 상권 분석의 입지계수(LQ)와 같은 구조", "manly"],
+                  ["수축(매물 적은 업종을 평균 쪽으로)", "있음", "당기는 세기 m을 사람이 아니라 베타-이항 주변우도로 정함(경험적 베이즈)", "casella"],
+                  ["÷ 최대 (하한 없음)", "있음", "최댓값 대비 비율 정규화", "fracmax"],
+                  ["업종마다 선호 층이 다름", "있음", "업종 대 나머지 검정 18개 모두 유의(Holm 보정), Cohen w로 크기 판정", "floorpat"],
+                  ["지하 점수", "부분", "지하 매물이 전체의 2.5%라 평균 쪽으로 크게 당겨짐(m 631). 지하 > 2층인 업종 6개는 2층 대 지하 차이가 유의하지 않음", "manly"]]
+    e["upgrade"] = "good/bad 층별 비율(증거가중치)로 수축 선택비 보정"
+    e["added"] = (e.get("added") or []) + [
+        ["바뀜 11.24", "리프트 → 수축 선택비", "있음", "매물 적은 업종의 우연한 0건(배달전문 2·3층 0건 → 40점)을 전체·대분류 쪽으로 당김. m: " + m, ["efron", "casella"]],
+        ["바뀜 11.24", "40 + 60 × … → 100 × … (하한 40 없앰, D5)", "있음",
+         "40 + 60 × 는 층 비중을 줄이는 것과 같은 효과(유효 가중치). 같은 비중에서 판별력(AUC) 차이 ±0.003 이하, 층 중요도는 그룹 안 비중(D1)으로 정함", ["becker", "fracmax"]],
+        ["삭제 11.23", "p ≥ 0.05면 층 인자 제외", "있음", "'확신 없음'을 '차이 없음'으로 다루던 절벽. 수축이 대신함 → 공연문화·소매>전시장·쇼룸도 층 인자 사용", ["casella"]],
+        ["바뀜 11.23", "검정: 적합도 카이제곱·V → 업종 대 나머지 2×3 독립성 + Cohen w, Holm 18개", "있음",
+         "자기 포함 비교와 효과크기 이름·기준을 바로잡음. 층 인자 사용 판정은 변화 없음(구분 안 되는 것은 공연문화·전시장·쇼룸 p 0.212뿐)", ["cohen", "effsz", "holm"]],
+        ["바뀜 11.24", "지하 일괄 40(공연문화 보류) → 수축 선택비 (D10)", "부분",
+         "지하 > 2층 6개(식음료 62 · 39, 소매 57 · 27 등)는 자료 부족으로 평균 쪽 값. 2층 대 지하 p 0.16~0.52(배달전문 0.014). 지하 ≤ 2층으로 막아도 상위 10·50 그대로라 예외 규칙 두지 않음", ["manly"]],
+    ]
+
+    e = row[("공간", "면적 적합도")]
+    e["formula"] = ("희망 면적 없음: 면적 11구간(10분위 + 95% 분위, 경계 " + " · ".join("%g" % x for x in ar["구간경계_㎡"]) +
+                    "㎡) 수축 선택비 → 100 × ÷ 업종 최대, 구간 가운데 사이 log 면적 선형 보간. 희망 면적 있음: 최소 면적 미만(·최대 면적 초과) 추천 제외, 통과 매물은 면적 점수 없이 공간 그룹 안 재분배")
+    e["parts"] = [["면적 구간 선택비", "있음", "층과 같은 식(업종 비율 ÷ 전체 비율)", "manly"],
+                  ["수축", "있음", "층과 같은 경험적 베이즈, 구간마다 m", "casella"],
+                  ["면적이 업종을 가름", "있음", "업종 대 나머지 18개 모두 유의(Holm), Cohen w 0.27~1.63", "cohen"],
+                  ["11구간 (10분위 + 95%)", "부분", "10분위는 관행. 큰 면적 끝 구간을 95%에서 나누는 시험으로 정함(우리 데이터)", None],
+                  ["희망 면적 = 최소 조건(필터)", "없음", "우리 설계. 예산처럼 한도는 거르고 점수로 두 번 세지 않음", None]]
+    e["upgrade"] = "good/bad '면적' 사유로 구간 수축 선택비 보정"
+    e["added"] = (e.get("added") or []) + [
+        ["바뀜 11.24", "목표(업종 중앙값) 대비 비대칭 구간 → 면적 구간 수축 선택비 (D7)", "있음",
+         "중앙값이 선택비가 가장 높은 구간이 아니었고, 넓음·좁음 비대칭 방향이 업종마다 반대. 판별력(AUC) 18개 중 15개 높음", ["manly", "casella"]],
+        ["바뀜 11.24", "희망 면적 = 목표 → 최소 면적 조건 (D8)", "없음",
+         "곡선을 희망 면적으로 옮기는 방식은 데이터와 안 맞음. 최소 미만 제외, 통과 매물은 면적 점수 없음, 최대 면적은 선택 입력, 경계 허용 없음", None],
+        ["삭제 11.24", "넓음·좁음 구간값 (±20% 100 · +50% 70 · −30% 60 …)", None, "근거 없던 비대칭 구간값", None],
+    ]
+
+    e = row[("공간", "건물 연식")]
+    e["formula"] = "헤도닉 곡선 (구간 가운데 연식): " + age + ", 그 뒤 " + str(c2["breakpoints"]["건물연식"][-1][1]) + ". 사이 선형 보간, 업종 공통"
+    e["parts"] = [["오래될수록 낮음(방향)", "있음", "우리 매물 헤도닉 회귀(동·층·면적·유형 고정, 2,697건, 같은 건물 군집 강건). 구 고정·월세만으로 바꿔도 같음, 공공 매매 실거래도 같은 방향", "rosen"],
+                  ["35~45년에서 바닥", "부분", "우리 매물 −52~−56% 뒤 평평, 일반 건물 매매도 35~40년 바닥. 철근콘크리트 내용연수 40년", "life"],
+                  ["연도별 점수값", "부분", "100 × exp(계수) ÷ 최대, 단조 정리. 0~15년은 공공 매매 실거래와 일치, 15년 이후 값은 우리 매물 호가 회귀 하나에 근거", "molit"],
+                  ["업종 공통 곡선", "부분", "의료·운동·교육·뷰티는 새 건물 쪽 매물이 많음(w 0.31~0.50) → 업종 차이는 그룹 안 비중으로 반영", None]]
+    e["upgrade"] = "실제 계약 임대료 자료가 생기면 같은 회귀로 다시 추정. 리모델링 여부 반영"
+    e["added"] = (e.get("added") or []) + [
+        ["바뀜 11.24", "100 · 85 · 65 · 45 · 30 → 헤도닉 곡선 (D9)", "부분",
+         "처음 10년 안에 더 빨리 떨어지고 바닥이 47(같은 조건 신축 대비 ㎡당 임대료 약 절반). 공실 매물 호가 자료, 0~5년에 신축 분양 호가 섞일 수 있음", ["rosen", "cameron"]],
+        ["추가 11.24", "공공 매매 실거래로 모양 검증", "부분",
+         "국토부 상업업무용 매매 3,589건(2023~2025): 방향·0~15년 일치(5~10년 우리 −25%, 구분상가 −27%), 15~20년은 매매가 더 떨어짐, 35년 이후 구분상가 거래 적어 비교 불가", ["molit"]],
+    ]
+
+    e = row[("공간", "그룹 안 비중")]
+    e["formula"] = "층 · 면적 · 연식: " + sw
+    e["parts"] = [["비중값", "부분", "중개사 추천용도(이 업종 대 다른 업종) 판별력 AUC가 가장 높은 비중, 5 간격 격자, 고르는 과정까지 5겹 교차검증 안에서. 대리 라벨이라 실제 임차 성공으로 검증한 것은 아님", "varma"],
+                  ["인자마다 최소 10", "부분", "데이터로 고른 비중이 0이 되는 것을 하한 제약으로 막음(사무업무 100·0·0 → 70·20·10). 10은 하한 10~15에서 판별력 손해가 없음을 보고 정함", "becker"]]
+    e["upgrade"] = "good/bad가 쌓이면 같은 방식으로 다시 추정"
+    e["added"] = (e.get("added") or []) + [
+        ["바뀜" + D25, "가설 비중 → 업종별 판별력 최적 + 최소 10 (D1)", "부분",
+         "이전 " + " · ".join(c + " " + "·".join(str(x) for x in before[c]) for c in ("식음료", "공연문화", "사무업무", "교육")) +
+         " 등. AUC 이전 → 새: 식음료 0.815 → 0.819, 뷰티 0.738 → 0.760, 사무업무 0.627 → 0.652, 교육 0.768 → 0.783, 의료 0.879 → 0.885, 공연문화 0.564 → 0.571 (소매·운동시설 ±0.002). 부트스트랩 범위 좁음(의료 층 15~25, 뷰티 면적 50~65)",
+         ["varma", "becker"]],
+    ]
 
 
 def add_estimation(evidence):
@@ -333,6 +420,7 @@ def main():
     sys.stdout.reconfigure(encoding="utf-8")
     add_estimation(EVIDENCE)
     c1, c2 = jload("점수_v1_config.json"), jload("점수_v2_config.json")
+    apply_space(EVIDENCE, c2)
     k1, k2 = jload("점수_v1_검사.json"), jload("점수_v2_검사.json")
     meta, sens = jload("용도분류_v2_meta.json"), jload("인자민감도_v2.json")
     s1, s2 = rows("점수_v1.csv"), rows("점수_v2.csv")
@@ -392,7 +480,7 @@ def main():
     sig = md_tables("### 신호 강도와 용도 일치도 (2026-11-17 결정)")
 
     data = {
-        "built": "2026-11-18 (임대료 부담+보증금 통합)",
+        "built": "2026-11-25 (공간 인자 보완 적용)",
         "cats": cats, "subs": subs,
         "v1kw": {c: v1.USE_KW[c] for c in CATS}, "v1multi_kw": v1.MULTI_KW, "v1multi": v1multi, "v2multi": v2multi,
         "v2": {"normalize": [[p, r] for p, r in cu.NORMALIZE], "compound": [[p, lab] for p, lab in cu.COMPOUND], "location": list(cu.LOCATION),
@@ -404,11 +492,12 @@ def main():
                  "form": meta["특징_문장형태_쌍"], "all": meta["전체_분포"], "leftover": meta["미분류_토큰_있는_매물"], "n": meta["매물수"]},
         "overlap": {"v1": k1["상위10_겹침"], "v2": k2["상위10_겹침"], "v1gu": k1["구별_상위10_겹침"], "v2gu": k2["구별_상위10_겹침"], "sub": k2["세부업종_상위10_겹침"]},
         "v1weights": {c: c1["preset"][c]["g"] for c in CATS}, "v2weights": {c: c2["preset"][c]["g"] for c in CATS},
-        "same_cfg": {"breakpoints": all(c1["breakpoints"][k] == v for k, v in c2["breakpoints"].items()), "use_score": c1["use_score"] == c2["use_score"],
+        "same_cfg": {"breakpoints": all(c1["breakpoints"][k] == c2["breakpoints"][k] for k in ("가성비", "지하철", "버스")), "use_score": c1["use_score"] == c2["use_score"],
                      "groups": c1["groups"] == c2["groups"], "factors": c1["factors"] == c2["factors"], "min_coverage": c1["min_coverage"] == c2["min_coverage"],
                      "factors_noncost": all(c1["factors"][g] == c2["factors"][g] for g in c2["groups"] if g != "비용"),
                      "weights": all(c1["preset"][c]["g"] == c2["preset"][c]["g"] and c1["preset"][c]["subway"] == c2["preset"][c]["subway"]
-                                    and all(c1["preset"][c]["s"][g] == c2["preset"][c]["s"][g] for g in c2["groups"] if g != "비용") for c in CATS)},
+                                    and all(c1["preset"][c]["s"][g] == c2["preset"][c]["s"][g] for g in c2["groups"] if g not in ("비용", "공간")) for c in CATS),
+                     "space_weight": {c: [c2["space_weight_before"][c], c2["preset"][c]["s"]["공간"]] for c in CATS}},
         "cost": {"rule": c2["cost_rule"], "pool": c2["cost_pool"], "sens_cond": sens["조건"],
                  "s1": {c: c1["preset"][c]["s"]["비용"] for c in CATS}, "s2": {c: c2["preset"][c]["s"]["비용"] for c in CATS}},
         "bp": c2["breakpoints"], "use_score": c2["use_score"], "floor_rule": c2["floor_rule"],
