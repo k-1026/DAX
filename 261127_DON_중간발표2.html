@@ -1,0 +1,721 @@
+<!doctype html>
+<html lang="ko" data-rev="r1795740699726"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D : ON 중간발표 2 (편집용)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+:root{
+  --teal:#2b8a7e; --teal-d:#1f6660; --teal-l:#e3f2ef; --teal-ll:#f2f9f7;
+  --ink:#1c2321; --ink2:#4a5652; --ink3:#7c8a86; --line:#dde5e2;
+  --bg:#ffffff; --page:#e9eeec;
+  --red:#c2513f; --red-l:#fbebe7; --amber:#b9821c; --amber-l:#fbf2df; --green:#2f8a4e; --green-l:#e5f3ea; --gray-l:#eef1f0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--page);font-family:Pretendard,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+#stage{position:fixed;inset:0 0 46px 0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.slide{position:absolute;width:1600px;height:900px;background:var(--bg);box-shadow:0 10px 40px rgba(20,40,35,.18);padding:56px 72px 0;display:none;flex-direction:column;transform-origin:center center}
+.slide.on{display:flex}
+/* 머리 */
+.bar{width:56px;height:6px;background:var(--teal);border-radius:3px;margin-bottom:18px}
+.hd{display:flex;justify-content:space-between;align-items:flex-start;gap:24px}
+.ch{font-size:20px;font-weight:700;color:var(--teal);letter-spacing:.02em;margin-bottom:6px}
+.q{font-size:40px;font-weight:800;line-height:1.25;letter-spacing:-.02em}
+.q em{font-style:normal;color:var(--teal)}
+.crit{flex:none;background:var(--teal-l);color:var(--teal-d);font-size:16px;font-weight:700;padding:9px 18px;border-radius:999px;white-space:nowrap}
+.msg{margin-top:18px;font-size:21px;line-height:1.5;color:var(--ink2);font-weight:500;max-width:1400px}
+.msg b{color:var(--ink);font-weight:700}
+.body{flex:1;display:grid;gap:22px;margin:24px 0 20px;min-height:0}
+.foot{flex:none;height:52px;border-top:1px solid var(--line);margin:auto -72px 0;padding:0 72px;display:flex;align-items:center;justify-content:space-between;font-size:14px;color:var(--ink3)}
+.foot .src{max-width:1300px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pg{background:var(--teal);color:#fff;font-weight:700;border-radius:6px;padding:3px 10px;font-size:14px}
+/* 블록 */
+.card{background:var(--teal-ll);border:1px solid var(--line);border-radius:14px;padding:18px 22px;min-height:0;min-width:0}
+.card h3{font-size:17px;font-weight:700;color:var(--teal-d);margin-bottom:12px;letter-spacing:.01em}
+.card.todo{border:2px dashed var(--amber);background:#fffdf7}
+.k{font-size:14px;color:var(--ink3)}
+.big{font-size:40px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.mid{font-size:26px;font-weight:800;letter-spacing:-.01em}
+.tag{display:inline-block;font-size:12.5px;font-weight:700;padding:2px 8px;border-radius:6px;vertical-align:middle;line-height:1.5;white-space:nowrap}
+.t-ok{background:var(--green-l);color:var(--green)}
+.t-hold{background:var(--amber-l);color:var(--amber)}
+.t-no{background:var(--gray-l);color:var(--ink3);border:1px dashed #b9c4c0}
+.t-red{background:var(--red-l);color:var(--red)}
+ul.li{list-style:none}
+ul.li li{font-size:16px;line-height:1.5;padding-left:14px;position:relative;margin-bottom:5px;color:var(--ink2)}
+ul.li li::before{content:"";position:absolute;left:0;top:10px;width:6px;height:6px;border-radius:50%;background:var(--teal)}
+ul.li li b{color:var(--ink)}
+table{width:100%;border-collapse:collapse;font-size:15.5px}
+th{background:var(--teal-l);color:var(--teal-d);font-weight:700;text-align:left;padding:8px 10px;font-size:14px}
+td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.4}
+.banner{background:var(--teal-d);color:#fff;border-radius:14px;padding:16px 24px;font-size:19px;font-weight:600;line-height:1.45}
+.banner b{color:#bff0e5}
+.note{font-size:13.5px;color:var(--ink3);line-height:1.5;margin-top:8px}
+
+/* 표지 */
+.cover{padding:0 0 0 120px;justify-content:center;align-items:flex-start;background:linear-gradient(120deg,#ffffff 55%,var(--teal-ll) 55%)}
+.cover .bar{width:80px;height:8px}
+.cover h1{font-size:84px;font-weight:800;letter-spacing:-.03em;line-height:1.1}
+.cover h1 em{font-style:normal;color:var(--teal)}
+.cover p{font-size:30px;color:var(--ink2);margin-top:26px;line-height:1.5;font-weight:500}
+.cover .meta{margin-top:70px;font-size:20px;color:var(--ink3)}
+.cover .parts{margin-top:22px;display:flex;gap:10px}
+.cover .parts span{background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 16px;font-size:17px;color:var(--ink2);font-weight:600}
+.cover .parts b{color:var(--teal);margin-right:6px}
+
+/* 1 진행상황 */
+.prog{display:grid;grid-template-columns:repeat(10,1fr);gap:8px}
+.ps{border-radius:12px;padding:12px 8px 12px;text-align:center;border:1px solid var(--line);background:#fff;display:flex;flex-direction:column;gap:6px;min-width:0}
+.ps .no{font-size:26px;font-weight:800;line-height:1}
+.ps .nm{font-size:15px;font-weight:700;line-height:1.3;min-height:40px}
+.ps .st{font-size:12.5px;line-height:1.35;color:var(--ink2)}
+.ps .bd{height:8px;border-radius:4px;background:#e4e9e7;overflow:hidden}
+.ps .bd i{display:block;height:100%}
+.ps.ok{background:var(--green-l);border-color:#bfe1cb}.ps.ok .no{color:var(--green)}.ps.ok .bd i{background:var(--green);width:100%}
+.ps.part{background:#f6faf3;border-color:#cfe3c6}.ps.part .no{color:var(--green)}.ps.part .bd i{background:linear-gradient(90deg,var(--green) 0 80%,var(--amber) 80%);width:100%}
+.ps.hold{background:var(--amber-l);border-color:#ecd9ad}.ps.hold .no{color:var(--amber)}.ps.hold .bd i{background:var(--amber);width:30%}
+.ps.wait{background:#fff;border:2px dashed var(--amber)}.ps.wait .no{color:var(--amber)}.ps.wait .bd i{background:var(--amber);width:15%}
+.grp{display:grid;grid-template-columns:3fr 3fr 4fr;gap:8px;margin-bottom:8px}
+.grp div{font-size:14px;font-weight:700;color:var(--teal-d);border-bottom:3px solid var(--teal);padding-bottom:5px}
+.legend{display:flex;gap:18px;font-size:13px;color:var(--ink3);align-items:center;margin-top:10px}
+.legend i{display:inline-block;width:14px;height:10px;border-radius:3px;vertical-align:0;margin-right:5px}
+
+/* 2 아키텍처 */
+.arch{position:relative;width:1456px;height:592px;margin-top:40px;flex:none}
+.lane{position:absolute;border:1.5px dashed #b6c4c0;border-radius:14px;background:rgba(242,249,247,.55)}
+.lane .lb{position:absolute;top:-14px;left:12px;background:var(--teal-d);color:#fff;font-size:14px;font-weight:700;padding:4px 12px;border-radius:8px;white-space:nowrap}
+.lane .lb small{font-weight:500;opacity:.8;margin-left:6px;font-size:12px}
+.lane.c .lb{background:#2f7d4f}
+.lane.d .lb{background:#4b4f9c}
+.lane.a .lb{background:var(--ink)}
+.nd{position:absolute;background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 12px;box-shadow:0 1px 3px rgba(20,40,35,.06);font-size:15px;font-weight:700;line-height:1.3;display:flex;flex-direction:column;justify-content:center;z-index:2}
+.nd small{display:block;font-size:12px;font-weight:500;color:var(--ink3);margin-top:2px;line-height:1.35}
+.nd code{font-family:Consolas,monospace;font-size:13.5px;color:var(--teal-d)}
+.nd.ic{flex-direction:row;align-items:center;justify-content:flex-start;gap:10px}
+.nd .ico{flex:none;width:30px;height:30px;border-radius:8px;background:var(--teal-l);color:var(--teal-d);display:flex;align-items:center;justify-content:center;font-size:15px}
+.nd.user{align-items:center;text-align:center}
+.nd.ext{border:1.5px solid var(--red);background:#fff}
+.nd.ext .ico{background:var(--red-l);color:var(--red)}
+.nd.ext.off{border-style:dashed;background:#fffaf8}
+.nd.off{border-style:dashed}
+.nd.db{background:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.chips span{font-size:12.5px;font-weight:600;background:#e8f3ec;color:#2f6b47;border-radius:6px;padding:3px 8px}
+.chips span b{font-weight:800}
+.stepc{position:absolute;left:1115px;width:326px;height:44px;background:#fff;border:1px solid var(--line);border-left:4px solid #4b4f9c;border-radius:8px;padding:4px 10px;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:space-between;z-index:2}
+.stepc small{font-size:12px;color:var(--ink3);font-weight:500}
+.stepc.off{border:1.5px dashed var(--amber);border-left:4px dashed var(--amber)}
+svg.wires{position:absolute;inset:0;overflow:visible;z-index:1;pointer-events:none}
+svg.wires text{font-size:12px;fill:var(--ink2);paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round;font-family:Pretendard,sans-serif}
+.alegend{display:flex;gap:22px;font-size:13px;color:var(--ink3);align-items:center;margin-top:4px}
+
+/* 3 개발 단계 */
+.stage{display:flex;flex-direction:column;gap:10px}
+.stage .sh{display:flex;align-items:center;gap:12px}
+.stage .sh .n{flex:none;width:44px;height:44px;border-radius:12px;background:var(--teal);color:#fff;font-size:24px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.stage .sh .n.w{background:var(--amber)}
+.stage .sh h4{font-size:21px;font-weight:800;line-height:1.2}
+.stage .sh h4 small{display:block;font-size:13px;color:var(--ink3);font-weight:600;margin-top:2px}
+.sec{font-size:13px;font-weight:700;color:var(--teal-d);margin-top:4px;letter-spacing:.02em}
+.nums{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.nums div{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.nums b{display:block;font-size:24px;font-weight:800;color:var(--teal-d);line-height:1.15}
+.nums b.r{color:var(--red)}
+.nums span{font-size:12.5px;color:var(--ink3)}
+.mini{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.mini span{background:#fff;border:1px solid var(--line);border-radius:8px;padding:5px 9px;font-size:13.5px;font-weight:600}
+.mini span.off{border:1.5px dashed var(--amber);color:var(--amber)}
+.mini i{font-style:normal;color:var(--ink3);font-size:13px}
+.dec{background:#fff;border-left:4px solid var(--teal);border-radius:8px;padding:8px 12px;font-size:15px;line-height:1.45;color:var(--ink2)}
+.dec b{color:var(--ink)}
+.stage table{font-size:16px;background:#fff;border-radius:8px;overflow:hidden}
+.stage td,.stage th{padding:8px 10px}
+.stage{gap:12px}
+.stage ul.li li{font-size:17px;margin-bottom:7px}
+.stage .dec{font-size:16.5px;padding:10px 14px}
+.stage .mini span{font-size:15px;padding:6px 10px}
+.stage .sec{font-size:14px}
+.stage .nums b{font-size:28px}
+.stage .nums span{font-size:13.5px}
+
+/* 4 데모 */
+.demo{display:grid;grid-template-columns:1.05fr 1fr;gap:26px;flex:1;margin:26px 0 22px;min-height:0}
+.go{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:18px;background:linear-gradient(135deg,var(--teal-d),var(--teal));border-radius:18px;padding:40px 44px;color:#fff}
+.go .lbl{font-size:18px;font-weight:700;color:#bff0e5}
+.go a.url{display:inline-flex;align-items:center;gap:16px;background:#fff;color:var(--teal-d);text-decoration:none;font-size:40px;font-weight:800;letter-spacing:-.01em;padding:20px 30px;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.18);transition:transform .15s}
+.go a.url:hover{transform:translateY(-2px)}
+.go a.url span{font-size:15px;font-weight:700;background:var(--teal);color:#fff;border-radius:999px;padding:6px 14px}
+.go p{font-size:17px;line-height:1.6;color:#e7f5f2}
+.go p b{color:#fff}
+.chk{list-style:none;display:grid;gap:9px}
+.chk li{display:flex;gap:12px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:16px;line-height:1.45}
+.chk li .o{flex:none;width:26px;height:26px;border-radius:50%;background:var(--teal);color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.chk li b{display:block}
+.chk li small{color:var(--ink3);font-size:13.5px}
+
+/* 5 앞으로 */
+.road{display:flex;align-items:stretch;gap:6px}
+.road div{flex:1;background:#fff;border:1px solid var(--line);border-radius:10px;padding:9px 8px;text-align:center;font-size:14px;font-weight:700;line-height:1.3}
+.road div small{display:block;font-size:12px;color:var(--ink3);font-weight:500;margin-top:3px}
+.road i{align-self:center;color:var(--teal);font-style:normal;font-weight:800}
+
+/* 2 현재상황 (2)현재상황.html) */
+.cur .q{font-size:44px}
+.cur .sub{margin-top:14px;font-size:20px;color:var(--ink2);font-weight:500}
+.cur .sub b{color:var(--ink)}
+.cur .row{position:relative;margin-top:30px}
+.cur .row + .row{margin-top:8px;padding-top:22px;border-top:1px solid var(--line)}
+.cur .pill{display:inline-block;font-size:15px;font-weight:700;padding:5px 14px;border-radius:999px;background:#eef1f0;color:var(--ink3)}
+.cur .row.now .pill{background:var(--teal-l);color:var(--teal-d)}
+.cur .track{position:relative;display:grid;grid-template-columns:repeat(9,1fr);margin-top:10px;height:208px}
+.cur .track .ln{position:absolute;top:96px;height:4px;border-radius:2px;transform:translateY(-50%)}
+.cur .st{position:relative;display:flex;flex-direction:column;align-items:center;z-index:1}
+.cur .st .tg{height:34px;display:flex;align-items:flex-end;padding-bottom:6px;font-size:17px;font-weight:800;color:var(--teal-d)}
+.cur .st .dot{display:flex;align-items:center;justify-content:center;border-radius:50%;font-weight:800;margin-top:auto;margin-bottom:auto}
+.cur .st .cw{height:124px;display:flex;align-items:center;justify-content:center}
+.cur .st .nm{margin-top:8px;font-size:17px;line-height:1.35;text-align:center;color:var(--ink2);font-weight:600;max-width:150px}
+.cur .st .nm small{display:block;font-size:13px;color:var(--ink3);font-weight:600;margin-top:2px}
+.cur .st.done .dot{width:62px;height:62px;background:var(--teal-l);border:2px solid #bfe0d9;color:var(--teal-d);font-size:20px}
+.cur .st.plan .dot{width:62px;height:62px;background:#fff;border:2px solid #d6dedb;color:var(--ink3);font-size:20px}
+.cur .st.doing .dot{width:104px;height:104px;background:var(--teal);color:#fff;font-size:32px;box-shadow:0 0 0 9px var(--teal-l)}
+.cur .st.doing .nm{font-size:22px;font-weight:800;color:var(--ink)}
+.cur .st .dot i{font-style:normal;display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;border:2.5px solid currentColor;font-size:15px}
+.cur .st.doing .dot i{width:46px;height:46px;font-size:22px;border-width:3px}
+.cur .row.prev .track{opacity:.5}
+.cur .lg{display:flex;gap:26px;align-items:center;margin-top:18px;font-size:15px;color:var(--ink2)}
+.cur .lg span{display:flex;align-items:center;gap:8px}
+.cur .lg i{display:inline-block;width:18px;height:18px;border-radius:50%}
+.cur .cur .lg .chg{margin-left:auto;background:var(--teal-ll);border:1px solid var(--line);border-radius:10px;padding:8px 16px;font-size:15px}
+.cur .cur .lg .chg b{color:var(--teal-d)}
+#nav{position:fixed;left:50%;transform:translateX(-50%);bottom:8px;font-size:13px;color:#5f6d69;background:rgba(255,255,255,.85);padding:6px 12px;border-radius:8px;user-select:none;display:flex;gap:10px;align-items:center}
+#nav .sep{width:1px;height:16px;background:#cdd6d3}#nav button.wide{width:auto;padding:0 9px;font-size:12.5px}#nav button.on{background:var(--teal);color:#fff}#msg{color:var(--teal-d);font-weight:700;min-width:0}
+body.editing .slide [contenteditable=true]:hover{outline:1.5px dashed #9fcfc6;outline-offset:2px}body.editing .slide [contenteditable=true]:focus{outline:2px solid var(--teal);outline-offset:2px;background:rgba(227,242,239,.35)}
+#nav button{border:0;background:var(--teal-l);color:var(--teal-d);font-weight:800;border-radius:6px;width:26px;height:22px;cursor:pointer}
+@media print{
+  @page{size:1600px 900px;margin:0}
+  html,body{background:#fff}
+  #stage{position:static;display:block}
+  .slide{position:relative;display:flex!important;transform:none!important;box-shadow:none;page-break-after:always;break-after:page}
+  #nav{display:none}
+}
+</style>
+</head>
+<body class="">
+<div id="stage">
+
+<!-- ===== 표지 ===== -->
+<section class="slide cover" style="">
+  <div class="bar"></div>
+  <h1>D : <em>ON</em></h1>
+  <p>공실 용도별 매물 추천 AI 서비스 · 개발 단계 발표</p>
+  <div class="parts">
+    <span><b>1</b>현재 진행상황</span><span><b>2</b>시스템 구조</span><span><b>3</b>앱 개발 단계</span><span><b>4</b>데모</span><span><b>5</b>앞으로 할 일</span>
+  </div>
+  <div class="meta">2026. 11. 27 · 중간발표 2</div>
+</section>
+
+<!-- ===== 2 현재 진행상황 (2)현재상황.html) ===== -->
+<section class="slide cur" id="curSlide" style="">
+  <div class="bar"></div>
+  <div class="hd">
+    <div><div class="ch">실행 워크플로우</div><div class="q">5·6단계 완료, 현재 <em>7단계 통합</em> 진행 중</div></div>
+    <div class="crit">현재 진행상황</div>
+  </div>
+  <div class="sub">9단계 실행 워크플로우 기준 현황 · <b>실제 공실 적용 전에 ‘통합’ 단계를 새로 추가</b>했다</div>
+
+  <div class="row prev">
+    <span class="pill">이전 진행 상황</span>
+    <div class="track" id="curPrev" style="grid-template-columns: repeat(8, 1fr);"><div class="st done"><div class="tg"></div><div class="cw"><div class="dot"><i>1</i></div></div><div class="nm">범위<br>좁히기</div></div><div class="st done"><div class="tg"></div><div class="cw"><div class="dot"><i>2</i></div></div><div class="nm">정답지<br>확정</div></div><div class="st done"><div class="tg"></div><div class="cw"><div class="dot"><i>3</i></div></div><div class="nm">특징데이터<br>수집</div></div><div class="st done"><div class="tg"></div><div class="cw"><div class="dot"><i>4</i></div></div><div class="nm">점수공식<br>설계</div></div><div class="st doing"><div class="tg">진행 중</div><div class="cw"><div class="dot"><i>5</i></div></div><div class="nm">백테스팅</div></div><div class="st doing"><div class="tg">진행 중</div><div class="cw"><div class="dot"><i>6</i></div></div><div class="nm">스코어링 보완</div></div><div class="st plan"><div class="tg"></div><div class="cw"><div class="dot"><i>7</i></div></div><div class="nm">실제 공실<br>적용</div></div><div class="st plan"><div class="tg"></div><div class="cw"><div class="dot"><i>8</i></div></div><div class="nm">최종 제출</div></div><div class="ln" style="left: 122px; width: 120px; top: 96px; background: rgb(43, 138, 126);"></div><div class="ln" style="left: 304px; width: 120px; top: 96px; background: rgb(43, 138, 126);"></div><div class="ln" style="left: 486px; width: 120px; top: 96px; background: rgb(43, 138, 126);"></div><div class="ln" style="left: 668px; width: 99px; top: 96px; background: rgb(43, 138, 126);"></div><div class="ln" style="left: 871px; width: 78px; top: 96px; background: rgb(43, 138, 126);"></div><div class="ln" style="left: 1053px; width: 99px; top: 96px; background: rgb(223, 230, 227);"></div><div class="ln" style="left: 1214px; width: 120px; top: 96px; background: rgb(223, 230, 227);"></div></div>
+  </div>
+  <div class="row now">
+    <span class="pill">현재 진행 상황</span>
+    <div class="track" id="curNow" style="grid-template-columns: repeat(9, 1fr);"><div class="st done"><div class="tg"></div><div class="cw"><div class="dot"><i>1</i></div></div><div class="nm">범위<br>좁히기</div></div><div class="st done"><div class="tg"></div><div class="cw"><div class="dot"><i>2</i></div></div><div class="nm">정답지<br>확정</div></div><div class="st done"><div class="tg"></div><div class="cw"><div class="dot"><i>3</i></div></div><div class="nm">특징데이터<br>수집</div></div><div class="st done"><div class="tg"></div><div class="cw"><div class="dot"><i>4</i></div></div><div class="nm">점수공식<br>설계</div></div><div class="st done"><div class="tg"></div><div class="cw"><div class="dot"><i>5</i></div></div><div class="nm">백테스팅</div></div><div class="st done"><div class="tg"></div><div class="cw"><div class="dot"><i>6</i></div></div><div class="nm">스코어링 보완</div></div><div class="st doing"><div class="tg">진행 중</div><div class="cw"><div class="dot"><i>7</i></div></div><div class="nm">통합</div></div><div class="st plan"><div class="tg"></div><div class="cw"><div class="dot"><i>8</i></div></div><div class="nm">실제 공실<br>적용</div></div><div class="st plan"><div class="tg"></div><div class="cw"><div class="dot"><i>9</i></div></div><div class="nm">최종 제출</div></div><div class="ln" style="left: 112px; width: 100px; top: 96px; background: rgb(43, 138, 126);"></div><div class="ln" style="left: 274px; width: 100px; top: 96px; background: rgb(43, 138, 126);"></div><div class="ln" style="left: 436px; width: 99px; top: 96px; background: rgb(43, 138, 126);"></div><div class="ln" style="left: 597px; width: 100px; top: 96px; background: rgb(43, 138, 126);"></div><div class="ln" style="left: 759px; width: 100px; top: 96px; background: rgb(43, 138, 126);"></div><div class="ln" style="left: 921px; width: 79px; top: 96px; background: rgb(43, 138, 126);"></div><div class="ln" style="left: 1104px; width: 78px; top: 96px; background: rgb(223, 230, 227);"></div><div class="ln" style="left: 1244px; width: 100px; top: 96px; background: rgb(223, 230, 227);"></div></div>
+  </div>
+
+  <div class="lg">
+    <span><i style="background:var(--teal-l);border:2px solid #bfe0d9"></i>완료</span>
+    <span><i style="background:var(--teal)"></i><b>진행 중</b></span>
+    <span><i style="background:#fff;border:2px solid #d6dedb"></i>예정</span>  </div>
+
+  <div class="foot"><div>기준 · 2026-11-26 · 8단계 실행 워크플로우에 ‘통합’ 단계를 더해 9단계로 정리</div><div class="pg">2</div></div>
+</section>
+
+<!-- ===== 2 시스템 구조 ===== -->
+<section class="slide" style="">
+  <div class="bar"></div>
+  <div class="hd">
+    <div><div class="ch">2 · 시스템 구조</div><div class="q">TypeScript 하나로, <em>관리형 서비스 중심</em> 아키텍처</div></div>
+    <div class="crit">아키텍처 요약</div>
+  </div>
+
+  <div class="arch">
+    <!-- 외부 서비스 (위) -->
+    <div class="nd ic ext" style="left:430px;top:0;width:200px;height:58px"><div class="ico">⌖</div><div>카카오맵<small>지도 핀 · 로드뷰</small></div></div>
+    <div class="nd ic ext off" style="left:680px;top:0;width:250px;height:58px"><div class="ico">✦</div><div>AI API <span class="tag t-hold">연결 전</span><small>설명·요약·리뷰 분류만</small></div></div>
+    <div class="nd ic ext off" style="left:960px;top:0;width:230px;height:58px"><div class="ico">₩</div><div>토스페이먼츠 <span class="tag t-hold">연결 전</span><small>6-G 시험 결제</small></div></div>
+    <div class="nd ic ext" style="left:1220px;top:0;width:236px;height:58px"><div class="ico">✉</div><div>Resend 메일<small>지금은 시험 주소로만</small></div></div>
+
+    <!-- 구역 -->
+    <div class="lane a" style="left:0;top:100px;width:200px;height:450px"><div class="lb">사용자·입력</div></div>
+    <div class="lane b" style="left:240px;top:100px;width:360px;height:450px"><div class="lb">Web — Next.js 16<small>Vercel 배포 예정</small></div></div>
+    <div class="lane c" style="left:640px;top:100px;width:420px;height:450px"><div class="lb">Supabase — Postgres<small>Auth · Storage</small></div></div>
+    <div class="lane d" style="left:1100px;top:100px;width:356px;height:450px"><div class="lb">자동화 — 오케스트레이터<small>규칙 기반</small></div></div>
+
+    <!-- A -->
+    <div class="nd user" style="left:15px;top:128px;width:170px;height:62px">비로그인<small>매물 3곳 · AI 3회</small></div>
+    <div class="nd user" style="left:15px;top:205px;width:170px;height:62px">로그인 · 구독 회원<small>담기 · 비교 · 메일</small></div>
+    <div class="nd user" style="left:15px;top:282px;width:170px;height:62px">관리자<small>운영 현황 확인</small></div>
+    <div class="nd user" style="left:15px;top:440px;width:170px;height:80px;border-color:#4b4f9c">Aside 수집<small>3일 주기 (설계)<br>자동 실행 전</small></div>
+
+    <!-- B -->
+    <div class="nd ic" style="left:255px;top:125px;width:330px;height:78px"><div class="ico">▭</div><div>사용자 화면<small>조건 검색 · 지도 · 상세 · 담기·비교 · 마이페이지 · 공실이(AI 도우미)</small></div></div>
+    <div class="nd ic" style="left:255px;top:218px;width:330px;height:64px"><div class="ico">▤</div><div>관리자 화면<small>읽기 전용 · “다음에 할 일” 제안</small></div></div>
+    <div class="nd ic" style="left:255px;top:297px;width:330px;height:64px"><div class="ico">‹›</div><div>서버 액션 · API<small>등급 확인 → DB 함수 호출</small></div></div>
+    <div class="nd ic" style="left:255px;top:385px;width:330px;height:60px"><div class="ico">⇪</div><div><code>/api/ingest</code><small>매물 수집 주소 · 비밀 키 인증</small></div></div>
+    <div class="nd ic" style="left:255px;top:465px;width:330px;height:62px"><div class="ico">◷</div><div><code>/api/cron/*</code><small>monitor 5분 · mail 매시 · weekly 월 새벽 3시</small></div></div>
+
+    <!-- C -->
+    <div class="nd ic db" style="left:655px;top:125px;width:390px;height:56px"><div class="ico" style="background:#e8f3ec;color:#2f6b47">🔒</div><div>Auth<small>카카오 · 이메일 로그인 · 세션</small></div></div>
+    <div class="nd db" style="left:655px;top:196px;width:390px;height:254px;justify-content:flex-start">
+      <div style="display:flex;justify-content:space-between;align-items:baseline">Postgres <span style="font-size:13px;color:#2f6b47">설계 35개 · 구현 32개</span></div>
+      <div class="chips">
+        <span>매물 <b>4</b></span><span>점수 <b>4</b></span><span>사용자 <b>7</b></span><span>구독·결제 <b>4</b></span><span>메일 <b>2</b></span><span>AI <b>3</b></span><span>운영 <b>11</b></span>
+      </div>
+      <div style="margin-top:12px;padding-top:10px;border-top:1px dashed var(--line)">권한은 DB에서 판단
+        <small>행 단위 권한(RLS) · 열 권한 · <code>security definer</code> 함수<br>등급 확인 실패 → 가장 낮은 권한</small></div>
+      <div style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)">migration + rollback
+        <small>SQL 26개, 파일마다 되돌리기 파일 · 실서비스 미적용 14개</small></div>
+    </div>
+    <div class="nd ic db" style="left:655px;top:465px;width:390px;height:62px"><div class="ico" style="background:#e8f3ec;color:#2f6b47">◷</div><div>pg_cron + pg_net<small>예약 시각만 관리 → 앱 API 호출 · 배포 후 등록</small></div></div>
+
+    <!-- D -->
+    <div class="stepc" style="top:125px;height:50px;border-left-color:#4b4f9c;background:#f3f3fb">갱신 1회 = 실행 1건<small>단계별 기록 · 최대 3회 재시도</small></div>
+    <div class="stepc" style="top:186px">① 품질 검사<small>누락 10%·건수 30% 이상 → 보류</small></div>
+    <div class="stepc" style="top:238px">② 변화 비교<small>신규·변경·나감</small></div>
+    <div class="stepc" style="top:290px">③ 검증<small>허위 의심 신호 5개</small></div>
+    <div class="stepc off" style="top:342px">④ 점수<small style="color:var(--amber)">방식 미정 · 지금은 건너뜀</small></div>
+    <div class="stepc" style="top:394px">⑤ 메일<small>조건 맞는 매물 묶음 · 야간 미룸</small></div>
+    <div class="stepc" style="top:465px;height:62px;border-left-color:var(--teal)">상시 · 주 1회<small style="text-align:right">5분 모니터링<br>리뷰 분석 → 가중치 보정안<br>→ 관리자 승인 후 점수 반영</small></div>
+
+    <svg class="wires" viewBox="0 0 1456 592" width="1456" height="592">
+      <defs>
+        <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4a5652"></path></marker>
+        <marker id="arR" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c2513f"></path></marker>
+        <marker id="arP" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4b4f9c"></path></marker>
+      </defs>
+      <g fill="none" stroke="#4a5652" stroke-width="1.6">
+        <!-- 사용자 → 화면 -->
+        <path d="M185 159 H255" marker-end="url(#ar)"></path>
+        <path d="M185 236 H222 V180 H255" marker-end="url(#ar)"></path>
+        <path d="M185 313 H232 V250 H255" marker-end="url(#ar)"></path>
+        <!-- 화면 → Supabase -->
+        <path d="M585 153 H655" marker-end="url(#ar)"></path>
+        <path d="M585 250 H655" marker-end="url(#ar)"></path>
+        <path d="M585 329 H655" marker-end="url(#ar)"></path>
+        <path d="M585 415 H655" marker-end="url(#ar)"></path>
+      </g>
+      <!-- Aside → ingest -->
+      <path d="M185 480 H222 V415 H255" fill="none" stroke="#4b4f9c" stroke-width="1.8" marker-end="url(#arP)"></path>
+      <!-- pg_cron → cron API (점선) -->
+      <path d="M655 496 H585" fill="none" stroke="#4a5652" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#ar)"></path>
+      <!-- cron API → 오케스트레이터 (아래로 돌아감) -->
+      <path d="M420 527 V566 H1278 V527" fill="none" stroke="#4b4f9c" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#arP)"></path>
+      <!-- ingest → 오케스트레이터 시작 -->
+      <!-- 오케스트레이터 → Postgres -->
+      <path d="M1115 310 H1045" fill="none" stroke="#4b4f9c" stroke-width="1.8" marker-end="url(#arP)"></path>
+      <!-- 외부: 화면 → 카카오맵 -->
+      <path d="M530 125 V58" fill="none" stroke="#c2513f" stroke-width="1.6" marker-end="url(#arR)"></path>
+      <!-- 서버 → AI (연결 전) -->
+      <path d="M585 140 H615 V40 H680" fill="none" stroke="#c2513f" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#arR)"></path>
+      <!-- 오케스트레이터 메일 → Resend -->
+      <path d="M1410 125 V58" fill="none" stroke="#c2513f" stroke-width="1.6" marker-end="url(#arR)"></path>
+
+      <text x="192" y="151">요청</text>
+      <text x="590" y="145" style="display:none"></text>
+      <text x="619" y="147">로그인</text>
+      <text x="592" y="243">읽기 (RLS)</text>
+      <text x="592" y="322">DB 함수</text>
+      <text x="592" y="408">적재</text>
+      <text x="189" y="472" fill="#4b4f9c">3일 주기</text>
+      <text x="594" y="489">예약 호출</text>
+      <text x="700" y="583" fill="#4b4f9c">점검 · 주간 분석 · 메일 실행</text>
+      <text x="1052" y="302" fill="#4b4f9c">결과·로그</text>
+      <text x="538" y="95">지도</text>
+      <text x="621" y="76">AI 호출 (연결 전)</text>
+      <text x="1352" y="78">메일 발송</text>
+      <!-- 리뷰 → AI 분류 (연결 전) -->
+      <path d="M1115 505 H1082 V78 H905 V58" fill="none" stroke="#c2513f" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#arR)"></path>
+      <text x="918" y="95" fill="#c2513f">리뷰 분류 · AI 호출 (연결 전)</text>
+      <!-- 보정안 → 승인 → 점수 반영 (설계) -->
+      <path d="M1441 482 H1468 V364 H1441" fill="none" stroke="#4b4f9c" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#arP)"></path>
+      <text x="1476" y="372" fill="#4b4f9c" transform="rotate(90 1476 372)">승인 후 반영 (설계)</text>
+    </svg>
+  </div>
+  <div class="alegend">
+    <span><svg width="34" height="8"><line x1="0" y1="4" x2="34" y2="4" stroke="#4a5652" stroke-width="2"></line></svg> 요청·데이터 흐름</span>
+    <span><svg width="34" height="8"><line x1="0" y1="4" x2="34" y2="4" stroke="#4b4f9c" stroke-width="2" stroke-dasharray="5 4"></line></svg> 예약 실행</span>
+    <span><svg width="34" height="8"><line x1="0" y1="4" x2="34" y2="4" stroke="#c2513f" stroke-width="2"></line></svg> 외부 서비스 호출</span>
+    <span><i style="display:inline-block;width:16px;height:12px;border:1.5px dashed var(--amber);border-radius:3px;vertical-align:-1px;margin-right:5px"></i>연결 전 · 방식 미정</span>
+    <span>AI는 설명·요약·리뷰 분류만 · 점수는 관리자가 승인한 보정안으로만 바뀜</span>
+  </div>
+  <div class="foot"><div class="src">근거 · 17_개발단계_발표.html · 15_9단계_준비.md · proto/supabase/migrations · proto/supabase/scheduled/cron_jobs.sql</div><div class="pg">3</div></div>
+</section>
+
+<!-- ===== 3-1 개발 단계 · 파트 1 ===== -->
+<section class="slide" style="">
+  <div class="bar"></div>
+  <div class="hd">
+    <div><div class="ch">3 · 앱 개발 단계 ① 기획·설계 (0~2단계)</div><div class="q">기능은 <em>불만 데이터</em>에서, 설계는 <em>바뀔 것</em>에 대비해</div></div>
+    <div class="crit">파트 1 / 3</div>
+  </div>
+  <div class="body" style="grid-template-columns:1.15fr 1fr 1fr">
+    <div class="card stage">
+      <div class="sh"><div class="n">0</div><h4>근거 → 기능<small>기능을 아이디어가 아니라 데이터에서</small></h4></div>
+      <div class="nums">
+        <div><b>513건</b><span>분석한 불만 언급</span></div>
+        <div><b class="r">268건</b><span>허위매물 계열 52%</span></div>
+        <div><b>97건</b><span>조건 필터 부족</span></div>
+      </div>
+      <div class="sec">문제 → 앱의 대응</div>
+      <table>
+        <tbody><tr><th>문제</th><th>대응</th></tr>
+        <tr><td>지금도 공실인지 모름</td><td>3일 갱신, “나간 매물” 표시</td></tr>
+        <tr><td>허위·미끼 매물</td><td>의심 신호 5개 + 사유, 문의 질문 생성</td></tr>
+        <tr><td>조건 입력이 어려움</td><td>문장으로 찾기</td></tr>
+        <tr><td>비교 기준·도구 부족</td><td>담기·나란히 비교, 점수 근거 화면</td></tr>
+      </tbody></table>
+    </div>
+    <div class="card stage">
+      <div class="sh"><div class="n">1</div><h4>기술 구조<small>TypeScript 하나, 관리형 서비스 중심</small></h4></div>
+      <div class="sec">스택</div>
+      <ul class="li">
+        <li><b>앱</b> · Next.js 16 · React 19 · TypeScript · Tailwind v4</li>
+        <li><b>데이터·인증</b> · Supabase Auth / Postgres / Storage</li>
+        <li><b>외부</b> · 카카오맵 · Resend 메일</li>
+        <li><b>연결 전</b> · 토스페이먼츠 · AI API</li>
+        <li><b>배포 예정</b> · Vercel</li>
+      </ul>
+      <div class="sec">흐름</div>
+      <div class="mini"><span>Aside 수집</span><i>→</i><span>/api/ingest</span><i>→</i><span>Postgres</span><i>→</i><span>Next.js</span><i>→</i><span>화면</span></div>
+      <div class="dec" style="margin-top:auto"><b>설계 결정</b> · 몇 분 간격 모니터링이 필요해서, <b>시각 관리는 DB 예약</b>(pg_cron), <b>실제 작업은 앱 API</b>로 나눔</div>
+    </div>
+    <div class="card stage">
+      <div class="sh"><div class="n">2</div><h4>데이터 설계<small>7묶음 · 표 35개 설계 (지금 32개 구현)</small></h4></div>
+      <div class="mini">
+        <span>매물 4</span><span>점수 4</span><span>사용자 7</span><span>구독·결제 4</span><span>메일 2</span><span>AI 3</span><span>운영 11</span>
+      </div>
+      <div class="sec">바뀔 것에 대비한 결정 3가지</div>
+      <div class="dec"><b>① 점수는 교체형</b> · 방식 미정이라 버전 단위로 저장하고 값은 비워 둠. 엔진이 나오면 갈아 끼움</div>
+      <div class="dec"><b>② AI의 역할 제한</b> · 설명·변환·요약·제안만. 점수와 순위는 바꾸지 않음</div>
+      <div class="dec"><b>③ 변경은 승인 후</b> · 제안 → 관리자 승인 → 반영, 실행은 로그로 남김</div>
+    </div>
+  </div>
+  <div class="foot"><div class="src">근거 · 17_개발단계_발표.html(3~5장) · 18_발표_대본.md(파트 1)</div><div class="pg">4</div></div>
+</section>
+
+<!-- ===== 3-2 개발 단계 · 파트 2 ===== -->
+<section class="slide" style="">
+  <div class="bar"></div>
+  <div class="hd">
+    <div><div class="ch">3 · 앱 개발 단계 ② 권한·자동화·점수 (3~5단계)</div><div class="q">권한은 <em>DB에서</em>, 갱신은 <em>단계별로 기록</em>, 점수는 <em>자리부터</em></div></div>
+    <div class="crit">파트 2 / 3</div>
+  </div>
+  <div class="body" style="grid-template-columns:1fr 1.1fr 1fr">
+    <div class="card stage">
+      <div class="sh"><div class="n">3</div><h4>로그인·동의·권한<small>구현 · 소셜 로그인 설정 일부 남음</small></h4></div>
+      <table>
+        <tbody><tr><th>등급</th><th>담기</th><th>비교</th><th>AI 기능</th></tr>
+        <tr><td>비로그인</td><td>불가</td><td>불가</td><td>브라우저당 3회</td></tr>
+        <tr><td>로그인</td><td>3곳</td><td>2곳</td><td>하루 5회</td></tr>
+        <tr><td>구독</td><td>제한 없음</td><td>5곳</td><td>하루 20회</td></tr>
+        <tr><td>관리자</td><td>제한 없음</td><td>5곳</td><td>제한 없음</td></tr>
+      </tbody></table>
+      <div class="dec"><b>화면이 아니라 서버·DB에서 판단</b> · 버튼을 숨기는 것만으로는 막은 게 아님. RLS + <code>security definer</code> 함수</div>
+      <div class="dec"><b>안전한 기본값</b> · 등급 확인 실패 → 가장 낮은 권한</div>
+      <div class="dec"><b>동의·탈퇴</b> · 필수·선택 분리, 만 14세 확인, SQL은 rollback 파일과 함께</div>
+      <div class="dec"><b>구독 혜택</b> · 담은 매물 메모 (11/26 추가) · AI 한도는 비용 예상 보고 조정</div>
+    </div>
+    <div class="card stage">
+      <div class="sh"><div class="n">4</div><h4>오케스트레이터·에이전트<small>테스트 DB 시험 완료</small></h4></div>
+      <div class="sec">갱신 1회 = 실행 1건</div>
+      <div class="mini"><span>수집</span><i>→</i><span>품질 검사</span><i>→</i><span>변화 비교</span><i>→</i><span>검증</span><i>→</i><span class="off">점수 (건너뜀)</span><i>→</i><span>메일</span></div>
+      <div class="dec"><b>잘못 수집 막기</b> · 필수 항목 누락 10% 이상 또는 매물 수 30% 이상 변하면 반영 보류</div>
+      <div class="dec"><b>실패 처리</b> · 단계별 최대 3회 재시도, 이미 성공한 단계는 반복하지 않음</div>
+      <div class="dec"><b>상시 · 주 1회</b> · 모니터링 / 피드백 분석 → 품질 평가 → 개선 제안</div>
+      <div class="dec"><b>사람이 결정</b> · 에이전트는 리포트·후보 등록까지, 채택은 관리자</div>
+      <div class="note" style="margin-top:auto"><span class="tag t-hold">솔직히</span> 지금은 규칙 기반 코드 · AI 연결예정</div>
+    </div>
+    <div class="card stage todo">
+      <div class="sh"><div class="n w">5</div><h4>스코어링·피드백 반영<small style="color:var(--amber)">보류 · 방식 미정</small></h4></div>
+      <div class="sec">설계한 흐름</div>
+      <div class="mini"><span class="off">점수 엔진</span><i>→</i><span>버전별 저장</span><i>→</i><span>그림자 계산</span><i>→</i><span>관리자 승인</span><i>→</i><span>새 버전 · 되돌리기</span></div>
+      <div class="sec">준비된 것</div>
+      <ul class="li">
+        <li>점수·버전·보정안 표</li>
+        <li>파이프라인의 점수 단계 자리</li>
+        <li>점수 엔진 연결 규격서</li>
+        <li>good/bad 평가 수집 · 보정안 분석 틀</li>
+      </ul>
+      <div class="sec" style="color:var(--amber)">추가할 내용&nbsp;</div>
+      <div class="mini"><span class="off">점수 구성·가중치</span><span class="off">업종 목록</span><span class="off">점수 구간 의미</span><span class="off">검증 결과</span></div>
+    </div>
+  </div>
+  <div class="foot"><div class="src">근거 · 17_개발단계_발표.html(6~8장) · proto/supabase/migrations(membership_tiers·ai_limits_update·agent_pipeline)</div><div class="pg">5</div></div>
+</section>
+
+<!-- ===== 3-3 개발 단계 · 파트 3 ===== -->
+<section class="slide" style="">
+  <div class="bar"></div>
+  <div class="hd">
+    <div><div class="ch">3 · 앱 개발 단계 ③ 화면·운영·배포 (6~9단계)</div><div class="q">쓰는 사람의 화면, 운영하는 사람의 화면, 그리고 <em>배포 준비</em></div></div>
+    <div class="crit">파트 3 / 3</div>
+  </div>
+  <div class="body" style="grid-template-columns:1fr 1fr 1fr 1.2fr">
+    <div class="card stage">
+      <div class="sh"><div class="n">6</div><h4>사용자 화면<small>A~F 완료 · G 남음</small></h4></div>
+      <ul class="li">
+        <li><b>찾기</b> · 조건 검색, 등급별 노출, 지도 핀, 문장으로 찾기</li>
+        <li><b>살펴보기</b> · 매물 상세, 평가, 문제 신고, 질문 칩</li>
+        <li><b>비교하기</b> · 담기, 나란히 비교, 엑셀 저장</li>
+        <li><b>내 정보</b> · 선호 조건, 프로필 사진, 동의 철회, 탈퇴</li>
+        <li><b>AI 도우미 “공실이”</b> · 화면·등급별 횟수 차감 <span class="tag t-hold">모델 연결 전</span></li>
+      </ul>
+      <div class="dec" style="margin-top:auto;border-left-color:var(--amber)"><b>6-G 결제</b> · 구독 가격 결정 후 시험 결제부터</div>
+    </div>
+    <div class="card stage">
+      <div class="sh"><div class="n">7</div><h4>추천 메일<small>시험 모드 발송 확인</small></h4></div>
+      <ul class="li">
+        <li>첫 추천 메일, 구독 묶음 메일</li>
+        <li><b>선호 조건에 맞는 새 매물</b> · 담은 매물 변동만</li>
+        <li><b>(광고) 표기</b> · 수신 거부 링크</li>
+        <li><b>야간 발송 미룸</b> · 월 한도</li>
+        <li>지금은 <b>시험 주소로만</b> 발송</li>
+      </ul>
+      <div class="dec" style="margin-top:auto"><b>안전 원칙</b> · 발표 때도 <code>MAIL_MODE</code>를 live로 하지 않음</div>
+    </div>
+    <div class="card stage">
+      <div class="sh"><div class="n">8</div><h4>관리자 화면<small>읽기 화면 완료</small></h4></div>
+      <ul class="li">
+        <li>개요 · 매물 갱신 · 에이전트 · 메일 · AI 사용량</li>
+        <li>품질·개선 · 가중치 보정안 · 사용자 · 설정값</li>
+      </ul>
+      <div class="sec">“다음에 할 일” 제안</div>
+      <div class="mini"><span>DB 숫자</span><i>→</i><span>규칙 파일 .md</span><i>→</i><span>조건식 평가기</span><i>→</i><span>제안</span></div>
+      <div class="dec" style="margin-top:auto"><b>AI 호출 없음</b> · &nbsp;AI 비용은 사용자 기능에만</div>
+    </div>
+    <div class="card stage todo">
+      <div class="sh"><div class="n w">9</div><h4>최종 시험·배포·운영<small style="color:var(--amber)">준비 문서 작성 · 대기</small></h4></div>
+      <div class="nums">
+        <div><b>14</b><span>미적용 SQL (파일마다 컨펌)</span></div>
+        <div><b>14</b><span>환경변수</span></div>
+        <div><b>4</b><span>예약 작업</span></div>
+      </div>
+      <div class="sec">배포 순서</div>
+      <div class="mini" style="gap:4px"><span>GitHub</span><i>→</i><span>Vercel 환경변수</span><i>→</i><span>빌드</span><i>→</i><span>지도 도메인</span><i>→</i><span>Auth 주소</span><i>→</i><span>로그인 설정</span><i>→</i><span>예약 등록</span><i>→</i><span>수집 확인</span></div>
+      <div class="sec">발표용 안전 원칙</div>
+      <ul class="li">
+        <li>메일 시험 모드 · 우리가 만든 시험 계정만</li>
+        <li>비밀값은 배포 환경변수 화면에만</li>
+        <li>결제는 시험 모드(가짜 결제)만</li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><div class="src">근거 · 17_개발단계_발표.html(9~11장) · 18_발표_대본.md(파트 3) · 15_9단계_준비.md(0·1·2·4절)</div><div class="pg">6</div></div>
+</section>
+
+<!-- ===== 4 데모 ===== -->
+<section class="slide" style="">
+  <div class="bar"></div>
+  <div class="hd">
+    <div><div class="ch">4 · 데모</div><div class="q">직접 보여 드리겠습니다 — <em>D : ON</em> PC 웹</div></div>
+    <div class="crit">MVP 동작</div>
+  </div>
+  <div class="demo">
+    <div class="go">
+      <div class="lbl">클릭하면 새 탭에서 열려요</div>
+      <a class="url" href="https://dax-web-xi.vercel.app" target="_blank" rel="noopener">dax-web-xi.vercel.app <span>열기 ↗</span></a>
+      <p>시연은 <b>우리가 만든 시험 계정</b>으로 해요.<br>메일은 <b>시험 모드</b>라 실제 회원에게 가지 않고, 결제는 아직 연결 전이에요.</p>
+    </div>
+    <div class="card" style="display:flex;flex-direction:column">
+      <h3>시연 순서</h3>
+      <ul class="chk">
+        <li><span class="o">1</span><div><b>비회원 화면</b><small>매물 3곳 · 지도 핀 3곳 · AI 3회</small></div></li>
+        <li><span class="o">2</span><div><b>로그인 → 약관 동의 → 첫 화면</b><small>카카오 / 이메일</small></div></li>
+        <li><span class="o">3</span><div><b>조건 검색 · 지도 핀 · 담기 · 비교 · 엑셀 저장</b></div></li>
+        <li><span class="o">4</span><div><b>문장으로 찾기 · 질문 칩 · 공실이 대화</b><small>등급별 횟수 차감 확인</small></div></li>
+        <li><span class="o">5</span><div><b>마이페이지</b><small>선호 조건 · 평가 · 사진 · 탈퇴</small></div></li>
+        <li><span class="o">6</span><div><b>관리자 화면</b><small>개요 → 각 화면 · “현재 관리자 확인 필요 사항”</small></div></li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><div class="src">근거 · 15_9단계_준비.md(0절 발표용 안전 원칙 · 5절 발표 전 최종 시험 체크)</div><div class="pg">7</div></div>
+</section>
+
+<!-- ===== 5 앞으로 할 일 ===== -->
+<section class="slide on" style="">
+  <div class="bar"></div>
+  <div class="hd">
+    <div><div class="ch">5 · 앞으로 할 일</div><div class="q">실서비스에 올리고, <em>남은 연결</em>을 채운다</div></div>
+    <div class="crit">다음 단계</div>
+  </div>
+  <div class="msg">9단계는 준비 문서까지 만들었다. 실서비스 DB에 SQL을 순서대로 적용하고, 배포한 뒤 로그인·지도 주소와 예약 실행을 등록한다.</div>
+  <div class="body" style="grid-template-columns:1fr 1fr 1fr;grid-template-rows:auto 1fr">
+    <div class="card" style="grid-column:1/4">
+      <h3>9단계 배포 순서 · GitHub·Vercel 단계마다 컨펌</h3>
+      <div class="road">
+        <div>실서비스 DB 확인<small>백업 · 적용 현황</small></div><i>→</i>
+        <div>SQL 14개 적용<small>한 파일씩 · 해시 확인</small></div><i>→</i>
+        <div>GitHub 반영<small>main은 컨펌 후</small></div><i>→</i>
+        <div>Vercel 연결<small>환경변수 14개 · 빌드</small></div><i>→</i>
+        <div>주소 등록<small>카카오 지도 · Auth · 로그인</small></div><i>→</i>
+        <div>예약 실행 등록<small>pg_cron 설정 파일 준비됨</small></div><i>→</i>
+        <div>Aside 수집 확인<small>관리자 “매물 갱신”</small></div>
+      </div>
+    </div>
+    <div class="card todo">
+      <h3 style="color:var(--amber)">남은 과제</h3>
+      <ul class="li">
+        <li><b>스코어링 연결</b> · 방식 확정 후 엔진 연결</li>
+        <li><b>실제 AI 연결</b> · 키는 서버 환경변수에만, 월 예산 상한</li>
+        <li><b>결제</b> · 구독 가격 결정 → 시험 결제</li>
+        <li><b>관리자 승인 버튼</b> · 제안 → 승인 → 반영</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>일반 공개 전 확인할 것</h3>
+      <table style="font-size:14.5px">
+        <tbody><tr><td><b>매물 수집·표시</b></td><td>약관·저작권 확인</td></tr>
+        <tr><td><b>광고성 메일</b></td><td>정보통신망법 요건</td></tr>
+        <tr><td><b>방침·약관</b></td><td>초안 → 법무 확인</td></tr>
+        <tr><td><b>AI 데이터 전송</b></td><td>국외 이전 명시</td></tr>
+        <tr><td><b>결제</b></td><td>사업자 등록 · PG 계약</td></tr>
+      </tbody></table>
+    </div>
+    <div class="card">
+      <h3>개발하면서 지킨 원칙</h3>
+      <ul class="li">
+        <li>단계마다 <b>확정하고</b> 진행한다</li>
+        <li><b>테스트 DB</b>에서 먼저 확인한다</li>
+        <li>권한·계산 규칙은 <b>시험 코드</b>로 검증한다</li>
+        <li>정해지지 않은 값은 지어내지 않고 <b>“미확정”</b></li>
+      </ul>
+    </div>
+  </div>
+  <div class="banner" style="margin:0 0 20px;display:flex;justify-content:space-between;align-items:center"><div><b>감사합니다</b> · 질문 받겠습니다</div><div style="font-size:16px;opacity:.9">D : ON ·</div></div>
+  <div class="foot"><div class="src">근거 · 15_9단계_준비.md(2·4·6절) · 18_발표_대본.md(11. 남은 길과 마무리)</div><div class="pg">8</div></div>
+</section>
+
+</div>
+<div id="nav"><button id="prev" aria-label="이전">‹</button><span id="cnt">8 앞으로 할 일 · 8 / 8</span><button id="next" aria-label="다음">›</button><span class="sep"></span><button id="edit" class="wide" title="글자를 눌러 바로 고쳐요">✎ 편집</button><button id="save" class="wide" title="고친 내용을 HTML 파일로 내려받아요">⤓ 저장</button><button id="reset" class="wide" title="이 브라우저에 자동 저장된 수정 내용을 지워요">↺ 처음으로</button><span id="msg"></span></div>
+
+<script>
+// ---- 2장 현재상황: 보일 때 한 번 그림 ----
+const names=['범위<br>좁히기','정답지<br>확정','특징데이터<br>수집','점수공식<br>설계','백테스팅','스코어링 보완','통합','실제 공실<br>적용','최종 제출'];
+// d=완료, g=진행 중, p=예정
+// 이전: 원래 8단계 (통합 없음) / 현재: 통합을 더한 9단계
+const prevNames=names.filter((_,i)=>i!==6);
+const prev=['d','d','d','d','g','g','p','p'];
+const now =['d','d','d','d','d','d','g','p','p'];
+const cls={d:'done',g:'doing',p:'plan'};
+function draw(id,state,nm){
+  const t=document.getElementById(id);
+  t.style.gridTemplateColumns=`repeat(${state.length},1fr)`;
+  let h='';
+  state.forEach((s,i)=>{
+    h+=`<div class="st ${cls[s]}"><div class="tg">${s==='g'?'진행 중':''}</div><div class="cw"><div class="dot"><i>${i+1}</i></div></div><div class="nm">${nm[i]}</div></div>`;
+  });
+  t.innerHTML=h;
+  // 선: 노드끼리 이음. 양쪽이 완료·진행 중이면 진한 색
+  const st=[...t.querySelectorAll('.st')],ss=state;
+  for(let i=0;i<st.length-1;i++){
+    const a=st[i].querySelector('.dot'),b=st[i+1].querySelector('.dot');
+    const x1=a.offsetLeft+st[i].offsetLeft+a.offsetWidth, x2=b.offsetLeft+st[i+1].offsetLeft;
+    const y=a.offsetTop+a.offsetHeight/2+st[i].offsetTop;
+    const on=ss[i]!=='p'&&ss[i+1]!=='p';
+    const ln=document.createElement('div');ln.className='ln';
+    ln.style.cssText=`left:${x1}px;width:${x2-x1}px;top:${y}px;background:${on?'#2b8a7e':'#dfe6e3'}`;
+    t.appendChild(ln);
+  }
+}
+let curDrawn=false;
+function drawCur(){if(curDrawn)return;curDrawn=true;if(!document.getElementById('curPrev').children.length)draw('curPrev',prev,prevNames);if(!document.getElementById('curNow').children.length)draw('curNow',now,names);}
+const slides=[...document.querySelectorAll('.slide')];let cur=0;
+const labels=['표지','현재 진행상황','시스템 구조','개발 단계 ①','개발 단계 ②','개발 단계 ③','데모','앞으로 할 일'];
+function fit(){const s=Math.min(innerWidth/1600,(innerHeight-46)/900)*.97;slides.forEach(x=>x.style.transform=`scale(${s})`);}
+function show(i){cur=Math.max(0,Math.min(slides.length-1,i));slides.forEach((x,j)=>x.classList.toggle('on',j==cur));if(slides[cur].id==='curSlide')drawCur();
+  document.getElementById('cnt').textContent=`${cur+1} ${labels[cur]} · ${cur+1} / ${slides.length}`;try{history.replaceState(null,'','#'+cur)}catch(e){}}
+addEventListener('keydown',e=>{if(e.target.isContentEditable||(e.target.closest&&e.target.closest('[contenteditable=true]')))return;if(['ArrowRight','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();show(cur+1)}if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){e.preventDefault();show(cur-1)}if(e.key=='Home')show(0);if(e.key=='End')show(slides.length-1)});
+document.getElementById('prev').onclick=()=>show(cur-1);
+document.getElementById('next').onclick=()=>show(cur+1);
+// ---- 편집 기능: 글자 고치기 · 자동 저장(이 브라우저) · HTML 파일로 저장 ----
+(function(){
+  const REV = document.documentElement.dataset.rev || 'base';
+  const KEY = 'don-1126-edit';
+  const stage = document.getElementById('stage');
+  const msg = document.getElementById('msg');
+  const say = (t) => { msg.textContent = t; clearTimeout(say.t); say.t = setTimeout(() => (msg.textContent = ''), 2500); };
+  const EDITABLE = '.ch,.q,.crit,.msg,.sub,.card h3,.foot .src,.cover h1,.cover p,.cover .meta,.cover .parts span,td,th,li,.dec,.note,.nd,.stepc,.lane .lb,.mini span,.nums div,.road div,.banner div,.go .lbl,.go p,.chk li div,.cur .pill,.cur .st .nm,.cur .st .tg,.legend span,.alegend span,.chips span,.sh h4,.sec,svg.wires text';
+  function load() {
+    try {
+      const d = JSON.parse(localStorage.getItem(KEY) || 'null');
+      if (d && d.rev === REV && Array.isArray(d.slides)) {
+        document.querySelectorAll('.slide').forEach((el, i) => { if (d.slides[i] != null) el.innerHTML = d.slides[i]; });
+        say('이전에 고친 내용을 불러왔어요');
+      }
+    } catch (e) {}
+  }
+  function store() {
+    try { localStorage.setItem(KEY, JSON.stringify({ rev: REV, slides: [...document.querySelectorAll('.slide')].map((el) => el.innerHTML) })); } catch (e) {}
+  }
+  let editing = false, timer = null;
+  function setEditing(on) {
+    editing = on;
+    document.body.classList.toggle('editing', on);
+    document.getElementById('edit').classList.toggle('on', on);
+    document.getElementById('edit').textContent = on ? '✓ 편집 끝' : '✎ 편집';
+    document.querySelectorAll('.slide').forEach((sl) => sl.querySelectorAll(EDITABLE).forEach((el) => {
+      if (el.parentElement && el.parentElement.closest('[contenteditable=true]') && !on) {}
+      if (on) { if (!el.parentElement.closest('[data-ed]')) { el.setAttribute('contenteditable', 'true'); el.dataset.ed = '1'; } }
+      else { el.removeAttribute('contenteditable'); delete el.dataset.ed; }
+    }));
+    if (!on) store();
+    say(on ? '글자를 눌러 고치세요 · 자동 저장돼요' : '편집을 끝냈어요');
+  }
+  stage.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(() => { store(); say('자동 저장됨'); }, 600); });
+  stage.addEventListener('paste', (e) => { if (!editing) return; e.preventDefault(); document.execCommand('insertText', false, (e.clipboardData || window.clipboardData).getData('text/plain')); });
+  document.getElementById('edit').onclick = () => setEditing(!editing);
+  document.getElementById('reset').onclick = () => {
+    if (!confirm('이 브라우저에 자동 저장된 수정 내용을 지우고 처음 상태로 돌아갈까요?')) return;
+    try { localStorage.removeItem(KEY); } catch (e) {}
+    location.reload();
+  };
+  document.getElementById('save').onclick = () => {
+    const was = editing; if (was) setEditing(false);
+    const rev = 'r' + Date.now();
+    const clone = document.documentElement.cloneNode(true);
+    clone.dataset.rev = rev;
+    clone.querySelectorAll('[contenteditable],[data-ed]').forEach((el) => { el.removeAttribute('contenteditable'); el.removeAttribute('data-ed'); });
+    clone.querySelector('body').classList.remove('editing');
+    clone.querySelectorAll('.slide').forEach((el) => { el.style.transform = ''; });
+    const m = clone.querySelector('#msg'); if (m) m.textContent = '';
+    const html = '<!doctype html>\n' + clone.outerHTML;
+    try { localStorage.setItem(KEY, JSON.stringify({ rev, slides: [...document.querySelectorAll('.slide')].map((el) => el.innerHTML) })); } catch (e) {}
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+    const d = new Date(); const pad = (n) => String(n).padStart(2, '0');
+    a.download = `DON_중간발표2_편집본_${pad(d.getMonth() + 1)}${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}.html`;
+    document.body.appendChild(a); a.click(); a.remove();
+    say('HTML 파일로 저장했어요');
+    if (was) setEditing(true);
+  };
+  addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); document.getElementById('save').click(); }
+    if (e.key === 'Escape' && editing) { document.activeElement && document.activeElement.blur(); }
+  });
+  load();
+})();
+addEventListener('resize',fit);fit();show(parseInt(location.hash.slice(1))||0);
+</script>
+
+
+</body></html>
