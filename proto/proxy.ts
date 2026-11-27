@@ -16,6 +16,19 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(url);
     }
   }
+  // 시험 중: 주소창에 사이트 주소를 직접 쳐서 들어온 첫 접속만 시연 첫 페이지(public/start.html)로 보낸다.
+  // 앱 안에서의 이동(같은 사이트에서 온 요청·화면 데이터 요청)이나 "/?app=1" 같은 주소는 그대로 실제 앱을 연다.
+  if (
+    pathname === "/" &&
+    !search &&
+    request.headers.get("sec-fetch-dest") === "document" &&
+    !(request.headers.get("referer") ?? "").startsWith(request.nextUrl.origin)
+  ) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/start.html";
+    url.search = "";
+    return NextResponse.redirect(url);
+  }
   return updateSession(request);
 }
 
