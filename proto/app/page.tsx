@@ -11,7 +11,7 @@ import { AutoApplyForm } from "@/app/_components/auto-apply-form";
 import { ListingMap, type MapPin } from "@/app/_components/listing-map";
 import { Panel } from "@/app/_components/panel";
 import { SiteLogo } from "@/app/_components/site-logo";
-import { AreaRange, LimitSlider } from "@/app/_components/range-fields";
+import { AreaButtons, MoneyField } from "@/app/_components/range-fields";
 import { RegionList } from "@/app/_components/region-list";
 import { SentenceSearch } from "@/app/_components/sentence-search";
 import { SummaryChips } from "@/app/_components/summary-chips";
@@ -97,6 +97,19 @@ async function UserStatus() {
 const inputClass =
   "w-full rounded-lg border border-zinc-300 bg-transparent px-3 py-2 text-sm dark:border-zinc-700";
 
+// 조건 상자 한 줄: 넓은 화면은 "이름 | 버튼들"로 나란히, 좁은 화면은 위아래로.
+function Row({ label, wide, note, children }: { label: string; wide?: boolean; note?: string; children: React.ReactNode }) {
+  return (
+    <div className={wide ? "flex flex-col gap-1.5 sm:flex-row sm:items-start sm:gap-4" : "flex flex-col gap-1.5"}>
+      <span className={`shrink-0 text-sm font-medium ${wide ? "sm:w-24 sm:pt-1.5" : ""}`}>{label}</span>
+      <div className="min-w-0 flex-1">
+        {children}
+        {note && <p className="mt-1 text-xs text-faint">{note}</p>}
+      </div>
+    </div>
+  );
+}
+
 function SearchForm({
   areas,
   filters,
@@ -133,51 +146,15 @@ function SearchForm({
         <span className="text-zinc-500 group-open:hidden">펼치기</span>
         <span className="hidden text-zinc-500 group-open:inline">접기</span>
       </summary>
-    <AutoApplyForm auto={bare} id={bare ? "search-form" : undefined} className={`${wide ? "grid gap-x-8 gap-y-5 md:grid-cols-2 xl:grid-cols-3" : "flex flex-col gap-4"} ${bare ? "" : "border-t border-zinc-200 p-4 dark:border-zinc-800"}`}>
-      <div className="flex flex-col gap-1.5 text-sm">
-        <span>업종</span>
-        <p className="rounded-xl border border-dashed border-line bg-soft px-3 py-3 text-xs text-muted">
-          미확정 · 업종 목록은 5단계에서 정해져요.
-        </p>
-      </div>
-
-
-      <AreaRange min={filters.area_min} max={filters.area_max} />
-      <LimitSlider name="deposit_max" label="보증금 상한" kind="deposit" value={filters.deposit_max} />
-      <div className="flex flex-col gap-2">
-        <LimitSlider name="rent_max" label="월세+관리비 상한" kind="rent" value={filters.rent_max} />
-        <p className="text-xs text-muted">
-          슬라이더를 끝까지 밀면 제한 없음이에요. 관리비가 적혀 있지 않은 매물은 관리비를 0으로 계산해요.
-        </p>
-      </div>
-
-      <div className="flex flex-col gap-1.5 text-sm">
-        <span>무엇을 가장 중요하게 볼까요?</span>
-        <p className="rounded-xl border border-dashed border-line bg-soft px-3 py-3 text-xs text-muted">
-          미확정 · 점수 기준이 정해지면 열려요.
-        </p>
-      </div>
-
-      <fieldset className="flex flex-col gap-1.5">
-        <legend className="mb-1.5 text-sm">층</legend>
-        <div className="flex flex-wrap gap-2">
-          {FLOOR_OPTIONS.map((option) => (
-            <label key={option.key} className="cursor-pointer rounded-full border border-line px-3.5 py-1.5 text-sm has-[:checked]:border-transparent has-[:checked]:bg-accent-soft has-[:checked]:text-accent has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent">
-              <input type="checkbox" name="floors" value={option.key} defaultChecked={filters.floors.includes(option.key)} className="sr-only" />
-              {option.label}
-            </label>
-          ))}
-        </div>
-      </fieldset>
-
-      <div className={`flex flex-col gap-2 ${wide ? "md:col-span-2 xl:col-span-2" : ""}`}>
+    <AutoApplyForm auto={bare} id={bare ? "search-form" : undefined} className={`flex flex-col ${wide ? "gap-3.5" : "gap-4"} ${bare ? "" : "border-t border-zinc-200 p-4 dark:border-zinc-800"}`}>
+      <Row label="지역" wide={wide}>
         <RegionList areas={Object.keys(areas)} selected={filters.gu} />
-        <details className="text-sm" open={filters.dong.length > 0}>
-          <summary className="cursor-pointer text-zinc-600 dark:text-zinc-400">동 고르기</summary>
-          <div className="mt-2 flex flex-col gap-3">
+        <details className="mt-2 text-sm" open={filters.dong.length > 0}>
+          <summary className="cursor-pointer text-xs text-muted">동 고르기 ▾</summary>
+          <div className="mt-2 flex max-h-56 flex-col gap-3 overflow-y-auto rounded-xl border border-line p-3">
             {Object.entries(areas).map(([gu, dongs]) => (
               <div key={gu}>
-                <p className="mb-1 font-medium">{gu}</p>
+                <p className="mb-1 text-xs font-medium">{gu}</p>
                 <div className="flex flex-wrap gap-x-3 gap-y-1">
                   {dongs.map((dong) => (
                     <label key={`${gu}-${dong}`} className="flex items-center gap-1">
@@ -190,19 +167,42 @@ function SearchForm({
             ))}
           </div>
         </details>
-      </div>
+      </Row>
 
-      <label className="flex flex-col gap-1 text-sm">
-        <span>정렬</span>
-        <select name="sort" defaultValue={sort} disabled={!canSort} className={inputClass}>
+      <Row label="월세+관리비" wide={wide} note="관리비가 안 적힌 매물은 0으로 계산해요.">
+        <MoneyField name="rent_max" kind="rent" value={filters.rent_max} />
+      </Row>
+      <Row label="보증금" wide={wide}>
+        <MoneyField name="deposit_max" kind="deposit" value={filters.deposit_max} />
+      </Row>
+
+      <Row label="넓이" wide={wide}>
+        <AreaButtons min={filters.area_min} max={filters.area_max} />
+      </Row>
+
+      <Row label="층" wide={wide}>
+        <div className="flex flex-wrap gap-2">
+          {FLOOR_OPTIONS.map((option) => (
+            <label key={option.key} className="cursor-pointer rounded-full border border-line px-3 py-1.5 text-sm hover:bg-soft has-[:checked]:border-transparent has-[:checked]:bg-accent-soft has-[:checked]:text-accent has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent">
+              <input type="checkbox" name="floors" value={option.key} defaultChecked={filters.floors.includes(option.key)} className="sr-only" />
+              {option.label}
+            </label>
+          ))}
+        </div>
+      </Row>
+
+      <Row label="정렬" wide={wide}>
+        <select name="sort" defaultValue={sort} disabled={!canSort} className={`${inputClass} max-w-56`}>
           {SORTS.map((option) => (
             <option key={option.key} value={option.key}>
               {option.label}
             </option>
           ))}
         </select>
-        {!canSort && <span className="text-xs text-zinc-500">정렬은 로그인하면 바꿀 수 있습니다.</span>}
-      </label>
+        {!canSort && <span className="ml-2 text-xs text-muted">정렬은 로그인하면 바꿀 수 있어요.</span>}
+      </Row>
+
+      <p className="text-xs text-faint">ⓘ 업종 선택과 ‘무엇을 중요하게 볼지’는 점수 기준이 정해지면 열려요.</p>
 
       {!bare && (
         <>
@@ -300,7 +300,6 @@ async function SearchSection({ searchParams }: { searchParams: PageProps<"/">["s
     return query.toString();
   })();
   const headingLine = conditionLine(filters);
-  const hasConditions = filters.gu.length + filters.dong.length + filters.floors.length > 0 || [filters.rent_max, filters.deposit_max, filters.area_min, filters.area_max].some((v) => v !== undefined);
   const aiBox = <SentenceSearch summary={aiStatus} />;
   const formProps = { areas, filters, sort: result.sort ?? sort, canSort: !guest, prefHref };
 
@@ -316,7 +315,7 @@ async function SearchSection({ searchParams }: { searchParams: PageProps<"/">["s
       <div className="flex min-h-0 min-w-0 flex-col gap-4 lg:overflow-y-auto">
       <ConditionBar
         summary={headingLine}
-        defaultOpen={!hasConditions}
+        defaultOpen={false}
         actions={
           <div className="flex shrink-0 items-center gap-3">
             <Link href="/" className="text-xs underline">초기화</Link>

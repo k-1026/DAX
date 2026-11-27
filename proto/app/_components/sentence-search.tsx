@@ -31,23 +31,23 @@ export function SentenceSearch({ summary }: { summary: AiSummary }) {
   }
 
   return (
-    <div className="rounded-2xl border border-line bg-soft p-4">
+    <div className="rounded-2xl border border-line bg-soft px-4 py-3">
       <label htmlFor="sentence-search" className="flex items-center gap-1.5 text-xs font-medium text-muted">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="text-accent" aria-hidden="true">
           <path d="M12 2l2.2 6.3L20 10.5l-5.8 2.2L12 19l-2.2-6.3L4 10.5l5.8-2.2z" />
         </svg>
         문장으로 찾기
       </label>
-      <textarea
-        id="sentence-search"
-        value={text}
-        onChange={(event) => setText(event.target.value)}
-        rows={2}
-        maxLength={200}
-        placeholder="예: 수성구 20평 카페, 월세 200 이하 1층"
-        className="mt-2 w-full resize-none bg-transparent text-sm outline-none placeholder:text-faint"
-      />
-      <div className="mt-1 flex justify-end">
+      <div className="mt-2 flex items-center gap-2">
+        <input
+          id="sentence-search"
+          value={text}
+          onChange={(event) => setText(event.target.value)}
+          onKeyDown={(event) => { if (event.key === "Enter" && !event.nativeEvent.isComposing) { event.preventDefault(); convert(); } }}
+          maxLength={200}
+          placeholder="예: 수성구 20평 카페, 월세 200 이하 1층"
+          className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-faint"
+        />
         <button
           type="button"
           onClick={convert}

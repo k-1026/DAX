@@ -5,9 +5,14 @@ const STEP_SECONDS = 0.9;
 
 export function RecommendLoading() {
   return (
-    <div className="grid min-h-0 min-w-0 gap-4 lg:h-full lg:grid-cols-[300px_minmax(0,1fr)_340px] xl:grid-cols-[320px_minmax(0,1fr)_380px]" role="status" aria-live="polite">
-      <div className="hidden rounded-3xl border border-line bg-panel lg:block" aria-hidden="true" />
-      <section className="flex min-h-[18rem] flex-col rounded-3xl border border-line bg-panel">
+    // 실제 첫 화면과 같은 2단(가운데: 접힌 조건 줄 + 추천, 오른쪽: 스튜디오) 모양으로 기다린다.
+    <div className="grid min-h-0 min-w-0 gap-4 lg:h-full lg:grid-cols-[minmax(0,1fr)_360px]" role="status" aria-live="polite">
+      <div className="flex min-h-0 min-w-0 flex-col gap-4">
+      <div className="hidden items-center gap-3 rounded-3xl border border-line bg-panel px-5 py-3 lg:flex" aria-hidden="true">
+        <span className="text-sm font-medium">조건</span>
+        <span className="h-3 w-40 rounded-full bg-soft" />
+      </div>
+      <section className="flex min-h-[18rem] flex-col rounded-3xl border border-line bg-panel lg:flex-1">
         <div className="flex items-center justify-between border-b border-line px-5 py-4">
           <h2 className="text-sm font-medium">추천</h2>
           <span className="rounded-full bg-accent-soft px-2.5 py-1 text-[11px] text-accent">AI 검색 중…</span>
@@ -44,6 +49,7 @@ export function RecommendLoading() {
           </div>
         </div>
       </section>
+      </div>
       <div className="hidden rounded-3xl border border-line bg-panel lg:block" aria-hidden="true" />
     </div>
   );
