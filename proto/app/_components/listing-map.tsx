@@ -2,6 +2,7 @@
 // 6-C 지도: 검색 결과 한 쪽을 목록 번호와 같은 번호 핀으로 보여 준다(카카오맵).
 // 점수가 연결되기 전까지 핀은 한 가지 색, 색 설명은 숨긴다.
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { FOCUS_EVENT } from "./map-focus-button";
 import { SavedButton } from "./saved-button";
@@ -49,6 +50,10 @@ const PIN_CLASS =
   "flex h-7 min-w-7 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border-2 border-white bg-blue-700 px-1 text-xs font-medium text-white shadow";
 
 export function ListingMap({ pins, missing, fill = false }: { pins: MapPin[]; missing: number; fill?: boolean }) {
+  // 핀 번호를 누르면 매물 상세 창을 바로 연다(지도가 다시 그려지지 않도록 ref로 들고 있음).
+  const router = useRouter();
+  const routerRef = useRef(router);
+  useEffect(() => { routerRef.current = router; }, [router]);
   const listWord = fill ? "오른쪽 목록" : "아래 목록";
   const box = useRef<HTMLDivElement>(null);
   const [failed, setFailed] = useState(false);
@@ -74,7 +79,15 @@ export function ListingMap({ pins, missing, fill = false }: { pins: MapPin[]; mi
         map.addControl(new kakao.maps.ZoomControl(), kakao.maps.ControlPosition.RIGHT);
         const bounds = new kakao.maps.LatLngBounds();
 
-        overlays = pins.map((pin) => {
+        // 같은 건물(같은 좌표) 매물은 핀이 겹치므로, 한 줄에 4개씩 옆으로 벌려 각각 누를 수 있게 한다.
+        const groups = new Map<string, number>();
+        const place = pins.map((pin) => {
+          const key = `${pin.lat.toFixed(5)},${pin.lng.toFixed(5)}`;
+          const k = groups.get(key) ?? 0;
+          groups.set(key, k + 1);
+          return { key, k };
+        });
+        overlays = pins.map((pin, index) => {
           const position = new kakao.maps.LatLng(pin.lat, pin.lng);
           bounds.extend(position);
           const el = document.createElement("button");
@@ -82,7 +95,17 @@ export function ListingMap({ pins, missing, fill = false }: { pins: MapPin[]; mi
           el.className = PIN_CLASS;
           el.textContent = String(pin.n);
           el.setAttribute("aria-label", `${pin.n}번 ${pin.title}`);
-          el.addEventListener("click", () => setSelected(pin));
+          const { key, k } = place[index];
+          const size = groups.get(key) ?? 1;
+          if (size > 1) {
+            const cols = Math.min(size, 4);
+            const col = k % 4;
+            const row = Math.floor(k / 4);
+            el.style.marginLeft = `${(col - (cols - 1) / 2) * 32}px`;
+            el.style.marginTop = `${row * 32}px`;
+            el.title = `같은 건물 매물 ${size}곳`;
+          }
+          el.addEventListener("click", () => { setSelected(pin); routerRef.current.push(pin.href, { scroll: false }); });
           const overlay = new kakao.maps.CustomOverlay({ position, content: el, yAnchor: 0.5, zIndex: 100 - pin.n });
           overlay.setMap(map);
           return overlay;

@@ -11,6 +11,7 @@ import { useSaved } from "./saved-provider";
 import { StudioTiles } from "./studio-tiles";
 import { SavedCompare } from "./saved-compare";
 import { AiWorking } from "./ai-working";
+import { CompareModal } from "./compare-modal";
 import { StudioDetail, type Candidate, type StudioView } from "./studio-views";
 import { useHydrated } from "./use-hydrated";
 import { SavedMemo } from "./saved-memo";
@@ -20,6 +21,8 @@ const buttonClass = "rounded-lg border border-zinc-300 px-3 py-2 text-sm disable
 export function SavedStudio({ candidates = [] }: { candidates?: Candidate[] }) {
   const [view, setView] = useState<StudioView | null>(null);
   const [comparing, setComparing] = useState(false);
+  // 비교 결과는 스튜디오 안이 아니라 창으로 띄운다.
+  const [cmpOpen, setCmpOpen] = useState(false);
   const { state, listId, selectList, isPending, toggle } = useSaved();
   const hydrated = useHydrated();
   const [chosenIds, setChosenIds] = useState<string[]>([]);
@@ -55,6 +58,7 @@ export function SavedStudio({ candidates = [] }: { candidates?: Candidate[] }) {
   }
 
   function compare() {
+    setCmpOpen(true);
     setComparing(true);
     startTransition(async () => {
       setMessage("");
@@ -136,8 +140,18 @@ export function SavedStudio({ candidates = [] }: { candidates?: Candidate[] }) {
           {pending ? "처리 중…" : `선택한 ${selected.length}곳 비교`}
         </button>
         {message && <p role="status" className="text-sm text-amber-800 dark:text-amber-200">{message}</p>}
-        {comparing && <AiWorking title="AI가 비교 분석 중입니다…" steps={["AI가 고른 매물을 불러오는 중", "항목별로 나란히 놓는 중", "공통점과 차이점을 찾는 중"]} stepMs={550} />}
-        {!comparing && currentComparison && <SavedCompare items={currentComparison} />}
+        {!cmpOpen && currentComparison && (
+          <button type="button" onClick={() => setCmpOpen(true)} className="self-start text-sm underline">비교 결과 다시 보기</button>
+        )}
+        {cmpOpen && (comparing || currentComparison) && (
+          <CompareModal count={selected.length} onClose={() => setCmpOpen(false)}>
+            {comparing ? (
+              <AiWorking title="AI가 비교 분석 중입니다…" steps={["AI가 고른 매물을 불러오는 중", "항목별로 나란히 놓는 중", "공통점과 차이점을 찾는 중"]} stepMs={550} />
+            ) : (
+              currentComparison && <SavedCompare items={currentComparison} />
+            )}
+          </CompareModal>
+        )}
       </>}
       </>}
       <p className="border-t border-line pt-3 text-xs text-faint">서비스 의견이나 오류는 <Link href="/report" className="underline">문제 신고</Link>로 알려 주세요.</p>
