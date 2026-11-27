@@ -22,7 +22,9 @@ export async function proxy(request: NextRequest) {
     pathname === "/" &&
     !search &&
     request.headers.get("sec-fetch-dest") === "document" &&
-    !(request.headers.get("referer") ?? "").startsWith(request.nextUrl.origin)
+    // 입장 비밀번호 화면(/gate)에서 넘어온 것도 "첫 접속"으로 본다.
+    (!(request.headers.get("referer") ?? "").startsWith(request.nextUrl.origin) ||
+      (request.headers.get("referer") ?? "").startsWith(`${request.nextUrl.origin}/gate`))
   ) {
     const url = request.nextUrl.clone();
     url.pathname = "/start.html";
