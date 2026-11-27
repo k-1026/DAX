@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko" data-rev="r1795740699726"><head>
+<html lang="ko" data-rev="r1795740699727"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>D : ON 중간발표 2 (편집용)</title>
@@ -187,6 +187,55 @@ svg.wires text{font-size:12px;fill:var(--ink2);paint-order:stroke;stroke:#fff;st
 .cur .lg i{display:inline-block;width:18px;height:18px;border-radius:50%}
 .cur .cur .lg .chg{margin-left:auto;background:var(--teal-ll);border:1px solid var(--line);border-radius:10px;padding:8px 16px;font-size:15px}
 .cur .cur .lg .chg b{color:var(--teal-d)}
+/* 2 개발 진행 현황 (앱 0~9 + 스코어링 세부) */
+.f2,.f2 *{word-break:keep-all}
+.f2 .sub{margin-top:12px;font-size:19px;color:var(--ink2);font-weight:500;display:flex;justify-content:space-between;align-items:center;gap:20px}
+.f2 .sub b{color:var(--ink)}
+.f2 .lg2{display:flex;gap:16px;font-size:13.5px;color:var(--ink2);align-items:center;flex:none}
+.f2 .lg2 span{display:flex;align-items:center;gap:6px}
+.f2 .lg2 i{display:inline-block;width:14px;height:14px;border-radius:50%}
+.f2 .wrap{position:relative;width:1456px;height:612px;margin-top:22px;flex:none}
+.f2 .trk{position:absolute;left:0;top:0;width:1456px;height:170px;display:grid;grid-template-columns:repeat(10,1fr)}
+.f2 .ln{position:absolute;top:44px;height:4px;border-radius:2px;transform:translateY(-50%);z-index:0}
+.f2 .nd2{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;text-align:center}
+.f2 .nd2 .dt{width:60px;height:60px;margin-top:14px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;border:2px solid #d6dedb;background:#fff;color:var(--ink3)}
+.f2 .nd2 .nm{margin-top:10px;font-size:16.5px;font-weight:700;line-height:1.3;color:var(--ink)}
+.f2 .nd2 .st{margin-top:5px;font-size:12.5px;line-height:1.35;color:var(--ink3);max-width:132px}
+.f2 .nd2.done .dt{background:var(--teal-l);border-color:#bfe0d9;color:var(--teal-d)}
+.f2 .nd2.part .dt{background:var(--teal);border-color:var(--teal);color:#fff}
+.f2 .nd2.part .nm{color:var(--teal-d)}
+.f2 .nd2.plan .nm{color:var(--ink3)}
+.f2 .nd2.focus .dt{width:72px;height:72px;margin-top:8px;background:#fffaf0;border:2.5px dashed var(--amber);color:var(--amber);font-size:26px;box-shadow:0 0 0 8px var(--amber-l)}
+.f2 .nd2.focus .nm{color:var(--amber);font-size:18px}
+.f2 .nd2.focus .st{color:var(--amber);font-weight:600}
+.f2 .down{position:absolute;left:800px;top:142px;width:0;height:86px;border-left:2.5px dashed var(--amber);z-index:0}
+.f2 .down::after{content:"";position:absolute;left:-8.5px;bottom:-4px;border:7px solid transparent;border-top:10px solid var(--amber)}
+.f2 .downlb{position:absolute;left:814px;top:172px;font-size:13.5px;font-weight:700;color:var(--amber);background:#fff;padding:0 4px}
+.f2 .pnl{position:absolute;left:0;top:236px;width:1456px;height:376px;background:var(--teal-ll);border:2px dashed var(--amber);border-radius:16px;padding:22px 28px}
+.f2 .pnl .ph{display:flex;align-items:center;gap:12px}
+.f2 .pnl .ph .n{flex:none;width:40px;height:40px;border-radius:11px;background:var(--amber);color:#fff;font-size:22px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.f2 .pnl .ph h4{font-size:21px;font-weight:800;line-height:1.25}
+.f2 .pnl .ph h4 small{display:block;font-size:13.5px;font-weight:600;color:var(--ink3);margin-top:2px}
+.f2 .pnl .ph .tag{margin-left:6px}
+.f2 .srow{position:absolute;left:28px;top:96px;width:1100px;height:200px;display:grid;grid-template-columns:repeat(6,1fr)}
+.f2 .srow .ln{top:30px}
+.f2 .sn{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 6px}
+.f2 .sn .dt{width:56px;height:56px;margin-top:2px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;background:var(--teal-l);border:2px solid #bfe0d9;color:var(--teal-d)}
+.f2 .sn .nm{margin-top:12px;font-size:17px;font-weight:800;color:var(--ink);line-height:1.3}
+.f2 .sn .st{margin-top:4px;font-size:12.5px;font-weight:700;color:var(--teal)}
+.f2 .sn.doing .dt{width:62px;height:62px;margin-top:-4px;background:var(--teal);border-color:var(--teal);color:#fff;box-shadow:0 0 0 7px var(--teal-l)}
+.f2 .sn.doing .nm{color:var(--teal-d)}
+.f2 .sn.doing .st{color:var(--amber)}
+.f2 .sn .ds{margin-top:8px;font-size:13.5px;color:var(--ink2);line-height:1.45;background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 10px;width:100%}
+.f2 .nxt{position:absolute;right:28px;top:96px;width:270px;height:196px;background:#fff;border:1.5px dashed var(--amber);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:8px}
+.f2 .nxt b{font-size:16.5px;color:var(--amber)}
+.f2 .nxt p{font-size:14px;line-height:1.5;color:var(--ink2)}
+.f2 .nxt p strong{color:var(--ink)}
+.f2 .arw{position:absolute;left:1134px;top:128px;width:14px;height:0;border-top:2.5px dashed var(--amber)}
+.f2 .arw::after{content:"";position:absolute;right:-6px;top:-8.5px;border:7px solid transparent;border-left:10px solid var(--amber)}
+.f2 .pft{position:absolute;left:28px;right:28px;bottom:18px;display:flex;gap:10px;flex-wrap:wrap}
+.f2 .pft span{font-size:13.5px;color:var(--ink2);background:#fff;border:1px solid var(--line);border-radius:8px;padding:5px 11px}
+.f2 .pft span b{color:var(--teal-d)}
 #nav{position:fixed;left:50%;transform:translateX(-50%);bottom:8px;font-size:13px;color:#5f6d69;background:rgba(255,255,255,.85);padding:6px 12px;border-radius:8px;user-select:none;display:flex;gap:10px;align-items:center}
 #nav .sep{width:1px;height:16px;background:#cdd6d3}#nav button.wide{width:auto;padding:0 9px;font-size:12.5px}#nav button.on{background:var(--teal);color:#fff}#msg{color:var(--teal-d);font-weight:700;min-width:0}
 body.editing .slide [contenteditable=true]:hover{outline:1.5px dashed #9fcfc6;outline-offset:2px}body.editing .slide [contenteditable=true]:focus{outline:2px solid var(--teal);outline-offset:2px;background:rgba(227,242,239,.35)}
@@ -214,30 +263,27 @@ body.editing .slide [contenteditable=true]:hover{outline:1.5px dashed #9fcfc6;ou
   <div class="meta">2026. 11. 27 · 중간발표 2</div>
 </section>
 
-<!-- ===== 2 현재 진행상황 (2)현재상황.html) ===== -->
-<section class="slide cur" id="curSlide" style="">
+<!-- ===== 2 개발 진행 현황 (앱 0~9단계 + 5단계 스코어링 세부) ===== -->
+<section class="slide f2" id="flowSlide">
   <div class="bar"></div>
   <div class="hd">
-    <div><div class="ch">실행 워크플로우</div><div class="q">5·6단계 완료, 현재 <em>7단계 통합</em> 진행 중</div></div>
+    <div><div class="ch">1 · 현재 진행상황</div><div class="q">앱 개발 <em>0~9단계</em>, 그 안의 <em>스코어링</em> 세부 진행</div></div>
     <div class="crit">현재 진행상황</div>
   </div>
-  <div class="sub">9단계 실행 워크플로우 기준 현황 · <b>실제 공실 적용 전에 ‘통합’ 단계를 새로 추가</b>했다</div>
-
-  <div class="row prev">
-    <span class="pill">이전 진행 상황</span>
-    <div class="track" id="curPrev" style="grid-template-columns: repeat(8, 1fr);"><div class="st done"><div class="tg"></div><div class="cw"><div class="dot"><i>1</i></div></div><div class="nm">범위<br>좁히기</div></div><div class="st done"><div class="tg"></div><div class="cw"><div class="dot"><i>2</i></div></div><div class="nm">정답지<br>확정</div></div><div class="st done"><div class="tg"></div><div class="cw"><div class="dot"><i>3</i></div></div><div class="nm">특징데이터<br>수집</div></div><div class="st done"><div class="tg"></div><div class="cw"><div class="dot"><i>4</i></div></div><div class="nm">점수공식<br>설계</div></div><div class="st doing"><div class="tg">진행 중</div><div class="cw"><div class="dot"><i>5</i></div></div><div class="nm">백테스팅</div></div><div class="st doing"><div class="tg">진행 중</div><div class="cw"><div class="dot"><i>6</i></div></div><div class="nm">스코어링 보완</div></div><div class="st plan"><div class="tg"></div><div class="cw"><div class="dot"><i>7</i></div></div><div class="nm">실제 공실<br>적용</div></div><div class="st plan"><div class="tg"></div><div class="cw"><div class="dot"><i>8</i></div></div><div class="nm">최종 제출</div></div><div class="ln" style="left: 122px; width: 120px; top: 96px; background: rgb(43, 138, 126);"></div><div class="ln" style="left: 304px; width: 120px; top: 96px; background: rgb(43, 138, 126);"></div><div class="ln" style="left: 486px; width: 120px; top: 96px; background: rgb(43, 138, 126);"></div><div class="ln" style="left: 668px; width: 99px; top: 96px; background: rgb(43, 138, 126);"></div><div class="ln" style="left: 871px; width: 78px; top: 96px; background: rgb(43, 138, 126);"></div><div class="ln" style="left: 1053px; width: 99px; top: 96px; background: rgb(223, 230, 227);"></div><div class="ln" style="left: 1214px; width: 120px; top: 96px; background: rgb(223, 230, 227);"></div></div>
+  <div class="sub"><div>웹사이트는 0~9단계로 만들고, 5단계에 들어갈 <b>점수 공식</b>은 스코어링 팀이 6단계로 나눠 진행했다</div>
+    <div class="lg2"><span><i style="background:var(--teal-l);border:2px solid #bfe0d9"></i>완료</span><span><i style="background:var(--teal)"></i>일부 남음</span><span><i style="background:#fffaf0;border:2px dashed var(--amber)"></i>연결 대기</span><span><i style="background:#fff;border:2px solid #d6dedb"></i>예정</span></div></div>
+  <div class="wrap">
+    <div class="trk"><div class="ln" style="left:103px;width:86px;background:#2b8a7e"></div><div class="ln" style="left:248px;width:86px;background:#2b8a7e"></div><div class="ln" style="left:394px;width:86px;background:#2b8a7e"></div><div class="ln" style="left:540px;width:86px;background:#2b8a7e"></div><div class="ln" style="left:685px;width:80px;background:#2b8a7e"></div><div class="ln" style="left:837px;width:80px;background:#2b8a7e"></div><div class="ln" style="left:976px;width:86px;background:#2b8a7e"></div><div class="ln" style="left:1122px;width:86px;background:#2b8a7e"></div><div class="ln" style="left:1268px;width:86px;background:#dfe6e3"></div><div class="nd2 done"><div class="dt">0</div><div class="nm">근거 → 기능</div><div class="st">확정</div></div><div class="nd2 done"><div class="dt">1</div><div class="nm">기술 구조</div><div class="st">확정</div></div><div class="nd2 done"><div class="dt">2</div><div class="nm">데이터 설계</div><div class="st">확정</div></div><div class="nd2 part"><div class="dt">3</div><div class="nm">로그인·권한</div><div class="st">구현 · 소셜 로그인 일부 남음</div></div><div class="nd2 done"><div class="dt">4</div><div class="nm">자동 갱신</div><div class="st">테스트 DB 시험 완료</div></div><div class="nd2 focus"><div class="dt">5</div><div class="nm">스코어링</div><div class="st">앱 연결 대기</div></div><div class="nd2 part"><div class="dt">6</div><div class="nm">사용자 화면</div><div class="st">A~F 완료 · G 결제 남음</div></div><div class="nd2 done"><div class="dt">7</div><div class="nm">추천 메일</div><div class="st">시험 모드 발송 확인</div></div><div class="nd2 part"><div class="dt">8</div><div class="nm">관리자 화면</div><div class="st">읽기 화면 완료</div></div><div class="nd2 plan"><div class="dt">9</div><div class="nm">배포·운영</div><div class="st">준비 문서 작성 · 대기</div></div></div>
+    <div class="down"></div><div class="downlb">5단계 세부 진행</div>
+    <div class="pnl">
+      <div class="ph"><div class="n">5</div><h4>스코어링 — 점수 공식 만들기<small>스코어링 팀 세부 진행 · "이 자리가 이 업종에 맞는가"를 계산하는 공식</small></h4><span class="tag t-ok">1~5 완료</span><span class="tag t-hold">6 보완·통합 진행 중</span></div>
+      <div class="srow"><div class="ln" style="left:120px;width:127px;background:#2b8a7e"></div><div class="ln" style="left:303px;width:127px;background:#2b8a7e"></div><div class="ln" style="left:486px;width:127px;background:#2b8a7e"></div><div class="ln" style="left:670px;width:127px;background:#2b8a7e"></div><div class="ln" style="left:853px;width:127px;background:#2b8a7e"></div><div class="sn"><div class="dt">1</div><div class="nm">범위 좁히기</div><div class="st">완료</div><div class="ds">대구 · 업종 · 매물 범위 정하기</div></div><div class="sn"><div class="dt">2</div><div class="nm">정답지 확정</div><div class="st">완료</div><div class="ds">업종에 잘 맞는 자리 사례 모으기</div></div><div class="sn"><div class="dt">3</div><div class="nm">특징데이터 수집</div><div class="st">완료</div><div class="ds">공공데이터 5종 · 11개 인자</div></div><div class="sn"><div class="dt">4</div><div class="nm">점수공식 설계</div><div class="st">완료</div><div class="ds">비용·공간·입지·업종 적합 4그룹</div></div><div class="sn"><div class="dt">5</div><div class="nm">백테스팅</div><div class="st">완료</div><div class="ds">정답지에 공식을 돌려 검증</div></div><div class="sn doing"><div class="dt">6</div><div class="nm">스코어링 보완</div><div class="st">보완 및 통합 진행 중</div><div class="ds">계산식 보완 · 팀원별 공식을 하나로 통합</div></div></div>
+      <div class="arw"></div>
+      <div class="nxt"><b>다음 · 앱에 연결</b><p>확정한 공식을 <strong>앱 5단계의 점수 자리</strong>에 연결한다.</p><p>앱에는 점수 저장 표 · 갱신 흐름의 점수 칸 · 연결 규격서를 <strong>미리 준비</strong>해 두었다.</p></div>
+      <div class="pft"><span><b>점수는 코드로 계산</b> · 같은 조건이면 같은 점수</span><span><b>AI는 점수를 바꾸지 않음</b> · 설명·요약·리뷰 분류만</span><span><b>리뷰 반영</b> · 보정안 → 관리자 승인 후</span></div>
+    </div>
   </div>
-  <div class="row now">
-    <span class="pill">현재 진행 상황</span>
-    <div class="track" id="curNow" style="grid-template-columns: repeat(9, 1fr);"><div class="st done"><div class="tg"></div><div class="cw"><div class="dot"><i>1</i></div></div><div class="nm">범위<br>좁히기</div></div><div class="st done"><div class="tg"></div><div class="cw"><div class="dot"><i>2</i></div></div><div class="nm">정답지<br>확정</div></div><div class="st done"><div class="tg"></div><div class="cw"><div class="dot"><i>3</i></div></div><div class="nm">특징데이터<br>수집</div></div><div class="st done"><div class="tg"></div><div class="cw"><div class="dot"><i>4</i></div></div><div class="nm">점수공식<br>설계</div></div><div class="st done"><div class="tg"></div><div class="cw"><div class="dot"><i>5</i></div></div><div class="nm">백테스팅</div></div><div class="st done"><div class="tg"></div><div class="cw"><div class="dot"><i>6</i></div></div><div class="nm">스코어링 보완</div></div><div class="st doing"><div class="tg">진행 중</div><div class="cw"><div class="dot"><i>7</i></div></div><div class="nm">통합</div></div><div class="st plan"><div class="tg"></div><div class="cw"><div class="dot"><i>8</i></div></div><div class="nm">실제 공실<br>적용</div></div><div class="st plan"><div class="tg"></div><div class="cw"><div class="dot"><i>9</i></div></div><div class="nm">최종 제출</div></div><div class="ln" style="left: 112px; width: 100px; top: 96px; background: rgb(43, 138, 126);"></div><div class="ln" style="left: 274px; width: 100px; top: 96px; background: rgb(43, 138, 126);"></div><div class="ln" style="left: 436px; width: 99px; top: 96px; background: rgb(43, 138, 126);"></div><div class="ln" style="left: 597px; width: 100px; top: 96px; background: rgb(43, 138, 126);"></div><div class="ln" style="left: 759px; width: 100px; top: 96px; background: rgb(43, 138, 126);"></div><div class="ln" style="left: 921px; width: 79px; top: 96px; background: rgb(43, 138, 126);"></div><div class="ln" style="left: 1104px; width: 78px; top: 96px; background: rgb(223, 230, 227);"></div><div class="ln" style="left: 1244px; width: 100px; top: 96px; background: rgb(223, 230, 227);"></div></div>
-  </div>
-
-  <div class="lg">
-    <span><i style="background:var(--teal-l);border:2px solid #bfe0d9"></i>완료</span>
-    <span><i style="background:var(--teal)"></i><b>진행 중</b></span>
-    <span><i style="background:#fff;border:2px solid #d6dedb"></i>예정</span>  </div>
-
-  <div class="foot"><div>기준 · 2026-11-26 · 8단계 실행 워크플로우에 ‘통합’ 단계를 더해 9단계로 정리</div><div class="pg">2</div></div>
+  <div class="foot"><div>기준 · 2026-11-27 · 앱 개발 단계: proto 개발 안내 · 스코어링 단계: 실행 워크플로우(11/19 피치)</div><div class="pg">2</div></div>
 </section>
 
 <!-- ===== 2 시스템 구조 ===== -->
@@ -654,7 +700,7 @@ document.getElementById('next').onclick=()=>show(cur+1);
   const stage = document.getElementById('stage');
   const msg = document.getElementById('msg');
   const say = (t) => { msg.textContent = t; clearTimeout(say.t); say.t = setTimeout(() => (msg.textContent = ''), 2500); };
-  const EDITABLE = '.ch,.q,.crit,.msg,.sub,.card h3,.foot .src,.cover h1,.cover p,.cover .meta,.cover .parts span,td,th,li,.dec,.note,.nd,.stepc,.lane .lb,.mini span,.nums div,.road div,.banner div,.go .lbl,.go p,.chk li div,.cur .pill,.cur .st .nm,.cur .st .tg,.legend span,.alegend span,.chips span,.sh h4,.sec,svg.wires text';
+  const EDITABLE = '.ch,.q,.crit,.msg,.sub,.card h3,.foot .src,.cover h1,.cover p,.cover .meta,.cover .parts span,td,th,li,.dec,.note,.nd,.stepc,.lane .lb,.mini span,.nums div,.road div,.banner div,.go .lbl,.go p,.chk li div,.cur .pill,.cur .st .nm,.cur .st .tg,.legend span,.alegend span,.chips span,.sh h4,.sec,svg.wires text,.f2 .nm,.f2 .st,.f2 .ds,.f2 .nxt b,.f2 .nxt p,.f2 .pft span,.f2 .downlb,.f2 .lg2 span,.f2 .ph h4,.f2 .ph .tag';
   function load() {
     try {
       const d = JSON.parse(localStorage.getItem(KEY) || 'null');
